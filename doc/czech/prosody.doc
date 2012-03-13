@@ -1,0 +1,51 @@
+
+Formát prosodických pravidel pro pravidla typu PROSODY
+------------------------------------------------------
+
+Terminologie: jedno z možných pravidel v souborech *.rul jest
+pravidlo PROSODY (mùže se vyskytovat opakovanì a s rùznými 
+parametry). Jeho nejdùležitìjším parametrem (viz doc/rules.doc)
+je jméno souboru s prosodickými úpravami. Prosodické úpravy
+jsou tedy nìco jako podøízená pravidla, pro formát jejich souboru
+platí vše, co pro formát slovníkù (viz doc/dict.doc), zde se
+dále konkretizuje.
+
+Na poøadí prosodických úprav v souboru nezáleží. Každá je umístìna
+na samostatném øádku a mìní buïto frekvenci, intensitu nebo èasový
+faktor pro jednotky vyhovující podmínce umístìní.
+
+Pøíklad pravidla: "i/3:4  +100" (bez uvozovek). První znak každé
+úpravy mùže být pouze f,i nebo t a urèuje velièinu, která má být
+pøípadnì mìnìna, tato úprava se tedy týká intensity. Je-li nyní
+tato úprava použita v rámci pravidla s rozsahem slovo a zasaženou
+jednotkou slabika, bude aplikována na tøetí slabiku v každém ètyø-
+slabièném slovì (obecnìji, na "tøetí cíl ze ètyø v rámci rozsahu).
+Poslední èást pravidla je úprava, která se má pøièíst k dosavadní
+intensitì zasažené jednotky; mùže to být libovolné rozumnì velké
+celé èíslo.
+
+Obecný formát pravidla je "v/i:n a", kde _v_ je znak malé t,i nebo f,
+_i_ je poøadí zasažené jednotky v rámci rozsahu, pøípadnì s pøíponou
+"last" (poøadí od konce), _n_ je poèet jednotek zasažené úrovnì
+v rozsahu nebo hvìzdièka (libovolný poèet) a _a_ je vlastní úprava,
+která se užije, jsou-li splnìny podmínky dané _i_,_n_. Je-li užito
+_i_ s pøíponou "last", musí být n hvìzdièka.
+
+V následujících pøíkladech pøedpokládám, že rozsah je vìta a zasažená
+jednotka je slabika:
+t/2last:*   100    ; pøièti 100 k èasovému faktoru pøedposlední 
+		   ; slabiky v každé vìtì
+f/1:*      -130    ; sniž frekvenci v prvních slabikách všech vìt...
+f/1:1         0    ; ...frekvenci jednoslabièných vìt ale nemìò
+
+Lze-li na tutéž jednotku uplatnit více úprav v témže pravidle,
+má pøednost pravidlo, které uvádí konkrétní _n_ (zbylá se neprovedou);
+dojde-li ke konfliktu pravidla poèítajícího odpøedu a odzadu,
+pøednost má pravidlo poèítající odpøedu. Úpravy z rùzných pravidel
+se sèítají tak, jak by èlovìk èekal.
+
+Upozornìní: prosodické parametry slabiky nejsou ani zdaleka totéž,
+co prosodické parametry difonù v této slabice figurujících.
+Definitivní hodnoty prosodických velièin se dávají dohromady
+ve funkci unit::effective(), a to jako jakýsi souèet všech vrstev
+nad daným difonem.

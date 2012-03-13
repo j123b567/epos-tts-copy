@@ -1,0 +1,26 @@
+
+	Installation.
+
+1. cd src; make dos     (or "make doskam" - if you like Kamenicky)
+2. copy the dos package to your dos directory and unzip it
+3. compile ss.cpp in the LARGE mode ("bcc -ml ss.cpp")
+4. enjoy
+
+
+
+	Compilation notes.
+
+What I'm using is Borland C++ 4.5 command line compiler (BCC).
+If you ever need to use another C++ compiler, you should know that 
+
+- all of the .cc files (possibly renamed to .cpp) can be compiled separately,
+  but you'll probably want to compile them together, using ss.cpp
+- you may wish to disable some warnings because of my dialect of C.
+  [  I believe that "if (a=b) ..." is sweet and short, also that 
+     (char *)-(char *) gives an int (may cause bugs). 
+     I've tried to be acceptably ANSI compliant.      ]
+- I'd guess GNU C++ (g++) might be the best choice, if you have access to it.
+- as my development environment is linux/gcc, you may have some compilation 
+  problems under DOS, both great and small. Don't think I cross-test every
+  patch I hack in.
+

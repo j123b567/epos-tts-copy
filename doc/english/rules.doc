@@ -1,0 +1,332 @@
+
+This file describes the syntax used for specifying the rewriting rules (*.rul)
+
+
+Rule
+----
+
+Any line may contain at most one rule and possibly some comment.
+The rule begins with an operation code specifier (what to do),
+followed by the parameter (one word, opcode specific), and possibly
+by scope and target specification, if the defaults are not suitable.
+
+The scope and the target can be one of "phone", "syll", "word", "colon",
+"sent", and "text". Other levels of description may be added later.
+Every rule is evaluated within certain unit, and the scope specifies,
+what kind of unit it should be. For example, if the scope of some
+assimilation happens to be "word", every word will have the rule 
+applied in isolation and the assimilation will never apply across
+the word boundary. The meaning of the target is somewhat opcode specific,
+but generally, this is the level which is affected by that rule.
+See individual rule descriptions.
+
+The default scope for most rules is "word", the default target
+is usually "phone".
+
+The code, scope and target is not case sensitive, but the parameter
+usually is.
+
+
+Using comments
+--------------
+
+Any text starting with ';' or '#' up to the end of the line is a comment.
+It will be properly ignored. If a line doesn't contain anything except
+whitespace and/or comment, it is also ignored.
+
+
+Variables (macros)
+------------------
+
+A line, which doesn't contain a rule, may contain a macro definition instead.
+It is usually specified as "identifier = replacement";  macro identifiers
+always start with a dollar sign, and the equality sign is facultative, which
+allows for this example: "$vowel aeiouy". As a special case, if the replacement
+is the word "external", the identifier is assigned the value of its correspond-
+ing configuration parameter.
+
+The macros will get expanded anywhere where they occur except for their own
+point of definition. Therefore, "$vowel  $short$long" will be a valid macro
+definition, provided that $short and $long have already been defined. The
+expansion is performed at the definition time and it is not iterated, because
+the replacement is not expected to contain the dollar sign.
+
+Macros can later be redefined if you wish and they can be local to a block
+of rules as described below.
+
+If there be any uncertainity concerning the exact length of the identifier,
+you can use braces to embrace it: "${name}" is usually equal to "$name", but
+"$nameaeiou" is not equal to "${name}aeiou". It is also possible to use
+a colon or an ampersand an a delimiter: "$name&aeiou".
+
+For an abundance of examples see existing rule files.
+
+
+Blocks of rules
+---------------
+
+A block is a sequence of rules enclosed within braces ("{" and "}").
+Both the opening and the closing brace follow the rule syntax, but
+they take no parameters except for possible scope specification.
+The block is treated as a single rule, which is useful with conditional
+rules like
+
+if   condition
+{
+	do   this
+	do   that
+}
+
+The rules are applied sequentially, as you would expect, for every
+unit of the proper size as given by the scope of the opening brace.
+This means that every word (if the scope is "word") is processed
+separately throughout all the rules in the block. This involves
+some splitting of execution on entering the block. By default, no
+such splitting is done and the block inherites its scope from its
+master rule (a conditional rule, a block it is encapsulated in,
+or the global implicit block which covers all the rules altogether).
+
+Any macros defined in the block are local to the block. The semantic
+details are C-like and are by no means important.
+
+
+Choices of rules
+----------------
+
+A choice is a sequence of rules enclosed within brackets ("[" and "]").
+Both the opening and the closing bracket follow the rule syntax, but
+they take no parameters except for possible scope specification.
+The choice is treated as a single rule.
+
+Whenever the choice is applied, one of its subordinate rules is chosen
+nondeterministically for every unit of the proper size as given by the
+scope of the opening brace, and only this rule is applied.
+
+Generally, choices behave like blocks; the main difference is that with
+blocks, all of the rules are applied, whereas with choices, exactly one
+of them gets applied (possibly different rules for different pieces of
+the text processed).
+
+Empty choices (with no rules within) are not tolerated, contrary
+to empty blocks.
+
+
+Repeated rules and choice probabilities
+---------------------------------------
+
+Write "3x" before the rule to repeat it three times (in a block)
+or to make it three times more probable (in a choice):
+
+[
+	3x prosody		typical.dic
+	   prosody		variant.dic
+]
+
+(The first alternative now has 75% of being chosen, while
+the other one is left for the remaining 25%.)
+
+The repeat count must be a positive integer. You can not use
+this feature just after conditional rules:
+	
+	if  $something
+		2x   regress   0>x(!_!)
+		
+You should rewrite this to
+
+	if  $something
+	{
+		2x   regress   0>x(!_!)
+	}
+
+Huge integers (like one million) are disallowed. This is because
+the current implementation needs a few bytes of memory (one pointer)
+per every repetition.
+
+
+The preprocessor
+----------------
+
+If you need a more complicated rule structure, use
+
+#include "file.rul"
+
+to insert the contents of file.rul at the place where this directive
+is found. You can nest files like that many levels deep if you desire.
+There are some other directives beside "#include", but they're nearly
+useless: #warn and #error.
+
+The double cross must come in the very first column and must not be
+followed by whitespace, otherwise we're dealing with a comment.
+
+
+Individual rule types
+---------------------
+
+There are two kinds of rules - rules whose parameter is a filename
+(of a file which holds specific, possibly very large data), and rules
+whose parameter describes the rule in itself. In the following enumeration,
+the rules which refer to some file are presented first. All of them use
+a generic file structure. The file consists of multiple lines, whose
+order is not significant; it may contain comments according to hash.doc.
+Every line consists of two words separated by whitespace and the words
+will hence be called "replacee" and "replacer", respectively.
+
+SUBST	- substring substitution. The replacers replace every occurence
+  of their respective replacees; longer matches are matched first; the
+  process is iterated until no replacee occurs in the string. The target
+  must currently be PHONE, because it is not obvious how to handle the
+  children.
+
+  Infinitely looping substitutions are currently reported as an error
+  condition.
+
+PREP	- preposition. If the (scope) unit is identical to some replacee,
+  it gets replaced which its respective replacer and merged to its right-hand
+  neighbor. If there is no such neighbour, nothing happens. Again, the target
+  must currently be PHONE.
+
+POSTP	- postposition. See PREP, but the resultant unit is merged to its
+  left-hand neighbor.
+
+PROSODY - See doc/prosody.doc for details on this rule type.
+
+DIPHONES - Setup the diphones. See doc/diphones.doc for details.
+
+REGEX 	- regular expression substitution. The parameter is of the form
+  "/regular_expression/replacement/". This rule type is similar to SUBST,
+  but it is more powerful and more arcane; it is not intended for end
+  wizards. Skip it.
+  
+  For a regular expressions' overview  try "man grep". Note a difference:
+  in "regular" regular expressions, parentheses match themselves, while
+  the open group and close group operators are "\(" and "\)", respectively.
+  As we use groups heavily and next to none real parentheses, we decided
+  to do it the other way round.
+  
+  The replacement may contain escape sequences referring to the match of
+  the n-th group within the regular expression: \1 to \9. \0 represents
+  the entire match, but this is probably unusable under the current design,
+  as this would cause an infinite substitution loop.
+  
+  In order to use this type of rule, you need to have the rx library
+  already installed and have WANT_REGEX enabled in common.h.
+
+RAISE	- move a unit to another level of description, e.g. when a segment
+  level unit should directly affect the prosody. The parameter is of the form
+  from:to ("from" and "to" are arbitrary strings, they can employ the "except"
+  operator (exclamation mark). The tokens in "from", if found at the "target"
+  level, are copied to the scope level, if the original scope token is listed
+  in "to". It is also possible to omit the colon and the "to" string; the default
+  interpretation is "everywhere".
+
+REGRESS	- assimilation, elision or other mutation of phones or other units
+  depending on their immediate environment. The parameter is of the form
+  o>n(l_r), where o,n,l,r are arbitrary strings. The semantic is "change tokens
+  in o to their corresponding tokens in n whenever the left neighbour is in l
+  and right one is in r". The first two strings should therefore either be of
+  equal length, or "n" should be a single character, with the obvious inter-
+  pretations of "corresponding".
+
+  The zero character ('0') may be included in any of the strings; it means
+  "no element", and it can be used to insert new units, delete the old ones,
+  and to limit the change to the beginning or the end of the "scope" unit,
+  respectively.
+
+  Example:   regress  0>'(0_aeiou)  word  phone
+  inserts the apostrophe before the vowels listed at the beginning of a word.
+
+  Example:   regress  $voiceless>$voiced(!_$voiced)  word  phone
+  assimilates voiceless consonants to their voiced counterparts (assuming
+  $voiced and $voiceless have been defined previously), when the're followed
+  by a voiced consonant. The change proceeds from the right to the left,
+  therefore "ppb" will change to "bbb". See below for the explanation of the
+  exclamation mark (here: "everywhere").
+
+PROGRESS - as above, but the change proceeds from left to right. In the second
+  example for the REGRESS rule, the result would be "pbb" if PROGRESS were
+  employed.
+
+SYLL	- roughly speaking, this rule type can be used to split words to
+  syllables according to the theory of sonority, i.e. at the least sonorous
+  phones. More generally, it could be used to do any sort of inserting unit
+  boundaries depending on local values of a simple metric.
+
+  The parameter is an ordering of the "target" units (typically, phones).
+
+  Example:  syll  0<ptkf<bdgv<mnN<lry<aeiou"  syll  phone
+  inserts the following (and other) syllable boundaries:
+  a|pa  ap|pa  ap|ppppa  arp|pa  ar|pra  a|pr|pa
+
+  Tokens not listed are considered least sonorous, order of tokens within
+  the same sonority group (see the example) is irrelevant.
+
+  See the source (unit::syllablify) for any other details.
+
+SMOOTH	- Smoothing out of one of the F,I,T quantities. The parameter is of
+  the form quantity/left_weights/base_weight\right_weights; the left weights,
+  if there're multiple ones, shall be slash separated, the right weights shall
+  be backslash separated. The new value of the quantity specified for any
+  target is computed as a weighted average of the values for the surrounding
+  units at the same level. If the target is too near to the scope boundary
+  to have enough neighbours in some direction, the value for the last unit
+  in that direction instead.
+
+  Example:  smooth  i/10/20/40\20\10  word  syll
+  applied to the second word "un-ne-ce-ssa-ry" will adjust intensity values
+  for all of the syllables. E.g. the second syllable will be computed as
+  0.3 x i("un") + 0.4 x i("ne") + 0.2 x i("ce") + 0.1 x i("ssa")
+
+  The computations for different units do not interfere. The weights can
+  also be specified as negative quantities and/or as sums of more values.
+  This allows for linear parametrization of the rules.
+  
+  Explanation of unit::project is missing here.
+
+DEBUG	- Debugging information during the application of the rules.
+  Scope and target are ignored, parameter is parsed lazily.
+
+  Parameter "elem": dump the current state of the text being processed
+  Parameter "pause": wait until keypress
+
+INSIDE	- Apply a rule or a block of rules within certain units only.
+  The parameter is a list of values at the scope level, wherein the
+  following rule should be applied; the "except" operator may be used.
+
+  Every unit (a sentence, for example), which fullfills the criterion,
+  is processed separately, therefore the following rule's scope may
+  be at most that of the INSIDE rule itself.
+
+IF	- Apply a rule of a block of rules only if a condition (given
+  by the parameter) is met. The condition must currently be specified
+  as a string comparison test - "string1==string2". The following rule
+  is applied only if the strings are identical after the macro expansions.
+
+  Again, the subordinate rule's scope may not be larger than that of
+  the IF rule itself.
+
+
+The "except" operator
+---------------------
+
+Whenever an unordered list of tokens should be specified within the parameter
+to some rule (use common sense and/or individual rule descriptions above),
+you can also make negative specifications, such as "all consonants except
+l and r". To do this, use the exclamation mark serving as an "except" operator:
+"$consonants!lr" (The right operand is subtracted from the left one.)
+If there is no left operand, say in "!x", the semantics is "all but x".
+You see that "!" alone means "everything".
+
+The operator is right-associative; "!$vowels!ou" means "all excluding vowels,
+but o and u don't count as vowels just now".
+
+Let us repeat that this operator will never work for ordered lists, not even
+for the SYLL rule sonority groups.
+
+
+Escaping special characters
+---------------------------
+
+You can use the backslash to escape any special character including itself
+anywhere in the rules or .ini file strings. "\n", "\t", "\[" may be used
+to insert a newline, tab, or escape characters, respectively.
+

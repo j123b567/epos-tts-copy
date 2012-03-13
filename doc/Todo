@@ -1,0 +1,20 @@
+- Moná by šlo cachovat, tzn. hashovat i parsery, any se leckdy opakují. 
+- je "se" prepozice, nebo postpozice? Jak to poznáme?
+- Kumulace monosylab. Tohle bude trochu problém.
+- zjistit, zda bude nutno dále uzpùsobit ptacek97 diftongùm.
+- stddbg etc. jsou nechutné - nesnesou sdílení souboru, neuvolòují pamì
+- doladit DOS port
+- DLL, jak dál pod Windows
+- sníit pamìové nároky hashovacích tabulek
+- unknown diphone - asi jen è. 19 (souhláska---r)
+- gramatickı marking
+- slouèit struct diphone difon
+- skni unused???
+- v traditnl.dph chybí difony typu i/ (?i0), kde i je samohláska
+- umonit vkládání paus
+- úplnì zrušit difony kvùli sníení pamìovıch nárokù
+- vhodnì oøezat listy AVL stromù v hash.cc
+- make install je velmi neodolnı (cfg not there, no binaries...)
+- inserting rules (not phones) may go madly looping
+  (eating up all memory); why? What should they do anyway?
+- difon 254 et c. se nepouívá, rázy jsou ošetøeny divnì, slab. r taky.

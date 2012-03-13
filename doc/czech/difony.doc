@@ -1,0 +1,43 @@
+Soubor s difony se zpracovává stejnì jako slovníky (viz dict.txt).
+Každý øádek obsahuje právì dvì slova, první z nich je tøíznakový název 
+difonu, druhý z nich je lidsky (decimálnì) zapsané èíslo difonu.
+Je-li pro týž název více èísel, platí poslední uvedené; je-li 
+více názvù pro totéž èíslo, platí všechny.
+
+Struktura názvu difonu
+----------------------
+
+Prostøední znak oznaèuje hlásku, pod kterou bude výsledný difon
+zaøazen; krajní znak mùže být buï otazník, nebo mùže dále zúžit
+výskyt difonu jen na pøíslušného levého èi pravého souseda.
+Pod každou hlásku jsou zleva doprava zavìšeny postupnì difony
+typu   lt? ?t? ?tr ltr, pokud je inventáø zahrnuje.
+
+Pøíklad, Dubìdùv inventáø:
+
+    p       l       o       u       t       e       f
+  0p?   pl? ?lo   ?o? ou?  ?u?    ut? ?te  ?e?    ef? ?f0
+  
+nebo tradièní inventáø:
+
+    p       l       o       u       t       e       f
+ 0p? ?pl  pl? ?lo   ?o? ou?  ?u?    ut? ?te  ?e?    ef? ?f0
+ 
+(v tomto pøípadì by napø. symbolické difony ?pl, ?pt mìly totéž èíslo,
+které by korespondovalo s pozicí difonu p@ v tradièním inventáøi)   
+  
+Týž inventáø však mùže být reprezentován i jinak; pro každý
+typ difonu v daném inventáøi je nutno rozhodnout, zda bude
+bydlet ve své výchozí nebo ve své koncové hlásce.
+
+S pseudodifony odvozenými od diakritiky zatím nepoèítám,
+protože jsem je ještì nepochopil.
+
+Opakování difonù
+----------------
+
+Užívá se napø. pro støedy dlouhých vokálù v traditnl.dph. 
+K èíslu difonu je tøeba pøièíst pøíslušný násobek 10000.
+Pøíklad:   ?á? 20241   by znamenalo, že vyskytne-li se kdekoli
+hláska 'á', budou jí podøízeny celkem tøi exempláøe difonu
+èíslo 241.

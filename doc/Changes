@@ -1,0 +1,389 @@
+
+1.1.1 from earlier releases (incomplete):
+	- this file
+	- debugging & other conditional compilation parameters have been moved
+		to the config file. doc/debug.doc has been rewritten
+	- fixed the array size in sss.cc to fit into the 64K DGROUP in DOS
+	- fixed shriek() not to be volatile and to always take signed ints
+	- allowed (hack) 16-bit ints in load_config and DOS HUGE memory model
+	- "make tgz" (in sss/src) makes a tgz (in sss/src/../..) with the
+		name sssX-Y-Z.tgz; the version numbers as read from common.h
+		A copy is made on the diskette (if one is inserted at the moment).
+	- "make date" outputs the last modification time
+
+1.1.2 from 1.1.1	10.5.97
+	- "make dos" creates a zipfile, not individual files
+	- "make dos1250", "make dos1252" can produce two other encodings
+	- in unit::sanity, fixed the range checks for pointer values
+	- migrated the rest of non-ASCII chars out of the sources
+	- migrated another bunch of options to the .ini file
+	- allowed escape sequences and quoted strings in the .ini file
+	- multiple tiny code amendments
+	- no compile-time checking for the memory model
+	- run-time check whether we've been compiled fully 32-bit (again)
+	- changed warning flags to -Wall -Wno-parentheses -Wno-unused
+	- new option type: DEBUG_AREA (enum, just for focus_dbg)
+	- interf.h uglified
+	- side syllables hacked out. See unit:syll_break for more info.
+		The feature can be disabled in the .ini file (syll_break())
+		cfg/nonsyl.dic has been consequently cleaned up.
+	- the sonority rule no longer considers nasals as more sonorous than
+		the ordinary consonants. Hope it doesn't hurt.
+	- parser now can accept keyboard input & other minor improvements there
+	- new files in the doc directory: Intro, Files
+
+1.1.3 from 1.1.2	14.5.97
+	- enums UNIT, OPT_TYPE suffer formally renamed elements because of Borland
+	- BOOL, INT, STR (formerly STRING),... in config.cc are always #defined now
+	- a new diphone inventory description (.dph) - the traditional one.
+		Very crude, lots of the diphones discarded (incl. W[{>,` etc.)
+		This inventory doesn't cover some allophones at all, see default.rul
+	- in unit::set_father(), f,i,t will be inherited (untested). This should 
+		allow phone-level f,i,t adjustments propagated to the diphones.
+	- unit::diph() optionally allows repeated diphones (have a look there).
+	- we now allow "triphones" (like "a'a", a.k.a. "a|a" in traditnl.dph)
+	- the default rules contain one killer rule (until traditnl.dph is fixed)
+
+1.1.4 from 1.1.3	19.5.97
+	- optional hash table profiling; configurable hash table full percentage
+	- removed a word-length quadratic complexity aspect of subst() by not 
+		checking too long words (longer than hash::longest). Typically,
+		this "feature" will cause an overall slowdown. :-)
+	- fixed unit::subst to loop until there's nothing to substitute
+	- traditnl.dph is less crude now, it only doesn't solve the voiced 
+		affricates now. We still never use many important diphones.
+	- some big fixed-length auto arrays have been made static & malloced
+	- introduced cfg.safe_grow, but still not configurable
+
+1.1.5 from 1.1.4	22.5.97
+	- '\0' shall be replaced by '_' in parser::getch; '\0' never gets output.
+	- unit::fout is much more configurable now, see config.cc
+	- tabs regularized to eight chars
+
+1.1.6 from 1.1.5	27.5.97
+	- config.cc #inclusion scheme has been substantially reworked
+	- aggregate (array...) config options are now possible, see config.cc
+	- unit::fout is even more configurable now. And slower as well.
+	- ANSI escape sequences mostly made configurable
+	- can remove elements from the hash tables now
+	- invalid options are checked against
+	- fixed pointer sanity checks (when trusted_ptr==off)
+	- added doc/output.doc
+
+1.1.7 from 1.1.6	28.5.97
+	- fixed a stupid "last byte swallowing" bug
+	- added diphtong rules, made traditnl.dph handle diphtongs better
+	- too high level symbols, which could make the parser prematurely
+		terminate a substitution, are checked against (parser::done)
+	- gather now gathers everything, thus preserving syllables etc.
+		during substitutions. This makes work multiple multilevel
+		substitutions, such as "ououo" -> "ou|ou|o".
+	- prep is temporarily broken
+
+1.1.8 from 1.1.7	29.5.97
+	- fixed prep &c (bug having to do with M_EXACT and unit::gather())
+	- if a preposition occurs at the end of a colon, let it be fatal
+	- added the FILE cfg option type
+	- deuglified load_config()
+
+1.2.-1 from 1.1.8	30.5.97
+	- converted all printf's to redirectable calls. Use "stddbg_file",
+		"stdshriek_file", "stdwarn_file" in sss.ini to redirect them.
+		An exception is user_pause(), which should never be redirected
+	- renamed sss to ss, 'cause 'tis shorta.
+	- colorize() now doesn't check against redirected input
+	- rewrote the stuff about ss_init(), multiple .ini files
+	- at the very beginning, the debug output may go temporarily
+		to the screen. It will be redirected properly after
+		the .ini file which uses it is redirected.
+	- we now have cfg/ssfixed.ini and ss.ini instead of sss.ini.
+		Any values in ss.ini override those in ssfixed.ini. The idea 
+		is not to bury the oft-changing params in the permanent ones.
+	- the "markup_language" configuration parameter (MUST be located
+		in ssfixed.ini!, possible values: none, ansi, rtf) allows
+		run-time switching between ANSI output and the Rich Text Format
+		output. Either ssansi.ini or ssrtf.ini is processed after
+		ssfixed.ini
+	- ss_reinit() can be used to re-read the config files. Not fool-proof.
+	- ss_init() shall be used instead of load_config()
+
+1.2.0 from 1.2.-1	1.6.97
+	- cfg/ssdeflt.ini (used by ss_reinit()) is now automagically generated
+		from src/config.cc (on "make")
+	- Makefile deuglified a little bit
+	- fixed hash::hash (empty lines had been creating phantom items)
+	- doc/output.doc includes new topics (e.g. debugging info redirection)
+	- fixed safe_grow and max_line_len to be configurable
+	- got finally rid of ANSI escape sequences in config.cc
+	- made '~' a valid word separator (e.g. in a dictionary)
+
+1.2.1 from 1.2.0	13.6.97
+	- fixed some of the silly Borland warnings
+	- removed -Wno-parentheses (and fixed some lines which got it)
+	- added nnet.cc (neural networks' input - see doc/neuralnet.doc)
+	- consistently changed "auxiliary syllable" to "side syllable"
+	- changed warning flags to -Wall with no exceptions
+	- faked the use of unused function arguments, see unused() in common.h
+	- added the "text" abstraction (src/text.*) to handle #include in rules
+	- maybe fixed a DOS CR/LF freadin() bug
+	- gather() called after the diphones get created now shrieks gracefully
+
+1.2.2 from 1.2.1	 2.7.97
+	- no code change, makefile adjusted for the files that were new in 1.2.1
+
+1.2.3 from 1.2.2	 7.7.97
+	- minor code changes in text.*, chasing a DOS-only Heisenbug (lost)
+
+1.2.4 from 1.2.3	 14.9.97
+	- fixed this==NULL sanity check in unit::sanity()
+	- made parser skip any garbage (whitespace?) until the first phone
+	- minor amendments to text.cc
+	- made hash.cc a little bit more commentproof
+	- when DEBUG is defined, free() is #defined to paranoid_free() (see)
+	- fixed tmps declaration in rules::str2rule() (the DOS-only bug?)
+	- improved cfg/syll.dic (laryngeal stop before word-initial vocals)
+	- fixed long vowels in the nnet code (unit::nnet_type())
+	- the glottal stop is now a valid voiceless stop for the nnet code
+
+1.2.5 from 1.2.4	29.9.97
+	- added doc/COPYING (GNU Public License - copyleft) to fix the legalese
+	- the paranoid_free() hack from 1.2.4 has been removed. Because,
+	- dmalloc (debugging mem alloc()) library is used #ifdef WANT_DMALLOC
+	- fixed a fence-post error (rules::rules::ruleline one byte too short)
+	- rules::resolve_vars now uses a pseudostatic buffer (was call-lived)
+	- the FOREVER macro should be used to mark permanent memory allocations
+	- some minor memory leaks have been found and fixed
+	- rewrote hash::hash to make it even more commentproof, but messier
+	- "make clean" tries to clean up the Makefile and report some settings
+	- cleaned up parser::parser, parser.cc now depends on interf.cc::freadin()
+
+1.2.6 from 1.2.5	29.10.97
+	- partly allowed deletion of the last phone in a syllable
+	- const char * everywhere to be -Wwrite-strings clean
+	- hash collisions are now handled with a balanced AVL tree
+	- furthermore, on hash table over/underflow it is completely rehashed
+	- made the only nnet.rules substitution not destroy syllables
+	- fixed a trailing whitespace bug in hash:hash
+	- it is possible to remove the diphones with "DIPHONES ~" rule
+	- option to dump the diphones at every DIPHONES rule (immed_diphones)
+	- added a punctuation hack into the nnet rules and similar minor fixes
+
+1.3.-2 from 1.2.6	 3.11.97
+	- aux/addcflag to easily add compiler flags; used by "make gdb/pg"
+	- "make clean" tries harder to clean up the Makefile
+	- simple suprasegmentalia (doc/rules.doc, doc/prosody.doc)
+	- hash::add_int/translate_int now understands negative quantities
+	- version optionally printed on startup
+	- hash table can work with other keys/data than char*/char* now
+	- fixed substitutions ('$' didn't work if scope->cont!=NO_CONT)
+	- new rule type RAISE - move tokens to other levels
+	- fixed some harmless memory leaks with ss_done()
+	- added rules to mark wh-quesions as such
+	- if there is nothing for a postp/preposition to join to, it's ignored
+
+1.3.-1 from 1.3.-2	17.11.97
+	- inline is never used under DOS, Borland can't handle it properly
+	- snprintf is no longer used, it is unportable
+	- allowed no value in .ini files, default is "".
+	- long command line options etc. (see doc/options.doc)
+	- fixed: if no phones given to the parser, it would crash
+	- ss.cc is now compiled separately, thus speeding up the compilation
+	- new rule type SMOOTH - smoothen suprasegmentalia (doc/rules.doc)
+	- unit::project() - move suprasegmental adjustments to a certain level
+	- some short command options, still undocumented
+	- f,i,t is now kept zero-relative, not neutral-value-relative
+	- unit::effective is now a uniform sum of the adjustments
+
+1.4.-2 from 1.3.-1	 8.12.97
+	- "gcc -pipe" might compile a bit faster
+	- src/x moved to aux/xd
+	- default.rul renamed to czech.rul
+	- rule is now a fully-fledged class with a VMT, doc/classes.doc
+	- stopped trying to avoid multiple-loaded dictionaries
+	- moved the "scope" logic from unit::...() to rules::apply()
+	- rules get precompiled much tighter
+	- made hash dmallocable
+	- fixed profiling (LDOPTS in the Makefile)
+	- REGRESS and PROGRESS now can insert new units (doc/rules.doc)
+	- this allows for throwing out many subst rules
+	- simple help for single-letter (short) options
+	- debugging tags - rules now have source file/line information
+	- copy constructor for hash tables (could be made faster)
+	- class block - a subblock of rules (doc/rules.doc)
+	- fixed the "Undefined identifier (null)" error message in resolve_vars
+	- conditional rules (rule type IF)
+	- first try at merging in the win32 and .wav generator code
+	- dos package contains files from var subdir
+	- shriek() is now more consistent (integers should have their %d)
+	- rule can begin with 0 or more words of comment (hm, inconsistent)
+	- str2rule renamed to next_rule, cleaned up, added functionality
+
+1.4.-1 from 1.4.-2	11.12.97
+	- doc for r_if (doc/rules.doc)
+	- renamed some sources (r*)
+	- calling syn32.cc to write the samples somewhere, rewrote ss.cc
+	- redesigned czech.rul, though the old style is still supported
+	- minor memory leaks fixed
+	- updated copyright notices in syn32.*, common.h, and COPYING
+	- adjusted class dsynth (former DifSynt)
+	- threw out dos support files again
+	- some options for controlling syn32.cc output
+
+1.4.0 from 1.4.-1	15.12.97
+	- adjusted class synteza in syn32.cc
+	- option wav_header to turn off the header	
+	- wiped out lot of now redundant scoping code out of elements.cc
+	- added hash::write(), hash::update(), doc/hash.doc
+	- new option -n - neuronet rules
+	- synth32.cc now tests whether it was able to open its files
+	- doc/sound.doc
+	- if paranoid, rules cannot begin with the old-style comment
+
+1.4.1 from 1.4.0	18.12.97
+	- renamed syn32.cc to synth.cc
+	- changed div.quot to / throughout synth.cc
+	- handling 0 models for a diphone differently
+	- ammended the (unused) hash<non-char> code
+	- fixed the directories (cfg!=src/cfg)
+
+1.4.2 from 1.4.1	19.12.97
+	- the default config now really speaks to /dev/dsp16
+	- updated doc/sound.doc 
+	- fork() suggested in ss.cc as an example
+
+1.4.3 from 1.4.2	22.12.97
+	- rules can examine string configuration parameters (/dev/rules.doc)
+	- twice using strcasecmp() (if not portable, replace with stricmp())
+	- -d gives diphone names, not numbers
+	- -s makes ss speak (not default today)
+	- synteza::wave_buffer added (performance reasons)
+	- found and inserted the improved cfg/ptacek97.dph at last
+
+1.4.4 from 1.4.3	29.12.97
+	- fixed wavout maybe NULL bug in synteza::synteza()
+	- invent_dir now points to /usr/lib/ss
+	- improved prosody and other rules
+	- r_if renamed to r_inside, new rule r_if (constant comparison only),
+		it is not very useful at the moment, as we don't use "external"
+		parameters introduced in 1.4.3 as yet
+	- text to be processed can be given on command-line
+	- added some preliminary german.rul
+	- fixed splitting of a 'q'
+	- moved some more r_raise code from run-time to its constructor
+	- r_inside now accepts more sophisticated lists and handles them faster
+		(booltab instead of a simple strchr)
+	- it is possible to force hash tables to be power-of-two-sized,
+		thus avoiding division in hash::fn() on machines with no hw div
+	- fork() is used to speak the samples (if UNIX && needed && enabled)
+
+
+1.4.5 from 1.4.4	2.1.98
+	- the text to be parsed can be given directly on the command line
+	- option colloquial (-c) turns on the specific features of casual speech
+	- option irony (-i) turns on ironical prosody (tries to)
+	- non-terminated utterances (non-final colons) have been hacked a bit
+	- renamed struct diphone member "i" to "e" (possible naming conflicts
+		with local variables)
+	- partly united struct diphones with struct difon
+	- changed use_syn for inventar[2] - again a bug?
+	- stupid heuristic classification "se" as either prep or postp 
+
+
+1.4.6 from 1.4.5	4.1.98
+	- t/i adjustments ("korekce") can be turned on with a cfg par
+	- support for sampling frequencies other than 8kHz (cfg.sampling_rate)
+	- the sampling buffer now has the optimal size (hw dependent)
+	- sampling is done through the open() breed of functions, not the
+		fopen() one. Rationale: we need ioctl's, but not clib buffering.
+	- changed some #includes and Makefile dependencies
+	
+
+1.4.7 from 1.4.6	18.1.98
+	- multiple languages partially supported
+	- reshaped hash_table as a template
+
+
+1.4.8 from 1.4.7	26.1.98
+	- reduced number of diagnostic levels to 5 (0-4)
+	- cfg files moved to /usr/lib/ss
+	- .ini file for each diphone inventory added
+	- the ANYWAY option of hash tables (see doc/hash.doc)
+	- new target - make install
+	- make dist had to be rewritten
+
+1.4.9 from 1.4.8	27.1.98
+	- merged an improved synth.* by Petr
+
+
+1.4.10 from 1.4.9	 2.2.98
+	- makeinst - a bit more working cfg installer
+	- the bulk made a shared library libss.a
+	- make static  links statically (use for debugging)
+	- all directories are relative to cfg.base_dir
+	- stricmp, filenames made more consistent and portable
+
+
+1.4.11 from 1.4.10	 4.2.98
+	- #!/bin/bash is used to mark scripts as such
+	- detection of open syllables (marked with '~')
+	- minor dos fixes (fork(), open(,,)
+
+
+1.4.12 from 1.4.11	16.2.98
+	- dos fix - IS_NOT_SLASH in compose_pathname()
+	- significant prosody amendments
+	- backslash can escape exclamation marks within some rules
+	- nondeterministic [ ] rules (see "choices" in rules.doc) 
+
+
+1.4.13 from 1.4.12	23.2.98
+	- minor fixes (O_BINARY, f0 for int3, DOS documentation)
+	- choice probabilities and repeat counts (see rules.doc)
+	- winss.ini replaces ss.ini during "make dos"
+	- "make cfgsync" synces cfg for "make dos" and "make dist"
+
+
+1.4.14 from 1.4.13	 6.3.98
+	- Watcom changes merged
+	- null number pronunciation support (parser only)
+	- fixed r_syll to avoid "Nothing to split" with unknown symbols
+	- allowed multiple non-option parameters if not paranoid
+	- partly fixed voiced africates
+	- show_raw_diphs option added
+	- various diphone fixes
+	- .dph files moved somewhere under the inv directory
+
+
+1.5.-1 from 1.4.14	16.3.98
+	- Watcom/QNX and generic portability fixes
+	- regex rule support using rx library (turn on with WANT_REGEX
+		in src/common.h; see also rules.doc and "man grep")
+	- some Czech numerals (see lng/czech/num*) and other special stuff
+	- better guess at German vowel quantity rules
+	- -p option now stands for --pausing
+	- -H option lists the long options
+	- renamed inventories and associated files, see also inv/UNKNOWN
+	- renamed config.cc to options.cc
+	- first attempt at using autoconf to set up a configure script
+		(see the end doc/Files for an explanation)
+	- removed three obsolete output formatting options
+	- quoted exclamation marks in rule files are not expanded
+
+
+1.5.0 from 1.5.-1	20.3.98
+	- rx and regex are properly detected by configure
+	- speak using /dev/dsp instead of /dev/dsp16 (SNDCTL_DSP_SAMPLESIZE)
+	- doc/english/prosody.doc
+
+
+1.5.1 from 1.5.0	22.3.98
+	- partly fixed -soname stuff
+	- Czech numerals work quite well
+	- fixed glottal stops in inv/czech/traditnl.dph
+	- removed unsafe unlinks and unsafe grows...hopefully...
+	- escaped chars are more powerful now, text.cc:strip()
+	- crude pauses can be inserted (denoted by "#")
+	- cleaned up some #defines (bool constants, ESCAPE...)
+	- Czech voiced affricates now respect traditnl.dph
+
+

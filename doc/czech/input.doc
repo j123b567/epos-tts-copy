@@ -1,0 +1,17 @@
+Jméno vstupního souboru lze urèit pomocí konfiguraèního parametru
+input_file; není-li uveden, nebo je-li jeho hodnota "", ète se text
+k syntéze ze standardního vstupu (klávesnice); v takovém pøípadku 
+ukonèí se pomocí Ctrl-D (tzv. dobrı operaèní systém) nebo Ctrl- 
+(tzv. zlı operaèní systém). Lze také nastavit ukonèení jinım znakem,
+a to pomocí parametru end_of_file; v tomto pøípadì nutno navíc 
+stisknout Enter.
+
+Soubor se hledá v adresáøi input_dir, staèí relativní cesta.
+
+Malá/velká písmena ve vstupním textu se nerozlišují, pouívá se kódování
+èeštiny podle ISO Latin 2. (V DOSovém portu jak kdy.)
+
+Pípami ('|') lze explicitnì vymezovat slabiky. Mezery, tabelátory, 
+øádkování, mají pouze delimitaèní funkci. Rozumná interpunkce se skladuje
+spolu s jednotkou, kterou vydìluje.
+

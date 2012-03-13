@@ -1,0 +1,67 @@
+
+Hlavní výstup
+-------------
+
+Zde jest popsán výpis obsahu hlavní datové struktury pomocí unit::fout,
+respektive jeho konfigurace v souboru ?.ini.
+
+Parametry "colored" a "structured" by mìly být vždy "on", pokud se nedìje
+nìco velmi divného. Parametr "markup_language" lze nastavit na hodnoty
+"none", "ansi", nebo "rtf". První z nich nepoužívá žádné barvièky,
+druhá používá ANSI escape sekvence (v DOSu fungují, obsahuje-li
+soubor config.sys øádku "DEVICE=ANSI.SYS"), tøetí produkuje výstup
+ve formátu Rich Text Format, který lze zobrazovat speciálními programy.
+Celkem se dá øíci, že v dané situaci je správná maximálnì jedna 
+z tìchto možností. 
+POZOR: parametr "markup_language" lze použít pouze v souboru ssfixed.ini 
+a zatím se neaktualizuje funkcí ss_reinit().
+
+Parametr "multipart" by mìl být "off", protože jde o funkci, kterou lze
+nakonfigurovat jinak a obecnìji (puntièkáø by nemusel souhlasit).
+
+Parametry "prefix" a "postfix" urèují, zda se napøed tiskne obsah jednotky
+vyšší úrovnì (napøíklad vykøièník), nebo obsahy všech jejích následníkù
+(napøíklad hlásky vìty rozkazovací). Není-li nastaven žádný z tìchto 
+parametrù, netisknou se obsahy vyšších jednotek vùbec. Jsou-li nastaveny
+oba, tisknou se pøed i po, podobnì jako otazník èi vykøièník ve španìlské
+grafice.
+
+Je-li parametr "swallow_underbars" zapnut, nikdy se netiskne podtržítko
+(reprezentující tzv. "prázdný obsah", zpravidla jednotky, jejíž hranice
+nebyla explicitnì vyznaèena v grafice).
+
+Jako oddìlovaèe všech úrovní jednotek je možné použít parametry
+tvaru (pozice)_(úroveò) kde "pozice" mùže být "begin", "separ" nebo 
+"close", zatímco "úroveò" mùže nabývat obvyklých hodnot "diphone"
+až "text" (ne všechny mezní kombinace jsou považovány za smysluplné).
+"begin_syll" je tedy øetìzec, který se vytiskne pøed každou slabikou,
+"end_word" se vytiskne za každým pøízvukovým taktem, "separ_colon"
+bude oddìlovat jednotlivé promluvové úseky v rámci vìty (výpovìdi).
+Implicitní hodnoty jsou ve všech pøípadech prázdný øetìzec.
+
+Mimoto je možné nastavit i barvy používané pro odlišení jednotlivých
+úrovní jednotek, a to analogicky, tentokrát pomocí parametrù
+color_(úroveò). Napøíklad øádek
+
+color_colon "\[[01;33m"
+
+nastaví barvu používanou pro tisk oddìlovaèù a znakù úrovnì "colon"
+na žlutou. (Sekvence '\[' v konfiguraèním souboru reprezentuje znak 
+Escape, ASCII 27.)
+
+V normální barvì se tiskne globální header a footer, jejichž text je 
+vzat ze souboru udaného parametry "header", "footer".
+
+Difony se v metodì unit::fout nezobrazují vùbec. (Viz ale parametr
+show_diphones.)
+
+Ladicí tisky
+------------
+
+Ladicí tisky lze pøesmìrovat uvedením jména souboru v parametru
+"stddbg_file". Podobnì lze pomocí "stdwarn_file" a "stdshriek_file"
+pøesmìrovat varování a smrtelné výkøiky. Soubor bude vytvoøen,
+i kdyby mìl být prázdný.
+Prozatím však nemusí fungovat, bude-li více tìchto parametrù sdílet
+spoleèný soubor. Pro "totální pøesmìrování" doporuèuji spíše použít
+normální pøesmìrování stdout a stderr pomocí shellu.

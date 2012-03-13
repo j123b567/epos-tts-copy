@@ -1,0 +1,79 @@
+
+Tento soubor je urèen pouze tìm, kdo mají v úmyslu modifikovat nebo
+ve vlastních programech využívat zdrojové texty ss. Je zatím velmi
+málo použitelný a nemusí vždy odpovídat nejnovìjší versi.
+
+Tøídová hierarchie:
+-------------------
+
+simpleparser, unit, rules, text, jsou samostatné tøídy,
+které nijak nepoužívají mechanismy dìdiènosti. Slouží pouze
+k jasnìjšímu pøiøazení funkcí k datovým strukturám.
+
+Tøída hash je potomkem tøídy hash_table<char,char>, to jest
+hash_table je template, hash nikoli. Bližší informace lze
+nalézt v doc/hash.doc, pokud zrovna není zastaralý.
+
+Skuteènou hierarchii tvoøí tøída "rule", která reprezentuje
+vždy jedno pravidlo:
+
+ rule ---- hashing_rule ---- r_subst ---- r_prep
+       |		 |	      `-- r_postp
+       |		 `-- r_diph
+       |		 |
+       |		 `-- r_prosody
+       |
+       `-- cond_rule ------- r_inside
+       |		|
+       |		`--- r_if
+       `-- r_smooth
+       |
+       `-- r_regress ------- r_progress
+       |
+       `-- r_raise
+       |
+       `-- r_syll
+       |
+       `-- r_regex          (could be, but isn't, related to r_subst)
+       |
+       `-- r_debug
+       |
+       `-- block_rule ------ r_block
+       			|
+       			`--- r_choice
+       
+pøièemž tøídy rule, hashing_rule, cond_rule lze vnímat jako
+abstraktní. Polymorfismus tìchto tøíd využívá tøída block,
+která obsahuje pole pointerù na tyto objekty (rule **rulist).
+
+Tato komplikovanost mì nijak netìší, ale starý design tøídy
+rules mìl zásadní nedostatky pøi pøechodu k podmínìným
+pravidlùm, a navíc vedl k duplikování kódu ve všech funkcích
+tøídy unit, které byly z pravidel volány a staraly se napø.
+o rozsah aplikace (scope); o to se nyní mùže starat
+multi_rule::apply(), aniž by se musel neustále rozebírat parametr
+pravidla a aniž by pravidlo obsahovalo promìnlivì typované
+hodnoty pøedžvýkaného parametru.
+
+
+Tøídy strukturující jiná pravidla
+---------------------------------
+
+Tøída r_block representuje posloupnost pøíkazù. Využívá se
+podobnì jako v C k implementaci podmínìných pravidel,
+lokálních promìnných a podobných zádrhelù. Pravidla jako
+celek jsou rovnìž organizována ve tøídì block, která je
+ještì "obalena" tøídou rules, komunikujíc skrze ni se svìtem.
+Objekt r_block samozøejmì mùže obsahovat i jiné r_blocky.
+
+Tøída r_choice representuje nedeterministicky vybírané
+pravidlo. Její chování je stejné jako u tøídy r_block až na to,
+že musí obsahovat nejménì jedno pravidlo, a že pøi uplatnìní
+tohoto pravidla se náhodnì zvolí jedno z obsažených pravidel,
+a to se provede.
+
+Tøídy r_inside, r_if slouží k realisaci podmínìného pøíkazu.
+Jejich hlavní datovou položkou je jeden pøíkaz, který se má
+provést, je-li splnìna žádaná podmínka. Ten bývá obvykle
+typu block.
+
