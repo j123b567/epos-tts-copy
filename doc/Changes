@@ -927,3 +927,6 @@ for an exciting story, just skip it.
 	- partly fixed labelled waveforms (added a field to "cue " chunk header)
 	- hopefully finally fixed unit::sb
 
+2.4.36 from 2.4.35	11.11.99
+	- fixed unlabelled waveforms (added "adjustment" to class w_ophase)
+

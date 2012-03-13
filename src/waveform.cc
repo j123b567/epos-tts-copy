@@ -416,23 +416,24 @@ wavefm::detach()
 struct w_ophase
 {
 	bool inlined;
+	int  adjustment;
 	char **buff;
 	int  *len;
 };
 
-#define INLINED_WOPH(begin, type)  { true, (char **)&((wavefm *)NULL)->begin, (int *)sizeof(type) },
-#define VAR_WOPH(ptr, len)        { false, (char **)&((wavefm *)NULL)->ptr, &((wavefm *)NULL)->len },
+#define INLINED_WOPH(begin, type)  { true, 0, (char **)&((wavefm *)NULL)->begin, (int *)sizeof(type) },
+#define VAR_WOPH(ptr, len, adj)        { false, adj, (char **)&((wavefm *)NULL)->ptr, &((wavefm *)NULL)->len },
 
 #define WOPHASE_NO_MORE_BUFFS  ((char **)-1)
 
 w_ophase w_ophases[] = {
 	INLINED_WOPH(hdr, wave_header)
-	VAR_WOPH(buffer, hdr.buffer_idx)
+	VAR_WOPH(buffer, hdr.buffer_idx, 0)
 	INLINED_WOPH(cuehdr, cue_header)
-	VAR_WOPH(cp_buff, cuehdr.len)
+	VAR_WOPH(cp_buff, cuehdr.len, -4)
 	INLINED_WOPH(adtlhdr, adtl_header)
-	VAR_WOPH(adtl_buff, adtlhdr.len)
-	{true, WOPHASE_NO_MORE_BUFFS, (int *)0}
+	VAR_WOPH(adtl_buff, adtlhdr.len, 0)
+	{true, 0, WOPHASE_NO_MORE_BUFFS, (int *)0}
 };
 
 #define WAVEFM_ALL_FLUSHED  (w_ophases[ophase].buff == WOPHASE_NO_MORE_BUFFS)
@@ -447,7 +448,7 @@ wavefm::get_ophase_buff(w_ophase *p)
 inline int
 wavefm::get_ophase_len(w_ophase *p)
 {
-	return p->inlined ? (int)p->len : *(int *)((char *)this + (int)p->len);
+	return (p->inlined ? (int)p->len : *(int *)((char *)this + (int)p->len)) + p->adjustment;
 }
 
 inline bool
