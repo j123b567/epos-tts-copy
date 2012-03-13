@@ -1,3 +1,0 @@
-			int v;
-			if (!sscanf(val,"%d",&v)) shriek(447, "Unrecognized numeric parameter");
-			*(int *)locus = v;
