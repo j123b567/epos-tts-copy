@@ -1,0 +1,55 @@
+# dosti neúplnı seznam slov obsaenıch ve zjišovacích otázkách
+
+^kdo$	kdoq
+^koho$	kohoq
+^komu$	komuq
+^kom$	komq
+^kım$	kımq
+
+^co$	coq
+^èeho$	èehoq
+^èemu$	èemuq
+^èem$	èemq
+^èím$	èímq
+
+^èí$	èíq
+^èího$	èíhoq
+^èích$	èíchq
+^èími$	èímiq
+^èíma$	èímaq
+
+^kterı$	kterıq
+^které$	kteréq
+^která$	kteráq
+^kterého$	kteréhoq
+^kterému$	kterémuq
+^kterou$	kterouq
+^kterém$	kterémq
+^kterım$	kterımq
+^kteøí$	kteøíq
+^kterıch$	kterıchq
+^kterejm$	kterejmq
+^kterımi$	kterımiq
+^kterejma$	kterejmaq
+^kterıma$	kterımaq
+^kterej$	kterejq
+^kterejch$	kterejchq
+
+#...a toté pro "jakı" plus zapomenuté tvary
+
+^kdy$	kdyq
+^odkdy$	odkdyq
+^dokdy$	dokdyq
+^kde$	kdeq
+^kudy$	kudyq
+^odkud$	odkudq
+^kam$	kamq
+^kolik$	kolikq
+^zaè$	zaèq
+^naè$	naèq
+^jak$	jakq
+^proè$	proèq
+^jake$	jakeq
+^jaktoe$	jaktoeq
+^coe$	coeq
+

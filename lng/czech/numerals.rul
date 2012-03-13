@@ -1,0 +1,45 @@
+
+# These rules should eventually convert numbers to their
+# corresponding numerals.
+
+regex	/^0/nula/	colon
+
+subst	mathsign.dic	colon
+
+regex	/([0-9])x/\1krát|/	colon
+
+regex  /(1),([0-9])/\1~celá~\2/   sent
+regex  /(^0),([0-9])/nula~celá~\2/  sent
+regex  /([234]),([0-9])/\1~celé~\2/   sent
+regex  /([05-9]),([0-9])/\1~celých~\2/   sent
+
+regex	/([1-9][0-9][015-9])([0-9][0-9][0-9])/\1~tisíc~\2/	colon
+
+regex	/1([0-9][0-9][0-9][^0-9])/~tisíc~\1/		colon
+
+if   $colloquial   text
+{
+	regex	/([1-9]\?[0-9][234])([0-9][0-9][0-9]\$)/\1~tisíc~\2/	colon
+}
+regex	/([0-9^][1][234])([0-9][0-9][0-9]\$)/\1~tisíc~\2/	colon
+regex	/([1-9^][0-9^][234])([0-9][0-9][0-9]\$)/\1~tisíce~\2/	colon
+
+
+regex	/([2-4])([0-9][0-9][0-9]\$)/\1~tisíce~\2/	colon
+regex	/([5-9])([0-9][0-9][0-9]\$)/\1~tisíc~\2/	colon
+
+regex	/([^0-9])0([0-9]*)/\1\2/ colon
+
+regex	/1([0-9][0-9])/~sto~\1/		colon
+regex	/2([0-9][0-9])/~dvì~stì~\1/	colon
+regex	/([34])([0-9][0-9])/\1~sta~\2/	colon
+regex	/([5-9])([0-9][0-9])/\1set~\2/	colon
+
+regex	/([2-9])([1-9])/\10~\2/		colon
+
+if   $colloquial   text
+{
+	regex	/1/jedna/	colon
+}
+
+subst  numsimple.dic

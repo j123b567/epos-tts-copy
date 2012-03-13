@@ -1,0 +1,167 @@
+
+# Prozatímní pravidla pro pøepis slovenèiny
+
+$colloquial	external
+$irony		external
+$prosody_dir	external
+$base_dir	external
+
+$prosody   = ${base_dir}/${prosody_dir}
+
+$voiced    = bdïgZzhv
+
+$voiceless = ptkcèsšxf
+$fric      = szšfvhx
+$afric     = cZè
+$stop      = ptkbdïg
+$nasal     = mnò¾åN
+$sonant    = jlr$nasal
+$short     = aeiouyä
+$long      = áéíóúıä
+$diphtong  = OAE
+$vowel     = $short$long$diphtong
+#$consonant=$voiced$voiceless$sonant
+$everywhere= !_!
+$sonority  = 0'%<$fric$afric${stop}øØ$nasal<l<rjJ<$vowel   ;l<r because of "umrlec" etc. Not outright systematic nor safe.
+
+ subst	   main.dic		   ;Rùzné vıjimky
+
+ progress  ä>e($everywhere)
+
+ progress  0>s(x_!)
+ progress  u0>0v(q_!)              ; Rozloení x,q na ks, kv
+ regress   xq>k($everywhere)
+ regress   h>x(c_!)                ; Spøeka ch > x
+ regress   z>Z(d_!)              ; Spøeky dz,d > Z,
+ progress  cd>0(!_xZ)
+ regress   0>o(ô_!)
+ regress   ô>u($everywhere) ; Rozloenie ô na uo 
+
+# Následující pravidla jednak zmìní vìty vydìlené dvojteèkou
+#   na vìty vydìlené teèkou (to je spíše špatnì ne dobøe),
+#   dále pak oznaèí dvojteèkou (místo otazníku) ty vìty, které
+#   obsahovaly ve své první klausi nìkteré ze slov uvedenıch
+#   ve slovníku wh.dic, nemìly tuto klauzi zvláš vydìlenou
+#   ádnou interpunkcí, a byly samy vydìleny otazníkem.
+#
+# Fonetik vidí, e jsem právì "definoval" doplòovací otázky.
+
+ progress  :>.($everywhere)	text	sent
+ subst     wh.dic		; Doplòovací otázky
+ raise     q:_			colon	phone
+ progress  q>_(!0_!)		sent	colon	;  jen v první klausi
+ raise     q:?			sent	colon
+ progress  q>0($everywhere)			;  úklid všech úrovní
+ progress  q>_($everywhere)	sent	colon
+ progress  q>:($everywhere)	text	sent
+
+ if        $colloquial
+ {
+	regress j>J(0_ds)	; fixme: random environment
+ }
+
+
+ subst     syll.dic		; Rozsadit vokály
+ regress   0>'(0_$vowel)	; Rázy
+ progress  0>q(!q_szš)	 colon  
+ progress  q>0(!_!0)     word   ; "q" jen pøed hranicí slov, za ní je sykavka
+ prep	   seq.dic
+ progress  q>0($everywhere)
+ prep      preps.dic 	     ; Fúze pøedloek, postpozic
+ prep      nonsyl.dic    syll
+ postp     postps.dic
+
+ regress   h>0(t_!)		; pathologie, plethora, thanatos. Pochybné.
+ regress   v>u($vowel_0)        ; spodobovanie v na u na konci
+ 
+ regress   v>ô($vowel_!$vowel)  ;
+ regress   0>v(ô_!)		;
+ regress   ô>u($everywhere)	;
+
+ 
+ regress   $voiced>${voiceless}(!_$voiceless&0')       	; Asimilace znìlosti
+ regress   $voiceless>$voiced(!_$voiced!v)       colon
+
+ if	   $colloquial
+ {
+	subst	casual.dic
+	regress J>0(!_!)
+	regress '>v(!_o)	; "okno" [vokno]
+ }
+
+ regress   dtnl>ïò¾(!_iíe)
+ 
+ progress  yı>ií($everywhere)
+ progress  i>j($vowel_!) syll   ; slabièné èlenìní? Leda vıjimeènì 
+ progress  w>v($everywhere)     ; vìtšinou ale "w" odstraní vıjimky
+ progress  n>N(!_kg)
+
+ regress   b>0(!_b)		; pochybnı heuristickı odstaveèek
+ regress   n>0(!_nò)		; proti geminátám
+ regress   s>0(!_s)
+ regress   t>0(!_t)
+
+
+ syll      $sonority	syll	; Rozklad_na_slabiky
+# prep      nonsyl.dic	syll	; Likvidace poboènıch slabik
+
+ progress  oae>OAE(!_u)		; Dvojhlásky
+ regress   u>0(OAE_!)
+ regress   0>d(!_Z)	syll	; Afrikáty zase zrušit, smùla
+ regress   Z>z($everywhere)
+
+
+ progress  0>~($vowel_0) syll	; Oznaèení otevøenıch vokalickıch slabik
+ raise     ~:!		 syll
+ progress  ~>0($vowel_0) syll
+
+
+ prosody	${prosody}/stress.dic      word	syll
+
+ inside  ,    colon
+ {
+	prosody	  ${prosody}/nonterm.dic	colon	phone
+	smooth	f/5/25/40\25\5	word	phone
+	smooth	f/25/50\25	colon	phone
+ }
+
+ if      $irony		colon
+ {
+	inside  , colon
+	{
+		prosody  ${prosody}/irony.dic colon phone
+		smooth f/10/20/40\20\10		word	phone
+	}
+ }
+
+ inside  .:   sent    ; Následující jen pro oznamovací vìty a doplòovací otázky
+ {
+	prosody   ${prosody}/fadeoutp.dic	sent	phone
+	prosody   ${prosody}/fadeouts.dic	sent	syll
+	prosody   ${prosody}/fadeoutw.dic	sent	word
+
+	smooth	f/30/40\30			word	phone
+ }
+
+ inside   ?	sent	; Následující jen pro otázky zjišovací
+ {
+#	prosody   ${prosody}/fadeoutp.dic	sent	phone
+	regress   _>L(!_0)			sent    word
+	inside	  L				word	        ; poslední slovo
+	{
+		prosody	  ${prosody}/fadeoutq.dic	word	syll
+	}
+	inside    !L				; jiné ne poslední slovo
+	{
+	}
+	regress   L>_($everywhere) 		sent	word
+	prosody	  ${prosody}/fadeoutw.dic	sent	word
+
+	smooth	f/30/40\30	word	phone
+ }
+
+ diphones  kadlec.dph	text	    ; mìlo by bıt posledním pravidlem
+
+;--------------------  debug     elem,pause text
+
+
