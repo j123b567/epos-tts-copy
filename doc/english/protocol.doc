@@ -48,7 +48,7 @@ both LF and CR LF sequences as a single "newline". Subject to change.
 
 TTSCP commands are newline-terminated strings. Each of them begins
 with a command identifier, some of them may continue with optional
-or mandatory parameters, depending on the particulat command.
+or mandatory parameters, depending on the particular command.
 Each command generates one or more "replies" and possibly
 also some command-specific information.
 

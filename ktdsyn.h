@@ -30,33 +30,14 @@ typedef struct
     int delk;
   } USEK;
 
-typedef struct
-{
-	char string1[4];
-	long flen;
-	char string2[8];
-	long xnone;
-	short int  datform, numchan, sf1, sf2, avr1, avr2, wlenB, wlenb;
-	char string3[4];
-	long dlen;
- } wavehead2;            // wav file header
-
 class ktdsyn : public synth
 {
    public:
 	double buf[9];
-//	int vyska;
-//	int tempo;
-	
-	//   etc.    FIXME??
-
 	USEK U[1000];
 	int uind, pocimp, peri, pocp;
 	double delka, smer, pomr;
 	int po_u;			//pocet usekov
-
-	int kw;			// smernik na aktualnu poziciu vo vystupnom poli
-	int fr_vz;			//frekvencia vzorkovania
 
 	int dif2psl (char *, char *);
 	int op_psl (char *, sample2_t *);
@@ -66,20 +47,6 @@ class ktdsyn : public synth
 	    ~ktdsyn ();
 	virtual void syndiph (voice *v, diphone d);
 	
-//	int sampel2file ();
-//	int sampel2wav ();
-//	int difon;
-//	int melod;
-//	int prodl;
-//	int inten;
-	unsigned long p_b;		//pocet bytov vystupneho suboru
-	unsigned int pocet_vzorku;
-	int wavout; 		// raw file handle (buffering is home made,
-			// we use ioctl's, so FILE would be clumsy...)
-	sample2_t *wave_buffer;
-	wavehead2 wavh;
-	int oldkw, newkw;
-//	T_SAMPL *sampel;
 };
 
 #endif		// SS_KTD_H

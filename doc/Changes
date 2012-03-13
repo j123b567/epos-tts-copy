@@ -521,7 +521,7 @@ for an exciting story.
 	- the most of palkova.rul, preposition adjunction rules fixed
 
 
-2.1.6 from 2.1.5	29.6.98
+2.1.6 from 2.1.5	28.6.98
 	- assim rules do not wipe zeroes
 	- numerals fixes
 	- spelling out rules improved (abbrev.dic and related rules)
@@ -529,7 +529,43 @@ for an exciting story.
 	- pauses, changed prosody rules in czech.rul
 
 
-2.1.7 from 2.1.6
+2.1.7 from 2.1.6	29.6.98
 	- "se" handling heuristics
+	- draft palkova.rul
+
+
+2.1.8 from 2.1.7	30.6.98
+	- numerous fixes, including Borland fixes in rx.c
+
+
+2.2.0 from 2.1.8	28.7.98
+	- soft options (user supplied voice options meaningful for a single language)
+	- doc/english/{options.doc,rules.doc} (in linuxdoc SGML)
+	- rule files now follow hash.* rules for comments (a comment-out
+		character must not be preceded by non-whitespace)
+	- it is now possible to use the "#include" directive in .ini files
+	- simpleparser renamed to parser and partly rewritten
+	- tokenizing (see src/parser.h)
+	- escape sequences in hash tables (dictiories)
+	- "make mh" is synonymous to "make monolith"
+	- if allowed.ini doesn't exist, an empty one is assumed.
+	- somewhat changed ss_init() ss_reinit(), ss_done(), forever() and others
+	- O_FILE option type no longer exists (only unit::fout() affected)
+
+	Merged from 2.1.7.1 (21.7.98):
+	- some qnx fixes
+	- ktdsyn prosody works properly now + related voice configuration fixes
+	- lpc-vq fixed
+
+	- changed freadin() calls to claim()/unclaim() pairs
+	- all indexing in lpcsyn.cc uses imodel (used to be ignored here and there)
+	- timestamping some files (daemon automatically rereads changed files)
+	- fixed preposition handling in certain contexts (cz)
+	- ss_done, ss_init, ss_reinit, ss_catharsis somewhat stabilised (related fixes)
+
+
+2.2.1 from 2.2.0	29.7.98
+	- better lpcsyn source handling; repacking
+	- fixed minor memory leaks
 
 

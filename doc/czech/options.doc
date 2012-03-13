@@ -43,7 +43,7 @@ Pøíkazová øádka
 
 Na pøíkazové øádce je možno uvádìt konfiguraèní parametry pod stejnými
 názvy, uvozenými dvojicí pomlèek. Hodnota se od názvu parametru oddìluje
-mezerou nebo rovnítkem, lze uvìøit výše uvedeným implicitním hodnotám.
+mezerou nebo rovnítkem, lze uvìøit níže uvedeným implicitním hodnotám.
 
 Ekvivalentní pøíklady spouštìní ss, chci-li vidìt difony od textu
 zadaného z klávesnice (poèet mezer nehraje roli):
@@ -85,7 +85,6 @@ Typ parametru		    Implicitní hodnota		Negace
    pøepínaè		      true (zapnuto)		  false (vypnuto)
    znak			      žádný znak ('\0')		  znak nula ('0')
    øetìzec		      prázdný øetìzec ("")	  øetìzec nula ("0")
-   soubor		      stdin (klávesnice)	  soubor jménem "0"
    ladìná oblast	      žádná			  žádná
    jednotka (slabika atd.)     (bìhová chyba)		   (bìhová chyba)
    výstupní formát	       (bìhová chyba)		   (bìhová chyba)

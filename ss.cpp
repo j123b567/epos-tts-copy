@@ -11,6 +11,7 @@
 #define bool int
 
 #define inline /* Borland can't handle inline */
+#define const  /* Borland can't handle even const properly! */
 
 #include "monolith.cc"
 #include "hash.cc"
@@ -21,5 +22,6 @@
 #include "text.cc"
 #include "synth.cc"
 #include "ktdsyn.cc"
+#include "lpcsyn.cc"	// comment out if not necessary
 #include "voice.cc"
 #include "rx.c"

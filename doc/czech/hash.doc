@@ -47,6 +47,7 @@ sníením kapacity tabulky na jedinı prvek a zakázáním automatického
 pøehashovávání. Základní operace se pak provádìjí v O(log n_poloek)
 a tabulka vlastnì slouí jako AVL strom.
 
+
 Co lze hashovat
 ---------------
 
@@ -70,6 +71,11 @@ K tomu staèí po vytvoøení tabulky, ale pøed vloením prvního prvku
 vynulovat její èlen dupkey anebo dupdata. V takovém pøípadì musí
 uivatel zajistit existenci hashovaného objektu tak dlouho, dokud
 není vyjmut z tabulky.
+
+Kdy u jsme u té historie, ve verzi 2.3 pøibylo ošetøení escape
+sekvencí pøi naèítání tabulky z textového souboru (backslash + znak
+-> znak). Viz poslední parametr pøíslušného konstruktoru.
+
 
 Pøehashovávání
 --------------
@@ -143,12 +149,21 @@ na øádku tøi nebo více slov - true znamená, e druhé a poslední slovo
 budou interpretovány jako víceslovná data, false znamená, e program
 havaruje s chybovım hlášením.
 
-Poslední, osmı parametr pak urèuje, jaké chybové hlášení se má vhodit
+Pøedposlední, osmı parametr pak urèuje, jaké chybové hlášení se má vhodit
 do funkce shriek(), pokud se soubor nepodaøí otevøít. Je-li tento parametr
 NULL, pouije se vestavìná hodnota. Je-li roven konstantì ANYWAY, bude
 v takovém pøípadì vytvoøena mrtvì narozená hashovací tabulka; není vùbec
 definováno, jak se bude chovat, pouze, e poloka "items" bude rovna minus
 jedné, a e pùjde provést její defaultní destruktor.
+
+A poslední devátı parametr, není-li NULL, je pøekladová tabulka
+pro escape sekvence, to jest objeví-li se na øádce zpìtné lomítko,
+zaindexuje se znakem, kterı následuje za zpìtnım lomítkem do této
+tabulky a vyloví se odpovídající znak, kterım se zpìtné lomítko
+s následujícím znakem nahradí. Pokud o zvláštní chování zpìtného
+lomítka není zájem, staèí místo tohoto parametru uvést NULL.
+Jinak musí bıt tabulka 256 znakù dlouhá. Tuto funkci lze kombinovat
+se zpìtnım vıstupem do souboru jen omezenì.
 
 Ostatní parametry souborového konstruktoru jsou jednak jméno souboru,
 jednak parametry kontrolující automatické pøehashovávání.
@@ -183,11 +198,11 @@ Pokud se hashují øetìzce na cokoli, poloka longest obsahuje poèet
 znakù nejdelšího klíèe, kterı vùbec kdy uvnitø bydlel. Mùe se nìkdy
 hodit zvenku vìdìt, co já vím.
 
-Tato implementace hashovací tabulky je rout pamìti. Vytváøí si vlastní
-kopie od klíèe i dat, dokonce i kdy jsou data struktury. Nadto si
-uchovává poloku sestávající ze short intu a ètyø ukazatelù pro kadou
-poloku (searchtreestruct). To moná nìkdy zkusím zlepšit vzhledem k tomu,
-e dva z tìch pointerù nabıvají nenulovıch hodnot jen pøi kolizích.
+Tato implementace hashovací tabulky je pomìrnì nároèná na pamì.
+Uchovává si mimo jiné strukturu sestávající ze short intu a ètyø
+ukazatelù pro kadou poloku (searchtreestruct). To moná nìkdy
+zkusím zlepšit vzhledem k tomu, e dva z tìch pointerù nabıvají
+nenulovıch hodnot jen pøi kolizích.
 
 Funkce translate() i funkce remove() vracejí pointer pøímo na vnitøní
 kopii v tabulce; v pøípadì translate() nesmí volající tuto pamì uvolnit,

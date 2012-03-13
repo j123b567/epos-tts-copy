@@ -24,10 +24,6 @@
  */
 
 
-#ifndef PARSER
-#error Class "unit" needs to know its "PARSER" even before declared.
-#endif
-
 #define MAX_GATHER       256            // Maximum word size (for buffer allocation)
 #define SSEG_QUESTION_LEN 32	        // see unit::sseg()
 #define SMOOTH_CQ_SIZE    16		// max smooth request length, see unit::smooth()
@@ -35,7 +31,7 @@
 
 class unit
 {
-	friend void ss_done();		  // necessary only #ifdef WANT_DMALLOC
+	friend void ss_catharsis();	  // necessary only #ifdef WANT_DMALLOC
 	friend class r_inside;
 
 	unit *next, *prev;                //same layer
@@ -64,7 +60,7 @@ class unit
 	int f,i,t;
     public:
 	bool scope;                       //true=don't pass on Next/Prev requests
-		unit(UNIT layer, PARSER *parser);
+		unit(UNIT layer, parser *);
 		unit(UNIT layer, int content); 
 		unit();               //(empty unit) constructor
 		~unit();
@@ -108,7 +104,7 @@ class unit
 				      //^how many times applied
 				      // userfn ^ whether applied
 	int effective(FIT_IDX which_quantity);  //evaluate total F, I or T
-	inline Char inside();
+	inline unsigned char inside();
 	unit *ancestor(UNIT level);   // the unit (depth level) wherein this lies
 	int  index(UNIT what, UNIT where);
 	int  count(UNIT what);

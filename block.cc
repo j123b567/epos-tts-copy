@@ -91,16 +91,17 @@ class r_switch : public block_rule
 
 block_rule::block_rule() : rule(NULL)
 {
+	rulist = NULL;
 }
 
 
 block_rule::~block_rule()
 {
-	for(current_rule=0; current_rule<n_rules; current_rule++) {
+	for(current_rule = 0; current_rule < n_rules; current_rule++) {
 		if (rulist[current_rule] != rulist[current_rule + 1])
 			delete rulist[current_rule];
 	}
-	free(rulist);
+	if (rulist) free(rulist);
 }
 
 void
@@ -112,7 +113,7 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 	int   began_at = file->current_line;
 
 	l = cfg->rules;
-	rulist=(rule **)malloc(sizeof(rule *) * l);
+	rulist = (rule **)malloc(sizeof(rule *) * l);
 	n_rules = 0; again = 1;
 	while((rulist[n_rules] = --again ? rulist[n_rules-1]
 					 : next_rule(file, vars, &again)) > END_OF_RULES) {
@@ -132,7 +133,8 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 		default: shriek("next_rule() gone mad");
 	}
 	free(began_in);
-	rulist=(rule **)realloc(rulist, n_rules ? sizeof(rule *) * n_rules : 1);
+	if (n_rules) rulist = (rule **)realloc(rulist, sizeof(rule *) * n_rules);
+	else free(rulist), rulist = NULL;
 	delete vars;
 }
 
@@ -222,7 +224,7 @@ r_block::apply(unit *root)
 {
 	for(current_rule=0; current_rule < n_rules; current_rule++) {
 		apply_current(root);
-	};
+	}
 }
 
 
@@ -291,7 +293,7 @@ rules::rules(const char *filename, const char *dirname)
 
 	if (!cfg->loaded) ss_init();
 	
-	file=new text(filename,dirname,false);
+	file=new text(filename,dirname,"rules",false);
 	vars = new hash(cfg->vars|1);
 	DEBUG(3,1,fprintf(stddbg,"Rules shall be taken from %s\n",filename);)
 	
@@ -362,7 +364,7 @@ rule_weight(const char *word, text *file)
  resolve_vars  Interpret the $variables on an input line
  **************************************************************/
  
-char *_resolve_vars_buff;
+char *_resolve_vars_buff = NULL;
 
 inline void
 resolve_vars(char *line, hash *vars, text *file)

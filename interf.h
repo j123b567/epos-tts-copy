@@ -23,7 +23,7 @@
 
 enum OPT_STRUCT { OS_CFG, OS_LANG, OS_VOICE };
 enum ACCESS { A_PUBLIC, A_AUTH, A_ROOT, A_NOACCESS };
-enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SYNTH, O_CHANNEL, O_DBG_AREA, O_INT, O_CHAR, O_STRING, O_FILE };
+enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SYNTH, O_CHANNEL, O_DBG_AREA, O_INT, O_CHAR, O_STRING};
 								//various types of options
 enum OUT_ML { ML_NONE, ML_ANSI, ML_RTF};
 #define OUT_MLstr "none:ansi:rtf:"
@@ -53,14 +53,15 @@ struct option
 	OPT_STRUCT structype	: 2;
 	ACCESS 	readable	: 2;
 	ACCESS 	writable	: 2;
+//	int reserved		: 2;
 	short int offset;
 };
 
-void process_options(hash *tab, option *list, void *base);
+// void process_options(hash *tab, option *list, void *base);
 char *get_named_cfg(const char *option_name);
-option *option_struct(const char *name);
+option *option_struct(const char *name, hash_table<char, option> *softopts);
 bool set_option(option *o, char *value);
-bool set_option(char *name, char *value);
+bool set_option(option *o, char *value, void *whither);
 char *format_option(option *name);	// will malloc some space
 char *format_option(const char *name);	// will malloc some space
 
@@ -75,9 +76,9 @@ extern char** argv;
 void ss_init(int argc, char**argv);
 void ss_init();
 void ss_reinit();
-void load_config(const char *filename, const char *not_found_message);
+void load_config(const char *filename);
 void load_config(const char *filename, const char *dirname, const char *what,
-			void *whither, const char *not_found, option *olist);
+		OPT_STRUCT type, void *whither, lang *parent_lang);
 void ss_done();		// No real need to call, ever. Just to be 100% dmalloc correct.
 
 
@@ -120,7 +121,18 @@ char *fntab(const char *s, const char *t); //will calloc and return 256 bytes no
 bool *booltab(const char *s);          //will calloc and return 256 bytes not freeing s
 
 char *compose_pathname(const char *filename, const char *dirname);
-char *freadin(const char *filename, const char *dirname, const char *flags, const char *description);  //returns malloced file contents
+
+struct file
+{
+	char *data;
+	char *filename;
+	int ref_count;
+	int timestamp;
+	~file();
+};
+
+file *claim(const char *filename, const char *dirname, const char *flags, const char *description);
+void unclaim(file *);
 
 void list_languages();
 void list_voices();
@@ -131,13 +143,6 @@ void process_diphones(unit *root);
 struct diphone {
 	int code;
 	int f,e,t;
-};
-
-struct freadin_file	// used by freadin() (and mentioned in hash.cc) only
-{
-	char *data;
-	int ref_count;
-	~freadin_file();
 };
 
 
@@ -175,11 +180,14 @@ void debug_prefix(int lev, int area);
 #ifdef WANT_DMALLOC
 
 char *forever(void *heapptr);
+void end_of_eternity();
 #define FOREVER(allocated) forever(allocated)
-#define ETERNAL_ALLOCS	256
+#define ETERNAL_ALLOCS	1024
+#define END_OF_ETERNITY  end_of_eternity()
 
 #else       // ifndef WANT_MALLOC
 #define FOREVER(allocated) (allocated)
+#define END_OF_ETERNITY  /**/
 #endif      // ifdef WANT_MALLOC
 
 

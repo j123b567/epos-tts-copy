@@ -302,14 +302,15 @@ int hash_max_line = 1024;
 hash::hash(const char *filename,
 		int perc_full, int perc_downsize, int perc_upsize,
 		int max_tree_depth, const char * no_data, bool multi_data,
-		const char *not_found): hash_table<char, char>(0)
+		const char *not_found, char *esctab): hash_table<char, char>(0)
 {
 	FILE *hashfile;
 	char *buff;
 	char *key;
 	const char *value;
-	int l=0;
+	int l = 0;
 	char *tmp;
+	char *dst;
 	free(ht);
 
 	dupkey = dupdata = true;
@@ -319,9 +320,9 @@ hash::hash(const char *filename,
 printf("hash::hash: using file %s\n", filename);
 #endif
 
-	maxdep=longest=items=0;
-	if (max_tree_depth==-1) max_tree_depth=_HASH_DEPTH;
-	perc_optimal=perc_full;
+	maxdep = longest = items = 0;
+	if (max_tree_depth == -1) max_tree_depth=_HASH_DEPTH;
+	perc_optimal = perc_full;
 	
 	if((hashfile=fopen(filename, "rt"))==NULL) {
 		ht = (hsearchtree<char, char> **)calloc(sizeof(int *), 1);
@@ -333,26 +334,33 @@ printf("hash::hash: using file %s\n", filename);
 		shriek(not_found ? not_found : "Can't hash in file %s", filename, 0);
 	}
 	while (fgets(buff, hash_max_line, hashfile)) if (!strspn(buff+strspn(buff,WHITESPACE),COMMENT_LINES)) l++;
-	capacity=l*100/perc_full|1;
+	capacity = l*100/perc_full | 1;
 	cfg_rehash(perc_downsize, perc_upsize, max_tree_depth);
-	ht=(hsearchtree<char, char> **)calloc(capacity,sizeof(hsearchtree<char, char>*));
+	ht = (hsearchtree<char, char> **)calloc(capacity,sizeof(hsearchtree<char, char>*));
 	rewind(hashfile);
-	l=0;
-	while (l++,fgets(buff, hash_max_line, hashfile)) {
-		if (strchr(COMMENT_LINES,*buff)) continue;
-		for (tmp=buff; tmp[1] && tmp[1]-'\n' && !(strchr(COMMENT_LINES,tmp[1]) 
-			&& strchr(WHITESPACE,tmp[0])); tmp++);
-		while (strchr(WHITESPACE, *tmp--) && tmp>=buff);
-		tmp[2]=0;			//Strip out comments and/or trailing whitespace
-		tmp=key=buff+strspn(buff, WHITESPACE);
+	l = 0;
+	while (l++, fgets(buff, hash_max_line, hashfile)) {
+		if (strchr(COMMENT_LINES, *buff)) continue;
+		for (tmp = dst = buff; !strchr(COMMENT_LINES, tmp[1]) ||
+				!strchr(WHITESPACE, tmp[0]) && tmp[1] && tmp[1] != '\n';
+				tmp++, dst++) {
+			if (esctab && tmp[0] == ESCAPE) *dst = esctab[(unsigned char)*++tmp];
+			else *dst = *tmp;
+		}
+		*dst = *tmp;
+		*++dst = 0;
+					
+		while (strchr(WHITESPACE, *--dst) && dst>=buff);
+		dst[1]=0;			//Strip out comments and/or trailing whitespace
+		tmp = key = buff + strspn(buff, WHITESPACE);
 	        if (!*key) continue;   		//Nothing but a comment
-	        tmp+=strcspn(key, WHITESPACE);
-		if (*tmp) *tmp++=0;		//terminate the key and go on
-		value=tmp+=strspn(tmp, WHITESPACE);
+	        tmp += strcspn(key, WHITESPACE);
+		if (*tmp) *tmp++ = 0;		//terminate the key and go on
+		value = tmp += strspn(tmp, WHITESPACE);
 		if (!*value) switch ((int)no_data) {
-			case (int)DATA_EQUALS_KEY: value=key; break;
+			case (int)DATA_EQUALS_KEY: value = key; break;
 			case (int)DATA_OBLIGATORY: shriek("No value specified in %s, line %d",filename,l);
-			default: value=no_data;
+			default: value = no_data;
 		}
 		else if (!multi_data && tmp[strcspn(tmp,WHITESPACE)]) 
 			shriek("Multiple values specified in %s, line %d",filename,l);

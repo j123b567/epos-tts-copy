@@ -214,7 +214,7 @@ hashing_rule::load_hash()
 
 	if (*raw != DQUOT) {
 		dict = new hash(raw, cfg->hash_full, 0, 200, 3,
-			(char *) allow_id, false, "dictionary %s not found");
+			(char *) allow_id, false, "dictionary %s not found", esctab);
 	} else dict = literal_hash(raw);
 	if (!dict) shriek("Unterminated argument%s", debug_tag());	// or out of memory
 }
@@ -418,12 +418,12 @@ r_contour::r_contour(char *param) : rule(param)
 	char *p;
 	short int tmp=0, sgn=1;
 	
-	contour=(int *)malloc(strlen(param)*sizeof(int));
-	contour[0]=l=0;
+	contour = (int *)malloc(strlen(param)*sizeof(int));
+	contour[0] = l = 0;
 	for (p=param+1+(param[1]=='/'); *p; p++) {
 		switch (*p) {
 		case ':': contour[l++] += tmp*sgn; tmp=0;
-			   sgn=1; contour[l]=0;  break;
+			   sgn=1; contour[l] = 0;  break;
 		case '-':
 		case '+':  contour[l]+=tmp*sgn; sgn=(*p=='+' ?+1:-1); break;
 		default:   if (*p<'0' || *p>'9') shriek("Expected a number, found \"%s\"%s",
@@ -431,7 +431,7 @@ r_contour::r_contour(char *param) : rule(param)
 			   else tmp = tmp*10 + *p-'0';
 		};
 	};
-	if (tmp) contour[l++]+=tmp*sgn;
+	if (tmp) contour[l++] += tmp*sgn;
 
 	quantity = fit(*param);
 }
@@ -629,7 +629,7 @@ r_syll::r_syll(char *param) : rule(param)
 	for (i = 0; i < 256; i++) son[i] = NO_SONORITY;
 	for (tmp = param; *tmp && lv; tmp++) {
 		if (*tmp==LESS_THAN) lv++;
-		else son[(Char)(*tmp)]=lv;
+		else son[(unsigned char)(*tmp)]=lv;
 		DEBUG(0,1,fprintf(stddbg,"Giving to %c sonority %d\n", *tmp, lv);)
 	};
 	DEBUG(1,1,fprintf(stddbg,"rules::parse_syll going to call syllablify()\n");)
@@ -747,7 +747,7 @@ r_regex::r_regex(char *param) : rule(param)
 	param = strdup(scratch);
 
 	matchbuff = (regmatch_t *)malloc((parens+2)*sizeof(regmatch_t));
-	DEBUG(2,1,fprintf(stddbg, "Compiling regex %s\n", param);)
+	DEBUG(1,1,fprintf(stddbg, "Compiling regex %s\n", param);)
 	result = regcomp(&regex, param, 0);
 	DEBUG(0,1,fprintf(stddbg, "...hm...\n");)
 	switch (result) {
@@ -937,7 +937,7 @@ r_with::apply(unit *root)
 	if (!dict) {
 		if (*raw == DQUOT) dict = literal_hash(raw);
 		else dict = new hash(raw, cfg->hash_full,
-			0, 200, 3, DATA_EQUALS_KEY, false, "dictionary %s not found");
+			0, 200, 3, DATA_EQUALS_KEY, false, "dictionary %s not found", esctab);
 	}
 	if (!dict) shriek("Unterminated argument%s", debug_tag());	// or out of memory
 

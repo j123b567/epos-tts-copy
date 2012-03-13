@@ -19,17 +19,28 @@
 - difon 254 et c. se nepoužívá, rázy jsou ošetøeny divnì, slab. r taky.
 - prof. Palková si právem stìžuje na rázy
 - otevøené slabiky se vyznaèují chybnì (slabikotvorné souhlásky)
-- zrychlit sputs()
 - plýtvání pamìtí napøíklad na inventáøe
 - shriek() -> exc handling, i monolith
 - skonsistentnit options v monolith a v clientovi. Monolith napø. nepodporuje
   --input_file a client snad jo; pokud jde o -n, je to zase naopak. Soubory
   se parsují stejnì, klávesnice však nikoli.
 - autentikace
-- tokenizace
-- stml
 - zaèlenit "set language" jako normální "set"
-- root rights '#' --> comment
 - chybová sémantika (nejen varování/utnutí session/havárie serveru)
 - suprasegmentalia by mìla být odolná vùèi celkovému posunutí
+- zjistit, zda funguje --input_file
+- zjistit, zda a k èemu je postp2.dic
+- monolith by mìl užívat str2units()
+- jak z klávesnice zadávat parametry per language?
+- time stamps ve freadin()
+- zrušit FILE options
+- otestovat soft options
+- dopsat options.doc
+- øadové èíslovky
+- øímské èíslice
+- STML tag stack
+- freadin unregistration
+- reinit
+- t i adjustments option
+- 2x "se" za sebou apod.
 

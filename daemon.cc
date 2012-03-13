@@ -87,9 +87,9 @@ class context
 };
 
 
-context *master_context = 0;
+context *master_context = NULL;
 context **context_table = (context **)malloc(sizeof(context *));
-int n_contexts = 1;
+int n_contexts = 0;
 
 void setup_master_context()
 {
@@ -124,7 +124,9 @@ void create_context(int index)
 
 	if (index >= n_contexts) {
 		context_table = (context **)realloc(context_table, (index+1) * sizeof(context *));
-		n_contexts = index + 1;
+		for (; n_contexts < index + 1;  n_contexts++)
+			context_table[n_contexts] = NULL;
+//		n_contexts = index + 1;
 	}
 	context_table[index] = c = new context;
 
@@ -452,7 +454,7 @@ void cmd_set(char *param)
 {
 	char *value = split_string(param);
 
-	option *o = option_struct(param);
+	option *o = option_struct(param, this_lang->soft_options);
 
 	if (o) {
 		if (access_level(session_uid) >= o->writable) {
@@ -460,6 +462,7 @@ void cmd_set(char *param)
 			else reply("412 illegal value");
 		} else reply("451 Access denied");
 	} else {
+		if (!param) param = "";
 		if (!strcmp("language", param)) {
 			if (lang_switch(value)) reply ("200 OK");
 			else reply ("443 unknown language");
@@ -507,6 +510,20 @@ void cmd_shutdown(char *param)
 	exit(0);
 }
 
+/************ ain't work (see the next line in server() just after the dispatcher call)
+void cmd_restart(char *param)
+{
+	if (param) shriek("shutdown should have no param");
+	reply("800 will restart");	// may be mad
+	register_child(0);		// kill all children, release memory
+	leave_context(cfg->sd);
+	close(cfg->sd);
+	for (int i=0; i<n_contexts; i++)
+		if (context_table[i]) forget_context(i);
+	ss_reinit();
+}
+**************/
+
 void cmd_reap(char *param)
 {
 	int cpid = 0;
@@ -533,7 +550,7 @@ void cmd_show(char *param)
 {
 	int i;
 
-	option *o = option_struct(param);
+	option *o = option_struct(param, this_lang->soft_options);
 
 	if (o) {
 		if (access_level(session_uid) >= o->readable) {
@@ -543,6 +560,7 @@ void cmd_show(char *param)
 			reply("200 OK");
 		} else reply("451 Access denied");
 	} else {
+		if (!param) param = "";
 		if (!strcmp("language", param)) {
 			reply(this_lang->name);
 			reply ("200 OK");
@@ -698,10 +716,12 @@ more_lines:
 				reply("690 session terminated");
 				if (dispatcher_pid != getpid()) done_child();
 				LOG("[core] session terminated\n");
-				leave_context(i);
-				FD_CLR(i, &thefds);
-				forget_context(i);
-				close(i);
+				if (context_table[i]) {
+					leave_context(i);
+					FD_CLR(i, &thefds);
+					forget_context(i);
+					close(i);
+				}
 			}
 		}
 	}
@@ -738,7 +758,6 @@ int main(int argc, char **argv)
 		if (just_connect_socket(cfg->listen_port) > -1)
 			shriek("Already running\n");
 		ttscp_keywords = str2hash(keyword_list, 0);
-//		cfg->sd = accept_socket(cfg->listen_port);
 		switch (my_fork()) {
 			case -1: server();
 				 return 0;	/* foreground process */

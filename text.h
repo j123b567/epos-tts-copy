@@ -25,20 +25,23 @@ struct textlink;
 
 class text
 {
-	textlink *current;        //the byte to be parsed next
+	textlink *current;      // the byte to be parsed next
 	const char *dir;
-	char *base;     	//the filename given to the constructor
-	bool warn;		//whether to heed or ignore #warn
-	int embed;		//subfiling depth 
+	const char *tag;	// describes the contents of this text to user
+	char *base;     	// the filename given to the constructor
+	bool warn;		// whether to heed or ignore #warn
+	int embed;		// subfiling depth 
 	
 	void subfile(const char *filename);
 	void superfile();
-	void done();		//shriek if some input left
+	void done();		// shriek if some input left
   public:
-  	text(const char *filename, const char *dirname, bool warnings);
+  	text(const char *filename, const char *dirname, const char *description, bool warnings);
+				// if description == NULL, please test exists() afterwards
 	~text();
+	bool exists();		// always true except when no description given to constructor
 	bool getline(char *line);    // return true on success, false on EOF
-	void rewind();		//let's start again
+	void rewind();		// let's start again
 	void rewind(bool warnings);
 	
 	char *current_file;

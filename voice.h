@@ -42,6 +42,8 @@ struct lang
 
 	char *lang_name;
 	rules *ruleset;
+	hash_table<char, option> *soft_options;
+	void *soft_defaults;
 	int   n_voices;
 	voice **voices;
 	voice *default_voice;
@@ -49,8 +51,10 @@ struct lang
    public:
 	lang::lang(const char *filename, const char *dirname);
 	lang::~lang();
-	void add_voice(const char *voice_name);
-	void add_voices(const char *voice_name);
+	void add_soft_option(const char  *option_name);
+	void add_soft_opts(const char *option_names);
+	void add_voice(const char  *voice_name);
+	void add_voices(const char *voice_names);
 	void compile_rules();		// could be made delayed....
 };
 
@@ -68,16 +72,14 @@ struct voice
 			 * Can also be an open device or a socket.
 			 * -1 means "busy, don't use" (daemon code sets this)
 			 */
-/*
- *	CHANNEL_TYPE channel;	// mono, first, second, both
- */
 
 	void skip_header();	// for writing into .wav files
 	void write_header();
 
    public:
 //   	char diphone_names[441][4];
-	char (*diphone_names)[5];
+//	char (*diphone_names)[5];
+	file *diphone_names;
 	
 	synth *syn;
    
@@ -108,6 +110,9 @@ struct voice
 			case CT_BOTH:	put_sample(sample); put_sample(sample); break;
 		}
 	}
+
+	void *operator new(const int);
+	void  operator delete(void *);
 };
 
 extern lang  *this_lang;

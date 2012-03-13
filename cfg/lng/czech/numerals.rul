@@ -14,16 +14,18 @@ regex	/([0-9])\ ([0-9][0-9][0-9])/\1\2/	colon
 
 regex	/^(0*)0/\1nula|/	word
 
+#	/\m/minus/	colon
 subst	mathsign.dic	colon
 
 regex	/([0-9])x/\1krát|/	colon
+
+regex  /(1)\.([0-9])/\1~celá~\2/   sent
+regex  /(^0)\.([0-9])/nula~celá~\2/  sent
+regex  /([234])\.([0-9])/\1~celé~\2/   sent
+regex  /([05-9])\.([0-9])/\1~celých~\2/   sent
+
 regex	/([0-9])([^X0-9])/\1X\2/	colon
 regex	/([0-9])\$/\1X/		colon
-
-regex  /(1),([0-9])/\1~celá~\2/   sent
-regex  /(^0),([0-9])/nula~celá~\2/  sent
-regex  /([234]),([0-9])/\1~celé~\2/   sent
-regex  /([05-9]),([0-9])/\1~celých~\2/   sent
 
 regex	/([0-9]\?[0-9][05-9])([0-9]\{9\}X)/\1~miliard~\2/	colon
 regex	/([0-9]\?[0-9]\?)2([0-9]\{9\}X)/\10~dvì~miliardy~\2/	colon
@@ -95,4 +97,5 @@ if   $colloquial   text
 }
 
 subst  numsimple.dic
+regex   /0//
 

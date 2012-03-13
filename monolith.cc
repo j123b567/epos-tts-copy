@@ -26,15 +26,14 @@
 
 int session_uid = 0;
 
-int submain(int argc, char **argv)
+int submain()
 {
 	unit *root;
-	PARSER *parsie;
+	parser *parsie;
 
 	check_lib_version(VERSION);
-	ss_init(argc, argv);
-	parsie = cfg->input_text ? new PARSER(cfg->input_text, 1)
-		: new PARSER(this_lang->input_file, 0);
+	parsie = cfg->input_text && *cfg->input_text ? new parser(cfg->input_text, 1)
+		: new parser(this_lang->input_file, 0);
 	root=new unit(U_TEXT, parsie);
 	delete parsie;
 	this_lang->ruleset->apply(root);
@@ -59,14 +58,17 @@ int submain(int argc, char **argv)
 	if (cfg->neuronet) root->nnet_out(cfg->nnet_file, cfg->matlab_dir);
 	delete(root);
 	fprintf(stddbg,"***** The End. ******************************\n");
-	ss_done();
 	return 0;
 }
 
 int main(int argc, char **argv)
 {
 	try {
-		return submain(argc, argv);
+		ss_init(argc, argv);
+		ss_reinit();
+		/*return */ submain();
+		ss_reinit();
+		ss_done();
 	} catch (exception *e) {
 		unuse(e);
 		printf("*****************\n");

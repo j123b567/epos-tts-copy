@@ -1,7 +1,7 @@
 #
 #	prosodická pravidla Fonetického ústavu FF UK pro èeštinu, 1998
 #
-#	pokud tu tento øádek není jen zapomenut, jde o versi 2.1.7
+#	pokud tu tento øádek není jen zapomenut, jde o versi 2.2.?
 #
 
 
@@ -9,18 +9,18 @@ $base_dir	external
 $prosody_dir	external
 $prosody = ${base_dir}/${prosody_dir}
 
-$any = _\ MFIT
+
+# Nasl. kazi zkratky jako "LAS"
 
 # pøidat èárku pøed "a":
 with  "a"  word
 {
-	regress a>A(!_!)
+	regress a>\X(!_!)
 }
-raise	A:!		word	phone
-syll	A<\ _		colon   word
-regress A>\ (!_!)	colon	word
-regress A>a(!_!)
-
+raise	\X:!		word	phone
+syll	\X<\ _		colon   word
+regress \X>\ (!_!)	colon	word
+regress \X>a(!_!)
 
 #
 #  Následující odstavec ještì pøed transkripcí oznaèuje
@@ -40,6 +40,18 @@ with "mi mì se si ho mu ti tì"
 #
 
 #include "trans.rul"
+
+#
+#  Následující pravidla ošetøují tøi teèky a pomlèku.
+#
+
+inside	\~	sent
+{
+   6x	regress  0>\#(!_0)	sent	; vložení pausy po tøech teèkách
+}
+regress  \~>.(!_!)	sent	sent
+regress  ->,(!_!)	sent	colon
+
 
 #
 #  Následující odstavec peèuje o to, aby døíve oznaèené
@@ -94,7 +106,7 @@ regress  ~>\ (!_!)	colon  word
 
 subst	"^mmmmm,mmmxm  ^mmmmmm,mmmxmm  ^mmmmmmm,mmmmxmm"	colon  word
 
-subst   "pmm,pxm  qmmm,qxmm  pmmm,pxmm  tmmmm,tmmxm  qmmmm,qxmxm  dmmmmm,dmmxmm  tmmmmm,tmmxmm  qmmmmm,qxmxmm  pmmmmm,pxmmxm dmmmmmm,dmmxmmm  tmmmmmm,tmmxmmm  qmmmmmm,qxmmxmm  pmmmmmm,pxmmxmm  dmmmmmmm,dmmxmmxm  tmmmmmmm,tmmxmmxm  qmmmmmmm,qxmmmxmm  pmmmmmmm,pxmmmxmm  mmmmmmmm,mmmmxmmm"   colon  word
+subst   "pmm,pxm  qmmm,qxmm  pmmm,pxmm  tmmmm,tmmxm  qmmmm,qxmxm  dmmmmm,dmmxmm  tmmmmm,tmmxmm  qmmmmm,qxmxmm  pmmmmm,pxmmxm  dmmmmmm,dmmxmmm  tmmmmmm,tmmxmmm  qmmmmmm,qxmmxmm  pmmmmmm,pxmmxmm  dmmmmmmm,dmmxmmxm  tmmmmmmm,tmmxmmxm  qmmmmmmm,qxmmmxmm  pmmmmmmm,pxmmmxmm  mmmmmmmm,mmmmxmmm"   colon  word
 
 postp	"m"		  word  word
 
@@ -135,20 +147,11 @@ regress  I>_(!_!)	sent   word
 #  P bude oznaèovat takt pøedcházející poslednímu.
 #
 
-regress	 $any>M(!_!)	colon	word
+regress	 _\ F>M(!_!)	colon	word
 regress	 M>I(0_!)	colon	word
-regress  $any>F(!_0)	colon	word
-regress  IM>P(!_F)	colon	word
-regress  F>T(!_0)	sent	word
-
-with	postp2.dic	colon   word
-{
-	regress   FT>M(!_!)	colon	word
-}
 
 #
-#  Nyní máme oznaèeny takty I, M, P, F, T ( = FF). Dále
-#  rozdìlíme M na A a B podle toho, zda budeme chtít
+#  Rozdìlíme M na A a B podle toho, zda budeme chtít
 #  kadenci klesavou nebo stoupavou. Oznaèování se dìje
 #  zleva:  IMMMMPF -> IBMMMPF -> IBAMMPF -> IBACMPF ->
 #  -> IBACBPF a pak dalším pravidlem -> IBABBPF
@@ -157,13 +160,27 @@ with	postp2.dic	colon   word
 subst   "IM,IB  BM,BA  AM,AC  CM,CB"	colon  word
 regress  C>B(!_!)			colon  word
 
+regress  IAB>F(!_0)	colon	word	; a,b: F (kA, kB)
+regress  IAB>aab(!_ab)	colon	word	; O,P: F-1 (kA, kB)
+regress  F>T(!_0)	sent	word
+
+# Toto pravidlo je nejspíš reliktem minulosti
+#with	postp2.dic	colon   word
+#{
+#	regress   FT>M(!_!)	colon	word
+#}
+
+#
+#  Nyní máme oznaèeny takty I, M, P, F, T ( = FF) a pøiøazeny kadence.
+#
+
 #
 #  pøi pøiøazování kadencí se hodnota pøiøazená slabice
 #  vztahuje na všechny její hlásky v použitém slabièném
 #  èlenìní
 #
 
-inside	IA	word
+inside	IaA	word
 {
 	<	word  syll	; tzn. zaøiï se dle poètu slabik v taktu
 		{					; monosylaba se ignorují
@@ -200,7 +217,7 @@ inside	IA	word
 }
 
 
-inside	V	word		; F A - never used
+inside	F	word		; F A - never used
 {
 	<	word  syll	; tzn. zaøiï se dle poètu slabik v taktu
 		{					; monosylaba se ignorují
@@ -226,7 +243,7 @@ inside	V	word		; F A - never used
 	>
 }
 
-inside	PB	word
+inside	bB	word
 {
 	<	word  syll
 		nothing				; monosylaba
@@ -258,28 +275,37 @@ inside	PB	word
 	>
 }
 
+
 inside	F	word
 {
 	contour   f/-2	word  word
 	<		word  syll
-		nothing				; monosylaba
+		nothing				; monosylaba nejsou
 		[				; disyllaba
 			contour  f/-5:-1	word   syll
 			contour  f/-3:+4	word   syll
+			contour	 f/+4:-4	word   syll
+			contour	 f/-3:-3	word   syll
 		]
 		[
 			contour  f/-6:-6:+0	word   syll
 			contour  f/-6:+4:+0	word   syll
 			contour  f/-4:+2:+4	word   syll
+			contour	 f/-4:+4:-6	word   syll
+			contour	 f/-4:+0:-4	word   syll
+			contour	 f/-2:-3:-3	word   syll
 		]
 		[
 			contour  f/-4:-4:-2:+2	word   syll
 			contour  f/+0:-3:+0:+2	word   syll
+			contour	 f/-3:+0:-2:-3	word   syll
+			contour	 f/+0:+0:-1:-1	word   syll
 		]
 		[
 			contour  f/-2:-2:+0:+2:+2	word   syll
+			contour	 f/-2:+0:+0:+0:-2	word   syll
 		]
-		nothing
+		nothing		; hexasyllaba a delší se neøeší
 	>
 }
 
@@ -387,7 +413,7 @@ inside	\#	phone
 
 5x  regress   0>\#(!_0)	sent	; vložení pausy
 
-diphones  traditnl.dph	colon
+diphones  traditnl.dph  colon
 
 #
 #  mírné vyhlazování se zejména snaží, aby hranièní difony
@@ -401,3 +427,4 @@ diphones  traditnl.dph	colon
 #
 
 smooth   f/70\30     word diphone
+

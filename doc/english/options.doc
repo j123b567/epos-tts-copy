@@ -1,0 +1,286 @@
+
+<sect1> Options
+<p>
+
+Most aspects of the operation can be customized by changing options.
+This can be enforced by TTSCP commands, in configuration files and
+on the command line. Basically, an option is an option name/option value
+pair. There are a few possible option types: number, string, yes/no,
+character, file (the value specified is a file name, but the value 
+actually assigned is the corresponding file contents) and a few
+enumerated types.
+
+The list of all built-in options can be found in <tt>src/options.cc</tt>.
+(See approximately line 275 and below. Every line represents at most one
+option for every option class as explained below. The option name is
+quoted; its semantics is usually explained following the option.)
+You can also list their names and types using <tt>ss -H</tt>.
+
+<sect2> Option classes
+<p>
+
+Basically, there are three major classes of options: global options,
+language options and voice options. For instance, switching a voice
+means switching to another set of voice options, while the language
+options and global options stay the same.
+
+Every voice is language specific (implies a specific language).
+That's why switching the language automatically switches the voice
+to the voice defined as default for this particular language.
+(It is however possible to use the same configuration file to setup
+a similarly sounding voice for every language if desired.)
+
+A set of voice options should completely describe a voice.
+A set of voice options should completely describe a language,
+except for voice-specific behaviour. A set of global options
+should cover language independent aspects of operation.
+It should be understood that a set of options may employ various
+references to other information, especially filenames (of language
+dependent transcription rules, voice dependent diphone inventories
+etc.)
+
+Some language and/or voice specific options may have suitable defaults
+for all but specific languages/voices. Every voice option thus has its
+corresponding language option to default to if unspecified for a given
+voice. Likewise, there is a global option for every language option
+to default to. Therefore, adding a new language or voice options
+doesn't necessarily imply adding them to each language or voice
+configuration file, if a reasonable default can be suggested.
+
+Whenever an option name is given, it is first understood as a voice option
+(of the current voice); if there is no such voice option, the name
+is treated as a language option, then as a global option. To override
+this order, you can prefix an option with "C:", "L:" or "V:". This will
+restrict the search to global, language or voice options, respectively.
+(This is automatically done with configuration files, because every
+configuration file describes either a language or a voice, or it is unrelated
+to the current language and voice altogether.)
+
+<sect2> Configuration files
+<p>
+
+Whenever the program starts up, it reads a number of configuration
+files, setting up the initial (default) values of the options.
+These are typically located under /usr/lib/ss (can be overriden
+with the <tt>--base_dir</tt> option on the command line). By convention,
+configuration file names have the ".ini" suffix.
+
+Unless overriden, three files in <tt>/usr/lib/ss/cfg</tt> will be processed
+to setup the global configuration: <tt>ssfixed.ini</tt>, <tt>ss.ini</tt> and
+either <tt>ssansi.ini</tt> or <tt>ssrtf.ini</tt> (depending on the preferred
+output format if colored output is turned on - either ANSI escape sequences
+or RTF are supported at the moment; other markup formats can be added easily).
+By convention, <tt>ssfixed.ini</tt> contains the standard global configuration
+values used by a given installation and rarely or never changes, while
+<tt>ss.ini</tt> contains less permanent parameters and temporary values.
+The global parameters include a list of <em>languages</em>, or language
+configurations which will be parsed when the global configuration is set up.
+Every language <tt>.ini</tt> file in turn contains a list of voices to be
+configured for this particular language. Language configuration files
+are located under <tt>/usr/lib/ss/lng/*/*.ini</tt>, voice configuration files
+under <tt>/usr/lib/ss/inv/*/*.ini</tt>, where <tt>*</tt> represents any string
+listed in the list of languages (or voices for a language). Go see the real
+files under <tt>/usr/lib/ss/cfg/*.ini</tt> for an example.
+
+If a <tt>SSCFGFILE</tt> environment variable is set upon the main program startup,
+its value is a file name to be parsed instead of <tt>ss.ini</tt>.
+
+<sect3> Configuration file format
+<p>
+
+A configuration file contains one option per line (empty lines are ignored).
+Each option is a name-value pair, separated with whitespace. Every configuration
+file is associated with a certain option set, that is, it contains either just
+global options, or options related to some language or voice. (In the latter
+two cases, the <tt>name</tt> option identifies the language or voice properly.)
+
+<sect4> Escaping special characters
+<p>
+
+It is possible to enter some special characters using escape sequences, such
+as <tt>"\ "</tt> for a space, <tt>"\n"</tt> for a newline, or <tt>"\~"</tt>
+for <tt>"..."</tt> or <tt>"dots"</tt> (treated as a single character in SS).
+Note that the surrounding quotes are not actually part of the option value.
+It is possible, but usually not necessary to use them to use them to
+enclose a string option value. The correspondence between escaped characters
+and their meaning is defined by the following table:
+
+<table>
+<tabular ca="|l|l|l|">
+	escape sequence	| interpreted as  | ASCII code, decimal | example
+<hline>
+	\n  |  newline    |  10  |
+	\t  |  tab        |   9  |
+	\E  |  escape	  |  27  |
+	\[  |  escape     |  27  |
+	\\  |  backslash  |  92  |
+	\   |  hard space | 255  |
+	\#  |  hash       |  35  |
+	\;  |  semicolon  |  59  |
+	\~  |  dots	  |  (1) |  No...
+	\.  |decimal point|  (2) |  1.2 kg
+	\-  |  range	  |  (3) |  2-3 people
+	\m  |  minus      |  (4) |  -1
+	\X  |  temporary  | (31) |
+</tabular>
+<caption></caption>
+</table>
+
+(If you suspect this table to be out-of-date, you can consult the <tt>token_esc</tt>
+and <tt>value_esc</tt> constants in <tt>option.cc</tt>, or the table in 
+<tt>parser.h</tt>.) ASCII codes in parentheses are ASCII codes used for different
+purposes by SS.
+
+
+<sect4> Comments and the #include directive
+<p>
+
+A configuration file usually contains various comments. A comment can start
+on any line with a semicolon or hash mark and lasts to the end of line.
+The semicolon (or hash mark) must be located at the beginning of line
+or just after some whitespace. Semicolons in the middle of a word don't
+start a comment.
+
+As an exception, if a line begins with <tt>#include</tt> starting in the first column,
+it is treated as an include
+directive. The format of the line should be <tt>#include "filename"</tt> and it will
+cause the contents of the <tt>filename</tt> file to be inserted at this place of the 
+main <tt>.ini</tt> file. These includes can be nested to any finite depth; if no or
+relative path is specified, the directory which holds the topmost file is used for
+the lookup.
+
+Two more directives, <tt>#warn</tt> and <tt>#error</tt> with obvious semantics
+are available for diagnostic purposes.
+
+<sect2> Command line
+<p>
+
+In both the daemon and monolithic shape it is possible to override
+configuration file supplied values at the command line. All options
+may be overriden using <em>long options</em>, i.e. the option name
+preceded by two dashes and followed by a value (unless the option
+is a truth value (boolean) and the value desired is "true"
+or, for a string option, the empty string).
+The ordering of the options on the command line is not significant.
+An example:
+
+<verb>
+ss --language german --pausing "Wie geht es?" --show_diphones
+</verb>
+
+This sets the default language to German, enables pausing after each
+transformation rule is applied to the text (sets the "pausing" option
+to "true", in other words) and prints the diphone string generated
+in the process (sets the "show_diphones" option to true). The string
+to be transcribed and synthesized is given on the command line as well
+(it must be quoted unless it consists of a single word).
+
+The list of all available long options together with their types
+can be obtained with <tt>ss -H</tt> of the main program (not the client
+stub, sorry). More information can occassionally be found in
+<tt>options.cc</tt>.
+
+The most frequently used options and occassionally even common sets
+of options are given a shortcut, called a <em>short option</em>.
+A short option is a single letter preceded by a single dash.
+Usual conventions for merging short options are available, therefore
+the example above may be abbreviated as
+
+<verb>
+ss -language german -p "Wie geht es?" -d
+</verb>
+
+or even 
+
+<verb>
+ss -language german -pd "Wie geht es?"
+</verb>
+
+(There  is no short option for <tt>--language</tt>.)
+For turning long boolean options off, it is possible to give their name
+with three dashes. Therefore,
+
+<verb>
+ss ---show_transcript "Say this, do not show the transcription"
+</verb>
+
+is equivalent to
+
+<verb>
+ss --show_transcript off "Say this, do not show the transcription"
+</verb>
+
+A list of (the most of) the short options can be obtained with
+<tt>ss --help</tt>, or <tt>ss -h</tt>.
+
+The options on the command line are processed left to right.
+They take precendence over the configuration files (unless
+common sense rules otherwise).
+
+
+<sect2> Setting options in TTSCP
+<p>
+
+See the TTSCP specification (<tt>doc/english/protocol.doc</tt>) for more info.
+
+<sect2> Semipermanent personal preferences
+<p>
+
+If many users with different needs and aesthetical feelings
+share the same SS daemon installation, they may choose to
+place the appropriate TTSCP commands into a file and to point
+the <tt>TTSCP_USER</tt> environment variable to this file.
+The contents of that file will be transmitted by the client
+to set up the working environment at the beginning of every 
+session.
+
+An example:
+
+<verb>
+set language czech
+set voice kadlec
+set init_f 90
+set init_i 110
+set language slovak
+</verb>
+
+This example will adjust the preferred pitch and volume for a certain
+Czech voice; it will also set the default language to Slovak. See
+the TTSCP specification (<tt>doc/english/protocol.doc</tt>) for more info.
+
+<sect2> Soft options
+<p>
+
+Most options (discussed until this point) have built-in meanings
+and semantics; for most uses this is sufficient and necessary.
+However, the user may also decide to define additional options
+to be provided by a language to its voices. This mechanism is
+called <em>soft options</em>; soft options are always voice options
+and are described at the language level (that is, the name, type
+and default value is supplied with the language, but individual
+voices may choose to specify a value for the option).
+
+The soft options are described by the language option <tt>soft_options</tt>.
+It is a list of colon separated descriptions of individual soft options;
+every item is of the format <tt>name[(type)][=default]</tt>, where <tt>name</tt>
+is an arbitrary option name, <tt>type</tt> is either <tt>b</tt>
+or <tt>s</tt> (meaning boolean or string; other possibilities include
+<tt>n, c</tt> for integers and characters, but these are untested
+and don't seem to be widely useful. The <tt>default</tt> is the default
+value to be used if the option is left unspecified by a voice. It should be
+chosen as a backward compatible value for a new option if applicable.
+
+The type and/or the default may be left unspecified. The default <tt>type</tt> is
+boolean, the default <tt>default</tt> is an empty string.
+
+An example:
+
+<tt>soft_options   "colloquial=false:diphone_listing_file(s)=traditnl.dph"</tt>
+
+This example defines two options, a boolean <tt>colloquial</tt> and
+a string <tt>diphone_listing_file</tt>.
+
+The sets of soft options for individual languages are independent and never
+clash with each other. However, built-in option names may not be used
+as soft option names.
+

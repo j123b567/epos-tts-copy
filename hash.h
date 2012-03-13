@@ -15,7 +15,7 @@
  *	Hash tables are quite independent of any other file. 
  *	You'll need just defaults.h - or not even that
  *
- *      This is hash.* v2.2
+ *      This is hash.* v2.3
  *
  *	In case you want to debug or profile the hash table code,
  *	go to the beginning of hash.cc and enable the appropriate
@@ -129,10 +129,12 @@ class hash: public hash_table<char, char>
 					// DATA_OBLIGATORY, if we reject single word input
 					// anything else - default data for this case
 		bool multi_data,	// true, if the data may consist of multiple words
-		const char *not_found_message);
+		const char *not_found_message,
 					// message to be printed if file not found
 					// (%s may represent the filename)
 					// use ANYWAY to continue anyway (with items == -1)
+		char *esctab);		// char[256] to translate backslash-escaped chars
+					// NULL if backslash not to be treated special
 
 	int	write(char *filename, bool keep_backup);	// non-destructive save
 	int	update(char *filename, bool keep_backup, bool remove_removed);

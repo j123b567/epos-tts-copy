@@ -4,7 +4,7 @@
  *   (Implements POSIX draft P1003.2/D11.2, except for some of the
  *   internationalization features.)
  *
- *   This file was without any modification taken out of the GNU C Library,
+ *   This file was without functional modification taken out of the GNU C Library,
  *   where it has been distributed under the LGPL version 2 license as regex.c.
  *   Then this file was placed under the GNU General Public License using
  *   Section 3 of the GNU Library Public License and incorporated into ss.
@@ -42,7 +42,7 @@
 #if defined(STDC_HEADERS) && !defined(emacs)
 #include <stddef.h>
 #else
-/* We need this for `regex.h', and perhaps for the Emacs include files.  */
+/* We need this for `rx.h', and perhaps for the Emacs include files.  */
 #include <sys/types.h>
 #endif
 
@@ -86,6 +86,7 @@
 #else
 char *malloc ();
 char *realloc ();
+void free(void *ptr);
 #endif
 
 /* When used in Emacs's lib-src, we need to get bzero and bcopy somehow.
@@ -175,7 +176,7 @@ init_syntax_once ()
 #endif /* not emacs */
 
 /* Get the interface, including the syntax bits.  */
-#include "regex.h"
+#include "rx.h"
 
 /* isalpha etc. are used for the character classes.  */
 #include <ctype.h>
@@ -344,7 +345,12 @@ typedef char boolean;
 #define false 0
 #define true 1
 
-static int re_match_2_internal ();
+struct re_pattern_buffer;
+
+static int
+re_match_2_internal (struct re_pattern_buffer *bufp, const char *string1, int size1,
+	const char *string2, int size2, int pos, struct re_registers *regs, int stop);
+
 
 /* These are the command codes that appear in compiled regular
    expressions.  Some opcodes are followed by argument bytes.  A
@@ -948,7 +954,7 @@ reg_syntax_t re_syntax_options;
    different, incompatible syntaxes.
 
    The argument SYNTAX is a bit mask comprised of the various bits
-   defined in regex.h.  We return the old syntax.  */
+   defined in rx.h.  We return the old syntax.  */
 
 reg_syntax_t
 re_set_syntax (syntax)
@@ -967,7 +973,7 @@ re_set_syntax (syntax)
 }
 
 /* This table gives an error message for each of the error codes listed
-   in regex.h.  Obviously the order here has to be same as there.
+   in rx.h.  Obviously the order here has to be same as there.
    POSIX doesn't require that we do anything for REG_NOERROR,
    but why not be nice?  */
 
@@ -1757,7 +1763,7 @@ static boolean group_in_compile_stack _RE_ARGS ((compile_stack_type
 						 regnum_t regnum));
 
 /* `regex_compile' compiles PATTERN (of length SIZE) according to SYNTAX.
-   Returns one of error codes defined in `regex.h', or zero for success.
+   Returns one of error codes defined in `rx.h', or zero for success.
 
    Assumes the `allocated' (and perhaps `buffer') and `translate'
    fields are set in BUFP on entry.
@@ -3086,7 +3092,7 @@ re_compile_fastmap (bufp)
   char *destination;
 #endif
   /* We don't push any register information onto the failure stack.  */
-  unsigned num_regs = 0;
+/*  unsigned num_regs = 0;	superfluous */
 
   register char *fastmap = bufp->fastmap;
   unsigned char *pattern = bufp->buffer;
@@ -3978,10 +3984,12 @@ re_match_2_internal (bufp, string1, size1, string2, size2, pos, regs, stop)
 	    {
 	      /* 1 if this match ends in the same string (string1 or string2)
 		 as the best previous match.  */
-	      boolean same_str_p = (FIRST_STRING_P (match_end)
-				    == MATCHING_IN_FIRST_STRING);
+	      boolean same_str_p;
 	      /* 1 if this match is the best seen so far.  */
 	      boolean best_match_p;
+
+              same_str_p = (FIRST_STRING_P (match_end)
+				    == MATCHING_IN_FIRST_STRING);
 
 	      /* AIX compiler got confused when this was combined
 		 with the previous declaration.  */
@@ -5516,7 +5524,7 @@ re_exec (s)
      routine will report only success or failure, and nothing about the
      registers.
 
-   It returns 0 if it succeeds, nonzero if it doesn't.  (See regex.h for
+   It returns 0 if it succeeds, nonzero if it doesn't.  (See rx.h for
    the return codes and their meanings.)  */
 
 int

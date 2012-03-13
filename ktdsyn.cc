@@ -15,7 +15,7 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License in doc/COPYING for more details.
- *	
+ *
  *
  */
 
@@ -37,60 +37,27 @@
 
 extern double buf[6];
 
-//ktdsyn::ktdsyn (int v, int t)
 ktdsyn::ktdsyn (voice *v)
 {
-	pocet_vzorku=0;
-	
-	kw = 100;
-	fr_vz = 8000;
-	po_u = 0;
 	FILE *f;
-	char * pathname = compose_pathname("useky.dat", v->inv_dir); 
+	char * pathname = compose_pathname("useky.dat", v->inv_dir);
 	f = fopen (pathname, "rt");
 	free(pathname);
 	if (!f) shriek("Nemozem otvorit subor 'useky.dat'");
-
-	while (!feof (f)) {		/* FIXME: consider turning into a freadin() call */
+	po_u = 0;
+ 	while (!feof (f)) {		/* FIXME: consider turning into a freadin() call */
 		int imp_int;		/* to make scanf() happy */
 		fscanf (f, "%s%i%i", U[po_u].jm, &imp_int, &U[po_u].delk);
 		U[po_u].imp = imp_int;
 		po_u++;
 	}
 	fclose (f);
-	oldkw=0; newkw=0;
-
-/* ---------------- tady se otviral waveout ------------- */
-
-// wave_buffer=(sample2_t*)malloc(buffer_size*(cfg->stereo+1)*sizeof(sample2_t)+2000);
-// for(int i=0; i < buffer_size+2000; i++) wave_buffer[i]=0x80;
-	
-/*	if (cfg->wav_header) {					//naplneni hlavicky wav
-		strcpy(wavh.string1,"RIFF");
-		strcpy(wavh.string2,"WAVEfmt ");
-		strcpy(wavh.string3,"data");
-		wavh.datform=1;
-		wavh.numchan=1;
-		wavh.sf1=cfg->samp_hz; wavh.sf2=0;
-		wavh.avr1=2*cfg->samp_hz; wavh.avr2=0;
-		wavh.wlenB=2; wavh.wlenb=8;
-		wavh.xnone=0x010;
-		wavh.dlen=0;
-		wavh.flen=0+0x24;
-		write(wavout, &wavh, 44);         //zapsani prazdne wav hlavicky na zacatek souboru
-	}
-*/
-
-	p_b = 0;
-	oldkw=0;
 	DEBUG(3,9,fprintf(stddbg,"Time Domain synth OK\n");)
 }
 
 
 ktdsyn::~ktdsyn()
 {
-//	printf("DEBUG: ~ktd\n");	but do fix this destructor!
-	pocet_vzorku+=kw;
 	/* zapis wav hlav */
 	/* uzavrit wavout */
 }
@@ -105,51 +72,36 @@ void ktdsyn::syndiph(voice *v, diphone d)
 	char *m_sub;
 	m_sub = (char *)malloc(MAX_PATHNAME);
 	strcpy (m_sub, cfg->base_dir);
-	strcat (m_sub, "/inv/USEKY/");
+	strcat (m_sub, "/");
+	strcat (m_sub, v->inv_dir);
+	strcat (m_sub, "/");
 	dif2psl (U[d.code].jm, m_sub);
 	strcat (m_sub, ".PSL");
 	op_psl (m_sub, s_psl);
 	uind = d.code;
 	pocimp = U[d.code].imp;
-	delka = ((double) d.t / 100 * (double) U[d.code].delk / 100 * (double) v->init_t * 40 / 10 + 0.5); // ugly as microsoft's code
-	peri = (int) (fr_vz / (((double) d.f / 100 * v->init_f)) + 0.5);
+	delka = ((double) d.t / 100 * (double) U[d.code].delk * 40 / 10 + 0.5); // ugly as microsoft code
+	peri = (int) (v->samp_rate / (8000/(double) d.f) + 0.5);
 	pocp = (int) (delka / peri);
 
-
-// printf("\nU=%d:%s, imp=%d pocp=%i delka=%f peri=%i - ",uind,U[uind].jm,pocimp,pocp,delka,peri); 
-// printf("d=%d p=%d t=%d m=%d v=%d - ",U[uind].delk,d.t,v->init_t,d.f,v->init_f); 
-
-	if (pocp > 1) {
+	if (pocp > 1) {                                              \
 		smer = (pocimp - 1) / (pocp - 1);
 		for (int i = 0; i < pocp; i++) {
-//			int iw = kw - peri / 2;   iw bylo nahrazeno v->buffer_idx
 			int jw = int (smer * i) * 100;
-			for (int j = 0; j < 100; j++) {
-				pomr = s_psl[jw] /* - 128 */ ;
-				pomr = (pomr /* + v->buffer[v->buffer_idx] */);
-				pomr = 0x80 + d.e * (pomr - 0x80) / 100;
-				if (pomr > 255) pomr = 255;
-				if (pomr < 0) pomr = 0;
-				v->sample((int)pomr);
+            if (peri<99) jw = jw+(50-peri/2);
+			for (int j = 0; j < peri; j++) {
+				if (j < 100) {
+                    pomr = s_psl[jw] - 128 ;
+				    pomr = 0x80 + d.e * (pomr) / 100;
+				    if (pomr > 255) pomr = 255;
+				    if (pomr < 0) pomr = 0;
+				    v->sample((int)pomr);
+                } else
+                    v->sample((int)128);
 				jw++;
 			}
-			kw += peri;
 		}
 	}
-/*		FIXME!!!! removed but not understood!
-	newkw=kw;
-	if (kw>buffer_size+1000) {
-		oldkw=kw-buffer_size;
-		write(wavout, wave_buffer, sizeof(sample2_t) * buffer_size);
-		printf("DEBUG: wrote\n");
-		for (int i=0; i<(kw-buffer_size-1); i++)
-			wave_buffer[i]=wave_buffer[i+buffer_size];
-		for(int i=(kw-buffer_size); i < buffer_size+2000; i++)
-			wave_buffer[i]=0x80;
-		kw=kw-buffer_size;
-		pocet_vzorku+=buffer_size;
-	}
-*/	
 	free(m_sub);
 	delete (s_psl);
 }

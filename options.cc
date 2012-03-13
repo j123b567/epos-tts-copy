@@ -41,9 +41,9 @@
 #define BOOL   bool
 #define INT    int
 #define STR    const char*
-#define CHAR   Char
+#define CHAR   unsigned char
 #define ELEM   UNIT
-#define FILE   const char*
+// #define FILE   const char*
 #define MARKUP OUT_ML
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
@@ -90,13 +90,13 @@
 #define STR    O_STRING
 #define CHAR   O_CHAR
 #define ELEM   O_UNIT
-#define FILE   O_FILE
+// #define FILE   O_FILE
 #define MARKUP O_MARKUP
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
 #define DEBUG_AREA O_DBG_AREA
 
-#define OPTION(member,name,type,default) {name, type, OS_CFG, A_PUBLIC, A_PUBLIC, (int)&((configuration *)NULL)->member},
+#define OPTION(member,name,type,default) {"C:" name + 2, type, OS_CFG, A_PUBLIC, A_PUBLIC, (int)&((configuration *)NULL)->member},
 
 #define OPTIONAGGR(x) 
 #define OPTIONITEM(w,x,y,z) OPTION (w,x,y,z)
@@ -135,9 +135,9 @@
 #define BOOL   bool
 #define INT    int
 #define STR    const char*
-#define CHAR   Char
+#define CHAR   unsigned char
 #define ELEM   UNIT
-#define FILE   const char*
+// #define FILE   const char*
 #define MARKUP OUT_ML
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
@@ -165,7 +165,7 @@
 #define STR    O_STRING
 #define CHAR   O_CHAR
 #define ELEM   O_UNIT
-#define FILE   O_FILE
+// #define FILE   O_FILE
 #define MARKUP O_MARKUP
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
@@ -176,12 +176,12 @@
 #define OPTIONAGGRENDS
 
 #define LNG_OPTIONAGGR(x) 
-#define LNG_OPTIONITEM(member,name,type,default) {name, type, OS_LANG, A_PUBLIC, A_PUBLIC, (int)&((lang *)NULL)->member}, 
+#define LNG_OPTIONITEM(member,name,type,default) {"L:" name + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, (int)&((lang *)NULL)->member}, 
 #define LNG_OPTIONAGGRENDS 
 
 #define OPTION(w,x,y,z)
-#define INV_OPTION(member,member_inv,name,type,default)   {name, type, OS_LANG, A_PUBLIC, A_PUBLIC, (int)&((lang *)NULL)->member_inv},
-#define LNG_OPTION(member,member_lang,name,type,default)  {name, type, OS_LANG, A_PUBLIC, A_PUBLIC, (int)&((lang *)NULL)->member_lang},
+#define INV_OPTION(member,member_inv,name,type,default)   {"L:" name + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, (int)&((lang *)NULL)->member_inv},
+#define LNG_OPTION(member,member_lang,name,type,default)  {"L:" name + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, (int)&((lang *)NULL)->member_lang},
 
 #undef CONFIG_LANG_DESCRIBE
 
@@ -209,9 +209,9 @@
 #define BOOL   bool
 #define INT    int
 #define STR    const char*
-#define CHAR   Char
+#define CHAR   unsigned char
 #define ELEM   UNIT
-#define FILE   const char*
+// #define FILE   const char*
 #define MARKUP OUT_ML
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
@@ -241,7 +241,7 @@
 #define STR    O_STRING
 #define CHAR   O_CHAR
 #define ELEM   O_UNIT
-#define FILE   O_FILE
+// #define FILE   O_FILE
 #define MARKUP O_MARKUP
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
@@ -256,7 +256,7 @@
 #define LNG_OPTIONAGGRENDS OPTIONAGGRENDS
 
 #define OPTION(w,x,y,z)
-#define INV_OPTION(member,member_inv,name,type,default)  {name, type, OS_VOICE, A_PUBLIC, A_PUBLIC, (int)&((voice *)NULL)->member_inv},
+#define INV_OPTION(member,member_inv,name,type,default)  {"V:" name + 2, type, OS_VOICE, A_PUBLIC, A_PUBLIC, (int)&((voice *)NULL)->member_inv},
 #define LNG_OPTION(member,member_lang,name,type,default)
 
 #undef CONFIG_INV_DESCRIBE
@@ -298,8 +298,8 @@ OPTION (limit_dbg,  "limit_debug", INT, 0)      // Never debug under this level,
 OPTION (loaded, "",               BOOL, false)  // Do we have already compiled the .ini files?
 OPTION (ssfixed, "ssfixed_file",   STR, "ssfixed.ini")
 OPTION (inifile, "cfg_file",       STR, "ss.ini")	// What is our favourite .ini file?
-OPTION (token_esc, "",             STR, "nt[E\\ #;")	// Escape sequences usable in the .ini files
-OPTION (value_esc, "",             STR, "\n\t\033\033\\\377#;")
+OPTION (token_esc, "",             STR, "nt[E\\ #;~.-mX")	// Escape sequences usable in the .ini files
+OPTION (value_esc, "",             STR, "\n\t\033\033\\\377#;\1\2\3\4\037")
 OPTION (slash_esc, "",            CHAR, '/')	// Path separator ('/' or '\') .ini escape seq
 
 OPTION (hash_full, "hashes_full",  INT, 100)    // How full should a hash table become?
@@ -313,9 +313,10 @@ OPTION (ml, "markup_language",  MARKUP, ML_NONE)// Are these ANSI escape seqs or
 OPTION (version, "version",	  BOOL, false)	// Print version info to stdwarn on startup?
 OPTION (help, "help",		  BOOL, false)	// Print help on stdwarn and exit on startup?
 OPTION (long_help, "long_help",   BOOL, false)	// Print also a simple list of long options?
-OPTION (neuronet, "neuronet",	  BOOL, false)  // Allow nnet_out()?
+OPTION (neuronet, "neuronet",     BOOL, false)  // Allow nnet_out()?
 OPTION (trusted, "trusted",       BOOL, false)  // Are sanity checks in unit::sanity() unnecessary?
 OPTION (paranoid, "paranoid",     BOOL, true)   // Are config files out to get us? (strict syntax)
+OPTION (stml, "stml",	          BOOL, false)	// Input text are STML (as opposed to plain ASCII)?
 OPTION (showrule, "show_rule",    BOOL, false)  // Print each rule before its application? DEBUGGING only!
 OPTION (pausing, "pausing",       BOOL, false)  // Pause after each rule application?
 OPTION (r_dbg_sh_all, "verbose",  BOOL, false)  // When dumping rules, print them all?
@@ -390,7 +391,9 @@ OPTION (sd, "",			   INT, 0)	// network socket of the current session
 						// (can also be used to detect the daemon mode)
 OPTION (persistence,"persistence", INT, 60)	// Seconds to try to bind the socket (0 forever)
 
-LNG_OPTION (std_voices, voice_names, "voices", STR, "")	// voices supported for this languages
+LNG_OPTION (std_voices, voice_names, "voices", STR, "")	// voices supported for this language
+LNG_OPTION (sft_opts, soft_option_names, "soft_options", STR, "")
+				// language-specific voice options supported for this language
 
 OPTION (f_neutral, "f_neutral",    INT, 100)    // Neutral (unmarked) frequency
 OPTION (i_neutral, "i_neutral",    INT, 100)    // Neutral intensity
@@ -406,8 +409,10 @@ INV_OPTION (ti_adj, t_i_adjustments, "t_i_adj", BOOL, false)	// Adjust neutral t
 OPTION (relax_input,"relax_input",BOOL, false)  // Survive unknown characters on input
 OPTION (dflt_char, "default_char",CHAR, ' ')	// Replace them with this char
 
-OPTION (header_xscr, "header",    FILE, "")     // Header and footer printed
-OPTION (footer_xscr, "footer",    FILE, "")     //   in unit::fout()
+// OPTION (header_xscr, "header", FILE, "")     // Header and footer printed
+// OPTION (footer_xscr, "footer", FILE, "")     //   in unit::fout()
+OPTION (header_xscr, "header",     STR, "")     // Header and footer printed
+OPTION (footer_xscr, "footer",     STR, "")     //   in unit::fout()
 
 LNG_OPTION (syll_hack, syll_hack, "suppress_side_syll",  BOOL,  false)   
 						// Try to avoid initial pseudo-syllables,

@@ -21,7 +21,9 @@
 #include <errno.h>
 #endif
 
-#if (('a'-'A')!=32)	//Well, we rely on this a few times I think
+#include <sys/stat.h>
+
+#if (('a'-'A')!=32 || '9'-'0'!=9)	//Well, we rely on these a few times I think
 #error If this machine doesn't believe in ASCII, I wouldn't port it hither.
 #error Hmmm... but you will manage it.
 #endif
@@ -33,9 +35,9 @@ FILE *stdshriek;
 FILE *stdwarn;
 FILE *stddbg;
 
-char *scratch;
+char *scratch = NULL;
 
-char *esctab;
+char *esctab = NULL;
 
 void
 check_lib_version(const char *version)
@@ -153,15 +155,18 @@ fopen(const char *filename, const char *flags, const char *reason)
 {
 	FILE *f;
 	char *message;
+
+	if (!filename || !*filename)
+		return *flags == 'r' ? stdin : stdout;
 	switch (*flags) {
 		case 'r': message = "Failed to read %s from %s: %s"; break;
 		case 'w': message = "Failed to write %s to %s: %s"; break;
 		default : shriek("Bad flags for %s", reason); message = NULL;
 	}
 	f = fopen(filename, flags);
-	if (!f) shriek(message, reason, filename, strerror(errno));
+	if (!f && reason) shriek(message, reason, filename, strerror(errno));
 	return f;
-};
+}
 
 void colorize(int level, FILE *handle)
 {
@@ -169,9 +174,9 @@ void colorize(int level, FILE *handle)
 	if (level==-1) {
 		fputs(cfg->normal_col, handle);
 		return;
-	};
+	}
 	fputs(cfg->out_color[level],handle);
-};
+}
 
 FIT_IDX fit(char c)
 {
@@ -184,7 +189,7 @@ FIT_IDX fit(char c)
 		case 'T': return Q_TIME;
 		default: shriek("Expected f,i or t, found %c",c);
 			return Q_FREQ;
-	};
+	}
 }
 
 #define LOWERCASED(x) (((x)<'A' || (x)>'Z') ? (x) : (x)|('a'-'A'))
@@ -200,11 +205,11 @@ UNIT str2enum(const char *item, const char *list, int dflt)
 		if(!*j && (*i==LIST_DELIM)) return UNIT(k);
 		if(LOWERCASED(*i) != LOWERCASED(*j)) k++,j=item-1,i=strchr(i,LIST_DELIM);
 		DEBUG(0,0,fprintf(stddbg,"str2enum %s %s %d\n",i,j,k);)
-	};
+	}
 	if(i&&j&&!*j) return (UNIT)k;
 	DEBUG(3,0,fprintf(stddbg,"str2enum returns ILL for %s %s\n",item, list);)
 	return U_ILL;
-};
+}
 
 char _enum2str_buff[20];
 
@@ -222,7 +227,7 @@ char *enum2str(int item, const char *list)
 	}
 	if (*i && item>0) shriek("enum2str should stringize %d",item);
 	return _enum2str_buff;
-};
+}
 
 hash *str2hash(const char *list, unsigned int max_item_len)
 {
@@ -249,10 +254,10 @@ hash *str2hash(const char *list, unsigned int max_item_len)
 unit *str2units(char *text)
 {
 	unit *root;
-	PARSER *parsie;
+	parser *parsie;
 
-	if (text && *text) parsie = new PARSER(text, 1);
-	else parsie = new PARSER(this_lang->input_file, 0);
+	if (text && *text) parsie = new parser(text, 1);
+	else parsie = new parser(this_lang->input_file, 0);
 	root=new unit(U_TEXT, parsie);
 	delete parsie;
 	this_lang->ruleset->apply(root);
@@ -265,11 +270,11 @@ char *fntab(const char *s, const char *t)
 {
 	char *tab;
 	int tmp;
-	tab=(char *)malloc(256); for(tmp=0;tmp<256;tmp++) tab[tmp]=(Char)tmp;  //identity mapping
+	tab=(char *)malloc(256); for(tmp=0; tmp<256; tmp++) tab[tmp] = (unsigned char)tmp;  //identity mapping
 	if(cfg->paranoid && (tmp=strlen(s)-strlen(t)) && t[1]) 
 		shriek(tmp>0?"Not enough (%d) resultant elements":"Too many (%d) resultant elements",abs(tmp));
-	if(!t[1]) for (tmp=0;s[tmp];tmp++) tab[(Char)s[tmp]]=*t;
-	else for (tmp=0;s[tmp]&&t[tmp];tmp++) tab[(Char)(s[tmp])]=t[tmp];
+	if(!t[1]) for (tmp=0; s[tmp]; tmp++) tab[(unsigned char)s[tmp]]=*t;
+	else for (tmp=0;s[tmp]&&t[tmp];tmp++) tab[(unsigned char)(s[tmp])]=t[tmp];
 	return(tab);
 }
 
@@ -286,8 +291,8 @@ bool *booltab(const char *s)
 	for(tmp=s;*tmp;tmp++) switch (*tmp) {
 		case EXCL: mode=1-mode; break;
 		case ESCAPE: if (!*++tmp) tmp--;	// and fall through
-		default:  tab[(Char)(*tmp)]=mode;
-	};
+		default:  tab[(unsigned char)(*tmp)]=mode;
+	}
 	return(tab);
 }
 
@@ -309,7 +314,7 @@ char *compose_pathname(const char *filename, const char *dirname)
 
 	if (!filename || !dirname) return strdup("");
 	if (!*dirname) dirname = ".";
-	pathname=(char *)malloc(strlen(filename)+strlen(dirname)+strlen(cfg->base_dir)+3);
+	pathname = (char *)malloc(strlen(filename) + strlen(dirname) + strlen(cfg->base_dir) + 3);
 	if (IS_NOT_SLASH(*filename) && (filename[0]!='.' || IS_NOT_SLASH(filename[1]))) {
 		if (IS_NOT_SLASH(*dirname)) {
 			strcpy(pathname, cfg->base_dir);
@@ -319,7 +324,7 @@ char *compose_pathname(const char *filename, const char *dirname)
 		strcpy(pathname+tmp, dirname);
 		tmp = strlen(pathname);
 		if (IS_NOT_SLASH(pathname[tmp-1])) pathname[tmp++]=SLASH;
-	};
+	}
 	strcpy(pathname+tmp, filename);
 
 #if SLASH!='/'
@@ -331,50 +336,97 @@ char *compose_pathname(const char *filename, const char *dirname)
 
 #undef IS_NOT_SLASH
 
+/*
+ *	If file does not exist or stat() is broken, return 0 for a timestamp
+ */
 
-freadin_file::~freadin_file()
+int get_timestamp(char *filename)
 {
-	free(data);
+	struct stat buff;
+	if (stat(filename, &buff)) return 0;
+	return buff.st_ctime;
 }
 
-char *freadin(const char *filename, const char *dirname, const char *flags, const char *description)
+file::~file()
 {
-	FILE *file;
-	freadin_file *ff;
+	if (ref_count) shriek("File %s not unclaimed", filename);
+	free(data);
+	free(filename);
+}
+
+static hash_table<char, file> *file_cache = NULL;
+
+file *claim(const char *filename, const char *dirname, const char *flags, const char *description)
+{
+	FILE *f;
+	file *ff;
 	char *pathname;
 	char *data;
 	int tmp;
-	static hash_table<char, freadin_file> *known = new hash_table<char, freadin_file>(30);
-
-	if (!filename) {
-		delete known;
-		return NULL;
+	
+	if (!file_cache) {
+		file_cache = new hash_table<char, file>(30);
+		file_cache->dupkey = file_cache->dupdata = false;
 	}
+
 	pathname = compose_pathname (filename, dirname);
-	ff = known->translate(pathname);
+	ff = file_cache->translate(pathname);
 	if (ff) {
-		DEBUG(1,0,fprintf(stddbg, "freadin hit on %s\n", pathname);)
+		if (get_timestamp(pathname) != ff->timestamp) {
+			ff->timestamp = get_timestamp(pathname);
+			f = fopen(pathname, flags, description);
+			fseek(f, 0, SEEK_END);
+			ff->data = (char *)realloc(ff->data, tmp = ftell(f) + 1);
+			rewind(f);
+			ff->data[fread(ff->data, 1, tmp, f)] = 0;
+			fclose(f);
+			DEBUG(1,0,fprintf(stddbg, "cache update for %s\n", pathname);)
+		}
+		DEBUG(1,0,fprintf(stddbg, "cache hit on %s\n", pathname);)
 		free(pathname);
 		ff->ref_count++;
-		return ff->data;
+		return ff;
 	}
 
-	file = fopen(pathname, flags, description);
-	fseek(file, 0, SEEK_END);
-	data = (char *)malloc(tmp = ftell(file) + 1);
-	rewind(file);
-	data[fread(data, 1, tmp, file)] = 0;	  // remember DOS crlfs. tmp suits here.
-	fclose(file);
+	f = fopen(pathname, flags, description);
+	fseek(f, 0, SEEK_END);
+	data = (char *)malloc(tmp = ftell(f) + 1);
+	rewind(f);
+	data[fread(data, 1, tmp, f)] = 0;	  // remember DOS crlfs. tmp suits here.
+	fclose(f);
 
-	ff = new freadin_file;
+	ff = new file;
 	ff->ref_count = 1;
 	ff->data = data;
-	known->add(pathname, ff);
-	DEBUG(1,0,fprintf(stddbg, "freadin miss on %s\n", pathname);)
-	free(pathname);
-	free(ff);	// must avoid the destructor. This is really ugly.
-	return data;
+	ff->filename = pathname;
+	ff->timestamp = get_timestamp(pathname);
+	file_cache->add(pathname, ff);
+	DEBUG(1,0,fprintf(stddbg, "cache miss on %s\n", pathname);)
+	return ff;
 }
+
+void uncache_file(char *, file *ff)	// the first argument is ignored
+{
+	delete file_cache->remove(ff->filename);
+}
+
+void unclaim(file *ff)
+{
+	ff->ref_count--;
+	if (!ff->ref_count) {
+		if (cfg->lowmemory) uncache_file(NULL, ff);
+	}
+}
+
+void shutdown_file_cache()
+{
+	if (!file_cache) return; // shriek("No file cache to shutdown");
+	if (file_cache->items)
+		file_cache->forall(uncache_file);
+	delete file_cache;
+	file_cache = NULL;
+}
+
 
 /*
  *	cow - this routine should detect whether a piece of memory used
@@ -418,45 +470,85 @@ hash_table<char, option> *option_set = NULL;
 void configuration::shutdown()
 {
 	int i;
-	for (i=0; i < cfg->n_langs; i++) delete cfg->langs[i];
+	for (i=0; i < n_langs; i++) delete langs[i];
 	free(langs);
+	langs = NULL;
+	this_lang = NULL; this_voice = NULL;
+	n_langs = 0;
 }
 
+/*
+ * Some string trickery below. option->name is initialised (in options.cc)
+ *	to   "X:" "string"+2. In C, it means the same as "X:string"+2,
+ *	which means "string" with "X:" immediately preceding it.
+ * Now we add to our option_set both normal option names ("string")
+ *	and their prefixed spellings ("X:string", for X being either
+ *	C, L or V for global/language/voice configuration items,
+ *	respectively), eating up a minimum memory space only.
+ */
 
-char *get_named_cfg(const char *name, const option *list, void *from)
+
+void make_option_set()
 {
-	const option *o;
-	void *address;
-	
-	DEBUG(0,0,fprintf(stddbg,"get_named_cfg: %s\n", name);)
+	option *o;
 
-	if (!from) return NULL;
+	if (option_set) return;
 
-	for (o = list; o->optname; o++) if (!strcasecmp(o->optname, name)) {
-		address = (char *)from + o->offset;
-		if (o->opttype == O_STRING) return *(char **)address;
-		if (o->opttype == O_BOOL) return *(bool *)address ? "=" : "!=";
-		shriek("cfg::named_item not implemented for %s (not a string)", name);
+	option_set = new hash_table<char, option>(300);
+	option_set->dupkey = option_set->dupdata = 0;
+
+	for (o = voiceoptlist; o->optname; o++) option_set->add(o->optname, o);
+	for (o = langoptlist; o->optname; o++) option_set->add(o->optname, o);
+	for (o = optlist; o->optname; o++) option_set->add(o->optname, o);
+
+	for (o = voiceoptlist; o->optname; o++) option_set->add(o->optname-2, o);
+	for (o = langoptlist; o->optname; o++) option_set->add(o->optname-2, o);
+	for (o = optlist; o->optname; o++) option_set->add(o->optname-2, o);
+
+	option_set->remove("languages");	// FIXME
+	option_set->remove("language");
+	option_set->remove("voices");
+	option_set->remove("voices");
+
+	text *t = new text(cfg->allow_file, cfg->ini_dir, NULL, true);
+	if (!t->exists()) {
+		delete t;
+		return;		/* if no allow file, ignore it */
 	}
-	return NULL;
+	char *line = (char *)malloc(cfg->max_line);
+	while (t->getline(line)) {
+		char *status = split_string(line);
+		o = option_set->translate(line);
+		if (!o) {
+		  /*	shriek("Typo in %s:%d\n", t->current_file, t->current_line); */
+			continue;
+		}
+		o->readable = o->writable = A_NOACCESS;
+		ACCESS level = A_PUBLIC;
+		for (char *p = status; *p; p++) {
+			switch(*p) {
+				case 'r': o->readable = level; break;
+				case 'w': o->writable = level; break;
+				case '#': level = A_ROOT; break;
+				case '$': level = A_AUTH; break;
+				default : shriek("Invalid access rights in %s line %d",
+						t->current_file, t->current_line);
+			}
+		}
+	}
+	free(line);
+	delete t;
 }
 
-char *get_named_cfg(const char *name)
+option *option_struct(const char *name, hash_table<char, option> *softopts)
 {
-	char *result;
-	DEBUG(1,0,fprintf(stddbg,"get_named_cfg: lang %s voice %s\n", this_lang->name, 
-			this_voice ? this_voice->name : "(none)");)
-	result = get_named_cfg(name, voiceoptlist, this_voice); if (result) return result;
-	result = get_named_cfg(name, langoptlist, this_lang);	if (result) return result;
-	result = get_named_cfg(name, optlist, cfg);		if (result) return result;
-	warn("Never heard about \"%s\", empty word returned", name);
-	return "";
-}
+	option *o;
 
-option *option_struct(const char *name)
-{
-	if (!option_set) shriek("My option_set!");
-	return option_set->translate(name);
+	if (!option_set) make_option_set();
+	if (!name || !*name) return NULL;
+	o = option_set->translate(name);
+	if (!o && softopts) o = softopts->translate(name);
+	return o;
 }
 
 void unknown_option(char *name, char *data)
@@ -478,7 +570,7 @@ void parse_cfg_str(char *val, const char *optname)
 	for (netto=val, brutto=val+tmp; *brutto; brutto++,netto++) {
 		*netto=*brutto;
 		if (*brutto==ESCAPE) *netto=esctab[*++brutto];
-	};				//resolve escape sequences
+	}				//resolve escape sequences
 	*netto=0;
 	DEBUG(1,10,fprintf(stddbg,"Configuration option \"%s\" set to \"%s\"\n",optname,val);)
 #ifndef DEBUGGING
@@ -488,6 +580,7 @@ void parse_cfg_str(char *val, const char *optname)
 
 bool set_option(option *o, char *val, void *base)
 {
+	if (!o) return false;
 	char *locus = (char *)base + o->offset;
 	switch(o->opttype) {
 		case O_BOOL:
@@ -532,10 +625,10 @@ bool set_option(option *o, char *val, void *base)
 			parse_cfg_str(val, o->optname);
 			*(char**)locus=FOREVER(strdup(val));
 			break;
-		case O_FILE:
-			parse_cfg_str(val, o->optname);
-			*(char**)locus=freadin(val, cfg->ini_dir, "rt", "config file content");
-			break;
+//		case O_FILE:
+//			parse_cfg_str(val, o->optname);
+//			*(char**)locus=freadin(val, cfg->ini_dir, "rt", "config file content");
+//			break;
 		case O_CHAR:
 			parse_cfg_str(val, o->optname);
 			if (val[1]) shriek("Multiple chars given for a CHAR option %s", o->optname);
@@ -548,65 +641,31 @@ bool set_option(option *o, char *val, void *base)
 
 bool set_option(option *o, char *value)
 {
+	if (!o) return false;
 	switch(o->structype) {
 		case OS_CFG:	cow(&cfg, sizeof(configuration));
 				return set_option(o, value, cfg);
 		case OS_LANG:	cow(&this_lang, sizeof(lang));
 				return set_option(o, value, this_lang);
-		case OS_VOICE:	cow(&cfg, sizeof(configuration));
+		case OS_VOICE:	cow(&cfg, sizeof(voice) + (this_lang->soft_options->items * sizeof(void *) >> 1));
 				return set_option(o, value, this_voice);
 	}
 	return false;
 }
 
-#if (0)
-bool set_option(char *name, char *value)	/* disgusting sloowwness */
+static inline bool set_option(char *name, char *value)
 {
-	int i;
-	option *o;
-
-	for (o = voiceoptlist; o->optname; o++)
-		if (!strcmp(o->optname, name)) {
-			cow(&this_voice, sizeof(voice));
-			set_option(o, value, this_voice);
-			return true;
-		}
-	for (o = langoptlist; o->optname; o++)
-		if (!strcmp(o->optname, name)) {
-			cow(&this_lang, sizeof(lang));
-			set_option(o, value, this_lang);
-			return true;
-		}
-	for (o = optlist; o->optname; o++)
-		if (!strcmp(o->optname, name)) {
-			cow(&cfg, sizeof(configuration));
-			set_option(o, value, cfg);
-			return true;
-		}
-	if (!strcmp("language", name)) {
-		for (i=0; i < cfg->n_langs; i++)
-			if (!strcmp(cfg->langs[i]->name, value)) {
-				if (!cfg->langs[i]->n_voices)
-					shriek("Switch to a mute language");
-				else this_voice = *cfg->langs[i]->voices;
-				this_lang = cfg->langs[i];
-				return true;
-			}
-		shriek("Switch to an unknown language");
-		return false;
-	}
-	if (!strcmp("voice", name)) {
-		for (i=0; i < this_lang->n_voices; i++)
-			if (!strcmp(this_lang->voices[i]->name, value)) {
-				this_voice = this_lang->voices[i];
-				return true;
-			}
-		shriek("Switch to an unknown voice");
-		return false;
-	}
-	return false;
+	return set_option(option_struct(name, NULL), value);
 }
-#endif
+
+/*
+ *	For the following one, make sure that base is the correct type
+ */
+
+static inline bool set_option(char *name, char *value, void *base, hash_table<char, option> *softopts)
+{
+	return set_option(option_struct(name, softopts), value, base);
+}
 
 bool lang_switch(const char *value)
 {
@@ -633,48 +692,6 @@ bool voice_switch(const char *value)
 	return false;
 }
 
-void make_option_set()
-{
-	option *o;
-
-	if (option_set) shriek("option_set reset");
-	option_set = new hash_table<char, option>(200);
-	option_set->dupkey = option_set->dupdata = 0;
-	for (o = voiceoptlist; o->optname; o++) option_set->add(o->optname, o);
-	for (o = langoptlist; o->optname; o++) option_set->add(o->optname, o);
-	for (o = optlist; o->optname; o++) option_set->add(o->optname, o);
-
-	option_set->remove("languages");	// FIXME
-	option_set->remove("language");
-	option_set->remove("voices");
-	option_set->remove("voices");
-
-	char *line = (char *)malloc(cfg->max_line);
-	text *t = new text(cfg->allow_file, cfg->ini_dir, true);
-	while (t->getline(line)) {
-		char *status = split_string(line);
-		o = option_set->translate(line);
-		if (!o) {
-		  /*	shriek("Typo in %s:%d\n", t->current_file, t->current_line); */
-			continue;
-		}
-		o->readable = o->writable = A_NOACCESS;
-		ACCESS level = A_PUBLIC;
-		for (char *p = status; *p; p++) {
-			switch(*p) {
-				case 'r': o->readable = level; break;
-				case 'w': o->writable = level; break;
-				case '#': level = A_ROOT; break;
-				case '$': level = A_AUTH; break;
-				default : shriek("Invalid access rights in %s line %d",
-						t->current_file, t->current_line);
-			}
-		}
-	}
-	free(line);
-	delete t;
-}
-
 char *format_option(option *o, void *base)
 {
 	char *locus = (char *)base + o->offset;
@@ -694,9 +711,9 @@ char *format_option(option *o, void *base)
 			return strdup(scratch);
 		case O_STRING: 
 			return strdup(*(char **)locus);
-		case O_FILE:
-			warn("File option value no more kept");
-			return "no idea";
+//		case O_FILE:
+//			warn("File option value no more kept");
+//			return "no idea";
 		case O_CHAR:
 			scratch[0] = *(char *)locus;
 			scratch[1] = 0;
@@ -716,69 +733,32 @@ char *format_option(option *o)
 	return "?!";
 }
 
-/*****************
-char *format_option(const char *name)
+char *get_named_cfg(const char *name)
 {
-	int i;
-	if (!strcmp("language", name)) {
-		return strdup(this_lang->name);
-	}
-	if (!strcmp("languages", name)) {
-		int bufflen = 0;
-		for (i=0; i < cfg->n_langs; i++) bufflen += strlen(cfg->langs[i]->name) + strlen(cfg->comma);
-		char *result = (char *)malloc(bufflen + 1);
-		strcpy(result, cfg->n_langs ? cfg->langs[0]->name : "(empty list)");
-		for (i=1; i < cfg->n_langs; i++) {
-			strcat(result, cfg->comma);
-			strcat(result, cfg->langs[i]->name);
-		}
-		return result;
-	}
-	if (!strcmp("voice", name)) {
-		return strdup(this_voice->name);
-	}
-	if (!strcmp("voices", name)) {
-		int bufflen = 0;
-		for (i=0; i < this_lang->n_voices; i++)
-			bufflen += strlen(this_lang->voices[i]->name) + strlen(cfg->comma);
-		char *result = (char *)malloc(bufflen + 1);
-		strcpy(result, this_lang->n_voices ? this_lang->voices[0]->name : "(empty list)");
-		for (i=1; i < this_lang->n_voices; i++) {
-			strcat(result, cfg->comma);
-			strcat(result, this_lang->voices[i]->name);
-		}
-		return result;
+	void *address;
+	option *o = option_struct(name, this_lang && this_lang->soft_options
+				? this_lang->soft_options : (hash_table<char, option>*)NULL);
+	if (!o) {
+		warn("Returning empty string for nonexistant option %s", name);
+		return "";
 	}
 
-	for (option *o = voiceoptlist; o->optname; o++)
-		if (!strcmp(o->optname, name)) {
-			return format_option(o, this_voice);
-		}
-	for (option *o = langoptlist; o->optname; o++)
-		if (!strcmp(o->optname, name)) {
-			return format_option(o, this_lang);
-		}
-	for (option *o = optlist; o->optname; o++)
-		if (!strcmp(o->optname, name)) {
-			return format_option(o, cfg);
-		}
-	return NULL;
-}
-***********************/
+	switch (o->structype) {
+		case OS_CFG:	address = cfg;		break;
+		case OS_LANG:	address = this_lang;	break;
+		case OS_VOICE:	address = this_voice;	break;
+		default: shriek("Bad option class");
+	}
 
-void process_options(hash *tab, option *list, void *base)
-{
-	char *val;
+	address += o->offset;
 
-	esctab[cfg->slash_esc]=SLASH;
+	if (o->readable == A_NOACCESS) return "nic nebude";	//FIXME
 
-	for (option *o=list; o->optname; o++) {
-		val=tab->remove(o->optname);
-		if (!val) continue;
-		set_option(o, val, base);
-		free(val);
-	};
-	tab->forall(unknown_option);
+	switch (o->opttype) {
+		case O_STRING:	return *(char **)address;
+		case O_BOOL:	return *(bool *)address ? "=" : "!=";
+		default:	shriek("cfg::named_item not implemented for %s (not a string)", name);
+	}
 }
 
 void parse_cmd_line()
@@ -786,9 +766,9 @@ void parse_cmd_line()
 	char *ar;
 	char *j;
 	register char *par;
-	hash *opts;
+//	hash *opts;
 
-	opts=new hash(argc|15);
+//	opts=new hash(argc|15);
 	for(int i=1; i<argc; i++) {
 		ar=argv[i];
 		switch(strspn(ar, CMD_LINE_OPT)) {
@@ -796,18 +776,22 @@ void parse_cmd_line()
 			ar+=3;
 			if (strchr(ar, CMD_LINE_VAL) && cfg->warnings) 
 				shriek("Thrice dashed options have an implicit value");
-			opts->add(ar, "0");
+//			opts->add(ar, "0");
+			set_option(ar, "0");
 			break;
 		case 2:
 			ar+=2;
 			par=strchr(ar, CMD_LINE_VAL);
 			if (par) {					//opt=val
 				*par=0;
-				opts->add(ar, par+1);
+//				opts->add(ar, par+1);
+				set_option(ar, par+1);
 				*par=CMD_LINE_VAL;
 			} else	if (i+1==argc || strchr(CMD_LINE_OPT, *argv[i+1])) 
-					opts->add(ar, "");		//opt
-				else opts->add(ar, argv[++i]);		//opt val
+//					opts->add(ar, "");		//opt
+					set_option(ar, "");
+//				else opts->add(ar, argv[++i]);		//opt val
+				else set_option(ar, argv[++i]);
 			break;
 		case 1:
 			for (j=ar+1; *j; j++) switch (*j) {
@@ -849,34 +833,41 @@ void parse_cmd_line()
 			break;
 		default:
 			if (cfg->warnings) shriek("Too many dashes");
-		};
-	};
-	process_options(opts, optlist, cfg);
-	delete opts;
+		}
+	}
+//	process_options(opts, optlist, cfg);
+//	delete opts;
 }
 
-void load_config(const char *filename, const char *dirname, const char *what, void *whither, const char *not_found, option *olist)
+void load_config(const char *filename, const char *dirname, const char *what,
+		OPT_STRUCT type, void *whither, lang *parent_lang)
 {
-	hash *tab;
-	char *pathname;
-	bool warn = cfg->warnings;
-	cfg->warnings = true;
-	
+	int i;
+
 	if (!filename || !*filename) return;
-
-	pathname=compose_pathname(filename, dirname);
-	DEBUG(3,10,fprintf(stddbg,"Loading %s from %s\n", what, pathname);)
-	tab=new hash(pathname, 40,10,200,6, "", true, not_found);
-				//Those 40%, 10%, 200%, height 6 are unimportant.
-	free(pathname);
-	process_options(tab, olist, whither);
-	delete tab;
-	cfg->warnings = warn;
+	DEBUG(3,10,fprintf(stddbg,"Loading %s from %s\n", what, filename);)
+	char *line = (char *)malloc(cfg->max_line + 2) + 2;
+	line[-2] = "CLV"[type];
+	line[-1] = ':';
+	text *t = new text(filename, dirname, what, true);
+	while (t->getline(line)) {
+		char *value = split_string(line);
+		if (value && *value) {
+			for (i = strlen(value)-1; strchr(WHITESPACE, value[i]) && i; i--);
+			if (value[i-1] == ESCAPE && value[i] && i) i++;
+			if (value[i]) i++;
+			value[i] = 0;		// clumsy: strip off trailing whitespace
+		}
+		if (!set_option(line - 2, value, whither, parent_lang ? parent_lang->soft_options : (hash_table<char, option> *)NULL))
+			shriek("Bad option %s %s in %s", line, value, compose_pathname(filename, dirname));
+	}
+	free(line - 2);
+	delete t;
 }
 
-void load_config(const char *filename, const char *not_found)
+void load_config(const char *filename)
 {
-	load_config(filename, cfg->ini_dir, "config", cfg, not_found, optlist);
+	load_config(filename, cfg->ini_dir, "config", OS_CFG, cfg, NULL);
 }
 
 static inline void add_language(const char *lng_name)
@@ -915,6 +906,7 @@ static inline void load_languages(const char *list)
 	free(tmp);
 }
 
+/****
 static inline void load_diph_inv(const char *inv_name)
 {
 	char *tmp = (char *)malloc(strlen(cfg->invent_dir) + strlen(inv_name) + 6);
@@ -924,6 +916,7 @@ static inline void load_diph_inv(const char *inv_name)
 	}
 	free(tmp);
 }
+********/
 
 static inline void version()
 {
@@ -932,8 +925,7 @@ static inline void version()
 
 static inline void dump_help()
 {
-	int i;
-	int j=0;
+	int i,j,k;
 
 	printf("usage: ss [options] ['Text to be processed']\n");
 	printf(" -b  bare format (no frills)\n");
@@ -947,15 +939,18 @@ static inline void dump_help()
 	printf(" -D  debugging info (more D's - more detailed)\n");
 	printf(" -   keyboard input\n");
 	printf(" --long_options    ...see options.cc or 'ss -H' for these\n");
-#if(0)
-	for (option *o = optlist; o->optname; o++) if (*o->optname) printf(" --%s", o->optname);
-#endif
 	if (!cfg->long_help) exit(0);
 
+	printf("Long option types: (b) boolean,    (c) character, (e) special enumerated\n");
+	printf("                   (n) int number, (s) string,    (u) unit level\n");
+	k = 0;
 	for (i=0; optlist[i].optname;i++) {
-		if (*optlist[i].optname) printf("--%-18s%s",
-			optlist[i].optname, j++ ? "" : "\n");
-		if (j==4) j=0;
+		if (*optlist[i].optname) {
+			printf("--%s(%c)", optlist[i].optname, "bueeeencs"[optlist[i].opttype]);
+			for (j = -strlen(optlist[i].optname)-5; j <= 0; j += 26) k++;
+			for (; j>0; j--) printf(" ");
+			if (k >= 3) printf("\n"), k=0;
+		}
 	}
 	printf("\n");
 	exit(0);
@@ -963,6 +958,21 @@ static inline void dump_help()
 
 int argc=0;
 char **argv=NULL;
+
+static inline void release(char **buffer)
+{
+	if (*buffer) free(*buffer);
+	*buffer = NULL;
+}
+
+/*
+ *	ss_init(): to bring up everything (from a "main() {" state)
+ *	ss_done(): to release everything just before exit() (no need to
+ *		call this one except for debugging)
+ *	ss_reinit(): to reread all files, adjust all structures
+		Takes nearly as much time as killing and restarting
+ *	ss_catharsis(): to release as much as possible, but leave a way back
+ */
 
 void ss_init(int argc_, char**argv_)	 //Some global sanity checks made here
 {
@@ -978,8 +988,8 @@ void ss_init(int argc_, char**argv_)	 //Some global sanity checks made here
 			case 0:	  cfg->inifile=argv[++i]; break;
 			case '=': cfg->inifile=argv[i]+optlen+1; break;
 			default:  /* another option, most likely a bug */;
-		};
-	};
+		}
+	}
 	ss_init();
 }
 
@@ -992,22 +1002,21 @@ void ss_init()	 //Some global sanity checks made here
 
 	if (!cfg->loaded) stddbg=stdwarn=stdout,	stdshriek=stderr;
 	if (sizeof(int)<4 || sizeof(int *)<4) 
-		shriek ("You dwarf! I require 32 bit arithmetic & pointery [%d]", sizeof(int));
+		shriek ("You dwarf! I want at least 32 bit arithmetic & pointery [%d]", sizeof(int));
 
 	srand(time(NULL));	// randomize
 
-	esctab = FOREVER(fntab(cfg->token_esc, cfg->value_esc));
+	if (!esctab) esctab = FOREVER(fntab(cfg->token_esc, cfg->value_esc));
 
-
-	parse_cmd_line();	/* cmd line first to allow --base_dir */
 	make_option_set();
+	parse_cmd_line();	/* this ordering forbids --base_dir for allowed.ini on the cmd line */
 	DEBUG(2,10,fprintf(stddbg,"Using configuration file %s\n", cfg->inifile);)
 
-	load_config(cfg->ssfixed, "Cannot open base config file %s");
+	load_config(cfg->ssfixed);
 	parse_cmd_line();
 
-	load_config(mlinis[cfg->ml], "Cannot open output config file %s");
-	load_config(cfg->inifile, "Cannot open config file %s");
+	load_config(mlinis[cfg->ml]);
+	load_config(cfg->inifile);
 	parse_cmd_line();
 	load_languages(cfg->languages);
 
@@ -1034,9 +1043,9 @@ void ss_init()	 //Some global sanity checks made here
 	if (cfg->stdshriek) stdshriek = fopen(cfg->stdshriek, "w", "fatal error messages");
 	if (cfg->stdwarn) stdwarn = fopen(cfg->stdwarn, "w", "warning messages");
 		
-	_subst_buff = FOREVER((char *)malloc(MAX_GATHER+2));
-	_resolve_vars_buff = FOREVER((char *)malloc(cfg->max_line+1)); 
-	scratch = FOREVER((char *)malloc(cfg->scratch+1));
+	if (!_subst_buff) _subst_buff = (char *)malloc(MAX_GATHER+2);
+	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)malloc(cfg->max_line+1); 
+	if (!scratch) scratch = (char *)malloc(cfg->scratch+1);
 	
 	_next_rule_line = (char *)malloc(cfg->max_line+1);
 	for (i=0; i<cfg->n_langs; i++) cfg->langs[i]->compile_rules();
@@ -1047,27 +1056,44 @@ void ss_init()	 //Some global sanity checks made here
 	DEBUG(1,10,fprintf(stddbg,"struct voice is %d bytes\n", sizeof(voice));)
 }
 
-void ss_reinit()
-{
-	load_config("ssdeflt.ini", "Cannot open the defaults %s");
-	ss_init();
-}
+void end_of_eternity();
 
-void ss_done()
+void ss_catharsis()
 {
 	if (_unit_just_unlinked) {  // to avoid a memory leak in unlink()
 		_unit_just_unlinked->next=NULL;
 		delete _unit_just_unlinked;
 		_unit_just_unlinked=NULL;
-	};
+	}
 
 	if (_directive_prefices) delete _directive_prefices;
+	_directive_prefices = NULL;	// useless?
 
 	cfg->shutdown();
-	freadin(NULL, NULL, NULL, NULL);
+
+	shutdown_file_cache();
 	delete option_set;
+	option_set = NULL;
+}
+
+void ss_done()
+{
+	ss_catharsis();
 	shutdown_hashing();
-	_directive_prefices=(hash *)FOREVER(NULL);	//the right side counts
+
+	release(&_subst_buff);
+	release(&_resolve_vars_buff);
+	release(&scratch);
+	
+	END_OF_ETERNITY;
+}
+
+void ss_reinit()
+{
+	ss_catharsis();
+	make_option_set();
+	load_config("ssdeflt.ini");
+	ss_init();
 }
 
 #ifdef DEBUGGING
@@ -1086,7 +1112,7 @@ int  debug_config(int area)
 		case _PARSER_: return cfg->parser_dbg;
 		case _SYNTH_:  return cfg->synth_dbg;
 		case _CFG_:    return cfg->cfg_dbg;
-	};
+	}
 	shriek("Unknown debug area %d", area);
 	return 0;   // keep the compiler happy
 }
@@ -1094,10 +1120,10 @@ int  debug_config(int area)
 bool debug_wanted(int lev, /*_DEBUG_AREA_*/ int area) 
 {
 	if (!cfg->use_dbg) return false;
-	if (lev>=cfg->always_dbg) return true;
-	if (area==cfg->focus_dbg) return lev>=debug_config(area);
-	if (lev<cfg->limit_dbg)   return false;
-	return lev>=debug_config(area);
+	if (lev >= cfg->always_dbg) return true;
+	if (area == cfg->focus_dbg) return lev >= debug_config(area);
+	if (lev < cfg->limit_dbg)   return false;
+	return  lev >= debug_config(area);
 }
 
 void debug_prefix(int lev, int area)
@@ -1112,43 +1138,34 @@ void debug_prefix(int lev, int area)
 
 #ifdef WANT_DMALLOC
 
+static forever_count = 0;
+static void *forever_ptr_list[ETERNAL_ALLOCS];
+
 char *forever(void *heapptr)
 {
-	static count=-1;
-	static void*ptr_list[ETERNAL_ALLOCS];
-	if (!heapptr) {
-		DEBUG(3,0,fprintf(stddbg,"Freeing %d permanent heap buffers.\n",count+1);)
-		for(;count>=0;count--) {
-			DEBUG(0,0,fprintf(stddbg, "pointer number %d was %p\n", count, ptr_list[count]);)
-			free(ptr_list[count]);
-		};
-		return NULL;
-	};
-	if (++count >= ETERNAL_ALLOCS) {
+	if (forever_count >= ETERNAL_ALLOCS) {
 		warn("Too many eternal allocations (memory leak?)");
 		return (char *)heapptr;
-	};
-	ptr_list[count] = heapptr;
+	}
+	forever_ptr_list[forever_count++] = heapptr;
 	return (char *)heapptr;
 }
 
+void end_of_eternity()
+{
+	DEBUG(3,0,fprintf(stddbg,"Freeing %d permanent heap buffers.\n", forever_count);)
+	while (forever_count-- > 0) {
+		DEBUG(0,0,fprintf(stddbg, "pointer number %d was %p\n", forever_count, forever_ptr_list[forever_count]);)
+		free(forever_ptr_list[forever_count]);
+	}
+}
 
 void *
 operator new(size_t n)
 {
-	void *ret=malloc(n);
+	void *ret = malloc(n);
 	return ret;
 }
-
-
-/*
-void *
-operator new[](size_t n)
-{
-	DEBUG(2,0,fprintf(stddbg,"operator new[] called, size %d\n", n));
-	return malloc(n);
-}
-*/
 
 void
 operator delete(void * cp)

@@ -62,7 +62,10 @@ void play_diphones(unit *root, voice *v)
 	for (int k=0; i==BUFF_SIZE; k+=BUFF_SIZE) {
 		i=root->write_diphs(d,k,BUFF_SIZE);
 		for (j=0;j<i;j++) {
-			d[j].f=this_voice->samp_rate * 100 / (d[j].f*cfg->inv_f0);
+//			d[j].f=this_voice->samp_rate * 100 / (d[j].f*cfg->inv_f0);  - fixed 8.7.98 by Petr
+			d[j].t=v->init_t * d[j].t / 100;            //corrections for t,f,i by Petr
+			d[j].f=v->samp_rate * 100 / (v->init_f * d[j].f);
+			d[j].e=v->init_i * d[j].e / 100;
 		}
 		v->attach();
 		DEBUG(3,9,fprintf(stddbg,"Using %s synthesis\n", enum2str(this_voice->type, STstr));)
@@ -81,7 +84,7 @@ void show_diphones(unit *root)
 		i=root->write_diphs(d,k,BUFF_SIZE);
 		for (int j=0;j<i;j++) {
 			if (cfg->diph_raw) fprintf(stddbg,  "%5d", d[j].code);
-			fprintf(stddbg," %.3s f=%d t=%d i=%d\n", d[j].code<441 ? this_voice->diphone_names[d[j].code] : "?!", d[j].f, d[j].t, d[j].e);
+			fprintf(stddbg," %.3s f=%d t=%d i=%d\n", d[j].code<441 ? ((char(*)[5])this_voice->diphone_names->data)[d[j].code] : "?!", d[j].f, d[j].t, d[j].e);
 		}
 	}
 }

@@ -27,7 +27,7 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@ff.cuni.cz"
-#define VERSION     "2.1.7"
+#define VERSION     "2.2.1"
 
 #include "config.h"
 
@@ -75,9 +75,10 @@ enum UNIT {U_DIPH, U_PHONE, U_SYLL, U_WORD, U_COLON, U_SENT, U_TEXT, U_INHERIT, 
 #define FITstr	"f:i:t:"
 #define LIST_DELIM	 ':'
 
-#define Char unsigned char
 #define unuse(x) if (((1&(int)(x))*(1&(int)(x)))<0) shriek("I'm drunk");
 
+struct file;
+struct option;
 struct unit;
 
 #include "defaults.h"
@@ -89,7 +90,6 @@ struct unit;
 #include "interf.h"             //See interf.h and even interf.cc for other headerities
 //#include "client.h"
 #include "parser.h"
-#define PARSER simpleparser
 #include "elements.h"
 #include "rule.h"              //See rules.h for additional #defines and enums
 #include "synth.h"

@@ -42,11 +42,12 @@ void strip(char *s)
 		switch (*r = *t) {
 			case ';':
 			case '#':
+				if (s != r && !strchr(WHITESPACE, r[-1])) break;
 			case '\n':
 //				while (r>s && strchr(WHITESPACE, *--r));
 				*r = 0;
 				return;
-			case '\\':
+			case ESCAPE:
 				if (!*++t || *t=='\n') shriek("text.cc still cannot split lines");
 				if (strchr(cfg->token_esc, *t))	*r = esctab[*t];
 				else t--;	/* insert self */
@@ -64,12 +65,12 @@ struct textlink {
 	int line;
 };
 
-text::text(const char *filename, const char *dirname, bool warnings)
+text::text(const char *filename, const char *dirname, const char *description, bool warnings)
 {
-//	if (!cfg->loaded) ss_init(0, NULL);
 	if (!_directive_prefices) 
 		_directive_prefices = str2hash(DIRECTIVEstr, MAX_DIRECTIVE_LEN);
 	dir = dirname;
+	tag = description;
 	base = strdup(filename);
 	warn = warnings;
 	embed = 0;
@@ -93,9 +94,9 @@ text::subfile(const char *filename)
 	} else { 
 		char *pathname=compose_pathname(filename, dir);
 		DEBUG(1,1,fprintf(stddbg,"Text preprocessor opening %s\n", pathname);)
-		current->f=fopen(pathname, "r", "rules");
+		current->f=fopen(pathname, "r", tag);
 		free(pathname);
-	};
+	}
 	current->prev=parent;
 	current->filename=current_file;
 	current->line=current_line;
@@ -116,6 +117,12 @@ text::superfile()
 	current=tmp->prev;
 	embed--;
 	delete tmp;
+}
+
+bool
+text::exists()
+{
+	return current && current->f;
 }
 
 
@@ -192,5 +199,5 @@ text::~text()
 void
 text::done()
 {
-	if (current) shriek("File %s was left prematurely at line %d", base, current_line);
+	if (current && exists()) shriek("File %s was left prematurely at line %d", base, current_line);
 }
