@@ -1,0 +1,5 @@
+perm_phone 	"aábcèdïeéìfghiíjklmnòoópqrøsštuúùvwxyızAÁBCÈDÏEÉÌFGHIÍJKLMNÒOÓPQRØSŠTUÚÙVWXYİZ+=/@%'()"
+perm_syll	"|"
+perm_word	"\ ~"
+perm_colon	",-"
+perm_sent	":.!?"

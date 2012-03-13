@@ -21,6 +21,7 @@
 
 #define CFG_FILE_ENVIR_VAR	"SSCFGFILE"
 
+enum OPT_STRUCT { OS_CFG, OS_LANG, OS_VOICE };
 enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SYNTH, O_CHANNEL, O_DBG_AREA, O_INT, O_CHAR, O_STRING, O_FILE };
 								//various types of options
 enum OUT_ML { ML_NONE, ML_ANSI, ML_RTF};
@@ -46,7 +47,8 @@ struct configuration		//Some description & defaults can be found in options.cc
 struct option {
 	const char *optname;
 	OPT_TYPE opttype;
-	int offset;
+	OPT_STRUCT structype;
+	short int offset;
 };
 
 void process_options(hash *tab, option *list, void *base);
@@ -90,8 +92,9 @@ void warn(const char *s, const char *t);
 void user_pause();
 FILE *fopen(const char *filename, const char *flags, const char *reason);
 
-
+#ifndef HAVE_STRDUP
 char *strdup(const char *src);   //Ultrix lacks it. Otherwise, we're just superfluous.
+#endif
 
 extern char *scratch;
 
@@ -116,6 +119,13 @@ void process_diphones(unit *root);
 struct diphone {
 	int code;
 	int f,e,t;
+};
+
+struct freadin_file	// used by freadin() (and mentioned in hash.cc) only
+{
+	char *data;
+	int ref_count;
+	~freadin_file();
 };
 
 

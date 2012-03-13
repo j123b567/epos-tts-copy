@@ -12,7 +12,7 @@
 
 #define inline /* Borland can't handle inline */
 
-#include "ss.cc"
+#include "monolith.cc"
 #include "hash.cc"
 #include "interf.cc"
 #include "parser.cc"
@@ -20,3 +20,5 @@
 #include "rule.cc"
 #include "text.cc"
 #include "synth.cc"
+#include "ktdsyn.cc"
+#include "voice.cc"

@@ -42,7 +42,8 @@ synth *setup_synth(voice *v)		//FIXME
 		case S_LPC_INT:
 		case S_LPC_VQ:	return NULL;	// potential sea of troubles	FIXME!!
 #endif
-		case S_KTD:	return new ktdsyn(cfg->ktd_pitch, cfg->ktd_speed);
+//		case S_KTD:	return new ktdsyn(cfg->ktd_pitch, cfg->ktd_speed);
+		case S_KTD:	return new ktdsyn(v);
 		default:	shriek("Impossible synth type");
 	}
 
