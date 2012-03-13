@@ -349,6 +349,7 @@ OPTION (multi_subst,"multi_subst", INT, 100)    // How many substs should apply 
 OPTION (lowmemory, "memory_low",  BOOL, false)  // Should we free hash tables after first use?
 OPTION (forking, "forking",	  BOOL, false)  // (UNIX only) Detach using a child process?
 OPTION (asyncing, "asyncing",	  BOOL, false)  // (UNIX only) Close files using a child process?
+OPTION (init_time, "init_time",    INT, 0)	// (UNIX only) seconds to wait for daemon init
 OPTION (colored, "colored",       BOOL, false)  // Use the color escape sequences?
 OPTION (languages, "languages",     STR, "")	// Which languages to provide?
 OPTION (ml, "markup_language",  MARKUP, ML_NONE)// Are these ANSI escape seqs or the RTF ones?
@@ -395,8 +396,9 @@ OPTION (input_text, "",            STR, NULL)			// the input text itself
 LNG_OPTION (rules_file, rules_file, "rules_file",  STR, NULL)   // relative filename of the rules text
 OPTION (nnet_file, "nnet_file",    STR, NULL)	// relative filename of nnet output
 OPTION (stddbg_file, "stddbg_file",     STR, NULL)   // file to write debug info to (NULL...stdout)
-// OPTION (stdwarn_file, "stdwarn_file",   STR, NULL)   // file to write warnings to (NULL...stderr)
+// OPTION (stdwarn_file, "stdwarn_file",   STR, NULL)// file to write warnings to (NULL...stderr)
 OPTION (stdshriek_file,"stdshriek_file",STR, NULL)   // file to write fatal errors to (NULL...std~err)
+OPTION (profile, "profile",        STR, NULL)        // file to write profiling information to
 
 // OPTION (trans, "show_transcript", BOOL, true)	// Should we display transcription on exit?
 OPTION (show_phones,"show_phones",BOOL, false)	// Should we display the sounds on exit?

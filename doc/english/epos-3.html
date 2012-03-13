@@ -562,6 +562,12 @@ on non-UNIX systems, where the close() is always synchronous.
 <DT><B>--forking</B><DD><P>Turn on to allow forking and fully detaching the Epos daemon.
 Usable only on unices.  If off, some debugging information will
 be written to <CODE>stdout</CODE> in some configurations.
+<DT><B>--init_time <I>n</I> </B><DD><P>If set to a non-zero value under a UNIX, the parent process will
+wait for at most <I>n</I> seconds for the daemon process to start
+accepting connections.  One second is likely to be more than enough
+except when the machine is severely overloaded.  Note that most
+Epos initialization takes place before the fork, whereas this
+option is only used after the fork.
 <A NAME="ml-option"></A> <DT><B>--markup_language <I>ml</I></B><DD><P>The parameter is either "ansi", "rtf" or "none". This parameter
 is only effective in <CODE>fixed.ini</CODE> or on the command
 line.  Depending on its value, the <CODE>ansi.ini</CODE> or <CODE>rtf.ini</CODE>
@@ -611,6 +617,16 @@ the value of the <CODE>default_char</CODE> option before they're classified.
 debugging situations (when a text is parsed in an unexpected way
 and the user is trying to find out which rule has escaped his
 attention). This option may not work with all setups.
+<DT><B>--profile <I>filename</I> </B><DD><P>Setting this option to a file name causes profiling information
+to be recorded to the file named.  The file is created in the
+current directory of the server if a relative pathname is given.
+Each line of the profile log corresponds to one timeslice of
+an agent.  First, the time spend before running the agent
+(after the last agent has finished).  Second, agent type.
+Third, time spent by the agent.  Both time intervals are given
+is microseconds and their accuracy depends on the
+<CODE>gettimeofday</CODE> system call.  Using the profiler on a loaded
+machine is going to give almost meaningless results.
 <DT><B>--debug_password <I>password</I> </B><DD><P>An alternative password for server-level authentication.  Can be
 useful when debugging the TTSCP implementation, with the obvious
 security implications.

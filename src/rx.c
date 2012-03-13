@@ -42,6 +42,15 @@
 
 #include "config.h"
 
+static void call_abort(void)
+{
+#ifdef HAVE_ABORT
+	abort();
+#else
+	while (1) ;
+#endif
+}
+
 #ifdef BROKEN_LOCALE
 	int isupper(int c) { return 0; }
 	int isdigit(int c) { return c <= '9' && c >= '0'; }

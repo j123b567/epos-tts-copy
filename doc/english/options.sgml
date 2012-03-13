@@ -578,6 +578,13 @@ engineering dilemmata.
 	Turn on to allow forking and fully detaching the Epos daemon.
 	Usable only on unices.  If off, some debugging information will
 	be written to <tt/stdout/ in some configurations.
+<tag>--init_time <sl/n/ </tag>
+	If set to a non-zero value under a UNIX, the parent process will
+	wait for at most <sl/n/ seconds for the daemon process to start
+	accepting connections.  One second is likely to be more than enough
+	except when the machine is severely overloaded.  Note that most
+	Epos initialization takes place before the fork, whereas this
+	option is only used after the fork.
 <label id="ml-option">
 <tag>--markup&lowbar;language <sl/ml/</tag>
 	The parameter is either "ansi", "rtf" or "none". This parameter
@@ -637,6 +644,17 @@ engineering dilemmata.
 	debugging situations (when a text is parsed in an unexpected way
 	and the user is trying to find out which rule has escaped his
 	attention). This option may not work with all setups.
+<tag>--profile <sl/filename/ </tag>
+	Setting this option to a file name causes profiling information
+	to be recorded to the file named.  The file is created in the
+	current directory of the server if a relative pathname is given.
+	Each line of the profile log corresponds to one timeslice of
+	an agent.  First, the time spend before running the agent
+	(after the last agent has finished).  Second, agent type.
+	Third, time spent by the agent.  Both time intervals are given
+	is microseconds and their accuracy depends on the
+	<tt/gettimeofday/ system call.  Using the profiler on a loaded
+	machine is going to give almost meaningless results.
 <tag>--debug_password <sl/password/ </tag>
 	An alternative password for server-level authentication.  Can be
 	useful when debugging the TTSCP implementation, with the obvious

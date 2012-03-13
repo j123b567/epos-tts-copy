@@ -112,6 +112,8 @@
 /* Define if you have the <unistd.h> header file.  */
 /* #undef HAVE_UNISTD_H */
 
+#define HAVE_ABORT
+
 /* Define if you have the <wait.h> header file.  */
 /* #undef HAVE_WAIT_H */
 

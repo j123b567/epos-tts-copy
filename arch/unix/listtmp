@@ -1,3 +1,4 @@
+
 #! /bin/sh
 
 libdir=$1
@@ -6,7 +7,7 @@ targets=$2
 echo tmp>tmp~
 echo tmp~
 
-for i in *.o *.a *.wav $targets core a.out gmon.out matlab.in tmp.0* dmalloc hackfile config.status libepos.so.* said.* say epos eposm vrfy; do
+for i in *.o *.a *.wav $targets core a.out gmon.out matlab.in tmp.0* dmalloc hackfile profile.log config.status libepos.so.* said.* say epos eposm vrfy; do
 	if [ -f $i ]; then
 		echo $i
 	fi

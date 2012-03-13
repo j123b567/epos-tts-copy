@@ -386,7 +386,6 @@ static void daemonize()
 		= ctrl_conns->dupdata = false;
 }
 
-#undef UNIX
 
 /*
 
@@ -420,7 +419,7 @@ static bool select_socket(bool sleep)
 	n = select(select_fd_max, &rd_set, &wr_set, NULL, &tv);
 	if (n > 0) return true;
 	if (!sleep) return false;
-	if (n < 0) shriek(871, "select() failed");
+	if (n < 0 && errno != EINTR) shriek(871, "select() failed");
 
    restart:
 	if (server_shutting_down) return false;
@@ -510,7 +509,8 @@ int start_unix_daemon()
 			case 0:  detach();
 				 server();
 				 return 0;	/* child  */
-			default: return 0;	/* parent */
+			default: UNIX( if (!running_at_localhost() && cfg->init_time--) sleep(1);)
+				 return 0;	/* parent */
 		}
 
 	} catch (any_exception *e) {

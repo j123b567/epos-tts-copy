@@ -62,6 +62,38 @@
 
 #define DARK_ERRLOG 2	/* 2 == stderr; for global stdshriek and stddbg output */
 
+#ifdef HAVE_GETTIMEOFDAY
+
+inline void agent_profile(const char *s)
+{
+	if (!cfg->profile || !*cfg->profile) return;
+	
+	static FILE *log = NULL;
+	if (!log) log = fopen(cfg->profile, "w");
+	static struct timeval start, stop;
+	if (!s) {
+		if (gettimeofday(&start, NULL)) shriek(861, "profiler fails");
+		long duration = start.tv_sec - stop.tv_sec;
+		duration *= 1000000;
+		duration += start.tv_usec - stop.tv_usec;
+		fprintf(log, "%10ld", duration);
+		fflush(log);
+		if (gettimeofday(&start, NULL)) shriek(861, "profiler fails");
+	} else {
+		if (gettimeofday(&stop, NULL)) shriek(861, "profiler fails");
+		long duration = stop.tv_sec - start.tv_sec;
+		duration *= 1000000;
+		duration += stop.tv_usec - start.tv_usec;
+		fprintf(log, " %-13s%8ld\n", s, duration);
+		fflush(log);
+		if (gettimeofday(&stop, NULL)) shriek(861, "profiler fails");
+	}
+}
+
+#else
+	inline void agent_profile(const char *s) { return; }
+#endif
+
 
 agent::agent(DATA_TYPE typein, DATA_TYPE typeout)
 {
@@ -115,7 +147,9 @@ agent::timeslice()
 		}
 	}
 	try {
+		agent_profile(NULL);
 		run();
+		agent_profile(name());
 	} catch (command_failed *e) {
 		if (!next) throw e;
 		DEBUG(2,11,fprintf(STDDBG, "Processing failed, %d, %.60s\n", e->code, e->msg);)

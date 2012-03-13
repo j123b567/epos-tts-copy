@@ -1,3 +1,4 @@
+
 /*
  *	epos/src/unit.cc
  *	(c) 1996-99 geo@cuni.cz
@@ -267,12 +268,10 @@ void
 unit::insert(UNIT target, bool backwards, char what, bool *left, bool *right)
 {
 	unit *tmpu;
-	static unit *baby = NULL;	//check against infinite spawning
 
 	if (depth == target) {
 		DEBUG(1,4,fprintf(STDDBG,"inner unit::insert %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
 		DEBUG(1,4,fprintf(STDDBG,"   env is %c %c\n",left[Prev(depth)->inside()]+'0',right[Next(depth)->inside()]+'0');)
-		if (this == baby) return;
 		if (left[cont] && right[Next(depth)->cont]) {
 			tmpu = new unit(depth, what);
 			tmpu->prev = this;
@@ -287,7 +286,7 @@ unit::insert(UNIT target, bool backwards, char what, bool *left, bool *right)
 			tmpu->t = t;
 		}
 		if (!prev && right[cont] && left[Prev(depth)->cont]) {
-			baby = tmpu = new unit(depth, what);
+			tmpu = new unit(depth, what);
 			tmpu->next = this;
 			father->firstborn = tmpu;
 			prev = tmpu;
@@ -299,10 +298,15 @@ unit::insert(UNIT target, bool backwards, char what, bool *left, bool *right)
 		DEBUG(1,4,fprintf(STDDBG,"New contents: %c\n",cont);)
 		return;
 	}
-	baby = NULL;
-	if (depth > target) 
-		for (tmpu=(backwards?lastborn:firstborn);tmpu;tmpu=(backwards?tmpu->prev:tmpu->next))
+
+	if (depth > target)  {
+		tmpu = backwards ? lastborn : firstborn; 
+		while (tmpu) {
+			unit *todo = backwards ? tmpu->prev : tmpu->next;
 			tmpu->insert(target,backwards,what,left,right);
+			tmpu = todo;
+		}
+	}			
 	else shriek (861, "Out of turtles");
 }
 

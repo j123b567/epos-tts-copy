@@ -1116,3 +1116,15 @@ for an exciting story, just skip it.
 	- (Cz) fixed the voicing assimilation rule for ø after an
 		unvoiced nonsyllabic preposition; fixed ain$ -> ajn etc.
 	- fixed a unit::gather() bug
+
+2.4.64 from 2.4.63	18.8.01
+	- fixed a unit::insert looping bug
+	- minor fixes to the Slovak rules (esp. disabled glottal stops)
+	- on UNIX, the init_time option
+	- a trivial agent profiler, see the profile option
+	- minor NT fixes, such as call_abort() or project settings
+
+
+2.4.65 from 2.4.64	27.8.01
+	- fixed a minor select() bug
+
