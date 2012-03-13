@@ -40,10 +40,10 @@ eposversionfile = $(LIBDIR)/version
 SHELL = /bin/sh
 
 HEADERS=common.h defaults.h unit.h parser.h rule.h text.h interf.h options.h hash.h synth.h voice.h exc.h
-MOREHEADERS=waveform.h ktdsyn.h ptdsyn.h lpcsyn.h tcpsyn.h slab.h rx.h client.h agent.h 
-SOURCES=parser.cc unit.cc rule.cc block.cc text.cc interf.cc options.cc exc.cc hash.cc hashd.cc hashtmpl.cc synth.cc waveform.cc voice.cc say.cc options.lst nnet.cc monolith.cc daemon.cc agent.cc ttscp.cc client.cc qnxipc.cc ktdsyn.cc ptdsyn.cc lpcsyn.cc tcpsyn.cc rx.c
+MOREHEADERS=waveform.h ktdsyn.h ptdsyn.h lpcsyn.h tdpsyn.h tcpsyn.h slab.h rx.h client.h agent.h 
+SOURCES=parser.cc unit.cc rule.cc block.cc text.cc interf.cc options.cc exc.cc hash.cc hashd.cc hashtmpl.cc synth.cc waveform.cc voice.cc say.cc options.lst nnet.cc monolith.cc daemon.cc agent.cc ttscp.cc client.cc qnxipc.cc ktdsyn.cc ptdsyn.cc lpcsyn.cc tdpsyn.cc tcpsyn.cc rx.c
 DOSSOURCES=epos.cpp config.dos README.dos
-MODULES=parser.o unit.o rule.o text.o interf.o options.o synth.o ktdsyn.o ptdsyn.o lpcsyn.o tcpsyn.o voice.o waveform.o
+MODULES=parser.o unit.o rule.o text.o interf.o options.o synth.o ktdsyn.o ptdsyn.o lpcsyn.o tdpsyn.o tcpsyn.o voice.o waveform.o
 TARGETS=epos say vrfy
 DOSES=  dos1250 dos1252 dospc2 dosil1 dosil2 doskam doskoi8 dosascii dosmac dosvga
 
@@ -213,7 +213,7 @@ unit.o: $(HEADERS) unit.cc nnet.cc options.lst $(MAKEFILE) $(SHELL)
 text.o: common.h defaults.h hash.h interf.h options.lst $(MAKEFILE) text.cc $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ text.cc
 
-synth.o: synth.h synth.cc interf.h options.h options.lst waveform.h ktdsyn.h lpcsyn.h $(MAKEFILE) $(SHELL)
+synth.o: synth.h synth.cc interf.h options.h options.lst waveform.h ktdsyn.h lpcsyn.h tdpsyn.h $(MAKEFILE) $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ synth.cc
 
 waveform.o: waveform.h waveform.cc interf.h options.lst $(MAKEFILE) $(SHELL)
@@ -230,6 +230,9 @@ ptdsyn.o: ptdsyn.h waveform.h synth.h ptdsyn.cc interf.h options.lst $(MAKEFILE)
 
 lpcsyn.o: lpcsyn.h waveform.h synth.h lpcsyn.cc interf.h options.lst $(MAKEFILE)
 	$(CC) $(FLAGS) -c -o $@ lpcsyn.cc
+
+tdpsyn.o: tdpsyn.h waveform.h synth.h tdpsyn.cc interf.h options.lst $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ tdpsyn.cc
 
 tcpsyn.o: tcpsyn.h tcpsyn.cc client.h waveform.h interf.h options.lst $(MAKEFILE)
 	$(CC) $(FLAGS) -c -o $@ tcpsyn.cc

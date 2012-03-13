@@ -60,7 +60,7 @@ progress  0>s(x_!)
 progress  u0>0v(q_!)
 regress   xq>k($everywhere)
 progress  w>v(0_!)
-regress   v>w(!0_$consonant&0)
+regress   v>w($vowel_!$sonant)
 
 progress ä>e(!$labial_!)
 

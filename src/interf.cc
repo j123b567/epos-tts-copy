@@ -562,8 +562,9 @@ void uncache_file(char *, file *ff, void *)	// the first argument is ignored
 
 void unclaim(file *ff)
 {
-	ff->ref_count--;
-	if (!ff->ref_count) {
+	if (ff->ref_count <= 0) shriek(461, "Forgot to unclaim()");
+	
+	if (!--ff->ref_count) {
 		if (cfg->lowmemory) uncache_file(NULL, ff, NULL);
 	}
 }

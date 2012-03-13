@@ -31,8 +31,12 @@ if    phr_break
 	5x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
 }
 
-if   kadlec_dph
-	segments  ../czech/kadlec.dph   colon
-if  !kadlec_dph
-	segments  traditnl.dph 		colon
-
+if    slovak_dph
+	segments  slovak.dph	colon
+if    !slovak_dph
+{
+	if   kadlec_dph
+		segments  ../czech/kadlec.dph   colon
+	if  !kadlec_dph
+		segments  traditnl.dph 		colon
+}

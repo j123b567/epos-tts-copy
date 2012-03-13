@@ -1137,3 +1137,11 @@ for an exciting story, just skip it.
 	- moved call_abort down rx.c
 	- avoided a spurious template instantiation warning in Visual C
 	- moved traditnl.dph from lng/slovak.prev to lng/slovak
+
+2.4.68 from 2.4.66	internal
+	- added tdpsyn.cc, .h
+
+2.4.69 from 2.4.68	31.10.01
+	- integrated 2.4.66 to 2.4.67 patch (mostly related to tdpsyn and
+		adjustments in Czech and Slovak language configuration)
+	- tdpsyn cleanup

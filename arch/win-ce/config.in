@@ -168,6 +168,8 @@ int rename(const char *, const char *);
 void abort();
 extern int errno;
 char *strerror(int);
+
+#include <stdio.h>
 int rewind (FILE *x);
 
 

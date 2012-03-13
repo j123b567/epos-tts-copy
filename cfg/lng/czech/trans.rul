@@ -38,6 +38,9 @@ inside .  sent
 regex  /(\Z)\\.([${lower_case}])/\1\2/	text
 regex  /\Z(\\.)([${upper_case}])/\1\2/	text
 
+# rùzné zkratky
+
+subst   short.dic
 
 # Pravidla pro ètení zkratek apod.: velké písmeno na jiném,
 #   ne¾ prvním místì ve slovì indikuje zkratku a hláskuje se.
@@ -179,9 +182,12 @@ regress  ${upper_case}>${lower_case}($everywhere)			colon
  progress  oae>OAE(!_u)	syll	; Dvojhlásky
  regress   u>0(OAE_!)	syll
 
- regress   Z®>DÏ(!_$vowel)	; toto by mìlo pøijít do inventáøe (traditnl.dph);
- regress   0>d(!_DÏ)		; rozkládá se zde dz, d¾ (representované Z,®)
- regress   DÏ>z¾(!_!)		; na d-z, d-¾, pokud následuje vokál.
+ if  !voiced_affrs
+ {
+	regress   Z®>DÏ(!_$vowel)	; toto by mìlo pøijít do inventáøe (traditnl.dph);
+	regress   0>d(!_DÏ)		; rozkládá se zde dz, d¾ (representované Z,®)
+	regress   DÏ>z¾(!_!)		; na d-z, d-¾, pokud následuje vokál.
+ }
 
 # progress  0>~($vowel_0) syll	; Oznaèení otevøených vokalických slabik tildou
 # raise     ~:!		 syll	; FIXME!!!! slabikotvorné
