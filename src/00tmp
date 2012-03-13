@@ -1,4 +1,0 @@
-#ifdef HAVE_GETEGID
-	/* this forbids --base_dir for allowed.ini on the cmd line:   */
-	if (getuid() != geteuid() || getgid() != getegid()) make_option_set();
-#endif
