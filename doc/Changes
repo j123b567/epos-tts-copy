@@ -1100,3 +1100,19 @@ for an exciting story, just skip it.
 	- removed a few duplicate dph files
 	- new rules for Slovak
 
+2.4.62 from 2.4.61	 5.8.01
+	- diacritics used for diphtongs in Slovak and that made optional
+	- minor NT port fixes:
+		- project files, HAVE_FCNTL_H, MB_SERVICE_NOTIFICATION
+		- glibc regex code no more reports warnings
+	- minor CE port adjustments
+	- cfg->relax_input fixed
+
+2.4.63 from 2.4.62	16.8.01
+	- more CE port adjustments, stdlib.cpp introduced
+	- side syll hack moved from source to the rules.  Major rule group
+		permutation in lng/czech/trans.rul (syllabification,
+		transcription, nonsyll prep adjoining, geminates groups)
+	- (Cz) fixed the voicing assimilation rule for ø after an
+		unvoiced nonsyllabic preposition; fixed ain$ -> ajn etc.
+	- fixed a unit::gather() bug

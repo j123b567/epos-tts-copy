@@ -487,12 +487,12 @@ OPTION (dflt_char, "default_char",CHAR, ' ')	// Replace them with this char
 OPTION (header_xscr, "header",     STR, "")     // Header and footer printed
 OPTION (footer_xscr, "footer",     STR, "")     //   in unit::fout()
 
-LNG_OPTION (syll_hack, syll_hack, "suppress_side_syll",  BOOL,  false)   
-						// Try to avoid initial pseudo-syllables,
-						// e.g. "j-sem", "r-men" in Czech
-LNG_OPTION (limit_syll_hack, syll_thr, "limit_side_syll", CHAR, 'a') 
-						// What sonority the initial phone must have
-						// in order to become syllable peak? (Example)
+//LNG_OPTION (syll_hack, syll_hack, "suppress_side_syll",  BOOL,  false)   
+//						// Try to avoid initial pseudo-syllables,
+//						// e.g. "j-sem", "r-men" in Czech
+//LNG_OPTION (limit_syll_hack, syll_thr, "limit_side_syll", CHAR, 'a') 
+//						// What sonority the initial phone must have
+//						// in order to become syllable peak? (Example)
 
 OPTION (normal_col, "normal_color",   STR, "")
 OPTION (curul_col, "curr_rule_color", STR, "")

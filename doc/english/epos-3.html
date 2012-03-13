@@ -899,16 +899,6 @@ it uses a voice.  Should such an initialization fail because
 of a network error, the current voice will be switched to
 the voice specified by this option and the initialisation will be
 retried.
-<DT><B>--suppress_side_syll</B><DD><P>This option should be off for most languages.  It makes the
-<CODE>syll</CODE> rule avoid splitting off an insufficiently sonorous
-word-initial pseudo-syllable. It is an ugly hack originally
-introduced to get the Czech syllabification right, but I am
-still not aware of related phenomena or possible generalizations.
-<DT><B>--limit_side_syll <I>sound</I></B><DD><P>This parameter is only considered if <CODE>suppress_side_syll</CODE> is
-enabled.  The parameter is the least permissible sonorous sound
-to serve as a sonority peak if it happens to be word-initial.
-(More precisely: permissible target unit, scope-initial, as defined
-by the individual <CODE>syll</CODE> rule.)
 <DT><B>--rules_file <I>filename</I></B><DD><P>The parameter is a filename. The file contains the transformational
 rules to be applied for this language.
 <DT><B>--perm* <I>set</I></B><DD><P>The asterisk stands for a @-separated symbolic name of a linguistic description

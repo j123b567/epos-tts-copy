@@ -319,7 +319,7 @@ static void detach()
 		DEBUG(3,11,fprintf(STDDBG, "\n\n\n\nEpos restarted at ");)
 		fflush(stdout);
 		system("/bin/date");
-	} else /* deep OS level trouble, contact authors */ abort();
+	} else /* deep OS level trouble, contact authors */ call_abort();
 }
 
 static inline void make_server_passwd()
@@ -481,7 +481,7 @@ void server_crashed(char *, a_ttscp *a, int why_we_crashed)
 	sputs(" shutdown, not your problem\n", a->c->config->sd_out);
 }
 
-inline void lest_already_running()
+void lest_already_running()
 {
 	if (running_at_localhost()) {
 		cfg->pwdfile = NULL;
@@ -517,10 +517,12 @@ int start_unix_daemon()
 		/* handle all known uncatched exceptions here */
 		init_thrown_exception(e->code);
 		return 1;
+#ifndef NO_CATCHALL_CATCHES
 	} catch (...) {
 		/* handle all unknown uncatched exceptions here */
 		init_thrown_exception(869);
 		return 2;
+#endif
 	}
 }
 

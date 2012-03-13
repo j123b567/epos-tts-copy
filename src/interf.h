@@ -81,6 +81,7 @@ extern void *xmall_ptr_holder;
 // void *xcalloc(size_t, size_t);
 // void *xrealloc(void *, size_t);
 
+void call_abort();
 
 #ifndef HAVE_STRDUP
 char *strdup(const char *src);   //Ultrix lacks it. Otherwise, we're just superfluous.

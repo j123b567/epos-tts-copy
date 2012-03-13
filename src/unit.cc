@@ -93,7 +93,7 @@ unit::~unit()
  Dumps the segments to an array of "struct segment". Returns how many dumped.
  
  Note:	iucache,ifcache and ocache is a primitive one-line cache of
- 	where to start dumping the segments.  If could speed up
+ 	where to start dumping the segments.  It can speed up
  	the dumping of a very very long utterance (it can be slow
  	to find the "first" segment in general, but it is likely to be the
  	one following the last one dumped in the previous run).
@@ -371,12 +371,10 @@ unit::gather(char *buffer_now, char *buffer_end, bool suprasegm)
 		buffer_now = tmpu->gather(buffer_now, buffer_end, suprasegm);
 		if (!buffer_now) return NULL;
 	}
-	if (cont != NO_CONT && (depth == cfg->phone_level || suprasegm)) {
-		if(buffer_now >= buffer_end) 
-			return NULL;
-		if (depth < cfg->phone_level) 
-			// shriek(811, "Cannot gather segments (reorder rules)");
-			return buffer_now;
+	if(buffer_now >= buffer_end) 
+		return NULL;
+	if (cont != NO_CONT && (depth == cfg->phone_level
+				|| suprasegm && depth > cfg->phone_level)) {
 		*(buffer_now++) = (char)cont; 
 	}
 	return buffer_now;
@@ -798,8 +796,7 @@ unit::split(unit *before)
 		   by accident, so I decided to rewrite it completely.
 		   
 		   syll_break() is called to break the syllable before 
-		   the place given. Here the optional side-syllable 
-		   hack is implemented.
+		   the place given. 
  ****************************************************************************/
 
 char syll_pending;
@@ -807,8 +804,8 @@ char syll_pending;
 void
 unit::syll_break(char *sonor, unit *before)
 {
-	if (this_lang->syll_hack && prev==father->firstborn 
-		&& sonor[prev->inside()]<sonor[this_lang->syll_thr]) return;
+//	if (this_lang->syll_hack && prev==father->firstborn 
+//		&& sonor[prev->inside()]<sonor[this_lang->syll_thr]) return;
 	father->split(before);
 	syll_pending=0;
 }

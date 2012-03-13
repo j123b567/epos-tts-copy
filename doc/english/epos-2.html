@@ -411,18 +411,21 @@ inserts the following (and other) syllable boundaries:
 </CODE></BLOCKQUOTE>
 <P>Tokens not listed are considered least sonorous, order of tokens within
 the same sonority group (see the example) is irrelevant.
-<P>(It is possible (using the <CODE>suppress_side_syll</CODE> and
-<CODE>limit_side_syll</CODE> options in conjunction) to forbid
-the formation of a unit with an insufficiently sonorous
-element at its first position.  This crude feature allows
-us to avoid the unwanted "side syllables" in Czech and is
-off by default.  A language independent solution is not
-known, especially because the authors are not certain
-about similar phenomena in other languages.  Please contact
-us if you can comment on syllabification irregularities
-in natural languages.  We'll be happy to replace this
-"feature" with something generic.   See the source
-(<CODE>unit::syllabify</CODE>) for any other details.)
+<P>As you can see from the example, the syllable boundaries are inserted
+exactly once per every sequence of equivalent target units (e.g. equisonorous
+phones) such that both preceding and following target units of the group
+have higher sonority, and they're inserted either between the first and second
+element of the group, or, if the group consists of a single unit, before
+that unit.
+<P>This semantics is suitable for the syllabification task in all languages
+known to us where syllabification is not primarily morphologically based,
+but this rule type can also be used for other tasks involving a unit split
+as some point defined by its contents, e.g. splitting a higher level
+prosodic unit before or after certain words.  The authors are eager to
+hear from you if you'd prefer an extension or simplification of this rule
+type or if you can comment on syllabification issues over a wide range
+of languages.
+<P>
 <P>
 <H2><A NAME="prosody"></A> <A NAME="ss2.8">2.8 Prosody modeling rules </A>
 </H2>
@@ -769,15 +772,18 @@ the <CODE>if</CODE> rule itself.
 
 <P>
 <P>Regular expression substitution.  The parameter is of the form
-<CODE>/regular_expression/replacement/</CODE>.  This rule type is similar to <CODE>subst</CODE>,
-but it is often more powerful and more arcane; it is not intended for end
-wizards.  Skip it.
-<P>For a regular expressions' overview  try <CODE>man grep</CODE>.  Note a difference:
+<CODE>/regular_expression/replacement/</CODE>.  This rule type is similar to <CODE>subst</CODE>
+with only one dictionary item, but it is way more powerful and more arcane;
+its use is not intended for end wizards nor trivial tasks.
+For a regular expressions' overview, UNIX users can consult e.g. the <CODE>grep</CODE>
+manual page, whereas Windows users can telnet to a nearby UNIX machine and
+write <CODE>man grep</CODE> there.
+<P>Epos uses the extended regular expression syntax with the following difference:
 in "regular" regular expressions, parentheses match themselves, while
 the open group and close group operators are <CODE>\(</CODE> and <CODE>\)</CODE>, respectively.
 As we use groups heavily and next to none real parentheses, we decided
 to do it the other way round.  Also, <CODE>sed</CODE> users may be surprised
-by the iterative behavior of this rule type.
+by the iterative behavior of the <CODE>regex</CODE> rule type in Epos.
 <P>The replacement may contain escape sequences referring to the match of
 the <CODE>n</CODE>-th group within the regular expression: <CODE>\1</CODE> to <CODE>\9</CODE>.
 <CODE>\0</CODE> represents the entire match, but this is probably unusable under the
@@ -787,6 +793,10 @@ library already installed and have <CODE>WANT_REGEX</CODE> enabled in <CODE>comm
 This is because we don't actually implement the regex parsing stuff; we leave it
 to your OS libraries.  In case you don't have such libraries installed, we use
 the glibc implementation (<CODE>rx.c</CODE> in the Epos distribution).
+<P>Note that if your system doesn't support locale setting nor provides
+a usable regex library, you can't use named character classes such
+as <CODE>[:upper:]</CODE> in your regular expressions.  This is the case
+on Windows CE.
 <P>
 <H3><A NAME="debug-rule"></A> Type <CODE>debug</CODE> </H3>
 

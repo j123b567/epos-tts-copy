@@ -51,7 +51,7 @@ void qipc_proxy_crashed(char *reason)
 	fprintf(hackfile, "\n");
 	fclose(hackfile);
 
-	abort();
+	call_abort();
 }
 
 static inline void sync_finish_command(int fd, char *reason)

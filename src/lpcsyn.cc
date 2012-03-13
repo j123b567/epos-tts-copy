@@ -19,7 +19,9 @@
 #include "common.h"
 #include "lpcsyn.h"
 
-#include <fcntl.h>
+#ifdef HAVE_FCNTL_H
+	#include <fcntl.h>
+#endif
 
 #ifdef HAVE_IO_H
 	#include <io.h>

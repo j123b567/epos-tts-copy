@@ -43,11 +43,13 @@ if not exist hash.cc echo #include "hash.cpp" > hash.cc
 
 del config.h
 copy ..\arch\win-ce\config.in .\config.h
-copy ..\arch\win-ce\epos.dsp .
-copy ..\arch\win-ce\eposm.dsp .
-copy ..\arch\win-ce\say.dsp .
-copy ..\arch\win-ce\instserv.dsp .
-copy ..\arch\win-ce\epos.dsw .
+copy ..\arch\win-ce\epos.vcp .
+rem copy ..\arch\win-ce\eposm.vcp .
+mkdir say
+copy ..\arch\win-ce\say.vcp say
+copy ..\arch\win-ce\epos.vcw .
+
+copy ..\arch\win-ce\stdlib.cpp .
 
 cd ..\cfg\cfg
 

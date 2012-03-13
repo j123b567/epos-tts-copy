@@ -31,17 +31,6 @@ enum DIRECTIVE {DI_INCL, DI_WARN, DI_ERROR};
 
 // hash *_directive_prefices=NULL;
 
-/*
-
-void doneprefices()
-{
-	if (!cfg->lowmemory) return;	//will result in a small memory leak
-	delete _directive_prefices;
-	_directive_prefices=NULL;
-};
-
-*/
-
 bool strip(char *s)		/* return true if continuation */
 {
 	char *r;

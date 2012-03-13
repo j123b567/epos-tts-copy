@@ -232,7 +232,14 @@ hashing_rule::~hashing_rule()
 void
 hashing_rule::verify()
 {
-	if (cfg->paranoid) load_hash();
+	if (cfg->paranoid) {
+		load_hash();
+		if (cfg->lowmemory) {
+			DEBUG(2,2,fprintf(STDDBG,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
+			delete dict;
+			dict = NULL;
+		}
+	}
 }
 
 void

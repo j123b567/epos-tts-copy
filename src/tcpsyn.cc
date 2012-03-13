@@ -39,7 +39,10 @@
 	#include <sys/time.h>
 #endif
 
-#include <fcntl.h>
+#ifdef HAVE_FCNTL_H
+	#include <fcntl.h>
+#endif
+
 // #include <netdb.h>
 
 #define LANGNAMESEP	'.'

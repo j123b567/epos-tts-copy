@@ -47,8 +47,13 @@
 	#include <sys/stat.h>
 #endif
 
-#include <fcntl.h>
-#include <errno.h>
+#ifdef HAVE_FCNTL_H
+	#include <fcntl.h>
+#endif
+	
+#ifdef HAVE_ERRNO_H
+	#include <errno.h>
+#endif
 
 #ifndef O_NONBLOCK
 	#define O_NONBLOCK 0
@@ -1070,11 +1075,11 @@ a_ttscp::run_command(char *cmd)
 		reply(e->code, e->msg);
 		delete e;
 		return PA_NEXT;
-	} catch (connection_lost *e) {
-		DEBUG(2,11,fprintf(STDDBG, "Releasing a TTSCP control connection, %d, %.60s\n", e->code, e->msg);)
-		reply(e->code, e->msg);		/* just in case */
+	} catch (connection_lost *d) {
+		DEBUG(2,11,fprintf(STDDBG, "Releasing a TTSCP control connection, %d, %.60s\n", d->code, d->msg);)
+		reply(d->code, d->msg);		/* just in case */
 		reply(201, fmt("debug %d", cfg->sd_in));
-		delete e;
+		delete d;
 		return PA_DONE;
 	}
 

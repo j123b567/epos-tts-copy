@@ -19,7 +19,9 @@
 #include "client.h"
 
 
-#include <signal.h>
+#ifdef SIGNAL_H
+	#include <signal.h>
+#endif
 
 #ifdef HAVE_SYSLOG_H
 	#include <syslog.h>

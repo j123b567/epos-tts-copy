@@ -4,6 +4,7 @@ Bugs
 - with windows sokec, files as output modules with disk full crash the server
 - fix regress behavior wrt literal zero characters
 - what if make install fails to create /usr/lib/epos
+- Cz trans: ${vowel}i$consonant\$
 
 Features
 - pause hierarchy rules
@@ -27,6 +28,7 @@ Features
 - reasonable logging
 - investigate the optimum pause lengths
 - integrate the neural network stuff
+- all rule and config file syntax errors should be reported in a single run
 
 Inventory omissions
 - unknown segment - no. 19 (consonant---r)

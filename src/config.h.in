@@ -28,6 +28,9 @@
 /* Define if you have the ANSI C header files.  */
 #undef STDC_HEADERS
 
+/* Define if you have the abort function.  */
+#undef HAVE_ABORT
+
 /* Define if you have the fork function.  */
 #undef HAVE_FORK
 

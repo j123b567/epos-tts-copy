@@ -21,9 +21,10 @@
 some_key  this;is;the;replacement   ;this is a comment; why not.
  *
  *	where ';' is a comment-out character. If you need an initial ";" or
- *	a " ;" substring in the replacement, you're hooked. You might also
- *	consider changing the exported variable COMMENT_LINES to "\n" only,
- *	if exceptionproofness is needed whereas comments are not.
+ *	a " ;" substring in the replacement, you might consider changing
+ *	the exported variable COMMENT_LINES to "\n" only and refrain from
+ *	using comments at all.  Or, use COMMENT_LINES to choose another
+ *	comment-out character.
  *
  */
 
@@ -42,7 +43,10 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
+
+#ifdef HAVE_ERRNO_H
+	#include <errno.h>
+#endif
 
 #ifdef WANT_DMALLOC
 	#include <dmalloc.h>          // Unimportant debugging hack. Throw it out.
@@ -338,7 +342,7 @@ printf("hash::hash: using file %s\n", filename);
 	capacity = l*100/perc_full | 1;
 	cfg_rehash(perc_downsize, perc_upsize, max_tree_depth);
 	ht = (hsearchtree<char, char> **)xcalloc(capacity,sizeof(hsearchtree<char, char>*));
-	rewind(hashfile);
+	fseek(hashfile, 0, SEEK_SET);
 	l = 0;
 	while (l++, fgets(buff, hash_max_line, hashfile)) {
 		if (strchr(COMMENT_LINES, *buff)) continue;

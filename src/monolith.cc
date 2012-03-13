@@ -66,6 +66,7 @@ int main(int argc, char **argv)
 		epos_done();
 		return 0;
 	} catch (any_exception *e) {
+		unuse(e->code);
 		return 4;
 	}
 }

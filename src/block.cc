@@ -433,7 +433,7 @@ next_rule(text *file, hash *vars, int *count)
 		if (tmp) *tmp=' ';        //Yes. Wipe '=' if any.
 		if (get_words(str+1, word, 4)!=2) diatax("Illegal group assignment");
 		if (tmp) vars->add(word[0], word[1]);
-		else if (strcasecmp(word[1], "external")) diatax("'=' probably forgotten");
+		else if (strcmp(word[1], "external")) diatax("'=' probably forgotten");
 			else vars->add(word[0], format_option(word[0]));
 		goto next_line;
 	}

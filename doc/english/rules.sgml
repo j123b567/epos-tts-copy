@@ -1,4 +1,5 @@
 
+
 <sect> Rules <label id="rules">
 <p>
 
@@ -409,18 +410,22 @@ Example:
   Tokens not listed are considered least sonorous, order of tokens within
   the same sonority group (see the example) is irrelevant.
 
-  (It is possible (using the <tt>suppress&lowbar;side&lowbar;syll</tt> and
-  <tt>limit&lowbar;side&lowbar;syll</tt> options in conjunction) to forbid
-  the formation of a unit with an insufficiently sonorous
-  element at its first position.  This crude feature allows
-  us to avoid the unwanted "side syllables" in Czech and is
-  off by default.  A language independent solution is not
-  known, especially because the authors are not certain
-  about similar phenomena in other languages.  Please contact
-  us if you can comment on syllabification irregularities
-  in natural languages.  We'll be happy to replace this
-  "feature" with something generic.   See the source
-  (<tt>unit::syllabify</tt>) for any other details.)
+  As you can see from the example, the syllable boundaries are inserted
+  exactly once per every sequence of equivalent target units (e.g. equisonorous
+  phones) such that both preceding and following target units of the group
+  have higher sonority, and they're inserted either between the first and second
+  element of the group, or, if the group consists of a single unit, before
+  that unit.
+
+  This semantics is suitable for the syllabification task in all languages
+  known to us where syllabification is not primarily morphologically based,
+  but this rule type can also be used for other tasks involving a unit split
+  as some point defined by its contents, e.g. splitting a higher level
+  prosodic unit before or after certain words.  The authors are eager to
+  hear from you if you'd prefer an extension or simplification of this rule
+  type or if you can comment on syllabification issues over a wide range
+  of languages.
+
 
 <sect1> Prosody modeling rules <label id="prosody">
 <p>
@@ -767,16 +772,19 @@ if   !colloquial
 <p>
 
   Regular expression substitution.  The parameter is of the form
-  <tt>/regular&lowbar;expression/replacement/</tt>.  This rule type is similar to <tt>subst</tt>,
-  but it is often more powerful and more arcane; it is not intended for end
-  wizards.  Skip it.
-  
-  For a regular expressions' overview  try <tt>man grep</tt>.  Note a difference:
+  <tt>/regular&lowbar;expression/replacement/</tt>.  This rule type is similar to <tt>subst</tt>
+  with only one dictionary item, but it is way more powerful and more arcane;
+  its use is not intended for end wizards nor trivial tasks.
+  For a regular expressions' overview, UNIX users can consult e.g. the <tt>grep</tt>
+  manual page, whereas Windows users can telnet to a nearby UNIX machine and
+  write <tt>man grep</tt> there.
+
+  Epos uses the extended regular expression syntax with the following difference:
   in "regular" regular expressions, parentheses match themselves, while
   the open group and close group operators are <tt>&bsol;(</tt> and <tt>&bsol;)</tt>, respectively.
   As we use groups heavily and next to none real parentheses, we decided
   to do it the other way round.  Also, <tt>sed</tt> users may be surprised
-  by the iterative behavior of this rule type.
+  by the iterative behavior of the <tt/regex/ rule type in Epos.
   
   The replacement may contain escape sequences referring to the match of
   the <tt>n</tt>-th group within the regular expression: <tt>&bsol;1</tt> to <tt>&bsol;9</tt>.
@@ -788,6 +796,11 @@ if   !colloquial
   This is because we don't actually implement the regex parsing stuff; we leave it
   to your OS libraries.  In case you don't have such libraries installed, we use
   the glibc implementation (<tt>rx.c</tt> in the Epos distribution).
+
+  Note that if your system doesn't support locale setting nor provides
+  a usable regex library, you can't use named character classes such
+  as <tt>[:upper:]</tt> in your regular expressions.  This is the case
+  on Windows CE.
 
 <sect2> Type <tt>debug</tt> <label id="debug-rule">
 <p>

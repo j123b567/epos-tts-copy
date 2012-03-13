@@ -982,18 +982,6 @@ option is thence language dependent.
 	of a network error, the current voice will be switched to
 	the voice specified by this option and the initialisation will be
 	retried.
-<tag>--suppress_side_syll</tag>
-	This option should be off for most languages.  It makes the
-	<tt/syll/ rule avoid splitting off an insufficiently sonorous
-	word-initial pseudo-syllable. It is an ugly hack originally
-	introduced to get the Czech syllabification right, but I am
-	still not aware of related phenomena or possible generalizations.
-<tag>--limit_side_syll <sl/sound/</tag>
-	This parameter is only considered if <tt/suppress_side_syll/ is
-	enabled.  The parameter is the least permissible sonorous sound
-	to serve as a sonority peak if it happens to be word-initial.
-	(More precisely: permissible target unit, scope-initial, as defined
-	by the individual <tt/syll/ rule.)
 <tag>--rules_file <sl/filename/</tag>
 	The parameter is a filename. The file contains the transformational
 	rules to be applied for this language.

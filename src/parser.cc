@@ -71,15 +71,9 @@ parser::init(SYMTABLE symtab)
 	do level = chrlev(*++current); while (level > cfg->phone_level && level < cfg->text_level);
 		//We had to skip any garbage before the first phone
 
-	gettoken();		// new - hope this works
-//	f = i = t = 0;
+	gettoken();
 
 	DEBUG(0,7,fprintf(STDDBG,"Parser: initial level is %u.\n",level);)
-/*	if (level == U_TEXT) {		// This should go away sooner or later
-		DEBUG(2,7,fprintf(STDDBG,"Parser: is empty\n");)
-		initables(ST_EMPTY);
-		*current = NO_CONT;  // return '_' or something instead of quirky '\0'
-	}   */
 }
 
 parser::~parser()
@@ -144,13 +138,12 @@ parser::gettoken()
 //			case '&': if (cfg->stml) shriek(462, "STML not implemented"); else break;
 			default : ;
 		}
+		if (CHRLEV[token] == U_ILL && cfg->relax_input) token = cfg->dflt_char;
 		level = chrlev(token);
 		f = i = t = 0;
 		if (level == cfg->text_level) {
 			DEBUG(2,7,fprintf(STDDBG,"Parser: end of text reached, changing the policy\n");)
 			return ret;
-//			initables(ST_EMPTY);
-//			*current = NO_CONT;  // return '_' or something instead of quirky '\0'
 		}
 		current++;
 	} while (level <= lastlev && level > cfg->phone_level && level < cfg->text_level);
@@ -213,7 +206,6 @@ parser::initables(SYMTABLE table)
 {
 	int c;
 	UNIT u = cfg->phone_level;
-//	if (cfg->relax_input) for (c=1; c<256; c++) TRANSL_INPUT[c] = cfg->dflt_char;
 	for(c=0; c<256; c++) TRANSL_INPUT[c] = (unsigned char)c;
 	for(c=1; c<256; c++) CHRLEV[c] = U_ILL; *CHRLEV = cfg->text_level;
 	switch (table) {

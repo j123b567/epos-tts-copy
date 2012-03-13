@@ -142,28 +142,35 @@
 /* Defining this is necessary with any DOS/NT version */
 #define FORGET_SOUND_IOCTLS 1
 
+/* Define this if you don't have isalpha, isupper etc. functions */
+#define BROKEN_LOCALE
+
 /* Define if using mmsystem.lib for output */
 #define HAVE_MMSYSTEM_H  1
 
 /* Define if Epos should run as an NT service */
 /* #define HAVE_WINSVC_H  1 */
 
+
 /* The following stuff is included here to avoid making
    Epos source completely unintelligible through #ifdefs. */
 
-int open(const char *, int) { return -1; }
-int open(const char *, int, int) { return -1; }
-int close(int) { return -1; }
-int write(int, const char *, int) { return -1; }
-int read(int, char *, int) { return -1; }
-int lseek(int, int, int) { return -1; }
-int dup(int) {return -1; }
-int system(char *) {return -1; }
-int remove(const char *) {return -1; }
-int rename(const char *, const char *) { return -1; }
-void abort() {return; }
-int errno;
-char *strerror(int) { return ""; }
+int open(const char *, int);
+int open(const char *, int, int);
+int close(int);
+int write(int, const char *, int);
+int read(int, char *, int);
+int lseek(int, int, int);
+int dup(int);
+int system(char *);
+int remove(const char *);
+int rename(const char *, const char *);
+void abort();
+extern int errno;
+char *strerror(int);
+int rewind (FILE *x);
+
+
 #define EAGAIN 0
 #define ENOENT 0
 #define EINTR 0
@@ -182,19 +189,16 @@ char *strerror(int) { return ""; }
 #define try /**/
 #define catch(x) x; if (0)
 #define throw /**/
+#define NO_CATCHALL_CATCHES
 
 #include <malloc.h>
 
-inline void *calloc(int a, int b)
-{
-	char *c = (char *)malloc(a * b);
-	memset(c, a*b, 0);
-	return c;
-}
+void *calloc(int a, int b);
 
-#define rewind(x) fseek(x, 0, SEEK_SET);
+size_t  __cdecl strspn(const char *, const char *);
+char * __cdecl strrchr(const char *, int);
 
-_CRTIMP size_t  __cdecl strspn(const char *, const char *);
-_CRTIMP int  __cdecl stricmp(const char *, const char *);
-_CRTIMP int  __cdecl strnicmp(const char *, const char *, size_t);
+
+/* The following is implemented as strncmp instead!    (just on win CE)    */
+int  __cdecl strnicmp(const char *, const char *, size_t);
 

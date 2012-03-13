@@ -29,7 +29,11 @@ HANDLE hthread;		/* handle of the worker thread */
 #define ERROR_UGLY_EXCEPTION	1001
 #define ERROR_SOMETHING_WRONG	1002
 
-#define MBOX(x)  MessageBox(NULL, x, "TTS service Epos", MB_OK | MB_SERVICE_NOTIFICATION | MB_SERVICE_NOTIFICATION_NT3X)
+#ifndef MB_SERVICE_NOTIFICATION
+	#define MB_SERVICE_NOTIFICATION	0x00240000L
+#endif
+
+#define MBOX(x)  MessageBox(NULL, x, "TTS service Epos", MB_OK | MB_SERVICE_NOTIFICATION)
 
 int stop_service()
 {

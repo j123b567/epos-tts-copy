@@ -17,7 +17,10 @@
 
 #include "common.h"
 #include "exc.cc"
-#include <time.h>	// used to initialize the rand number generator
+
+#ifdef HAVE_TIME_H
+	#include <time.h>	// used to initialize the rand number generator
+#endif
 
 #ifdef HAVE_ERRNO_H
 	#include <errno.h>
@@ -230,7 +233,7 @@ fopen(const char *filename, const char *flags, const char *reason)
 	if (cfg->paranoid && f && *flags == 'r') {
 		if (!fread(&message, 1, 1, f))
 			shriek(445, fmt(message, reason, filename, "maybe a directory"));
-		rewind(f);
+		fseek(f, 0, SEEK_SET);
 	}
 	return f;
 }
@@ -364,13 +367,6 @@ char *fntab(const char *s, const char *t)
 	if(!t[1]) for (tmp=0; s[tmp]; tmp++) tab[(unsigned char)s[tmp]]=*t;
 	else for (tmp=0;s[tmp]&&t[tmp];tmp++) tab[(unsigned char)(s[tmp])]=t[tmp];
 
-//	int totl=0;
-//	for (int bus=0; bus<256; bus++) if ((unsigned char)(tab[bus])!=bus) {
-//		totl++;
-//		printf("...%c(%d) changes to %c(%d)\n", bus, bus, tab[bus], tab[bus]);
-//	}
-//	printf("Having totl %d\n", totl);
-
 	return(tab);
 }
 
@@ -496,14 +492,14 @@ inline bool reclaim(file *ff, const char *flags, const char *description, void o
 	f = fopen(ff->filename, flags, description);
 	fseek(f, 0, SEEK_END);
 	ff->data = (char *)xrealloc(ff->data, tmp = ftell(f) + 1);
-	rewind(f);
+	fseek(f, 0, SEEK_SET);
 	len = fread(ff->data, 1, tmp, f);
 	if (len < 0) {
 		if (!description) description = "an unspecified stuff";
 		shriek(445, fmt("Failed to read %s from %s", description, ff->filename));
 	}
 	ff->data[len] = 0;
-	if (oven) oven(ff->data, len);
+	if (oven != NULL) oven(ff->data, len);
 	fclose(f);
 	DEBUG(1,0,fprintf(STDDBG, "cache update for %s\n", ff->filename);)
 	return true;
@@ -539,14 +535,14 @@ file *claim(const char *filename, const char *dirname, const char *treename, con
 	if (fseek(f, 0, SEEK_END)) tmp = cfg->dev_txtlen;
 	else tmp = ftell(f) + 1;
 	data = (char *)xmalloc(tmp);
-	rewind(f);
+	fseek(f, 0, SEEK_SET);
 	tmp = fread(data, 1, tmp, f);
 	if (tmp == -1) {
 		if (!description) return NULL;
 		shriek(445, fmt("Failed to read %s from %s", description, pathname));
 	}
 	data[tmp] = 0;	  // remember DOS crlfs. tmp suits here.
-	if (oven) oven(data, tmp);
+	if (oven != NULL) oven(data, tmp);
 	fclose(f);
 
 	ff = new file;
@@ -721,6 +717,7 @@ bool privileged_exec()
 
 */
 
+
 #ifdef DEBUGGING
 
 char *current_debug_tag = NULL;
@@ -803,6 +800,15 @@ operator delete(void * cp)
 #endif   // ifdef WANT_DMALLOC
 
 
+void call_abort()
+{
+#ifdef HAVE_ABORT
+	abort();
+#else
+	while (1) ;	/* as far as I know, only used on Windows CE */
+#endif
+}
+
 //#ifndef HAVE_STRDUP
 
 char *strdup(const char*src)
@@ -816,7 +822,7 @@ char *strdup(const char*src)
 
 void terminate(void)
 {
-	abort();
+	call_abort();
 }
 
 #endif
