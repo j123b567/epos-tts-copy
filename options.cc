@@ -279,16 +279,16 @@ INV_OPTION (cow, cow, "",	  BOOL, false)	// copy on write (this cfg struct: is s
 
 OPTION (use_dbg,    "use_debug",  BOOL, false)  // Whether to print any debug info at all
 
-OPTION (interf_dbg, "interf_debug",INT, 2)      // Debugging levels of various
-OPTION (rules_dbg,  "rules_debug", INT, 2)      // code categories. See debug.doc
-OPTION (elem_dbg,   "elem_debug",  INT, 2)      // 
-OPTION (subst_dbg,  "subst_debug", INT, 2)      // 
-OPTION (assim_dbg,  "assim_debug", INT, 2)      // 
-OPTION (split_dbg,  "split_debug", INT, 2)      // 
-OPTION (parser_dbg, "parser_debug",INT, 2)      // 
-OPTION (synth_dbg,  "synth_debug", INT, 2)	//
+OPTION (interf_dbg, "interf_debug",INT, 3)      // Debugging levels of various
+OPTION (rules_dbg,  "rules_debug", INT, 3)      // code categories. See debug.doc
+OPTION (elem_dbg,   "elem_debug",  INT, 3)      // 
+OPTION (subst_dbg,  "subst_debug", INT, 3)      // 
+OPTION (assim_dbg,  "assim_debug", INT, 3)      // 
+OPTION (split_dbg,  "split_debug", INT, 3)      // 
+OPTION (parser_dbg, "parser_debug",INT, 3)      // 
+OPTION (synth_dbg,  "synth_debug", INT, 3)	//
 OPTION (cfg_dbg,    "cfg_debug",   INT, 4)	//
-OPTION (daemon_dbg, "daemon_debug",INT, 2)	//
+OPTION (daemon_dbg, "daemon_debug",INT, 3)	//
 
 OPTION (focus_dbg,  "focus_debug", DEBUG_AREA, _NONE_) 
 						// _DEBUG_AREA_ not affected by limit_debug 
@@ -364,7 +364,6 @@ OPTION (imm_diph,"immed_diphones",BOOL, false)  // Should we output them after a
 
 INV_OPTION (inv_name, name, "name",	   STR, "(unnamed)")
 INV_OPTION (inv_type, type, "type",       TYPE, S_NONE)	// Int, float, vector quantified...
-//INV_OPTION (inv_num, number, "number",     INT, -1)	// Back end voice number (?)
 INV_OPTION (inv_ct,channel, "channel", CHANNEL, CT_MONO)// (unused; not stereo)
 INV_OPTION (inv_counts, counts, "counts",  STR, NULL)	// File with the model counts for every diphone?
 INV_OPTION (inv_models, models, "models",  STR, NULL)	// File with the models themselves?
@@ -434,6 +433,18 @@ LNG_OPTIONITEM (perm[U_COLON], "perm_colon", STR, "")
 LNG_OPTIONITEM (perm[U_SENT], "perm_sent", STR, "")
 LNG_OPTIONITEM (perm[U_TEXT], "perm_text", STR, "")
 LNG_OPTIONAGGRENDS
+
+OPTIONAGGR (int sseg_weight[U_TEXT+1])
+OPTIONITEM (sseg_weight[U_DIPH],"sseg_weight_diph",INT,1)
+OPTIONITEM (sseg_weight[U_PHONE],"sseg_weight_phone",INT,1)
+OPTIONITEM (sseg_weight[U_SYLL],"sseg_weight_syll",INT,1)
+OPTIONITEM (sseg_weight[U_WORD],"sseg_weight_word",INT,1)
+OPTIONITEM (sseg_weight[U_COLON],"sseg_weight_colon",INT,1)
+OPTIONITEM (sseg_weight[U_SENT],"sseg_weight_sent",INT,1)
+OPTIONITEM (sseg_weight[U_TEXT],"sseg_weight_text",INT,1)
+OPTIONAGGRENDS
+
+// OPTION (sseg_weights_denom, "sseg_weights_denom", INT, 1) never used, maybe some day
 
 OPTION (out_verbose,"structured", BOOL, true)   // Will unit::fout display other units than phones?
 OPTION (out_postfix, "postfix",   BOOL, false)  // Content char follows the offspring?

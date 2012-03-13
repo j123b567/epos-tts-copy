@@ -111,6 +111,22 @@ Empty choices (with no rules within) are not tolerated, contrary
 to empty blocks.
 
 
+Length-based selection of rules
+-------------------------------
+
+A (length-based) switch is a sequence of rules enclosed within angle
+brackets ("<" and ">"). Both the opening and the closing bracket follow
+the rule syntax, but they take no parameters except for possible scope
+and target specification. The switch is treated as a single rule.
+
+Whenever the switch is applied to a scope unit, target units contained
+within are counted. If n units are found, the n-th rule in sequence of
+the subordinate rule is applied. 
+
+If there is less than n rules available, the last one will be used.
+You can avoid this behaviour by specifying "nothing" as the last rule.
+
+
 Repeated rules and choice probabilities
 ---------------------------------------
 
@@ -126,10 +142,11 @@ or to make it three times more probable (in a choice):
 the other one is left for the remaining 25%.)
 
 The repeat count must be a positive integer. You can not use
-this feature just after conditional rules:
+this feature just after conditional rules, because repeated
+rules are not counted as a single rule for syntactic purposes:
 	
 	if  $something
-		2x   regress   0>x(!_!)
+		2x   regress   0>x(!_!)	  #...wrong!
 		
 You should rewrite this to
 
@@ -181,6 +198,8 @@ SUBST	- substring substitution. The replacers replace every occurence
   process is iterated until no replacee occurs in the string. The target
   must currently be PHONE, because it is not obvious how to handle the
   children.
+
+  more info needed
 
   Infinitely looping substitutions are currently reported as an error
   condition.
@@ -235,7 +254,9 @@ REGRESS	- assimilation, elision or other mutation of phones or other units
   The zero character ('0') may be included in any of the strings; it means
   "no element", and it can be used to insert new units, delete the old ones,
   and to limit the change to the beginning or the end of the "scope" unit,
-  respectively.
+  respectively. On the other hand, if the contents of some unit is literal '0'
+  before the application of this rule, it will stay untouched. Use e.g.
+  REGEX or SUBST rules to handle this case properly.
 
   Example:   regress  0>'(0_aeiou)  word  phone
   inserts the apostrophe before the vowels listed at the beginning of a word.
@@ -266,6 +287,8 @@ SYLL	- roughly speaking, this rule type can be used to split words to
   the same sonority group (see the example) is irrelevant.
 
   See the source (unit::syllablify) for any other details.
+
+CONTOUR - to be yet documented - assigns prosodic contours
 
 SMOOTH	- Smoothing out of one of the F,I,T quantities. The parameter is of
   the form quantity/left_weights/base_weight\right_weights; the left weights,

@@ -80,7 +80,8 @@ class unit
         void insert(UNIT target, bool backwards, char what, bool *left, bool *right);
 //	void subst(UNIT target, hash *table, SUBST_METHOD method);
 	inline void subst(char *subst_buff);  //replace this one by _subst_buff
-	bool subst(hash *table, SUBST_METHOD method);				      
+	bool subst(hash *table, SUBST_METHOD method);
+	bool relabel(hash *table, SUBST_METHOD method, UNIT target);				      
 #ifdef WANT_REGEX
 	void regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl);
 #endif
@@ -95,6 +96,7 @@ class unit
                                       // units (phones) contained there
         void sseg(UNIT target, hash *templates);
         			      // Take freq, time or intensity from the hash*
+	void contour(UNIT target, int *recipe, int rec_len, FIT_IDX what, bool additive);
         void smooth(UNIT target, int *ratio, int base, int len, FIT_IDX what);
         void project(UNIT target, int f, int i, int t);
         void raise(bool *what, bool *when, UNIT whither, UNIT whence);

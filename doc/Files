@@ -27,6 +27,9 @@ elsewhere using ss.ini.
 /usr/lib/ss/inv/*/*.ini		diphone inventories
 /usr/lib/ss/prosody/*.dic	language independent (rather, default) prosody rules
 
+/var/log/ssdlog		system wide log of TTSCP transactions of the daemon
+			(still useful mostly for debugging)
+
 doc			various documentation, mostly both in Czech and English
 doc/*/*.doc		the filenames are self-explanatory
 doc/Intro		what to read first

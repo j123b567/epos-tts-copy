@@ -19,7 +19,8 @@
  
 #define END_OF_BLOCK  ((rule *)0)
 #define END_OF_CHOICE ((rule *)1)
-#define END_OF_RULES  ((rule *)2)
+#define END_OF_SWITCH ((rule *)2)	   // unit length
+#define END_OF_RULES  ((rule *)3)
 #define MAX_WORDS_PER_LINE 64
 
 #define DOLLAR             '$'             //These symbols are used to represent 
@@ -75,6 +76,16 @@ class r_choice : public block_rule
    public:
 	r_choice(text *file, hash *inherited_vars);
 	~r_choice();
+	void apply(unit *root);
+};
+
+class r_switch : public block_rule
+{
+   protected:
+	virtual OPCODE code() {return OP_SWITCH;};
+   public:
+	r_switch(text *file, hash *inherited_vars);
+	~r_switch();
 	void apply(unit *root);
 };
 
@@ -231,6 +242,31 @@ r_choice::apply(unit *root)
 {
 	current_rule = rand() % n_rules;	//random, less than n_rules
 	DEBUG(2,1,fprintf(stddbg,"Randomly chose rule [%s] %s %s\n",
+			rulist[current_rule]->dbg_tag,
+			enum2str(rulist[current_rule]->code(), OPCODEstr),
+			rulist[current_rule]->raw);)
+	apply_current(root);
+}
+
+
+
+r_switch::r_switch(text *file, hash *inherited_vars)
+{
+	load_rules(END_OF_SWITCH, file, inherited_vars);
+	if (!n_rules) diatax("Empty length dependencies");
+}
+
+r_switch::~r_switch()
+{
+}
+
+void
+r_switch::apply(unit *root)
+{
+	current_rule = root->count(target) - 1;
+	if (current_rule == -1) shriek("An empty unit strikes a switch");
+	if (current_rule >= n_rules) current_rule = n_rules - 1;
+	DEBUG(1,1,fprintf(stddbg,"Length-determined rule [%s] %s %s\n",
 			rulist[current_rule]->dbg_tag,
 			enum2str(rulist[current_rule]->code(), OPCODEstr),
 			rulist[current_rule]->raw);)
@@ -423,8 +459,9 @@ next_rule(text *file, hash *vars, int *count)
 		case 1: word[param+1] = NULL;	/* and fall through */
 		case 2: word[param+2] = NULL; 	/* and fall through */
 		case 3: break;
-		
-		default: diatax("Extra stuff follows rule");
+
+		default: if (code==255)	diatax("Unknown rule type");
+			 else 		diatax("Extra stuff follows rule");
 	}
 		
 	scope= str2enum(word[param+1], UNITstr,U_DEFAULT);	/* no later */
@@ -444,6 +481,7 @@ next_rule(text *file, hash *vars, int *count)
 #endif
 	case OP_PREP:    result = new r_prep(word[param]); break;
 	case OP_POSTP:   result = new r_postp(word[param]); break;
+	case OP_CONTOUR: result = new r_contour(word[param]); break;
 	case OP_PROSODY: result = new r_prosody(word[param]); break;
 	case OP_RAISE:   result = new r_raise(word[param]); break;
 	case OP_SMOOTH:  result = new r_smooth(word[param]); break;
@@ -458,6 +496,9 @@ next_rule(text *file, hash *vars, int *count)
 	case OP_END:	 return END_OF_BLOCK;
 	case OP_CHOICE:  result = new r_choice(file, vars); break;
 	case OP_CHOICEND:return END_OF_CHOICE;
+	case OP_SWITCH:  result = new r_switch(file, vars); break;
+	case OP_SWEND:	 return END_OF_SWITCH;
+	case OP_NOTHING: result = new r_nothing(); break;
 	default:  diatax("Unknown rule type"); goto next_line;  // to fool the compiler
 	};
     

@@ -103,6 +103,11 @@ Typ_pravidla REGRESS  Zmìna hlásek èi jiných jednotek podle jejich
                       jež tvoøí rozsah pravidla. V literatuøe se 
                       k tìmto úèelùm èasto používá symbol '#'.
 
+		      Tìmito pravidly není možno obrábìt '0' jakožto
+		      znak vyskytující se v textu; takový znak se
+		      nikdy nemìní. K jeho zpracování je nutno
+		      sáhnout po pravidlu napø. typu SUBST nebo REGEX.
+
 Typ_pravidla PROGRESS Jako REGRESS, ale zmìna se vyhodnocuje zleva.
 
                       REGRESS a PROGRESS nejsou totéž, co regresívní
@@ -131,6 +136,15 @@ Typ_pravidla SYLL     Zjednodušenì øeèeno, stanoví slabièné hranice
 Typ_pravidla PROSODY  Mìní hodnoty velièin F,I,T pro jednotlivé jednotky.
                       Parametr obsahuje jméno slovníku obsahujícího 
                       pøíslušná pravidla. Jejich formát viz doc/prosody.doc
+
+Typ_pravidla CONTOUR  Mìní hodnoty velièin F,I,T pro celé lineární sekvence
+		      jednotek naráz.
+		      Parametr je tvaru velièina/hodn:hodn:hodn atd.,
+		      to jest F, I nebo T a seznam hodnot postupnì pøiøazených
+		      zasaženým jednotkám v rámci rozsahu.
+
+		      V pøimìøené míøe je syntax obdobná syntaxi pravidla
+		      SMOOTH.
                       
 Typ_pravidla SMOOTH   Vyhlazuje stanovenou velièinu F,I nebo T. Parametr
 		      je tvaru velièina/levé_váhy/váha_pùvodního\pravé_váhy
@@ -391,3 +405,42 @@ v 25% pøípadù druhá. Váha musí být kladné pøirozené èíslo.
 
 (Je-li váha analogicky použita v bloku, pravidlo se bude
 tolikrát opakovat.)
+
+
+Výbìr pravidel podle poètu jednotek podøízených jednotce
+--------------------------------------------------------
+
+Nìkdy je potøeba odlišnì ošetøovat napøíklad dvojslabièné,
+trojslabièné a víceslabièné takty. Pak lze pøíslušná
+pravidla uzavøít mezi špièaté závorky:
+
+<  word syll
+	nothing
+	contour		f/+2:-3
+	contour		f/+2:-2:+1
+	nothing
+>
+
+První pravidlo "nothing" zde uvádí, že jednoslabièná slova
+se neošetøují, koncové slovo "nothing" uvádí, že ètyø-
+a víceslabièná slova se neošetøují. Pokud totiž nadøazená
+jednotka (úrovnì rozsahu) obsahuje více zasažených jednotek,
+než pro kolik je uvedeno pravidlo, použije se poslední
+uvedené pravidlo. Pokud by tedy koncové pravidlo "nothing"
+chybìlo, použilo by se pøedcházející pravidlo i pro delší
+než trojslabièné takty.
+
+Jako u blokù a náhodných voleb, i zde je možné uvádìt,
+kolikrát se má identické pravidlo poèítat. Upravíme-li
+tedy pøedchozí pøíklad takto ---
+
+<  word syll
+	nothing
+	contour		f/+2:-3
+    2x	contour		f/+2:-2:+1
+	nothing
+>
+
+--- použije se druhé uvedené pravidlo "contour" pro slova
+tøíslabièná a ètyøslabièná.
+

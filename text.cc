@@ -47,9 +47,9 @@ void strip(char *s)
 				*r = 0;
 				return;
 			case '\\':
-				if (!*t) shriek("text.cc still cannot split lines");
-				if (strchr(cfg->token_esc, t[1]))
-				*r = esctab[*++t];
+				if (!*++t || *t=='\n') shriek("text.cc still cannot split lines");
+				if (strchr(cfg->token_esc, *t))	*r = esctab[*t];
+				else t--;	/* insert self */
 				break;
 			default:;
 		}
@@ -132,7 +132,7 @@ text::getline(char *buffer)
 		while(!fgets(buffer,cfg->max_line,current->f)) {
 			superfile();
 			if (!current) return false;
-		};
+		}
 		current_line++;
 		global_current_line = current_line;
 		global_current_file = current_file;
@@ -164,8 +164,8 @@ text::getline(char *buffer)
 				DEBUG(1,1,fprintf(stddbg,"text::getline default is %s\n",buffer);)
 				if (!buffer[strspn(buffer,WHITESPACE)]) continue;
 				return true;
-		};
-	};
+		}
+	}
 }
 
 void

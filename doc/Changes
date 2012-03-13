@@ -510,7 +510,26 @@ for an exciting story.
 
 2.1.4 from 2.1.3	16.6.98
 	- voidsyn and lpcsyn fixes
-	- lpcsyn no more uses just "int" instead of occassional "long int"
+	- lpcsyn now uses just "int" instead of occassional "long int" before
 	- dispatcher_pid (used to distinguish between the server processes)
+
+
+2.1.5 from 2.1.4	26.6.98
+	- sseg_weight options (turning off sseg values for some unit levels)
+	- the CONTOUR, NOTHING and switch (<...>) rules (see doc/*/rules.doc)
+	- non-phone substitutions (doc/czech/dict.doc, unit::relabel())
+	- the most of palkova.rul, preposition adjunction rules fixed
+
+
+2.1.6 from 2.1.5	29.6.98
+	- assim rules do not wipe zeroes
+	- numerals fixes
+	- spelling out rules improved (abbrev.dic and related rules)
+	- autoconfiguring socklen_t (some systems have it signed, some unsigned, some missing)
+	- pauses, changed prosody rules in czech.rul
+
+
+2.1.7 from 2.1.6
+	- "se" handling heuristics
 
 

@@ -49,7 +49,6 @@
 #define O_BINARY  0
 #endif
 
-
 #pragma hdrstop
 
 #ifdef KDGETLED		// Feel free to disable or delete the following stuff
@@ -195,7 +194,7 @@ voice::attach()
 	output = compose_pathname(cfg->wav_file, cfg->wav_dir);
 
 #ifdef S_IRGRP
-	fd = open(output, O_WRONLY | O_CREAT | O_TRUNC, MODE_MASK);
+	fd = open(output, O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK, MODE_MASK);
 #else
 	fd = open(output, O_RDWR | O_CREAT | O_TRUNC | O_BINARY);
 #endif

@@ -96,7 +96,8 @@ rule::set_level(UNIT scp, UNIT trg)
 {
 	scope =  scp == U_DEFAULT ? DEFAULT_SCOPE : scp;
 	target = trg == U_DEFAULT ? DEFAULT_TARGET : trg;
-	if (scope <= target) shriek ("Scope must be wider than target%s", debug_tag());
+	if (scope < target) shriek ("Scope must not be more narrow than target%s", debug_tag());
+			// was scope <= target -  consider returning back
 }
 
 void
@@ -151,13 +152,46 @@ rule::debug_tag()
 	return wholetag;
 }
 
-void
-rule::apply(unit *root)
-{
-	unuse(root);
-	shriek("rule::apply() called (inherited or not)");		/* Abstract method */
-}
 
+/* Default value = key */
+
+hash *literal_hash(char *s)
+{
+	char *p;
+	char *last;
+	char *comma = NULL;
+
+	hash *dict = new hash((strlen(s) >> 4) + 4);
+
+	p = s;
+	last = s + 1;
+	while (1) {
+		switch(*++p) {
+		case COMMA:
+			if (comma) shriek("too many commae");
+			comma = p;
+			*comma = 0;
+			break;
+		case SPACE:
+		case TILDE:
+			*p = 0;
+			dict->add(last, comma ? comma+1 : last);
+			if (comma) *comma = COMMA;
+			*p = SPACE;
+			last = NULL;
+			comma = NULL;
+			for (last = p+1; *last == SPACE; last++) ;
+			break;
+		case DQUOT:
+			*p = 0;
+			if (last) dict->add(last, comma ? comma+1 : last);
+			if (comma) *comma = COMMA;
+			*p = DQUOT;
+			return dict;
+		case 0: return NULL;	// error - unterminated string
+		}
+	}
+}
 
 hashing_rule::hashing_rule(char *param) : rule(NULL)
 {
@@ -176,47 +210,13 @@ hashing_rule::~hashing_rule()
 inline void
 hashing_rule::load_hash()
 {
-	char *p;
-	char *last;
-	char *comma = NULL;
-
 	if (dict) shriek("unwanted load_hash");
 
 	if (*raw != DQUOT) {
 		dict = new hash(raw, cfg->hash_full, 0, 200, 3,
 			(char *) allow_id, false, "dictionary %s not found");
-		return;
-	}
-	dict = new hash((strlen(raw) >> 4) + 4);
-	p = raw;
-	last = raw+1;
-	while (1) {
-		printf("::::::::%s::::%s::::%s::::%s::::\n", raw, p, comma, last);
-		switch(*++p) {
-		case COMMA:
-			if (comma) shriek("too many commae");
-			comma = p;
-			*comma = 0;
-			break;
-		case SPACE:
-		case TILDE:
-			*p = 0;
-			dict->add(last, comma ? comma+1 : "(default)");	//FIXME (string const)
-			if (comma) *comma = COMMA;
-			*p = SPACE;
-			last = NULL;
-			comma = NULL;
-			last = p+1;
-			break;
-		case DQUOT:
-			*p = 0;
-			if (last) dict->add(last, comma ? comma+1 : "(default)"); // FIXME as above
-			if (comma) *comma = COMMA;
-			*p = DQUOT;
-			return;
-		case 0: shriek("Unterminated argument%s", debug_tag());
-		}
-	}
+	} else dict = literal_hash(raw);
+	if (!dict) shriek("Unterminated argument%s", debug_tag());	// or out of memory
 }
 
 void 
@@ -283,7 +283,7 @@ void
 r_subst::set_level(UNIT scp, UNIT trg)
 {
 	rule::set_level(scp, trg);
-	if (target != U_PHONE) shriek("Cannot substitute for non-phones %s",debug_tag());
+//	if (target != U_PHONE) shriek("Cannot substitute for non-phones %s",debug_tag());
 }
 
 /************************************************
@@ -294,7 +294,11 @@ void
 r_subst::apply(unit *root)
 {
 	if (!dict) load_hash();
-	root->subst(dict, method);
+
+//	if (target == U_PHONE) root->subst(dict, method);
+
+	root->relabel(dict, method, target);
+
 	if (cfg->lowmemory) {
 		DEBUG(2,2,fprintf(stddbg,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
 		delete dict;
@@ -390,6 +394,58 @@ r_prosody::apply(unit *root)
 		dict = NULL;
 	}
 }
+/************************************************
+ r_contour The following rule class distributes
+	  some prosodic contour over a linear
+ **	  sequence of units
+ ************************************************/
+
+class r_contour: public rule
+{
+   protected:
+	virtual OPCODE code() {return OP_CONTOUR;};
+	int *contour;
+	int l;
+	FIT_IDX quantity;
+   public:
+		r_contour(char *param);
+	virtual ~r_contour();
+	virtual void apply(unit *root);
+};
+
+r_contour::r_contour(char *param) : rule(param)
+{
+	char *p;
+	short int tmp=0, sgn=1;
+	
+	contour=(int *)malloc(strlen(param)*sizeof(int));
+	contour[0]=l=0;
+	for (p=param+1+(param[1]=='/'); *p; p++) {
+		switch (*p) {
+		case ':': contour[l++] += tmp*sgn; tmp=0;
+			   sgn=1; contour[l]=0;  break;
+		case '-':
+		case '+':  contour[l]+=tmp*sgn; sgn=(*p=='+' ?+1:-1); break;
+		default:   if (*p<'0' || *p>'9') shriek("Expected a number, found \"%s\"%s",
+					p, debug_tag());
+			   else tmp = tmp*10 + *p-'0';
+		};
+	};
+	if (tmp) contour[l++]+=tmp*sgn;
+
+	quantity = fit(*param);
+}
+
+r_contour::~r_contour()
+{
+	free(contour);
+}
+
+void r_contour::apply(unit *root)
+{
+	root->contour(target, contour, l, quantity, false);
+}
+
 
 /************************************************
  r_smooth The following rule class smoothens
@@ -861,8 +917,12 @@ class r_with: public cond_rule
 
 r_with::r_with(char *param, text *file, hash *vars) : cond_rule(param, file, vars)
 {
-	char *pathname = compose_pathname(raw, this_lang->hash_dir);
-	free(raw); raw = pathname;
+	char *old = raw;
+
+	if (*raw == DQUOT) raw = strdup(raw);
+	else raw = compose_pathname(raw, this_lang->hash_dir);
+
+	free(old);
 	dict = NULL;
 }
 
@@ -874,8 +934,12 @@ r_with::~r_with()
 void
 r_with::apply(unit *root)
 {
-	if (!dict) dict = new hash(raw, cfg->hash_full,
-		0, 200, 3, DATA_EQUALS_KEY, false, "dictionary %s not found");
+	if (!dict) {
+		if (*raw == DQUOT) dict = literal_hash(raw);
+		else dict = new hash(raw, cfg->hash_full,
+			0, 200, 3, DATA_EQUALS_KEY, false, "dictionary %s not found");
+	}
+	if (!dict) shriek("Unterminated argument%s", debug_tag());	// or out of memory
 
 	if (root->subst(dict, M_ONCE)) then->apply(root);
 }
@@ -911,5 +975,21 @@ r_if::apply(unit *root)
 {
 	if (result) then->apply(root);
 }
+
+/************************************************
+ r_nothing  The following rule class can serve
+ 	    as a void placeholder, where a rule
+ **	    is syntactically required
+ ************************************************/
+
+
+class r_nothing: public rule
+{
+   protected:
+	virtual OPCODE code() {return OP_NOTHING;};
+   public:
+	r_nothing() : rule(NULL) {};
+	virtual void apply(unit *) {};
+};
 
 #include "block.cc"

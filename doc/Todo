@@ -25,12 +25,11 @@
 - skonsistentnit options v monolith a v clientovi. Monolith napø. nepodporuje
   --input_file a client snad jo; pokud jde o -n, je to zase naopak. Soubory
   se parsují stejnì, klávesnice však nikoli.
-- sgets() mùže zablokovat všechny konexe, pøijde-li jen èást øetìzce
 - autentikace
 - tokenizace
 - stml
 - zaèlenit "set language" jako normální "set"
 - root rights '#' --> comment
 - chybová sémantika (nejen varování/utnutí session/havárie serveru)
-
+- suprasegmentalia by mìla být odolná vùèi celkovému posunutí
 

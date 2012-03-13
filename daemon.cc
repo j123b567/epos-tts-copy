@@ -57,6 +57,10 @@ inline int my_fork()
 #include <errno.h>
 #include <time.h>
 
+#ifndef HAVE_SOCKLEN_T
+#define	socklen_t int
+#endif
+
 int session_uid = UID_SERVER;
 int dispatcher_pid;
 
@@ -78,6 +82,8 @@ class context
 	configuration *cfg;
 	lang *this_lang;
 	voice *this_voice;
+
+	char *sgets_buff;	/* not touched upon context switch */
 };
 
 
@@ -97,6 +103,7 @@ void setup_master_context()
 	master_context->stdshriek = stdshriek;
 	master_context->stdwarn = stdwarn;
 	master_context->stddbg = stddbg;
+	master_context->sgets_buff = NULL;
 
 	for (int i=0; i < cfg->n_langs; i++) {
 		l = cfg->langs[i];
@@ -131,11 +138,14 @@ void create_context(int index)
 	c->stddbg = stddbg = fdopen(dup(index), "r+");
 	c->stdshriek = stdshriek = fdopen(dup(index), "r+");
 	c->stdwarn = stdwarn = fdopen(dup(index), "r+");
+
+	c->sgets_buff = (char *)malloc(cfg->max_net_cmd);
+	*c->sgets_buff = 0;
 }
 
 void forget_context(int index)
 {
-	LOG("forget_context(%d), pid %d\n", index, getpid());
+	LOG("forget_context(%d), pid=%d\n", index, getpid());
 	context *c = context_table[index];
 
 	close(c->cfg->sd);
@@ -147,13 +157,15 @@ void forget_context(int index)
 	if (!c->this_lang->cow) free(c->this_lang);
 	if (!c->cfg->cow) free(c->cfg);
 
+	free(c->sgets_buff);
+
 	delete context_table[index];
 	context_table[index] = NULL;
 }
 
 void enter_context(int index)
 {
-	LOG("enter_context(%d), pid %d\n", index, getpid());
+	LOG("enter_context(%d), pid=%d\n", index, getpid());
 	if (cfg != &master_cfg) shriek("nesting contexts");
 
 	context *c = context_table[index];
@@ -206,6 +218,72 @@ void leave_context(int index)
 	stdshriek = master_context->stdshriek;
 }
 
+/*
+ *	nonblocking sgets - returns immediately.
+ *	tries to get a line into buffer; if it can't,
+ *	returns zero and partbuff will contain some (undefined)
+ *	data, which should be passed to the next call to
+ *	sgets() with this, but not another socket.
+ *	The "space" argument limits both buffers.
+ *
+ *	Upon the first call with this socket, *partbuff must == 0.
+ *
+ *	returns:      0   partial line in partbuff
+ *		positive  full line in buffer
+ *		negative  error reading socket
+ *
+ *	Our policy is not to read the socket when we've got
+ *	a partial line acquired in an earlier invocation.
+ *	This is to avoid starvation by an over-active session.
+ *	It doesn't work, however. Please FIXME.
+ */
+
+int sgets(char *buffer, int space, int sd, char *partbuff)
+{
+	int i, l;
+	int result = 0;
+
+	if (*partbuff) {
+		LOG("[core] Appending.\n");
+		l = strlen(partbuff);
+		if (l > space) shriek("sgets() holdback overflow");
+		if (l == space) goto too_long;
+		strcpy(buffer, partbuff);
+		if (strchr(buffer, '\n')) goto already_enough_text;
+	} else l = 0;
+	result = read(sd, buffer + l, space - l); buffer[l+result] = 0;
+	if (result <=  0) {
+		*partbuff = 0;	/* forgetting partial line upon EOF/error. Bad? */
+		*buffer = 0;
+		return -1;
+	}
+	l += result;
+
+already_enough_text:
+	for (i=0; i<l; i++) {
+		if (buffer[i] == '\n' || !buffer[i]) {
+			if (i && buffer[i-1] == '\r') buffer[i-1] = 0;
+			buffer[i] = 0;
+			if (++i < l) strcpy(partbuff, buffer+i);
+			else *partbuff = 0;
+			return 1;
+		}
+	}
+	if (i >= space) goto too_long;
+	buffer[i] = 0;
+	strcpy(partbuff, buffer);
+	LOG("[core] partial line read: %s\n", partbuff);
+	*buffer = 0;
+	return 0;
+
+too_long:
+	strcpy(partbuff, "remark ");
+	LOG("[core] Too long command ignored");
+	sputs("413 Too long", sd);
+	*buffer = 0;
+	return 0;
+}
+
 inline ACCESS access_level(int uid)
 {
 	if (uid == UID_ROOT) return A_ROOT;
@@ -236,7 +314,9 @@ inline void register_child(int pid)
 
 	if (!pid) {
 		LOG("[core] Killing %d children\n", n_children);
-		for (i=0; i<n_children; i++) kill(children[i], SIGHUP);
+		for (i=0; i<n_children; i++) if (kill(children[i], SIGHUP)) 
+			shriek("Problems killing child %d", children[i]);
+		LOG("[core] Waiting for %d killed children\n", n_children);
 		for (i=0; i<n_children; i++) LOG("[core] Child %d returned\n",wait(NULL));
 		n_children = 0;
 		return;
@@ -302,8 +382,7 @@ void cmd_bad(char *param)
 
 void cmd_hello(char *param)
 {
-	unuse(param);
-	if (!strcmp(param, "anonymous")) {
+	if (param && !strcmp(param, "anonymous")) {
 		reply("212 anonymous access allowed");
 		return;
 	}
@@ -313,7 +392,7 @@ void cmd_hello(char *param)
 
 void cmd_pass(char *param)
 {
-	if (session_uid == UID_ANON && !strcmp(param, server_passwd)) {
+	if (session_uid == UID_ANON && param && !strcmp(param, server_passwd)) {
 		LOG("[core] It's me\n");
 		session_uid = UID_SERVER;
 	}
@@ -546,11 +625,12 @@ void run_command(char *cmd)
 void server()
 {
 	static int sk;
-	static unsigned int sia = sizeof(sockaddr);	// __QNX__ wants signed :-(
+	static socklen_t sia = sizeof(sockaddr);	// __QNX__ wants signed :-(
 	static sockaddr_in sa;
 	static sockaddr_in ia;
 	
 	int f, i, max;
+	int one = 1;
 
 	sk = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	memset(&sa, 0, sizeof(sa));
@@ -560,6 +640,7 @@ void server()
 	LOG("[core] Trying to bind...\n");
 	while (bind(sk, (sockaddr *)&sa, sizeof (sa)) && --cfg->persistence) 
 		sleep(1);
+	setsockopt(f, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int)); // not necessary
 	if (!cfg->persistence) shriek("Could not bind: %s", strerror(errno));
 	if (listen(sk, 5)) shriek("Could not listen");
 	ia.sin_family = AF_INET;
@@ -576,13 +657,14 @@ void server()
 
 	while (1) {
 		fd_set rdfds = thefds;
-		LOG("[core] fdset: ");
-		for (i=0; i<max+5; i++) LOG(FD_ISSET(i, &rdfds) ? "X" : "-"); LOG("\n");
+//		LOG("[core] fdset: ");
+//		for (i=0; i<=max; i++) LOG(FD_ISSET(i, &rdfds) ? "X" : "-"); LOG("\n");
 		LOG("[core] Ready....\n");
 		if (select(max, &rdfds, NULL, NULL, NULL) <= 0) shriek("select() failed");
-		LOG("[core] ...got a job\n");
+//		LOG("[core] ...got a job\n");
 		if (FD_ISSET(sk, &rdfds)) {
 			f = accept(sk, (sockaddr *)&ia, &sia);
+//			fcntl(f, F_SETFL, O_NONBLOCK);
 			LOG("[core] Accepted.\n");
 			FD_SET(f, &thefds);
 			if (f >= max) max = f+1;
@@ -596,7 +678,9 @@ void server()
 			try {
 				LOG("[core] serving job %d (of %d)\n", i, max);
 				enter_context(i);
-				if (!sgets(buffer, cfg->max_net_cmd, cfg->sd)) {
+more_lines:
+				if (sgets(buffer, cfg->max_net_cmd, cfg->sd,
+				     context_table[cfg->sd]->sgets_buff) == -1) {
 					LOG("[core] client unreachable\n");
 					leave_context(i);
 					FD_CLR(i, &thefds);
@@ -605,7 +689,9 @@ void server()
 				}
 				if ((int)strlen(buffer) >= cfg->max_net_cmd)
 					shriek("Received command is too looong");
-				run_command(buffer);
+				if (*buffer) run_command(buffer);
+				if (strchr(context_table[cfg->sd]->sgets_buff, '\n'))
+					goto more_lines;
 				leave_context(i);
 			} catch (old_style_exc *e) {
 				free(e);

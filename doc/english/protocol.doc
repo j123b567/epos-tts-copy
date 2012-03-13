@@ -58,6 +58,9 @@ also some command-specific information.
 Stop writing Signal into devices as soon as possible.
 (This command may disappear in the future.)
 
+The only mandatory requirement is that there are no more speaking 
+processes upon receiving a 2xx error code.
+
 <sect3>done
 <p>
 
@@ -158,8 +161,8 @@ digits) allows interfacing with simple to trivial clients, whereas
 the text (which is optional) is meant for possible user interaction.
 
 The response codes are defined by the protocol, the accompanying
-text is not, but it should rarely exceed 20 characters (servers
-hould tolerate at least 76 characters plus the response code).
+text is not, but it should rarely exceed 20 characters (clients
+should tolerate at least 76 characters plus the response code).
 
 Every response code consists of the response class, the subclass
 and an extra digit. The response class drives the protocol states
@@ -179,11 +182,11 @@ The following response classes are possible within TTSCP:
 1xx  OK, server starts requested transmission
 2xx  OK, client should transmit another command
 3xx  warning, server still trying
-4xx  command failed, client should tx
+4xx  command failed, client should tx another one
 5xx  reserved
-6xx  fatal problem, connection terminated (600 - the usual reply for "done")
+6xx  fatal problem, connection terminated (600 - the successful reply for "done")
 7xx  reserved  (server crash with a dump?)
-8xx  server crash or shutdown (800 - the usual reply for "shutdown")
+8xx  server crash or shutdown (800 - the successful reply for "shutdown")
 </verbatim>
 
 The client is expected to send another command whenever it receives
@@ -238,6 +241,7 @@ code      error type      suggested action
 
 411	command not recognized
 412	option passed illegal value
+413	command too long, ignored
 421	output voice busy
 441	help not available
 442	no such option

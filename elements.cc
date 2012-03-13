@@ -404,18 +404,119 @@ unit::subst(hash *table, SUBST_METHOD method)
 						goto break_home;
 			}
 		}
-		return false;
+		return i != cfg->multi_subst;
     
 		break_home:
 		DEBUG(1,3,fprintf(stddbg,"inner unit::subst has made the subst, relinking l/r, method %d\n", method);)
 		sanity();
-		if (method & (M_LEFT | M_RIGHT)) unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS);
+		if (method & (M_LEFT | M_RIGHT)) 
+			return unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS), true;
 		if (method & M_ONCE) return true;
-	};
+	}
 	warn("Infinite substitution loop detected on \"%s\"", gatbuff);
 	sanity();
 	return true;
 }
+
+/****************************************************************************
+ unit::relabel	implements subst for other targets than phones.
+		This is a completely different job than subst does, because
+		we don't get (and don't want to specify) any structure below
+		this level. We are therefore restricted to equal-sized 
+		substitutions and we assume that we can just "relabel" existing
+		units, never creating or deleting any.
+
+		On the other hand, this limitation makes the implemetation
+		easier and faster.
+
+		M_END and M_BEGIN are not implemented and I may remove
+		them also from subst. No use for them.
+ ****************************************************************************/
+
+bool
+unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
+{
+	if (target == U_PHONE) return subst(table, method);
+
+	char    buff[MAX_GATHER+2];
+	char	*r;
+	unit	*u;
+	unit	*v;
+	int len, i, j , n;
+	
+	*buff='^';
+	u = v = LeftMost(target);
+	for (i = 1; u != &EMPTY; i++) {
+		buff[i] = u->cont;
+		u = u->Next(target);
+		if (i == MAX_GATHER && cfg->paranoid) shriek("Too huge word relabelled");
+	}
+	buff[i]='$'; buff[++i]=0; len=i;
+
+	sanity();
+	if ((method & M_LEFT) && !prev) return false;
+	if ((method & M_RIGHT) && !next) return false;
+	for (n=cfg->multi_subst; n; n--) {
+		DEBUG(1,3,fprintf(stddbg,"unit::relabel %s, method %d\n", buff+1, method);)
+		sanity();
+		if ((method & M_PROPER) == M_EXACT) {
+			buff[--len] = 0; len--;
+			if ((r = table->translate(buff + 1))) {
+				if (cfg->paranoid && strlen(r) - len)
+					shriek("Substitute length differs: '%s' to '%s'", buff + 1, r);
+				strcpy(buff + 1, r);
+				goto commit;
+			}
+//			if (relabel(table, NULL,NULL,gatbuff+1,NULL,NULL)) goto break_home;
+		}
+//	??	if (strend[-1]==cont) --strend;
+//	??	*strend='$';*++strend=0;
+//		if (method & M_END)
+//			for(tail=gatbuff;*tail && tail-gatbuff<MAX_GATHER;tail++)
+//				if(subst(table, safe_grow, gatbuff+1,tail, tail, NULL,NULL)) goto break_home;
+//		if (method & M_BEGIN)
+//			for(tail=strend;tail>gatbuff;tail--) {
+//				tail[0]=tail[-1];tail[-1]=0;
+//				if(subst(table, safe_grow, NULL,NULL,gatbuff, tail, strend)) goto break_home;
+//			}
+		if (method & M_SUBSTR) {
+			for (i = len; i; i--) {
+				char tmp = buff[i];
+				buff[i] = 0;
+				j = i > table->longest ? i - table->longest : 0;
+				for (; j<i; j++) {
+					if ((r = table->translate(buff+j))) {
+						j += !j;
+						buff[i] = tmp;
+						if (cfg->paranoid && strlen(r) - i + j + !tmp)
+							shriek("Substitute length differs: '%s' to '%s'", buff+j, r);
+						memcpy(buff+j, r, strlen(r));
+						goto break_home;
+					}
+				}
+				buff[i] = tmp;
+			}
+		}
+		if (n == cfg->multi_subst) return false; else goto commit;
+
+		break_home:
+		if (method & M_ONCE) goto commit;
+	}
+	warn("Infinite substitution loop detected on \"%s\"", buff);
+	sanity();
+
+commit:
+	DEBUG(1,3,fprintf(stddbg,"inner unit::relabel has made the subst, relinking l/r, method %d\n", method);)    
+	for (i = 1; v != &EMPTY; i++) {
+		v->cont = buff[i];
+		v = v->Next(target);
+	}
+	sanity();
+	if (method & (M_LEFT | M_RIGHT))
+		unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS);
+	return true;
+}
+
 
 
 #ifdef WANT_REGEX
@@ -475,7 +576,7 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 	return;
 }
 
-#endif WANT_REGEX
+#endif // WANT_REGEX
 
 /****************************************************************************
  unit::assim
@@ -491,6 +592,7 @@ unit::assim(UNIT target, bool backwards, char *fn, bool *left, bool *right)
 		DEBUG(1,4,fprintf(stddbg,"inner unit::assim %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
 		DEBUG(1,4,fprintf(stddbg,"   env is %c %c\n",left[Prev(depth)->inside()]+'0',right[Next(depth)->inside()]+'0');)
 		if (right[Next(depth)->inside()] && left[Prev(depth)->inside()]) {
+			if (cont==DELETE_ME) return;
 			cont=(Char)fn[(Char)cont];     // Digital UNIX once had trouble here
 			if (cont==DELETE_ME) unlink(M_DELETE);
 			DEBUG(1,4,fprintf(stddbg,"New contents: %c\n",cont);)
@@ -629,12 +731,62 @@ unit::sseg(UNIT target, hash *templts)
 }
 
 /****************************************************************************
+ unit::contour	Distributes a prosodic contour over a linear string of units.
+		The last two arguments are the prosodic quantity code and
+			a flag whether to add the contour to the current
+			values or to set it absolutely.
+		The contour is applied left-to-right.
+ ****************************************************************************/
+
+#define FIT(x,y) ((y==Q_FREQ) ? (x->f) : (y==Q_INTENS) ? (x->i) : (x->t) )
+
+void
+unit::contour(UNIT target, int *recipe, int rec_len, FIT_IDX what, bool additive)
+{
+	unit *u;
+	int i;
+	for (u=LeftMost(target), i=0;
+			i<rec_len && u != &EMPTY;
+			u=u->Next(target), i++)  /* just count'em */ ;
+	if (u->Next(target) != &EMPTY) {
+		shriek("recipe too short: %d items", rec_len);
+	}
+	if (i < rec_len) {
+		shriek("recipe too long");
+	}
+	for (u=LeftMost(target), i=0;  i<rec_len;  u=u->Next(target), i++)
+		FIT(u, what) = recipe[i] + (additive ? FIT(u, what) : 0);
+}
+
+/*************
+	unit *u, *v;
+	int cq_wrap, j, k, avg;
+	
+	DEBUG(1,2,fprintf(stddbg, "unit::smooth (%d:%d) %d %d ...\n", n, rec_len, recipe[0], recipe[1]);)
+	u=v=LeftMost(target);
+	for (j=0; j<n; j++) smooth_cq[j] = FIT(u, what);
+	for (; j<rec_len && u->Next(target)!=&EMPTY; j++, u=u->Next(target)) smooth_cq[j] = FIT(u, what);
+	for (; j<rec_len; j++) smooth_cq[j] = FIT(u, what);
+
+	cq_wrap=0;
+
+	for (; v!=&EMPTY; v=v->Next(target)) {
+		avg=0;
+		for (k=0; k<rec_len; k++) avg+=recipe[k]*smooth_cq[(k + cq_wrap) % rec_len];
+		FIT(v, what) = avg/RATIO_TOTAL;
+		smooth_cq[cq_wrap]=FIT(u, what);
+		if (++cq_wrap==rec_len) cq_wrap=0;
+		if (u->Next(target) != &EMPTY) u = u->Next(target);
+	};
+**********/
+
+/****************************************************************************
  unit::smooth	Smoothens one of the suprasegmental quantities.	The new 
  		value for the quantity is computed as a weighted average
  		of the weights to the left and to the right. The pointer
  		argument points to the array of weights (starting with
  		the leftmost one). The integer arguments are the index
- 		of the weight of the unit being processed ifself and the
+ 		of the weight of the unit being processed itself and the
  		total number of weights in the array.
  		
  		We cannot simply change the value sequentially for each
@@ -645,8 +797,6 @@ unit::sseg(UNIT target, hash *templts)
  ****************************************************************************/
 
 int smooth_cq[SMOOTH_CQ_SIZE];
-
-#define FIT(x,y) ((y==Q_FREQ) ? (x->f) : (y==Q_INTENS) ? (x->i) : (x->t) )
 
 void
 unit::smooth(UNIT target, int *recipe, int n, int rec_len, FIT_IDX what)
@@ -851,8 +1001,9 @@ int
 unit::effective(FIT_IDX which)
 {
 	DEBUG(0,2,fprintf(stddbg,"computing unit::effective, level %d, f=%d\n", depth, f);)
-	int my=which  ?  which==2 ? t : i  :  f;
-	return father? father->effective(which)+my : my;
+	int my = which  ?  which==2 ? t : i  :  f;
+	my *= cfg->sseg_weight[depth];
+	return father ? father->effective(which)+my : my;
 } 
 
 /****************************************************************************
@@ -899,9 +1050,10 @@ unit::count(UNIT what)
 {
 	int i;
 	unit *tmpu;
+	bool tmpscope = scope;
 	scope=true;
 	for (i=0, tmpu=LeftMost(what); tmpu && tmpu!=&EMPTY; tmpu=tmpu->Next(what)) i++;
-	scope=false;
+	scope=tmpscope;
 	return  i;
 }
 

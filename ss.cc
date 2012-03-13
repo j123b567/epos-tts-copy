@@ -173,7 +173,7 @@ int main(int argc, char **argv)
 		while (!feof(f)) {
 			*scratch = 0;
 			fgets(scratch, SCRATCH_SPACE, f);
-			if (scratch) {
+			if (*scratch) {
 				sputs(scratch, sd);
 				get_result();
 			}

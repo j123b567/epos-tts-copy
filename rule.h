@@ -21,10 +21,10 @@
 #define EXCL		'!'
 #define PSEUDOSPACE	'\377'
 
-#define OPCODEstr "subst:regex:postp:prep:diphones:prosody:progress:regress:insert:syll:smooth:raise:debug:if:inside:with:{:}:[:]:error:"
-enum OPCODE {OP_SUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_DIPH, OP_PROSODY, OP_PROGRESS, OP_REGRESS, 
+#define OPCODEstr "subst:regex:postp:prep:diphones:prosody:contour:progress:regress:insert:syll:smooth:raise:debug:if:inside:with:{:}:[:]:<:>:nothing:error:"
+enum OPCODE {OP_SUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_DIPH, OP_PROSODY, OP_CONTOUR, OP_PROGRESS, OP_REGRESS, 
 	OP_INSERT, OP_SYLL, OP_SMOOTH, OP_RAISE, OP_DEBUG, OP_IF, OP_INSIDE, OP_WITH,
-	OP_BEGIN, OP_END, OP_CHOICE, OP_CHOICEND, OP_ERROR};
+	OP_BEGIN, OP_END, OP_CHOICE, OP_CHOICEND, OP_SWITCH, OP_SWEND, OP_NOTHING, OP_ERROR};
 		/* OP_BEGIN, OP_END and other OP's without parameters should come last
 		   OP_ERROR would abort the compilation (never used)			*/
 enum RULE_STATUS {RULE_OK, RULE_IGNORED, RULE_BAD=-1};
