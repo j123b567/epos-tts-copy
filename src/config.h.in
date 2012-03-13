@@ -46,6 +46,9 @@
 /* Define if you have the getegid function.  */
 #undef HAVE_GETEGID
 
+/* Define if you have the gethostname function.  */
+#undef HAVE_GETHOSTNAME
+
 /* Define if you have the qnx_name_attach function.  */
 #undef HAVE_QNX_NAME_ATTACH
 
@@ -115,6 +118,9 @@
 /* Define if you have the <sys/stat.h> header file.  */
 #undef HAVE_SYS_STAT_H
 
+/* Define if you have the <sys/termios.h> header file.  */
+#undef HAVE_SYS_TERMIOS_H
+
 /* Define if you have the <sys/time.h> header file.  */
 #undef HAVE_SYS_TIME_H
 
@@ -133,11 +139,17 @@
 /* Define if you have the c library (-lc).  */
 #undef HAVE_LIBC
 
+/* Define if you have the lnsl library (-llnsl).  */
+#undef HAVE_LIBLNSL
+
 /* Define if you have the regex library (-lregex).  */
 #undef HAVE_LIBREGEX
 
 /* Define if you have the rx library (-lrx).  */
 #undef HAVE_LIBRX
+
+/* Define if you have the socket library (-lsocket).  */
+#undef HAVE_LIBSOCKET
 
 /* Define if you have the stdc++ library (-lstdc++).  */
 #undef HAVE_LIBSTDC__

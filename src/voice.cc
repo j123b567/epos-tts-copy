@@ -295,7 +295,7 @@ void
 voice::claim_diphone_names()
 {
 	if (!diphone_names && dptfile && *dptfile)
-		diphone_names = claim(dptfile, loc, cfg->inv_base_dir, "rt", "diphone names");
+		diphone_names = claim(dptfile, loc, cfg->inv_base_dir, "rt", "diphone names", NULL);
 }
 
 voice::~voice()

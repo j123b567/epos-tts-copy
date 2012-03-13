@@ -37,7 +37,7 @@ parser::parser(const char *filename, int mode)
 	} else { 
 		if (mode) text = (unsigned char *) strdup(filename);
 		else {
-			file *f = claim(filename, this_lang->input_dir, cfg->lang_base_dir, "rt", "input text");
+			file *f = claim(filename, this_lang->input_dir, cfg->lang_base_dir, "rt", "input text", NULL);
 			text = (unsigned char *)strdup(f->data);
 			unclaim(f);
 		}

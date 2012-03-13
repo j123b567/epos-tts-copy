@@ -350,9 +350,9 @@ bool *booltab(const char *s)
 	tab = (bool *)xcalloc(sizeof(bool), 256);         //should always return zero-filled array
 	
 	DEBUG(0,0,fprintf(STDDBG, "gonna booltab out of %s\n", s););
-	if (*s==EXCL) memset(tab, true, 256*sizeof(bool));
+	if (*s==EXCLAM) memset(tab, true, 256*sizeof(bool));
 	for(tmp=s; *tmp; tmp++) switch (*tmp) {
-		case EXCL: mode = !mode; break;
+		case EXCLAM: mode = !mode; break;
 		case ESCAPE: if (!*++tmp) tmp--;	// and fall through
 		default:  tab[(unsigned char)(*tmp)]=mode;
 	}
@@ -447,11 +447,12 @@ file::~file()
 
 static hash_table<char, file> *file_cache = NULL;
 
-inline bool reclaim(file *ff, const char *flags, const char *description)
+inline bool reclaim(file *ff, const char *flags, const char *description, void oven(char *, int))
 {
 	FILE *f;
 	int tmp;
 	int ts = get_timestamp(ff->filename);
+	int len;
 
 	if (ts == ff->timestamp)
 		return false;
@@ -460,13 +461,19 @@ inline bool reclaim(file *ff, const char *flags, const char *description)
 	fseek(f, 0, SEEK_END);
 	ff->data = (char *)xrealloc(ff->data, tmp = ftell(f) + 1);
 	rewind(f);
-	ff->data[fread(ff->data, 1, tmp, f)] = 0;
+	len = fread(ff->data, 1, tmp, f);
+	if (len < 0) {
+		if (!description) return NULL;
+		shriek(445, fmt("Failed to read %s from %s", description, ff->filename));
+	}
+	ff->data[len] = 0;
+	if (oven) oven(ff->data, len);
 	fclose(f);
 	DEBUG(1,0,fprintf(STDDBG, "cache update for %s\n", ff->filename);)
 	return true;
 }
 
-file *claim(const char *filename, const char *dirname, const char *treename, const char *flags, const char *description)
+file *claim(const char *filename, const char *dirname, const char *treename, const char *flags, const char *description, void oven(char *, int))
 {
 	FILE *f;
 	file *ff;
@@ -484,7 +491,7 @@ file *claim(const char *filename, const char *dirname, const char *treename, con
 	pathname = compose_pathname(filename, dirname, treename);
 	ff = file_cache->translate(pathname);
 	if (ff) {
-		reclaim(ff, flags, description);
+		reclaim(ff, flags, description, oven);
 		DEBUG(1,0,fprintf(STDDBG, "cache hit on %s\n", pathname);)
 		free(pathname);
 		ff->ref_count++;
@@ -500,9 +507,10 @@ file *claim(const char *filename, const char *dirname, const char *treename, con
 	tmp = fread(data, 1, tmp, f);
 	if (tmp == -1) {
 		if (!description) return NULL;
-		shriek(445, fmt("Failed to read %s from %s (non-readable)", description, pathname));
+		shriek(445, fmt("Failed to read %s from %s", description, pathname));
 	}
 	data[tmp] = 0;	  // remember DOS crlfs. tmp suits here.
+	if (oven) oven(data, tmp);
 	fclose(f);
 
 	ff = new file;
@@ -599,6 +607,10 @@ void epos_init()	 //Some global sanity checks made here
 		shriek (862, fmt("You dwarf! I want at least 32 bit arithmetic & pointery [%d]", sizeof(int)));
 	if (sizeof(int) > sizeof(void *)) shriek(862, "Your integers are longer than pointers!\n"
 				"Turn hash_table::forall() fns in hash.h the other way round.");
+	if ((unsigned char)-1 != 255) shriek(862, "Your chars are not 8-bit? Funny.");
+	if (*(short int *)"wxyz" == 256 * 'w' + 'x') cfg->big_endian = true;
+	if (*(short int *)"wxyz" != 256 * 'x' + 'w' && !cfg->big_endian) shriek(862,
+				"Endianness detection failed");		// FIXME
 
 	srand(time(NULL));	// randomize
 

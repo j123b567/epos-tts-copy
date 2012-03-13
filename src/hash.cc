@@ -29,7 +29,7 @@
 #ifdef HAVE_TEMPL_INST
 
 template class hash_table<char, file>;
-// template class hash_table<char, char>;
+template class hash_table<char, char>;
 template class hash_table<char, option>;
 #ifndef MONOLITH
 	template class hash_table<char, a_ttscp>;

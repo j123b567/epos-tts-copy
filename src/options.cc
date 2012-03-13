@@ -808,7 +808,7 @@ static inline void dump_help()
 
 void check_cfg_version(const char *filename)
 {
-	file *f = claim(filename, "", "", "r", NULL);
+	file *f = claim(filename, "", "", "r", NULL, NULL);
 	if (!f) shriek(843, "Configuration files not installed or very old");
 	if (strncmp(f->data, VERSION, strlen(VERSION)) && cfg->paranoid) {
 		DEBUG(3,10,fprintf(STDDBG, "Expected version %s, found version %s\n",

@@ -448,9 +448,12 @@ OPTION (sd_out, "",		   INT, -1)	// current output network socket
 OPTION (pend_min, "pend_min",	   INT, 3)	// FIXME: non-functional
 OPTION (pend_max, "pend_max",	   INT, 7)	// FIXME: non-functional
 
+OPTION (big_endian, "big_endian", BOOL, false)  // run-time decided
+
 LNG_OPTION (std_voices, voice_names, "voices", STR, "")	// voices supported for this language
 LNG_OPTION (sft_opts, soft_option_names, "soft_options", STR, "")
 				// language-specific voice options supported for this language
+LNG_OPTION (permanent_fallbacks, permanent_fallbacks, "permanent_fallbacks", BOOL, false)
 LNG_OPTION (fallback_voice, fallback_voice, "fallback_voice", STR, "")
 				// voice to be used when the current one fails at run time
 

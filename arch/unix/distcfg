@@ -11,9 +11,9 @@ if [ -d $libdir ]; then
 	fi
 	cp -af $libdir $dir/cfg
 	rm -fr $dir/cfg/inv/*
-	if [ -f $dir/src/lpcsyn.cc ]; then
-		echo '(excluding lpc)'
-		cp -f $dir/src/lpcsyn.{cc,h} lpc/insurance 2>/dev/null
-	fi
-	rm -fr $dir/src/lpcsyn.{cc,h} 2>/dev/null
+#	if [ -f $dir/src/lpcsyn.cc ]; then
+#		echo '(excluding lpc)'
+#		cp -f $dir/src/lpcsyn.{cc,h} lpc/insurance 2>/dev/null
+#	fi
+#	rm -fr $dir/src/lpcsyn.{cc,h} 2>/dev/null
 fi

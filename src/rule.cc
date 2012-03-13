@@ -986,7 +986,7 @@ class r_if: public cond_rule
 
 r_if::r_if(char *param, text *file, hash *vars) : cond_rule(param, file, vars)
 {
-	option *o = option_struct(raw + (*raw == EXCL) , this_lang->soft_options);
+	option *o = option_struct(raw + (*raw == EXCLAM) , this_lang->soft_options);
 	if (!o) shriek(811, fmt("Not an option: %s%s", raw, debug_tag()));
 	if (o->opttype != O_BOOL) shriek(811, fmt("Not a truth value option: %s%s", raw, debug_tag()));
 	if (o->structype != OS_VOICE) shriek(811, fmt("Not a voice option: %s%s", raw, debug_tag()));
@@ -996,7 +996,7 @@ r_if::r_if(char *param, text *file, hash *vars) : cond_rule(param, file, vars)
 void
 r_if::apply(unit *root)		// this_lang must correspond to these rules!
 {
-	if (this_voice && (*(bool *)((char *)this_voice + flag_offs)) ^ (*raw == EXCL))
+	if (this_voice && (*(bool *)((char *)this_voice + flag_offs)) ^ (*raw == EXCLAM))
 		then->apply(root);
 }
 
@@ -1025,3 +1025,4 @@ class r_nothing: public rule
 };
 
 #include "block.cc"
+

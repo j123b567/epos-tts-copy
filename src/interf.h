@@ -114,8 +114,8 @@ struct file
 	~file();
 };
 
-file *claim(const char *filename, const char *dirname, const char *treename, const char *flags, const char *description);
-bool reclaim(file *);	// false...unchanged, true...changed
+file *claim(const char *filename, const char *dirname, const char *treename, const char *flags, const char *description, void oven(char *buff, int len));
+// bool reclaim(file *);	// false...unchanged, true...changed
 void unclaim(file *);
 
 // void list_languages();
@@ -132,7 +132,7 @@ struct diphone {
 
 #define DQUOT		'"'            //used when parsing the .ini file
 #define ESCAPE		'\\'
-#define EXCL		'!'
+#define EXCLAM		'!'
 #define PSEUDOSPACE	'\377'
 
 

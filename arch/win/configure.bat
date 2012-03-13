@@ -30,8 +30,8 @@ copy ..\arch\win\config.in .\config.h
 copy ..\arch\win\epos.dsp .
 copy ..\arch\win\epos.dsw .
 
-if not exist lpcsyn.cc echo /**/ > lpcsyn.cc
-if not exist lpcsyn.h  echo /**/ > lpcsyn.h
+rem if not exist lpcsyn.cc echo /**/ > lpcsyn.cc
+rem if not exist lpcsyn.h  echo /**/ > lpcsyn.h
 
 cd ..\cfg\cfg
 

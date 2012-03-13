@@ -141,13 +141,13 @@ unit::fout(char *filename)      //NULL means stdout
 	file *tmp;
 	outf = filename ? fopen(filename, "wt", "unit dump file") : cfg->stddbg;
 
-	tmp = claim(cfg->header_xscr, cfg->ini_dir, "", "rt", "transcription header");
+	tmp = claim(cfg->header_xscr, cfg->ini_dir, "", "rt", "transcription header", NULL);
 	fputs(tmp->data, outf);
 	unclaim(tmp);
 
 	fdump(outf);
 
-	tmp = claim(cfg->footer_xscr, cfg->ini_dir, "", "rt", "transcription footer");
+	tmp = claim(cfg->footer_xscr, cfg->ini_dir, "", "rt", "transcription footer", NULL);
 	fputs(tmp->data, outf);
 	unclaim(tmp);
 

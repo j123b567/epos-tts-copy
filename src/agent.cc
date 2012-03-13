@@ -44,6 +44,12 @@
 	#include <sys/stat.h>
 #endif
 
+#ifdef HAVE_MMSYSTEM_H
+	#include <mmsystem.h>
+	#include <windows.h>
+	#include <windowsx.h>
+#endif
+
 #include <fcntl.h>
 #include <errno.h>
 
@@ -53,6 +59,67 @@
 
 
 #define DARK_ERRLOG 2	/* 2 == stderr; for global stdshriek and stddbg output */
+
+#ifdef HAVE_MMSYSTEM_H
+/* WndProc - Main window procedure function.
+ */
+HWAVEOUT       hWaveOut = NULL;
+LPWAVEHDR      lpWaveHdr   = NULL;
+
+void CALLBACK WndProc(
+  HWAVEOUT hwo,      
+  UINT uMsg,         
+  DWORD dwInstance,  
+  DWORD wParam,    
+  DWORD lParam     
+)
+//LONG FAR PASCAL WndProc(
+//HWND hWnd,
+//UINT msg,
+//WPARAM wParam,
+//LPARAM lParam)
+{
+   switch (uMsg)
+   {
+      //HANDLE_MSG(hWnd, WM_DESTROY, ReverseOnDestroy);
+
+      //HANDLE_MSG(hWnd, WM_SYSCOMMAND, ReverseOnSysCommand);
+
+      //case WM_SETFOCUS:
+         //SetFocus(hwndName);
+         //return 0;
+
+      //HANDLE_MSG(hWnd, WM_COMMAND, ReverseOnCommand);
+      case MM_WOM_DONE:
+         /* This message indicates a waveform data block has
+          * been played and can be freed. Clean up the
+          * preparation done previously on the header.
+          */
+//         waveOutUnprepareHeader( (HWAVEOUT) wParam,
+//            (LPWAVEHDR) lParam, sizeof(WAVEHDR) );
+         waveOutUnprepareHeader( hwo, lpWaveHdr, sizeof(WAVEHDR) );
+
+         /* free all memory associated with the data block
+          */
+         //cleanup();
+         /* Close the waveform output device.
+          */
+//         waveOutClose( (HWAVEOUT) wParam );
+         waveOutClose( hwo );
+         hWaveOut = NULL;
+
+         /* Reenable both button controls.
+          */
+         //EnableWindow( hwndPlay, TRUE );
+         //EnableWindow( hwndQuit, TRUE );
+         //SetFocus(hwndName);
+
+         break;
+   }
+//   return 0; //MyDefProc(hWnd,msg,wParam,lParam);
+}
+#endif
+
 
 agent::agent(DATA_TYPE typein, DATA_TYPE typeout)
 {
@@ -389,8 +456,14 @@ a_synth::run()
 		try {
 			this_voice->syn = setup_synth(this_voice);
 		} catch (command_failed *e) {
-			if (e->code / 10 == 47 && this_lang->fallback_voice) {	// 47x codes are network errors
+			if (e->code / 10 == 47 && this_lang->fallback_voice && *this_lang->fallback_voice) {
+								// 47x codes are network errors
 				voice_switch(this_lang->fallback_voice);
+				if (this_lang->permanent_fallbacks) {
+					c->leave();
+					voice_switch(this_lang->fallback_voice);
+					c->enter();
+				} 
 				delete e;
 				run();
 				return;
@@ -456,7 +529,11 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 			  if (socket == -1) shriek(445, fmt("Cannot open file %s", par));
 			  else close_upon_exit = true;
 			  break;
+#ifdef HAVE_MMSYSTEM_H
+		case '#': socket = -2; //special_io(par + 1, in);
+#else
 		case '#': socket = special_io(par + 1, in);
+#endif
 			  break;
 		default:  shriek(462, "unimplemented i/o agent class");
 			/* if ever adding classes, take care of closing/nonclosing
@@ -602,6 +679,7 @@ a_output::report(bool total, int written)
 	}
 }
 
+
 class oa_ascii : public a_output
 {
 	virtual int insize() {
@@ -646,6 +724,66 @@ void
 oa_wavefm::run()
 {
 	wavefm *w = (wavefm *)inb;
+#ifdef HAVE_MMSYSTEM_H
+//	HWAVEOUT       hWaveOut = NULL;
+//	LPWAVEHDR      lpWaveHdr   = NULL;
+//	HPSTR          lpData      = NULL;     // waveform data block
+	DWORD          dwResult;
+//	HANDLE         hFormat;
+	WAVEFORMATEX   pFormat;
+//	DWORD          dwDataSize;
+
+	if (socket == -2) {
+	pFormat.wFormatTag = WAVE_FORMAT_PCM;
+	pFormat.wBitsPerSample = w->hdr.wlenb;
+	pFormat.nSamplesPerSec = w->hdr.sf1;
+	pFormat.nChannels = w->hdr.numchan;
+	pFormat.nBlockAlign = w->hdr.wlenB;
+	pFormat.nAvgBytesPerSec = w->hdr.avr1;
+	pFormat.cbSize = 0;
+	#if (WINVER >= 0x0400)
+		if (waveOutOpen(&hWaveOut, WAVE_MAPPER, &pFormat, 0, 0L,
+               WAVE_FORMAT_QUERY))
+	#else
+		if (waveOutOpen(&hWaveOut, WAVE_MAPPER, (LPWAVEFORMAT)&pFormat, 0, 0L,
+               WAVE_FORMAT_QUERY))
+	#endif
+	shriek(445, "Wave fmt not supported ...");
+	#if (WINVER >= 0x0400)
+		if (int autobus=waveOutOpen(&hWaveOut, WAVE_MAPPER,
+			&pFormat, (DWORD)&WndProc, 0L, CALLBACK_FUNCTION ))
+//			&pFormat, (UINT)0, 0L, CALLBACK_WINDOW))
+	#else
+		if (waveOutOpen(&hWaveOut, WAVE_MAPPER, 
+			(LPWAVEFORMAT)&pFormat, (DWORD)&WndProc, 0L, CALLBACK_FUNCTION ))
+//			(LPWAVEFORMAT)&pFormat, (UINT)0, 0L, CALLBACK_WINDOW))
+    #endif
+	shriek(445, "Cannot open wave device ...");
+//	lpWaveHdr = (LPWAVEHDR)GlobalAllocPtr(GMEM_MOVEABLE | GMEM_SHARE,
+//                  (DWORD) sizeof(WAVEHDR));
+	lpWaveHdr = (LPWAVEHDR)xmalloc(sizeof(WAVEHDR));
+	if (!lpWaveHdr)
+	shriek(445, "Cannot allocate wave header ...");
+//	lpWaveHdr = (LPWAVEHDR)xmalloc(sizeof(WAVEHDR));
+	lpWaveHdr->lpData = w->buffer;
+	lpWaveHdr->dwBufferLength = w->hdr.buffer_idx;
+	lpWaveHdr->dwFlags = 0L;
+	lpWaveHdr->dwLoops = 0L;
+//	lpWaveHdr->dwFlags = WHDR_ENDLOOP; 
+	if(waveOutPrepareHeader(hWaveOut, lpWaveHdr, sizeof(WAVEHDR)))
+		shriek(445, "Cannot prepare wave header ...");
+	dwResult = waveOutWrite(hWaveOut, lpWaveHdr, sizeof(WAVEHDR));
+	if (dwResult != 0)
+		shriek(445, "Cannot write to wave device ...");
+	report(false, 1);
+	report(true, 1);
+	attached = false;
+//	delete w;
+	inb = NULL;
+	finis(false);
+	} else {
+#endif
+	
 	if (!attached && !sleep_table[socket]) {
 //		report(true, w->written_bytes() /* + sizeof(wave_header) */);
 		w->attach(socket);
@@ -669,6 +807,9 @@ oa_wavefm::run()
 //		reply("200 output OK");
 		finis(false);
 	}
+#ifdef HAVE_MMSYSTEM_H
+	}
+#endif
 }
 
 void
@@ -1062,6 +1203,14 @@ void make_nonblocking(int f)
 	fcntl(f, F_SETFL, O_NONBLOCK);
 #endif
 }
+
+#ifndef HAVE_GETHOSTNAME
+int gethostbyname(char *b, size_t)
+{
+	strcpy(b, "localhost");
+	return 0;
+}
+#endif
 
 a_accept::a_accept() : agent(T_NONE, T_NONE)
 {

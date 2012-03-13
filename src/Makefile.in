@@ -5,8 +5,7 @@ SRC=.cc
 COPY=cp
 CC=@CXX@
 LNK=@CXX@
-LDOPTS=-L/lib -L/usr/local/lib -L/usr/lib
-OTHERLIBS=@LIBS@
+LDOPTS=-L/lib -L/usr/local/lib -L/usr/lib @LIBS@
 
 # The following line may be deleted if using any other compiler than Watcom C.
 export WPP386=-xs
@@ -24,6 +23,7 @@ export WPP386=-xs
 
 CFLAGS=@CFLAGS@
 FLAGS=$(DMALLOC_STATUS) $(HOMEMADE_STRDUP) $(CFLAGS)
+LINKFLAGS=
 
 # SS     = ss
 
@@ -88,16 +88,16 @@ Makefile: configure config.h Makefile.in
 
 say	: say.o Makefile ../cfg/cfg/default.ini
 	@echo Building the client...
-	$(LNK) -o $@ say.o $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
+	$(LNK) -o $@ say.o $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
 	@echo Type \"make install\" to install cfg files to $(LIBDIR)
 
 vrfy	: vrfy.cc client.cc
-	$(CC) $(FLAGS) -o $@ vrfy.cc
+	$(CC) $(LDOPTS) $(FLAGS) -o $@ vrfy.cc
 
 monolith mh : eposm
 
 eposm: monolith.o hashm.o client.o $(MODULES) Makefile ../cfg/cfg/default.ini
-	$(LNK) -o $@ monolith.o client.o hashm.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
+	$(LNK) -o $@ monolith.o client.o hashm.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
 
 # static  : $(MODULES) monolith.o say.o Makefile ../cfg/cfg/default.ini
 #	$(LNK) -o say say.o $(LIBNAME) $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
@@ -110,7 +110,7 @@ eposm: monolith.o hashm.o client.o $(MODULES) Makefile ../cfg/cfg/default.ini
 epos:	Makefile $(HEADERS) $(MODULES) hash.o daemon.o agent.o ttscp.o client.o
 	@echo Building the daemon...
 # replace MODULES with LIBNAME in the following line to produce a shared daemon
-	$(LNK) -o $@ daemon.o agent.o ttscp.o client.o hash.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
+	$(LNK) -o $@ daemon.o agent.o ttscp.o client.o hash.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
 #	@../arch/unix/rerunepos
 
 tgz: distclean $(SHELL) ../arch/unix/maketgz $(eposversionfile) cfgsync
@@ -231,8 +231,8 @@ ptdsyn.o: ptdsyn.h waveform.h synth.h ptdsyn.cc interf.h options.lst $(MAKEFILE)
 lpcsyn.o: lpcsyn.h waveform.h synth.h lpcsyn.cc interf.h options.lst $(MAKEFILE)
 	$(CC) $(FLAGS) -c -o $@ lpcsyn.cc
 
-lpcsyn.cc lpcsyn.h:
-	@if [ ! -f $@ ]; then if [ -f ../../$@ ]; then ln ../../$@ .; else echo "">$@; fi; else touch $@; fi
+#lpcsyn.cc lpcsyn.h:
+#	@if [ ! -f $@ ]; then if [ -f ../../$@ ]; then ln ../../$@ .; else echo "">$@; fi; else touch $@; fi
 
 tcpsyn.o: tcpsyn.h tcpsyn.cc client.h waveform.h interf.h options.lst $(MAKEFILE)
 	$(CC) $(FLAGS) -c -o $@ tcpsyn.cc

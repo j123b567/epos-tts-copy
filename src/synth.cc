@@ -18,7 +18,9 @@
 #include "ktdsyn.h"
 #include "ptdsyn.h"
 #include "lpcsyn.h"
+#ifndef MONOLITH
 #include "tcpsyn.h"
+#endif
 
 synth *setup_synth(voice *v)
 {
@@ -26,8 +28,10 @@ synth *setup_synth(voice *v)
 
 	switch (v->type) {
 		case S_NONE:	shriek(813, "This voice is mute");
+#ifndef MONOLITH
 		case S_TCP:	// shriek(462, "Network voices not implemented");
 				return new tcpsyn(v);
+#endif
 #ifdef LPC_H
 		case S_LPC_FLOAT: return new lpcfloat(v);
 		case S_LPC_INT: return new lpcint(v);

@@ -930,3 +930,12 @@ for an exciting story, just skip it.
 2.4.36 from 2.4.35	11.11.99
 	- fixed unlabelled waveforms (added "adjustment" to class w_ophase)
 
+2.4.37 from 2.4.36	 6.3.00
+	- endianness and Solaris related fixes
+	- mmsystem compatibility (Petr)
+	- added an lpc voice, "theimer"
+	- voices reconfigured: rvq renamed to r-kubec-vq, r-vichova added
+	- permanent voice fallbacks
+	- put lpcsyn.cc lpcsyn.h under GPL
+	- repacked inventories (relative to /usr/lib/epos/inv, added READMEs)
+

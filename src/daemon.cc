@@ -65,6 +65,10 @@
 	#include <signal.h>
 #endif
 
+#ifdef HAVE_SYS_TERMIOS_H
+	#include <sys/termios.h>
+#endif
+
 #include <fcntl.h>
 #include <errno.h>
 

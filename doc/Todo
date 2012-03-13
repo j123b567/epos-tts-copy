@@ -27,6 +27,7 @@ Features
 - reasonable logging
 - investigate the optimum pause lengths
 - integrate the neural network stuff
+- config files should ignore trailing carriage returns
 
 Inventory omissions
 - unknown diphone - no. 19 (consonant---r)

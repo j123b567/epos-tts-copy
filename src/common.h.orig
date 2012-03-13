@@ -68,8 +68,7 @@ char *strdup(const char *);
 		#include <rx.h>
 	#else
 	    #ifdef HAVE_REGEX_H
-//		#include <regex.h>
-		#include "rx.h"
+		#include <regex.h>
 	    #else
 		#include "rx.h"
 	    #endif

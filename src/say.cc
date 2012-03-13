@@ -129,7 +129,7 @@ void trans_data()
 			scratch[SCRATCH_SPACE] = 0;
 			sscanf(scratch, "%d", &count);
 			char *b=(char *)malloc(count+1);
-			b[read(datad, b, count)] = 0;
+			b[yread(datad, b, count)] = 0;
 			printf("%s\n", b);
 		}
 	}
