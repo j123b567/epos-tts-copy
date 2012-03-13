@@ -92,6 +92,6 @@ if   colloquial   text
 	regex	/1/~jedna/	colon
 }
 
-subst  numsimple.dic
+subst  basenum.dic
 regex   /0//
 
