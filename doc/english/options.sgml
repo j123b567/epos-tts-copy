@@ -147,7 +147,7 @@ and <tt>value&lowbar;esc</tt> constants in <tt>option.cc</tt>, or the table in
 purposes by Epos.
 
 
-<sect2> Comments and the &commat;include directive <label id="include-directive">
+<sect2> Comments and the @include directive <label id="include-directive">
 <p>
 
 A configuration file usually contains various comments. A comment can start
@@ -156,15 +156,15 @@ The semicolon (or hash mark) must be located at the beginning of line
 or just after some whitespace. Semicolons in the middle of a word don't
 start a comment.
 
-If a line begins with <tt>&commat;include</tt> (possibly preceded by whitespace),
+If a line begins with <tt>@include</tt> (possibly preceded by whitespace),
 it is treated as the <em>include directive</em>.
-The format of the line should be <tt>&commat;include "filename"</tt> and it will
+The format of the line should be <tt>@include "filename"</tt> and it will
 cause the contents of the <tt>filename</tt> file to be inserted at this place of the 
 main <tt>.ini</tt> file. These includes can be nested to any finite depth; if no or
 relative path is specified, the directory which holds the topmost file is used for
 the lookup.
 
-Two more directives, <tt>&commat;warn</tt> and <tt>&commat;error</tt> with obvious semantics
+Two more directives, <tt>@warn</tt> and <tt>@error</tt> with obvious semantics
 are available for diagnostic purposes.
 
 <sect1> Command line
@@ -481,7 +481,7 @@ Some options, especially pertaining to parsing the input and
 formatting the output, are set separately for every layer of
 the <ref id="tsr" name="TSR">, so that each of them is actually
 an array of options, indexed using the commercial at character
-(&commat;) followed by a layer name.  For example,
+(@) followed by a layer name.  For example,
 
 <tscreen><verb>
 	perm@colon	":,"
@@ -766,23 +766,23 @@ transmitting the text over TTSCP.
 	by the <tt/ini_dir/ option, which is to be printed after any
 	phonetic transcription.
 <tag>--begin* <sl/string/</tag>
-	The asterisk stands for a &commat;-separated symbolic name of a linguistic description
+	The asterisk stands for a @-separated symbolic name of a linguistic description
 	level, such as <tt/phone/, <tt/syll/ or <tt/word/.  The parameter
 	is a string which will be printed before the first unit within this
 	unit, for example before the word-initial syllable in case of
 	<tt/begin@word/).
 <tag>--close* <sl/string/</tag>
-	The asterisk stands for a &commat;-separated symbolic name of a linguistic description
+	The asterisk stands for a @-separated symbolic name of a linguistic description
 	level, such as <tt/phone/, <tt/syll/ or <tt/word/.  The parameter
 	is a string which will be printed after the last unit within this
 	unit, for example before the word-final syllable in case of
 	<tt/close@word/).
 <tag>--color* <sl/string/</tag>
-	The asterisk stands for a &commat;-separated symbolic name of a linguistic description
+	The asterisk stands for a @-separated symbolic name of a linguistic description
 	level, such as <tt/phone/, <tt/syll/ or <tt/word/.  The parameter
 	is the string to switch the color for this level of description.
 <tag>--separ* <sl/string/</tag>
-	The asterisk stands for a &commat;-separated symbolic name of a linguistic description
+	The asterisk stands for a @-separated symbolic name of a linguistic description
 	level, such as <tt/phone/, <tt/syll/ or <tt/word/.  The parameter
 	is a string which will be printed between adjacent units of this
 	level of description, for example between words in case of	
@@ -939,7 +939,7 @@ option is thence language dependent.
 	The parameter is a filename. The file contains the transformational
 	rules to be applied for this language.
 <tag>--perm* <sl/set/</tag>
-	The asterisk stands for a &commat;-separated symbolic name of a linguistic description
+	The asterisk stands for a @-separated symbolic name of a linguistic description
 	level, such as <tt/phone/, <tt/syll/ or <tt/word/.  The parameter
 	is a simple sequence of all characters belonging to this level
 	of description. For example, <tt/perm_phones/ will list letters,
@@ -976,14 +976,14 @@ option is thence language dependent.
    </table>
 	This option may influence other voice dependent options quite significantly,
 	as some of them are speech synthesis type dependent.
-<tag>--location <sl/&lsqb;&lsqb;voice&rsqb;&lsqb;.language&rsqb;&commat;&rsqb;hostname&lsqb;:port&rsqb;/ </tag>
+<tag>--location <sl/&lsqb;&lsqb;voice&rsqb;&lsqb;.language&rsqb;@&rsqb;hostname&lsqb;:port&rsqb;/ </tag>
 	If this speech synthesis is of the <tt/internet/ type,
 	this option can be used to set the hostname of the remote
 	server.  If the remote server is listening on a non-standard port number
 	(currently the standard port is considered to be 8778), the
 	host name may be followed by a colon and the port number
 	requested.  The desired remote voice and language may be optionally specified
-	before the host name, separated with a <tt/&commat;/ character
+	before the host name, separated with a <tt/@/ character
 	from the host name and with a dot from each other.  If a language name
 	is specified, while a voice name is not, the language name should be
 	preceded with a dot.
@@ -1066,7 +1066,7 @@ of those adjustments themselves.
 
 <descrip>
 <tag>--pros_weight* <sl/weight/</tag>
-	The asterisk stands for a &commat;-separated symbolic name of a linguistic description
+	The asterisk stands for a @-separated symbolic name of a linguistic description
 	level, such as <tt/phone/, <tt/syll/ or <tt/word/.  The parameter
 	is an integer value primarily used for enabling (1) or disabling (0)
 	certain levels of description when the total quantities for a diphone

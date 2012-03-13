@@ -151,7 +151,7 @@ and <CODE>value_esc</CODE> constants in <CODE>option.cc</CODE>, or the table in
 purposes by Epos.
 <P>
 <P>
-<H3><A NAME="include-directive"></A> Comments and the &commat;include directive </H3>
+<H3><A NAME="include-directive"></A> Comments and the @include directive </H3>
 
 <P>
 <P>A configuration file usually contains various comments. A comment can start
@@ -159,14 +159,14 @@ on any line with a semicolon or hash mark and lasts to the end of line.
 The semicolon (or hash mark) must be located at the beginning of line
 or just after some whitespace. Semicolons in the middle of a word don't
 start a comment.
-<P>If a line begins with <CODE>&commat;include</CODE> (possibly preceded by whitespace),
+<P>If a line begins with <CODE>@include</CODE> (possibly preceded by whitespace),
 it is treated as the <EM>include directive</EM>.
-The format of the line should be <CODE>&commat;include "filename"</CODE> and it will
+The format of the line should be <CODE>@include "filename"</CODE> and it will
 cause the contents of the <CODE>filename</CODE> file to be inserted at this place of the 
 main <CODE>.ini</CODE> file. These includes can be nested to any finite depth; if no or
 relative path is specified, the directory which holds the topmost file is used for
 the lookup.
-<P>Two more directives, <CODE>&commat;warn</CODE> and <CODE>&commat;error</CODE> with obvious semantics
+<P>Two more directives, <CODE>@warn</CODE> and <CODE>@error</CODE> with obvious semantics
 are available for diagnostic purposes.
 <P>
 <H2><A NAME="ss3.3">3.3 Command line</A>
@@ -473,7 +473,7 @@ formatting the output, are set separately for every layer of
 the 
 <A HREF="epos-2.html#tsr">TSR</A>, so that each of them is actually
 an array of options, indexed using the commercial at character
-(&commat;) followed by a layer name.  For example,
+(@) followed by a layer name.  For example,
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -719,20 +719,20 @@ phonetic transcription.
 <DT><B>--footer <I>filename</I></B><DD><P>The value is the file name of a file in the directory specified
 by the <CODE>ini_dir</CODE> option, which is to be printed after any
 phonetic transcription.
-<DT><B>--begin* <I>string</I></B><DD><P>The asterisk stands for a &commat;-separated symbolic name of a linguistic description
+<DT><B>--begin* <I>string</I></B><DD><P>The asterisk stands for a @-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is a string which will be printed before the first unit within this
 unit, for example before the word-initial syllable in case of
 <CODE>begin@word</CODE>).
-<DT><B>--close* <I>string</I></B><DD><P>The asterisk stands for a &commat;-separated symbolic name of a linguistic description
+<DT><B>--close* <I>string</I></B><DD><P>The asterisk stands for a @-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is a string which will be printed after the last unit within this
 unit, for example before the word-final syllable in case of
 <CODE>close@word</CODE>).
-<DT><B>--color* <I>string</I></B><DD><P>The asterisk stands for a &commat;-separated symbolic name of a linguistic description
+<DT><B>--color* <I>string</I></B><DD><P>The asterisk stands for a @-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is the string to switch the color for this level of description.
-<DT><B>--separ* <I>string</I></B><DD><P>The asterisk stands for a &commat;-separated symbolic name of a linguistic description
+<DT><B>--separ* <I>string</I></B><DD><P>The asterisk stands for a @-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is a string which will be printed between adjacent units of this
 level of description, for example between words in case of      
@@ -864,7 +864,7 @@ to serve as a sonority peak if it happens to be word-initial.
 by the individual <CODE>syll</CODE> rule.)
 <DT><B>--rules_file <I>filename</I></B><DD><P>The parameter is a filename. The file contains the transformational
 rules to be applied for this language.
-<DT><B>--perm* <I>set</I></B><DD><P>The asterisk stands for a &commat;-separated symbolic name of a linguistic description
+<DT><B>--perm* <I>set</I></B><DD><P>The asterisk stands for a @-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is a simple sequence of all characters belonging to this level
 of description. For example, <CODE>perm_phones</CODE> will list letters,
@@ -901,13 +901,13 @@ characters (dashes and underscores are also allowed).
 
 This option may influence other voice dependent options quite significantly,
 as some of them are speech synthesis type dependent.
-<DT><B>--location <I>[[voice][.language]&commat;]hostname[:port]</I> </B><DD><P>If this speech synthesis is of the <CODE>internet</CODE> type,
+<DT><B>--location <I>[[voice][.language]@]hostname[:port]</I> </B><DD><P>If this speech synthesis is of the <CODE>internet</CODE> type,
 this option can be used to set the hostname of the remote
 server.  If the remote server is listening on a non-standard port number
 (currently the standard port is considered to be 8778), the
 host name may be followed by a colon and the port number
 requested.  The desired remote voice and language may be optionally specified
-before the host name, separated with a <CODE>&commat;</CODE> character
+before the host name, separated with a <CODE>@</CODE> character
 from the host name and with a dot from each other.  If a language name
 is specified, while a voice name is not, the language name should be
 preceded with a dot.
@@ -978,7 +978,7 @@ structural units by the rules.  It actually controls the interpretation
 of those adjustments themselves.
 <P>
 <DL>
-<DT><B>--pros_weight* <I>weight</I></B><DD><P>The asterisk stands for a &commat;-separated symbolic name of a linguistic description
+<DT><B>--pros_weight* <I>weight</I></B><DD><P>The asterisk stands for a @-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is an integer value primarily used for enabling (1) or disabling (0)
 certain levels of description when the total quantities for a diphone

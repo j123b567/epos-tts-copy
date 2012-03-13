@@ -89,7 +89,7 @@ of description above the current unit.
 <p>
 
 This class represents a logical line-oriented text file. It handles things
-like the <ref id="include-directive" name="&commat;include directive">,
+like the <ref id="include-directive" name="@include directive">,
 <ref id="escaping" name ="backslash-escaped special characters">,
 initial whitespace and comment stripping. It is used for the <ref id="rules"
 name="rule files"> and <ref id="cfg-files" name="configuration files">,

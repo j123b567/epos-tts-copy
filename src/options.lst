@@ -310,7 +310,7 @@
 # define strfy(s) #s
 # define stringify(s) strfy(s)
 # ifndef BASE_DIR
-	# define BASE_DIR "/usr/lib/epos"
+	# define BASE_DIR /usr/lib/epos
 # endif
 	OPTION (base_dir, "base_dir", STR, stringify(BASE_DIR))// base path to everything
 # undef strfy
@@ -412,11 +412,13 @@ OPTION (imm_diph,"immed_diphones",BOOL, false)  // Should we output them after a
 VOICE_OPTION (inv_name, name, "name",	   STR, "(unnamed)")
 VOICE_OPTION (inv_type, type, "type",       TYPE, S_NONE)	// Int, float, vector quantified...
 VOICE_OPTION (inv_ct,channel, "channel", CHANNEL, CT_MONO)// (unused; not stereo)
+VOICE_OPTION (inv_size, n_segs, "n_segs",    INT, 0)	// Total number of segments
 VOICE_OPTION (inv_counts, counts, "counts",  STR, NULL)	// File with the model counts for every diphone?
 VOICE_OPTION (inv_models, models, "models",  STR, NULL)	// File with the models themselves?
 VOICE_OPTION (inv_book, book, "codebook",    STR, NULL)	// No idea what this file is
-VOICE_OPTION (inv_dph, dphfile, "dph_file",  STR, NULL)	// File describing the diphones?
+// VOICE_OPTION (inv_dph, dphfile, "dph_file",  STR, NULL)	// File describing the diphones?
 VOICE_OPTION (inv_dpt, dptfile, "dpt_file",  STR, NULL)	// File naming the diphones?
+VOICE_OPTION (inv_snl, snlfile, "snl_file",  STR, NULL)	// Sound labels file?
 VOICE_OPTION (inv_f0, init_f, "init_f",      INT, 100)	// Neutral frequency for the inventory
 VOICE_OPTION (inv_i0, init_i, "init_i",      INT, 100)	// Neutral intensity
 VOICE_OPTION (inv_t0, init_t, "init_t",      INT, 100)	// Neutral time factor

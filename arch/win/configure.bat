@@ -32,8 +32,7 @@ copy ..\arch\win\eposm.dsp .
 copy ..\arch\win\say.dsp .
 copy ..\arch\win\epos.dsw .
 
-rem if not exist lpcsyn.cc echo /**/ > lpcsyn.cc
-rem if not exist lpcsyn.h  echo /**/ > lpcsyn.h
+if not exist client.cc echo #include "client.cpp" > client.cc
 
 cd ..\cfg\cfg
 

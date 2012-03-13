@@ -33,6 +33,12 @@ const char *WHITESPACE = " \t";
 const char *output_file = "#localsound";
 
 bool chunking = false;
+bool show_segments = false;
+
+struct diphone {
+	int code;
+	int f,e,t;
+};
 
 #define STDIN_BUFF_SIZE  550000
 
@@ -110,7 +116,8 @@ void trans_data()
 	if (!data) data = "No.";
 	sputs("strm $", ctrld);
 	sputs(dh, ctrld);
-	sputs(":raw:rules:print:$", ctrld);
+	if (show_segments) sputs(":raw:rules:diphs:$", ctrld);
+	else sputs(":raw:rules:print:$", ctrld);
 	sputs(dh, ctrld);
 	sputs("\r\n", ctrld);
 	sputs("appl ", ctrld);
@@ -128,9 +135,15 @@ void trans_data()
 			sgets(scratch, SCRATCH_SPACE, ctrld);
 			scratch[SCRATCH_SPACE] = 0;
 			sscanf(scratch, "%d", &count);
-			char *b=(char *)malloc(count+1);
-			b[yread(datad, b, count)] = 0;
-			printf("%s\n", b);
+			if (show_segments) {
+				diphone *b=(diphone *)malloc(count);
+				yread(datad, b, count);
+				for (int i=1;i<b[0].code;i++) printf("%4.d - %3.d %3.d %3.d\n", b[i].code, b[i].f, b[i].e, b[i].t);
+			} else {
+				char *b=(char *)malloc(count+1);
+				b[yread(datad, b, count)] = 0;
+				printf("%s\n", b);
+			}
 		}
 	}
 
@@ -151,6 +164,7 @@ void dump_help()
 	printf("usage: say [options] ['text to be processed']\n");
 	printf(" -b  bare format (no frills)\n");
 	printf(" -c  casual pronunciation\n");
+	printf(" -d  show segments\n");
 	printf(" -i  ironic pronunciation\n");
 	printf(" -k  shutdown Epos\n");
 	printf(" -l  list available languages and voices\n");
@@ -188,7 +202,8 @@ void send_cmd_line(int argc, char **argv)
 			for (j=ar+1; *j; j++) switch (*j) {
 				case 'b': send_option("out_verbose", "false"); break;
 				case 'c': send_option("colloquial", "true"); break;
-				case 'd': send_option("show_diphones", "true"); break;
+				case 'd': show_segments = true; break;
+//				case 'd': send_option("show_diphones", "true"); break;
 				case 'H': send_option("long_help", "true");	/* fall through */
 				case 'h': dump_help(); exit(0);
 				case 'i': send_option("irony", "true"); break;
@@ -312,4 +327,5 @@ void terminate(void)
 }
 
 #endif
+
 

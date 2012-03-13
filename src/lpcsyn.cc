@@ -75,8 +75,8 @@ lpcsyn::lpcsyn(voice *v)
 
 	kyu = 0;		/* random initial value - geo */
 
-	diph_offs = (int *)xmalloc(sizeof(int) * 441);
-//	diph_len = (unsigned char *)xmalloc(sizeof(unsigned char) * 441);
+	diph_offs = (int *)xmalloc(sizeof(int) * v->n_segs);
+//	diph_len = (unsigned char *)xmalloc(sizeof(unsigned char) * v->n_segs);
 
 	nvyrov = 0;
 	lold = v->init_f;
@@ -91,7 +91,8 @@ lpcsyn::lpcsyn(voice *v)
 //	tdiph = (char (*)[4])freadin(v->dptfile, v->inv_dir, "rt", "diphone names");
 	diph_len = claim(v->counts, v->loc, cfg->inv_base_dir, "rb", "model counts", NULL);
 	diph_offs[0] = 0;
-	for (i=1; i<441; i++) diph_offs[i] = diph_offs[i-1] + (int)diph_len->data[i-1];	// cast to unsigned char * before [] if LPC sounds bad
+	for (i = 1; i < v->n_segs; i++)
+		diph_offs[i] = diph_offs[i-1] + (int)diph_len->data[i-1];	// cast to unsigned char * before [] if LPC sounds bad
 //	models = claim(v->models, v->loc, cfg->inv_base_dir, "rb", "lpc inventory");
 //	delmod = diph_offs[440] + diph_len[440];
 }

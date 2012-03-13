@@ -22,6 +22,9 @@
 #include "tcpsyn.h"
 #endif
 
+#define SOUND_LABEL_BASE	(2 << SOUND_LABEL_SHIFT)
+#define SOUND_LABEL_SHIFT	10
+
 synth *setup_synth(voice *v)
 {
 	if (v->syn) shriek(862, "new v->syn - again");
@@ -91,12 +94,12 @@ void show_diphones(unit *root)
 	voice *v = this_voice;
 	
 	if (!cfg->show_diph) return;
-	v->claim_diphone_names();
+	v->claim_all();
 	for (int k=0; i==BUFF_SIZE; k+=BUFF_SIZE) {
 		i=root->write_diphs(d,k,BUFF_SIZE);
 		for (int j=0;j<i;j++) {
 			if (cfg->diph_raw) fprintf(STDDBG,  "%5d", d[j].code);
-			fprintf(STDDBG," %.3s f=%d t=%d i=%d\n", d[j].code<441 && v->diphone_names ? ((char(*)[4])v->diphone_names->data)[d[j].code] : "?!", d[j].f, d[j].t, d[j].e);
+			fprintf(STDDBG," %.3s f=%d t=%d i=%d\n", d[j].code<v->n_segs && v->diphone_names ? ((char(*)[4])v->diphone_names->data)[d[j].code] : "?!", d[j].f, d[j].t, d[j].e);
 		}
 	}
 }
@@ -123,26 +126,32 @@ void
 synth::syndiphs(voice *v, diphone *d, int n, wavefm *w)
 {
 	diphone x;
+	v->claim_all();
 	if (cfg->show_labels) {
-		w->label(NULL);
+		w->label(0, NULL, NULL);
 	}
-	v->claim_diphone_names();
 	for (int i=0; i<n; i++) {
 		x.code = d[i].code;
 		x.t = v->init_t * d[i].t / 100;            // fixed 8.7.98 by Petr
 		x.f = v->samp_rate * 100 / (v->init_f * d[i].f);
 		x.e = v->init_i * d[i].e / 100;
-//		int hackint = w->offset();
-		syndiph(v, x, w);
-//		if (cfg->show_labels) fprintf(STDDBG, "%d %d %.3s\n", hackint, w->offset() - 1,
-//			(((char(*)[4])v->diphone_names->data)[d[i].code]));
 		if (cfg->show_labels) {
-			char tmp[5];
-			*tmp = 'd';
-			strncpy(tmp + 1, ((char(*)[4])v->diphone_names->data)[d[i].code], 3);
-			tmp[4] = 0;
-			w->label(tmp);
-		}
+			int oi = w->hdr.buffer_idx;
+			syndiph(v, x, w);
+			int len = (w->hdr.buffer_idx - oi) / w->samp_size_bytes;
+			char tmp[4];
+			strncpy(tmp, ((char(*)[4])v->diphone_names->data)[d[i].code], 3);
+			tmp[3] = 0;
+			w->label(0, tmp, enum2str(cfg->segm_level, cfg->unit_levels));
+			if (v->sl[x.code].pos != NO_SOUND_LABEL) {
+				tmp[0] = v->sl[x.code].labl;
+				tmp[1] = 0;
+				int negoffs = (SOUND_LABEL_BASE - v->sl[x.code].pos)
+					* len >> SOUND_LABEL_SHIFT;
+				w->label(negoffs, tmp, enum2str(cfg->phone_level, cfg->unit_levels));
+			}
+		} else 	syndiph(v, x, w);
+
 	}
 }
 

@@ -131,8 +131,14 @@
 #define FORGET_ENUM_BITFIELDS 1
 
 /* Defining this initially may save you some headaches */
-#define IGNORE_REGEX_RULES 1
+/* #undef IGNORE_REGEX_RULES */
+
+/* Define unless using an obscure regex library and having some luck */
+#define HAVE_RM_SO 1
 
 /* Defining this is necessary with any DOS/NT version */
 #define FORGET_SOUND_IOCTLS 1
+
+/* Define is using mmsystem.lib for output */
+#define HAVE_MMSYSTEM_H  1
 

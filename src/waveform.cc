@@ -115,12 +115,21 @@ struct ltxt
 	short codepage;
 };
 
+struct labl
+{
+	char txt[4];
+	long len;
+	long cp_name;
+};
+
 #define USA	 1		// FIXME (etc.)
 #define English  9
 #define American 1
 #define Boring_CodePage	437
 
 ltxt ltxt_template = { FOURCC_INIT("ltxt"), 0, 0, 0, FOURCC_INIT("dphl"), USA, English, American, Boring_CodePage };
+labl labl_template = { FOURCC_INIT("labl"), 0, 0 };
+labl note_template = { FOURCC_INIT("note"), 0, 0 };
 
 wavefm::wavefm(voice *v)
 {
@@ -631,7 +640,7 @@ wavefm::write_header()
 }
 
 void
-wavefm::label(char *lbl)
+wavefm::label(int pos, char *label, char *note)
 {
 	if (current_cp) {
 		if (!(current_cp & (current_cp - 1)))
@@ -640,15 +649,15 @@ wavefm::label(char *lbl)
 
 	cp_buff[current_cp] = cue_point_template;
 	cp_buff[current_cp].name = current_cp + 1;	/* numbered starting from 1 */
-	int offs = cp_buff[current_cp].pos = cp_buff[current_cp].sample_offset = hdr.buffer_idx;
+	int offs = cp_buff[current_cp].pos = cp_buff[current_cp].sample_offset = hdr.buffer_idx / samp_size_bytes - pos;
 	current_cp++;
 	cuehdr.len += sizeof(cue_point);
 	cuehdr.n++;
 
-	if (!lbl) return;
+	if (!label) return;
 
 	if (adtl_buff) {
-		if (adtlhdr.len + strlen(lbl) + 2 + sizeof(ltxt) >= (unsigned int)adtl_max) {
+		if (adtlhdr.len + strlen(label) + strlen(note) + 4 + 2 * sizeof(labl) >= (unsigned int)adtl_max) {
 			adtl_max <<= 1;
 			adtl_buff = (char *)xrealloc(adtl_buff, adtl_max);
 		}
@@ -657,14 +666,28 @@ wavefm::label(char *lbl)
 		adtl_buff = (char *)xmalloc(adtl_max);
 	}
 
-	ltxt *l = (ltxt *)(adtl_buff + adtlhdr.len);
-	*l = ltxt_template;
-	l->cp_name = current_cp - 1;
-	l->sample_count = offs - last_offset;
-	l->len = sizeof(ltxt) - RIFF_HEADER_SIZE + strlen(lbl) + 1;
-	strcpy((char *)(l+1), lbl);
-	adtlhdr.len += sizeof(ltxt) + strlen(lbl) + 1;
+//	ltxt *l = (ltxt *)(adtl_buff + adtlhdr.len);
+//	*l = ltxt_template;
+//	l->cp_name = current_cp - 1;
+//	l->sample_count = offs - last_offset;
+//	l->len = sizeof(ltxt) - RIFF_HEADER_SIZE + strlen(label) + 1;
+//	strcpy((char *)(l+1), label);
+//	adtlhdr.len += sizeof(ltxt) + strlen(label) + 1;
+	
+	labl *la = (labl *)(adtl_buff + adtlhdr.len);
+	*la = labl_template;
+	la->len = sizeof(labl) + strlen(label) + 1 - RIFF_HEADER_SIZE;
+	la->cp_name = current_cp - 1;
+	strcpy((char *)(la+1), label);
+	adtlhdr.len += sizeof(labl) + strlen(label) + 1;
 
+	labl *n = (labl *)(adtl_buff + adtlhdr.len);
+	*n = note_template;
+	n->len = sizeof(labl) + strlen(note) + 1 - RIFF_HEADER_SIZE;
+	n->cp_name = current_cp - 1;
+	strcpy((char *)(n+1), note);
+	adtlhdr.len += sizeof(labl) + strlen(note) + 1;
+	
 	last_offset = offs;
 }
 

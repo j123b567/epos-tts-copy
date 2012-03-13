@@ -288,19 +288,37 @@ voice::voice(const char *filename, const char *dirname, lang *parent_lang) : cow
 	}
 
 	diphone_names = NULL;
+	sl = NULL;
 	syn = NULL;
 }
 
 void
-voice::claim_diphone_names()
+voice::claim_all()
 {
 	if (!diphone_names && dptfile && *dptfile)
 		diphone_names = claim(dptfile, loc, cfg->inv_base_dir, "rt", "diphone names", NULL);
+	if (cfg->show_labels && !sl) {
+		sl = (sound_label *)xmalloc(sizeof(sound_label) * n_segs);
+		for (int i = 0; i < n_segs; i++) sl[i].pos = NO_SOUND_LABEL;
+		text *t;
+		if (!snlfile || !*snlfile) return;
+		t = new text(snlfile, loc, cfg->inv_base_dir, "sound labels", true);
+		char * l = (char *)xmalloc(cfg->max_line);
+		while (t->getline(l)) {
+			int a, b, d; char c;
+			if (sscanf(l, "%d %d %c %d\n", &a, &b, &c, &d) == 3) {
+				if (sl[a].pos != -1) shriek(861, "Multilabelled units unimplmd");
+				sl[a].pos = b;
+				sl[a].labl = c;
+			};
+		}
+	}
 }
 
 voice::~voice()
 {
 	if (diphone_names) unclaim(diphone_names);
+	if (sl) free(sl);
 //	if (buffer) detach();
 	delete syn;
 }

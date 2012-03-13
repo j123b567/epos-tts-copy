@@ -3,6 +3,7 @@ Bugs
 - better prosody modelling for monosyllaba
 - with windows sokec, files as stream input modules crash the server
 - with windows sokec, files as output modules with disk full crash the server
+- &commat;s in the documentation for latex
 
 Features
 - pause hierarchy rules

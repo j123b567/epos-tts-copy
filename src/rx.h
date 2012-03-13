@@ -25,10 +25,6 @@
 #ifndef __REGEXP_LIBRARY_H__
 #define __REGEXP_LIBRARY_H__
 
-#ifndef  __STDC__
-#define  __STDC__  1
-#endif
-
 /* Allow the use in C++ code.  */
 #ifdef __cplusplus
 extern "C" {
@@ -429,17 +425,15 @@ typedef struct
    prototype (if we are ANSI), and once without (if we aren't) -- we
    use the following macro to declare argument types.  This
    unfortunately clutters up the declarations a bit, but I think it's
-   worth it.  */
+   worth it.  */	/* I have discarded this - geo */
 
-#if __STDC__
+// #if __STDC__
 
 #define _RE_ARGS(args) args
 
-#else /* not __STDC__ */
-
-#define _RE_ARGS(args) ()
-
-#endif /* not __STDC__ */
+// #else /* not __STDC__ */
+// #define _RE_ARGS(args) ()
+// #endif /* not __STDC__ */
 
 /* Sets the current default syntax to SYNTAX, and return the old syntax.
    You can also simply assign to the `re_syntax_options' variable.  */

@@ -104,15 +104,15 @@ The code, scope and target identifier is not case sensitive, but the parameter
 usually is.
 
 
-<sect1> Using comments and the <tt>&commat;include</tt> directive
+<sect1> Using comments and the <tt>@include</tt> directive
 <p>
 
 Any text starting with a semicolon or <tt/&num;/ not in the middle of a word up to the
 end of the line is a comment.  It will be properly ignored.  If a line
 doesn't contain anything except whitespace and/or comment, it is also
-ignored.  The <tt>&commat;include</tt> directive can be used to nest the rule
+ignored.  The <tt>@include</tt> directive can be used to nest the rule
 files.  The same rules apply within <tt>.ini</tt> files; for more
-details, see <ref id="include-directive" name="the &commat;include directive in
+details, see <ref id="include-directive" name="the @include directive in
 configuration files">.
 
 <sect1> Variables (macros)

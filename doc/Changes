@@ -943,4 +943,20 @@ for an exciting story, just skip it.
 	- mmsystem and Visual C++ scripting fixes (Petr)
 	- a few voices changed prosodic defaults
 
+2.4.39 from 2.4.38	 16.3.00
+	- Windows specific regex configuration fixes
+	
+2.4.40 from 2.4.39	 17.3.00
+	- #define __STDC__ braindamage removed from rx.h
+	- added HAVE_MMSYSTEM_H to win/config.in
+
+2.4.41 from 2.4.40	 15.5.00
+	- sound labels
+	- label offset fix
+	- pause and nearby diphones fixed in ptacek97.dph
+	- some fixed diphone counts fixed
+
+2.4.42 from 2.4.41	 16.5.00
+	- label fixes
+	- say -d option (show segments)
 

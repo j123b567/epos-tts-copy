@@ -28,7 +28,7 @@
  *	would never be called except by common code, but it the
  *	compiler needs it at least declared).
  */
-
+ 
 class synth
 {
 	unsigned int crc;

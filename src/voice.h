@@ -68,6 +68,13 @@ struct lang : public cowabilium
 	void operator delete(void *ptr);
 };
 
+struct sound_label
+{
+	short int pos;
+	char labl;
+};
+
+#define NO_SOUND_LABEL -1
 
 struct voice : public cowabilium
 {
@@ -76,13 +83,14 @@ struct voice : public cowabilium
 
    public:
 	file *diphone_names;
+	sound_label *sl;
 	
 	synth *syn;
-   
+	
 	voice(const char *filename, const char *dirname, lang *parent_lang);
 	~voice();
 
-	void claim_diphone_names();
+	void claim_all();
 
 	void *operator new(size_t, lang *parent_lang);
 //	void  operator delete(void *p, lang *) { delete p; };
