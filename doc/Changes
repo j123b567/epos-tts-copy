@@ -916,4 +916,6 @@ for an exciting story, just skip it.
 	- properly escaped line-initial hash chars standing for pauses
 		in lng/*/traditnl.dph (discarded as comments until now)
 
+2.4.33 from 2.4.32	19.11.99
+	- say.cc fix (if no TTSCP_USER environment variable set)
 
