@@ -26,9 +26,6 @@
  *	If more than SCHED_SATIATED agents are scheduled (for immediate execution),
  *	the scheduler will stop checking the file descriptors until the situation
  *	gets under control.
- *
- *	We are currently not trying to avoid DoS attacks such as sending
- *	a megabyte file for processing, then writing it to disk.
  */
 
 #include "common.h"
@@ -227,7 +224,7 @@ int sgets(char *buffer, int space, int sd, char *partbuff)
 	int result = 0;
 
 	if (*partbuff) {
-		DEBUG(2,11,fprintf(STDDBG, "[core] Appending.\n");)
+		DEBUG(1,11,fprintf(STDDBG, "[core] Appending.\n");)
 		l = strlen(partbuff);
 		if (l > space) shriek(862, "sgets() holdback overflow"); // was: shriek(664)
 		if (l == space) goto too_long;
@@ -262,7 +259,7 @@ already_enough_text:
 	if (i >= space) goto too_long;
 	buffer[i] = 0;
 	strcpy(partbuff, buffer);
-	DEBUG(2,11,fprintf(STDDBG, "[core] partial line read: %s\n", partbuff);)
+	DEBUG(1,11,fprintf(STDDBG, "[core] partial line read: %s\n", partbuff);)
 	*buffer = 0;
 	return 0;
 
@@ -301,14 +298,17 @@ static void detach()
 {
 	int i;
         UNIX (ioctl(0, TIOCNOTTY);)          //Release the control terminal
+	if (!cfg->daemon_log || !*cfg->daemon_log)
+		return;
 	for (i=0; i<3; i++) close(i);
-	if (cfg->daemon_log && open(cfg->daemon_log, O_RDWR|O_CREAT|O_APPEND
-					UNIX( |O_NOCTTY), MODE_MASK) != -1) {
+	if (!open(cfg->daemon_log, O_RDWR|O_CREAT|O_APPEND  UNIX( |O_NOCTTY), MODE_MASK)
+			|| !open (NULL_FILE, O_RDWR|O_APPEND, MODE_MASK)) {
 		for (i=1; i<3; i++) dup(0);
+		cfg->colored = false;
 		DEBUG(3,11,fprintf(STDDBG, "\n\n\n\nEpos restarted at ");)
 		fflush(stdout);
 		system("/bin/date");
-	}
+	} else /* deep OS level trouble, contact authors */ abort();
 }
 
 static inline void make_server_passwd()
@@ -329,7 +329,7 @@ static inline void make_server_passwd()
 	}
 }
 
-bool server_shutting_down = false;
+volatile bool server_shutting_down = false;
 
 void server_shutdown()
 {
@@ -377,6 +377,8 @@ static void daemonize()
 
 #undef UNIX
 
+/*
+
 fd_set data_conn_set;
 
 void update_data_conn_set(char *, socky int *fd)
@@ -384,9 +386,11 @@ void update_data_conn_set(char *, socky int *fd)
 	FD_SET(*fd, &data_conn_set);
 }
 
+*/
+
 static void idle()
 {
-	FD_ZERO(&data_conn_set);
+//	FD_ZERO(&data_conn_set);
 //	data_conns->forall(update_data_conn_set);
 
 //	while (waitpid(-1, NULL, WNOHANG) > 0) ;

@@ -50,14 +50,14 @@ The average user may expect to be able to modify the voice dependent
 configuration files, but not inventory files.  Also, the inventories
 may often be distributed externally to Epos, while sample voices
 based on them may either be included with Epos, or with the
-diphone inventory, or their creation may be left to the user.
+segment inventory, or their creation may be left to the user.
 <P>A set of voice options should completely describe a voice.
 A set of language options should completely describe a language,
 except for voice-specific behavior. A set of global options
 should cover language independent aspects of operation.
 It should be understood that a set of options may employ various
 references to other information, especially filenames (of language
-dependent transcription rules, voice dependent diphone inventories
+dependent transcription rules, voice dependent segment inventories
 etc.)
 <P>Some language and/or voice specific options may have suitable defaults
 for all but specific languages/voices. That's why there is a corresponding language
@@ -223,13 +223,13 @@ An example:
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-say --language german --pausing "Wie geht es?" --show_diphones
+say --language german --pausing "Wie geht es?" --show_segments
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>This sets the default language to German, enables pausing after each
 transformation rule is applied to the text (sets the <CODE>pausing</CODE> option
-to <CODE>true</CODE>, in other words) and prints the diphone string generated
-in the process (sets the <CODE>show_diphones</CODE> option to <CODE>true</CODE>). The string
+to <CODE>true</CODE>, in other words) and prints the segment string generated
+in the process (sets the <CODE>show_segments</CODE> option to <CODE>true</CODE>). The string
 to be transcribed and synthesized is given on the command line as well
 (it must be quoted unless it consists of a single word).
 <P>The list of all available long options together with their types
@@ -312,6 +312,8 @@ A list of (the most of) the server short options can be obtained with
 short options understood by the <CODE>say</CODE> utility can be obtained with
 <CODE>say -h</CODE>.  Such list however includes undocumented options
 which may disappear in the next releases.
+<P>Please keep in mind that the say utility is only an example of a TTSCP
+client and not a full-fledged controlling interface to Epos.
 <P>
 <H3>Server short options</H3>
 
@@ -335,9 +337,14 @@ long options.
 <DL>
 <DT><B>-k</B><DD><P>Shut down the server.
 <DT><B>-l</B><DD><P>List all available languages and available voices for the current language.
+<DT><B>-m</B><DD><P>Write the waveform to a file (said.vox in the client's current directory)
+instead of writing it to the local sound card; the output doesn't
+include any header and is in the mu law format.
+<DT><B>-o</B><DD><P>Write the waveform to the standard output.  In this case, no transcription
+is performed.
 <DT><B>-u</B><DD><P>Turn on utterance chunking.  This option has unintuitive consequences
 when combined with <CODE>-w</CODE>.
-<DT><B>-w</B><DD><P>Write the output to a file (usually /usr/lib/epos/root/said.wav) instead
+<DT><B>-w</B><DD><P>Write the waveform to a file (said.wav in the client's directory) instead
 of writing it to the local sound card.
 </DL>
 <P>
@@ -454,11 +461,11 @@ boolean, the default <CODE>default</CODE> is an empty string.
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-        soft_options   "colloquial=false:diphone_listing_file(s)=traditnl.dph"
+        soft_options   "colloquial=false:segment_listing_file(s)=traditnl.dph"
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>This example defines two options, a boolean <CODE>colloquial</CODE> and
-a string <CODE>diphone_listing_file</CODE>.
+a string <CODE>segment_listing_file</CODE>.
 <P>The sets of soft options for individual languages are independent and never
 clash with each other. However, built-in option names may not be used
 as soft option names.
@@ -600,6 +607,14 @@ the value of the <CODE>default_char</CODE> option before they're classified.
 debugging situations (when a text is parsed in an unexpected way
 and the user is trying to find out which rule has escaped his
 attention). This option may not work with all setups.
+<DT><B>--debug_password <I>password</I> </B><DD><P>An alternative password for server-level authentication.  Can be
+useful when debugging the TTSCP implementation, with the obvious
+security implications.
+<DT><B>--handle_size <I>n</I> </B><DD><P>The TTSCP handle length in character.  The handles are always
+generated randomly using a 64 character alphabet.  Use small
+values for debugging the TTSCP implementation manually (and accept
+the risk of a handle-guessing attack); use higher values in a
+production environment.
 <DT><B>--shriek_art number</B><DD><P>The picture to be printed to <CODE>stdshriek</CODE> in case of an error.
 May or may not work.  Small integers such as 0, 1 or 2 are possible.
 <A NAME="trusted-option"></A> <DT><B>--trusted</B><DD><P>Code related to the <CODE>class unit</CODE> often calls its <CODE>sanity</CODE> method
@@ -609,6 +624,16 @@ to be necessary.  Use this option to skip them.
 <DT><B>--verbose</B><DD><P>When the rules are dumped with the <CODE>debug</CODE> rule type and this
 option is set, all of them will be displayed.  Otherwise only the
 current rule is displayed.  That's all.
+<P>
+<DT><B>--localsound</B><DD><P>Enables the use of the TTSCP <CODE>#localsound</CODE> output module.
+<DT><B>--readfs</B><DD><P>Enables the use of file system based TTSCP input modules.  See
+the 
+<A HREF="#pseudorootdir-option">pseudo_root_dir option</A>
+for more details.
+<DT><B>--writefs</B><DD><P>Enables the use of file system based TTSCP output modules. See
+the 
+<A HREF="#pseudorootdir-option">pseudo_root_dir option</A>
+for more details.
 <P>
 <DT><B>--unit_levels</B><DD><P>Levels of description.  Must be a colon separated list which includes
 <CODE>segm</CODE> and <CODE>phone</CODE> as the two lowest levels, and <CODE>text</CODE>
@@ -640,13 +665,12 @@ that can be produced by the monolithic and server binaries equally.
 <DL>
 <DT><B>--show_phones</B><DD><P>Print the sequence of sounds generated from the text processed.
 Monolithic binary only.
-<DT><B>--show_diphones</B><DD><P>Print the sequence of diphones generated from the text processed.
+<DT><B>--show_segments</B><DD><P>Print the sequence of segments generated from the text processed.
 Monolithic binary only.
-<DT><B>--show_raw_diphs</B><DD><P>When used in conjunction with the <CODE>show_diphones</CODE> option, the diphones
+<DT><B>--show_raw_segs</B><DD><P>When used in conjunction with the <CODE>show_segments</CODE> option, the segments
 will be not only listed by name, but they will also include the actual
 numbers generated.  Monolithic binary only.
-<DT><B>--play_diphones</B><DD><P>Synthesize the waveform and say it through the sound card or write it to
-a file, as pointed to by the <CODE>wave_file option</CODE> option.
+<DT><B>--play_segments</B><DD><P>Synthesize the waveform and say it through the sound card.
 Monolithic binary only.
 <DT><B>--wave_header</B><DD><P>When dumping the waveform into a file or a TTSCP data connection,
 put the RIFF wave file header at its beginning.  Regardless of
@@ -655,9 +679,28 @@ to a sound output device (a file descriptor which understands
 the usual ioctls).  TTSCP requires this option be always set
 to <CODE>on</CODE>; consequently, the option is only reasonably useful with the
 monolithic binary.
-<DT><B>--immed_diphones</B><DD><P>Print the sequence of diphones generated from the text processed
-just after the <CODE>diphones</CODE> rule.  This is useful especially
-in conjunction with the <CODE>neuronet</CODE> option where the diphone layer
+<DT><B>--ulaw</B><DD><P>Generated waveform uses mu law sample encoding instead of linear encoding.
+<DT><B>--out_sampling_rate <I>Hz</I> </B><DD><P>Voice dependent option.  May be used to downsample the output by one half.
+<DT><B>--autofilter</B><DD><P>If this option is enabled, an appropriate low band filter is used whenever
+downsampling.  This is necessary to avoid phantom sounds in the output.
+<DT><B>--label_seg</B><DD><P>Output segment (diphone) labels in the output waveform using the appropriate
+RIFF WAVE chunks.
+<A NAME="labelphones-option"></A> <DT><B>--label_phones</B><DD><P>Output phone labels in the output waveform.  This is only possible if
+phone boundary information is made available for the inventory using
+the 
+<A HREF="#snlfile-option">snl_file option</A>.  For other voices,
+this option has no effect.
+<DT><B>--label_sseg</B><DD><P>Very experimental.  If used in conjunction with the <CODE>label_phone</CODE>,
+the phone labels are assigned not the phone level, but the highest
+level whose boundary is detected at this place.  If you do use this
+option, be aware that Epos will use a (very slightly) TTSCP 0
+non-compatible internal representation for the segment (diphone) stream
+to preserve the necessary suprasegmental unit boundary information.
+Consequently, network voices provided by different TTSCP servers may
+fail reporting unexpected segment numbers.
+<DT><B>--immed_segments</B><DD><P>Print the sequence of segments generated from the text processed
+just after the <CODE>segments</CODE> rule.  This is useful especially
+in conjunction with the <CODE>neuronet</CODE> option where the segment layer
 is created, but later to be discarded by the rules.
 Monolithic binary only.
 <DT><B>--neuronet</B><DD><P>Very experimental. See <CODE>doc/czech/nnet.doc</CODE> for more info.
@@ -696,7 +739,7 @@ to the individual levels of description and marking up the boundaries
 between units with parentheses, separators or both. The levels of
 description are 
 <A HREF="epos-2.html#tsr-levels">defined</A> in compile time.
-The <CODE>diphone</CODE> and <CODE>text</CODE> may not be applicable for some of
+The <CODE>segment</CODE> and <CODE>text</CODE> may not be applicable for some of
 these options. This model of displaying the TSR is not used for
 transmitting the text over TTSCP.
 <P>
@@ -777,9 +820,9 @@ high values, with no direct impact on efficiency in the typical case.
 employ reasonably high values.
 <P>
 <DL>
-<DT><B>--diph_buff_size <I>diphones</I></B><DD><P>Soft limit.  Maximum number of diphones generated by the diphoniser
-and synthesized at once. It more diphones have to be generated,
-they are synthesized in chunks of <CODE>diph_buff_size</CODE>.  If this
+<DT><B>--seg_buff_size <I>segments</I></B><DD><P>Soft limit.  Maximum number of segments generated by the diphoniser
+and synthesized at once. It more segments have to be generated,
+they are synthesized in chunks of <CODE>seg_buff_size</CODE>.  If this
 option is set to zero, a growable buffer is used instead, and
 there is no limit on memory consumed.
 This option has no effect in the monolithic Epos.
@@ -827,7 +870,7 @@ preferably kilobytes, for this buffer.
 <P>This subsection lists some options defined for each language.  Additional
 language dependent options are certain directory and file names and possibly
 others.  As every voice is associated with a single language (two voices
-may share a multilingual diphone inventory if desired), every voice dependent
+may share a multilingual segment inventory if desired), every voice dependent
 option is thence language dependent.
 <P>
 <DL>
@@ -929,23 +972,32 @@ server for its current voice), or communicating over a congested, unreliable
 or slow network connection.
 A value of <CODE>0</CODE> is actually a very small positive value and negative
 values are not accepted.
-<DT><B>--models <I>filename</I></B><DD><P>The value is a file name. The file contains the diphone inventory
+<DT><B>--n_segs <I>n</I> </B><DD><P>The total number of segments withing the segment inventory.
+<DT><B>--models <I>filename</I></B><DD><P>The value is a file name. The file contains the segment inventory
 proper. Its format is speech synthesis type dependent.
 <DT><B>--counts <I>filename</I></B><DD><P>The value is a file name. The file contains the lengths of individual
-diphones in this diphone inventory.
-<DT><B>--dph_file <I>filename</I></B><DD><P>The value is a file name. The file contains the diphone descriptions
-in the format used by the <CODE>diph</CODE> rule. FIXME: odkaz nebo popis
-<DT><B>--dpt_file <I>filename</I></B><DD><P>The value is a file name. The file contains the symbolic diphone names
+segments in this segment inventory.
+<DT><B>--dpt_file <I>filename</I></B><DD><P>The value is a file name. The file contains the symbolic segment names
 for user output.
 <DT><B>--codebook <I>filename</I></B><DD><P>The value is a file name. The file contains the code book for
 the vector quantified LPC speech synthesis (<CODE>lpc-vq</CODE> type only).
+<A NAME="snlfile-option"></A> <DT><B>--snl_file <I>filename</I></B><DD><P>The value is a file name.  The file contains phone boundary information
+for individual segments in this segment inventory.  Each line of the file
+contains three space-separated items: segment number, relative position
+within the segment (valued from 1 to 1024, e.g. 512 is the middle of the segment)
+and the character (phone representation) which is to be associated with
+the position.  Lines not conforming to this specification are ignored.
+Currently, at most one label may be indicated for one segment, but it
+would be easy to get rid of this limit.
+See also 
+<A HREF="#labelphones-option">label_phones option</A>.
 <DT><B>--init_f <I>percentage</I></B><DD><P>The auditory neutral integer value for the fundamental frequency.
 The typical value is 100.
 <DT><B>--init_i <I>percentage</I></B><DD><P>The auditory neutral integer value for the volume.
 The typical value is 100.
-<DT><B>--init_t <I>percentage</I></B><DD><P>The auditory neutral integer value for the prosodic duration of diphones.
-The typical value is 100.  Of course, it is diphone length relative
-(some diphones are longer than others), just as the <CODE>init_f</CODE>
+<DT><B>--init_t <I>percentage</I></B><DD><P>The auditory neutral integer value for the prosodic duration of segments.
+The typical value is 100.  Of course, it is segment length relative
+(some segments are longer than others), just as the <CODE>init_f</CODE>
 and <CODE>init_i</CODE> options are.
 <DT><B>--channel <I>channeltype</I></B><DD><P>The parameter, the output channel type, is one of the following:
 <CENTER><TABLE BORDER><TR><TD>
@@ -959,20 +1011,20 @@ and <CODE>init_i</CODE> options are.
 
 This option may be used to simulate a dialogue by assigning
 different output channels to different speakers.
-<DT><B>--inv_sampling_rate <I>Hz</I></B><DD><P>The sampling rate this diphone inventory has been recorded at.
+<DT><B>--inv_sampling_rate <I>Hz</I></B><DD><P>The sampling rate this segment inventory has been recorded at.
 The algorithms we use also imply that we use the same frequency
 for the synthesis.
 <DT><B>--sample_size <I>bits</I></B><DD><P>Number of bits per sample.  If some kind of a stereo output
 is turned on, this option set the number of bits per channel.
 Again, this is related to the quality of recording of the
-diphone inventory.  We currently only support 8 and 16 bits.
+segment inventory.  We currently only support 8 and 16 bits.
 </DL>
 <P>
 <P>
 <H3>Prosody generation</H3>
 
 <P>
-<P>The options in this section control how the resulting per diphone prosodic
+<P>The options in this section control how the resulting per segment prosodic
 information is assembled from the prosodic adjustments done to the
 structural units by the rules.  It actually controls the interpretation
 of those adjustments themselves.
@@ -981,7 +1033,7 @@ of those adjustments themselves.
 <DT><B>--pros_weight* <I>weight</I></B><DD><P>The asterisk stands for a @-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is an integer value primarily used for enabling (1) or disabling (0)
-certain levels of description when the total quantities for a diphone
+certain levels of description when the total quantities for a segment
 are computed.  It must however be understood that when some rules
 like <CODE>smooth</CODE> are applied, the prosodic values are distributed
 down to the target level of such a rule and cannot be distinguished
@@ -1064,6 +1116,7 @@ cd src
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
+<A NAME="pseudorootdir-option"></A> n
 <DT><B>--pseudo_root_dir <I>dirname</I></B><DD><P>The value is a directory name.  Sets the path prepended
 to any file name referenced in the TTSCP 
 <A HREF="epos-4.html#strm-cmd">stream command</A>. This subtree cannot be escaped with
@@ -1083,10 +1136,12 @@ of the <CODE>fixed.ini</CODE> file, which usually contains operating system
 independent, relatively fixed default global configuration.
 <DT><B>--cfg_file <I>filename</I></B><DD><P>The value is a file name. This option can be used to change the file name
 of the <CODE>epos.ini</CODE> file.
-<DT><B>--wave_file <I>filename</I></B><DD><P>The value is a file name. This option can be used to change the file name
-of the file produced by the <CODE>play_diphones</CODE> option. In many unices,
+<DT><B>--local_sound_file <I>filename</I></B><DD><P>The value is a file name. This option can be used to change the file name
+of the local sound card device. In many unices,
 setting this to <CODE>/dev/dsp</CODE> is the recommended way to actually hear
-Epos speak. Other unices don't have <CODE>/dev/dsp</CODE>, however.
+Epos speak. Other unices don't have <CODE>/dev/dsp</CODE>, however.  If the
+sound card has no file name at all, set this to the null device
+file name.
 <DT><B>--input_file <I>filename</I></B><DD><P>The value is a file name. This option can be used to change the file name
 of the implicit input text used by the monolithic version of Epos.
 The value is language dependent.
@@ -1106,9 +1161,6 @@ The directory shall contain any dictionaries used by the rules.
 <DT><B>--input_dir <I>dirname</I></B><DD><P>The language dependent value is a directory name.
 The directory shall contain the implicit input text file for the
 monolithic version of Epos.
-<DT><B>--prosody_dir <I>dirname</I></B><DD><P>The language dependent value is a directory name.
-The directory shall contain any prosody modelling related dictionaries
-used by the rules. FIXME: fakt? chci to tak?
 <DT><B>--lang_base_dir <I>dirname</I></B><DD><P>The value is a global directory name, not a language dependent one.
 It serves as the base directory for looking up the newly constructed
 languages.
@@ -1142,13 +1194,28 @@ Applies only to the monolithic Epos.
 
 <P>
 <P>The options in this section usually have no effect if changed in run time;
-change them in the configuration files instead.
+change them in the configuration files instead and restart Epos.
 <P>
 <DL>
 <P>
 <A NAME="daemon-log-option"></A> <DT><B>--daemon_log <I>filename</I></B><DD><P>The value is a file name. This option can be used to set the file
 where various information about the Epos process is recorded.
 At the moment that is of little practical use except for debugging.
+<DT><B>--use_syslog</B><DD><P>Log all TTSCP error messages with syslogd, if the syslog facility
+is available.  Due to the internal design of Epos, some of these
+messages are never actually sent over TTSCP to anyone - for example,
+a fatal misconfiguration condition detected before the first client
+connects.
+<DT><B>--full_syslog</B><DD><P>Log all TTSCP completion messages with syslogd, if the syslog facility is
+available, including 1xx and 2xx class messages.
+<A NAME="authpriv-option"></A> <DT><B>--authpriv</B><DD><P>Log all security relevant TTSCP completion messages with the
+facility <CODE>authpriv</CODE> instead of <CODE>daemon</CODE>.  This includes
+messages concerning denial of access or incorrectly specified
+resource or password.  In that case, the <CODE>err</CODE> message level
+is used instead of <CODE>warn</CODE>.  Notice that network errors
+are not affected by this option.
+<DT><B>--log_codes </B><DD><P>When set, all TTSCP messages are preceded with their numeric codes
+as in TTSCP.
 <DT><B>--server_pwd_file <I>filename</I></B><DD><P>The value is a file name. This option can be used to force the server
 to store its internal password to a file.  This password can then
 be used for TTSCP authentication in order to issue restricted commands
@@ -1197,7 +1264,6 @@ level </TD><TD> debugging messages </TD><TD> comment </TD></TR><TR><TD>
 1 </TD><TD> verbose </TD><TD> too verbose </TD></TR><TR><TD>
 2 </TD><TD> normal </TD><TD> informative </TD></TR><TR><TD>
 3 </TD><TD> rare </TD><TD> warnings, and such </TD></TR><TR><TD>
-4 </TD><TD> none </TD><TD> should not exist </TD></TR><TR><TD>
 
 <CAPTION>       Severity levels</CAPTION>
 </TD></TR></TABLE></CENTER>
@@ -1242,7 +1308,7 @@ manipulations.
 related types of rules, as well as their implementation in the
 <CODE>src/unit.cc</CODE> file
 <DT><B>--synth_debug <I>level</I></B><DD><P>Severity level threshold for the code area of low level
-speech syntheses (diphone to speech). It covers both
+speech syntheses (segments to speech). It covers both
 individual algorithms and the common code.
 <DT><B>--always_debug <I>level</I></B><DD><P>The global positive severity level threshold. Any debugging code
 which reaches at least this severity level is executed regardless

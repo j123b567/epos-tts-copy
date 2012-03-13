@@ -290,7 +290,7 @@ hash_table<key_t, data_t>::~hash_table()
 #ifdef HASH_CAN_READ_FILES    //to be defined in default.h
 
 const char* COMMENT_LINES = "#;\n";    //these characters can start a comment
-const char* WHITESPACE    = " \t";     //i.e. space and tab
+const char* WHITESPACE    = " \t\r";     //i.e. space and tab
 
 int hash_max_line = 1024;
 

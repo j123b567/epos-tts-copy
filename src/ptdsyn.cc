@@ -96,7 +96,7 @@ int ptdsyn::analyza(DIFON *dfn, sample_type *waveout, int *tas, voice *v)
   
  sample_type *wavein;
  wavein=new sample_type[WAVEMAX]; 
- strcpy(scratch, "diphones/");
+ strcpy(scratch, "segments/");
  strcat(scratch, dfn->fname);
  strcat(scratch, ".wav");
  char *filename = compose_pathname(scratch, v->loc, cfg->inv_base_dir);
@@ -106,7 +106,7 @@ int ptdsyn::analyza(DIFON *dfn, sample_type *waveout, int *tas, voice *v)
  strcpy(filename, cfg->base_dir);
  strcat(filename,"/");
  strcat(filename, cfg->inv_dir);
- strcat(filename,"/petriska/diphones/");
+ strcat(filename,"/petriska/segments/");
  strcat(filename,dfn->fname);
  strcat(filename,".wav");
 */
@@ -114,7 +114,7 @@ int ptdsyn::analyza(DIFON *dfn, sample_type *waveout, int *tas, voice *v)
  FILE *fil;
 
  fil=fopen(filename,"rb");
- if (!fil) shriek(445, fmt("ptdsyn cannot find diphones in %s", filename));
+ if (!fil) shriek(445, fmt("ptdsyn cannot find segments in %s", filename));
  else {
 
  unsigned char *buf;
@@ -235,13 +235,13 @@ ptdsyn::ptdsyn(voice *v)
   }
 };
 
-void ptdsyn::syndiph(voice *v, diphone d,wavefm *w)
+void ptdsyn::synseg(voice *v, segment d,wavefm *w)
 {
  ta=new int[100];
  PSL=new sample_type[WAVEMAX];
  Fvz1=16000;// inventory sample rate
  fn=Fvz1/(double)d.f; 		// FIXME is it good ? fn  - frequency Fo [Hz]
- ntime=(double)(dif[d.code].time*d.t)/100;// new time  [ms] (diphone length)
+ ntime=(double)(dif[d.code].time*d.t)/100;// new time  [ms] (segment length)
  nperi=1000/fn;          //period of new signal [ms]
  nperiN=(int)(Fvz1/fn);
  npimp=(int)(ntime/nperi+0.5);

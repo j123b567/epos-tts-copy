@@ -17,7 +17,6 @@
 #include "common.h"
 #include "agent.h"
 #include "client.h"
-#include "navel.h"
 
 
 #ifdef HAVE_SYS_TIME_H
@@ -44,12 +43,6 @@
 	#include <sys/stat.h>
 #endif
 
-#ifdef HAVE_MMSYSTEM_H
-	#include <mmsystem.h>
-	#include <windows.h>
-	#include <windowsx.h>
-#endif
-
 #include <fcntl.h>
 #include <errno.h>
 
@@ -59,26 +52,6 @@
 
 
 #define DARK_ERRLOG 2	/* 2 == stderr; for global stdshriek and stddbg output */
-
-#ifdef HAVE_MMSYSTEM_H
-	HWAVEOUT       hWaveOut = NULL;
-	LPWAVEHDR      lpWaveHdr   = NULL;
-	/*
-	void CALLBACK WndProc(HWAVEOUT hwo, UINT uMsg, DWORD dwInstance, DWORD wParam, DWORD lParam)
-	{
-	   switch (uMsg)
-		{
-			case MM_WOM_DONE:
-			if(waveOutUnprepareHeader( hwo, lpWaveHdr, sizeof(WAVEHDR) ))
-				shriek(445, "Cannot unprepare wave header ...");
-			if(waveOutClose( hwo ))
-				shriek(445, "Cannot close wave device ...");
-			hWaveOut = NULL;
-			break;
-		}
-	}
-*/
-#endif
 
 
 agent::agent(DATA_TYPE typein, DATA_TYPE typeout)
@@ -292,33 +265,33 @@ a_print::run()
 }
 
 
-class a_diphs : public agent
+class a_segs : public agent
 {
 	virtual void run();
-	virtual const char *name() { return "diphs"; };
+	virtual const char *name() { return "segs"; };
 	int position;
    public:
-	a_diphs() : agent(T_UNITS, T_DIPHS) {position = 0;};
+	a_segs() : agent(T_UNITS, T_DIPHS) {position = 0;};
 };
 
 #define INIT_DIPHS_BS	2048
 
 void
-a_diphs::run()
+a_segs::run()
 {
 	int dbs = cfg->db_size ? cfg->db_size : INIT_DIPHS_BS;
-	diphone *d = (diphone *)xmalloc((dbs + 1) * sizeof(diphone));
-	diphone *c = d + 1;
+	segment *d = (segment *)xmalloc((dbs + 1) * sizeof(segment));
+	segment *c = d + 1;
 	int n;
 	int items = 0;
 
 	unit *root = *(unit **)&inb;
 again:
-	n = root->write_diphs(c, position, dbs);
+	n = root->write_segs(c, position, dbs);
 	position += n;
 	items += n;
 	if (cfg->db_size && n >= dbs) {
-		d = (diphone *)xrealloc(d, (dbs + 1 + position) * sizeof(diphone));
+		d = (segment *)xrealloc(d, (dbs + 1 + position) * sizeof(segment));
 		c = d + 1 + position;
 		goto again;
 	}
@@ -328,7 +301,8 @@ again:
 		position = 0;
 	} else schedule();
 	d->code = items;
-	DEBUG(1,11,fprintf(STDDBG, "agent diphs generated %d diphones\n", n);)
+	d->nothing = d->ll = 0;
+	DEBUG(1,11,fprintf(STDDBG, "agent segs generated %d segments\n", n);)
 	pass(d);
 }
 
@@ -414,7 +388,11 @@ a_synth::run()
 	if (!this_voice) shriek(861, "No current voice");
 	if (!this_voice->syn) {
 		try {
-			this_voice->syn = setup_synth(this_voice);
+			synth *sy = setup_synth(this_voice);
+			this_voice->syn = sy;
+//			c->leave();
+//			this_voice->syn = sy;
+//			c->enter();
 		} catch (command_failed *e) {
 			if (e->code / 10 == 47 && this_lang->fallback_voice && *this_lang->fallback_voice) {
 								// 47x codes are network errors
@@ -431,8 +409,8 @@ a_synth::run()
 		}
 	}
 	wavefm *wfm = new wavefm(this_voice);
-	this_voice->syn->syndiphs(this_voice, (diphone *)inb + 1, ((diphone*)inb)->code, wfm);
-	DEBUG(1,11,fprintf(STDDBG, "a_synth processes %d diphones\n", ((diphone *)inb)->code);)
+	this_voice->syn->synsegs(this_voice, (segment *)inb + 1, ((segment*)inb)->code, wfm);
+	DEBUG(1,11,fprintf(STDDBG, "a_synth processes %d segments\n", ((segment *)inb)->code);)
 
 	free(inb);
 	inb = NULL;
@@ -467,11 +445,28 @@ class a_io : public agent
 	virtual ~a_io();
 };
 
-#include "spcio.cc"
+
+#define LOCALSOUNDAGENT "localsound"
+
+int localsound = -1;
+
+socky int special_io(const char *name, DATA_TYPE intype)
+{
+	if (intype == T_INPUT || strcmp(name, LOCALSOUNDAGENT))
+		shriek(415, fmt("Bad stream component %s", name));
+	if (!cfg->localsound) shriek(453, "Not allowed to use localsound");
+
+	if (localsound != -1) return localsound;
+	int r = open(cfg->local_sound_device, O_WRONLY | O_NONBLOCK);
+	if (r == -1) shriek(462, fmt("Could not open localsound device, error %d", errno));
+	localsound = r;
+	return r;
+}
+
+void stretch_sleep_table(socky int);
 
 a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 {
-//	a_ttscp *tmp;
 	char *filename;
 
 	close_upon_exit = false;
@@ -482,23 +477,24 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 			  if (!dc) shriek(444, "Not a known data connection handle");
 			  else socket = (in == T_INPUT ? dc->c->config->sd_in : dc->c->config->sd_out);
 			  break;
-		case '/': filename = limit_pathname(par, cfg->pseudo_root_dir);
+		case '/': if (in == T_INPUT && !cfg->readfs)
+				shriek(451, "No filesystem inputs allowed");
+			  if (out == T_NONE && !cfg->writefs)
+			  	shriek(451, "No filesystem outputs allowed");
+			  filename = limit_pathname(par, cfg->pseudo_root_dir);
 			  socket = open(filename, in == T_INPUT ? O_RDONLY | O_NONBLOCK | O_BINARY
 						: O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK | O_BINARY, MODE_MASK);
 			  free(filename);
 			  if (socket == -1) shriek(445, fmt("Cannot open file %s", par));
 			  else close_upon_exit = true;
 			  break;
-#ifdef HAVE_MMSYSTEM_H
-		case '#': socket = -2; //special_io(par + 1, in);
-#else
 		case '#': socket = special_io(par + 1, in);
-#endif
 			  break;
 		default:  shriek(462, "unimplemented i/o agent class");
 			/* if ever adding classes, take care of closing/nonclosing
 			 * the socket upon exit        */
 	}
+	if (socket >= 0) stretch_sleep_table(socket);
 	DEBUG(0,11,fprintf(STDDBG, "I/O agent is %p\n", this);)
 }
 
@@ -551,9 +547,9 @@ void a_input::run()
 	if (offset == toread) {
 		switch (out) {
 			case T_DIPHS:
-				if ((((diphone *)inb)->code + 1) * (int)sizeof(diphone) != offset)
-					shriek(432, fmt("Received bad diphones: %d diphs, %d bytes",
-						((diphone *)inb)->code, offset));
+				if ((((segment *)inb)->code + 1) * (int)sizeof(segment) != offset)
+					shriek(432, fmt("Received bad segments: %d segs, %d bytes",
+						((segment *)inb)->code, offset));
 				break;
 			case T_WAVEFM:
 				wavefm *w;
@@ -635,7 +631,8 @@ a_output::report(bool total, int written)
 	if (foreground()) {
 		reply(total ? "122 total bytes" : "123 written bytes");
 		sprintf(scratch, " %d", written);
-		reply(scratch);
+		sputs(scratch, cfg->sd_out);
+		sputs("\r\n", cfg->sd_out);
 	}
 }
 
@@ -658,14 +655,14 @@ class oa_stml : public a_output
 	oa_stml(const char *s): a_output(s, T_STML) {};
 };
 
-class oa_diph : public a_output
+class oa_seg : public a_output
 {
 	virtual int insize() {
-		DEBUG(1,11,fprintf(STDDBG, "Sending %d diphones\n", ((diphone *)inb)->code);)
-		return ((diphone *)inb)->code * sizeof(diphone);
+		DEBUG(1,11,fprintf(STDDBG, "Sending %d segments\n", ((segment *)inb)->code);)
+		return ((segment *)inb)->code * sizeof(segment);
 	}
    public:
-	oa_diph(const char *s): a_output(s, T_DIPHS) {};
+	oa_seg(const char *s): a_output(s, T_DIPHS) {};
 };
 
 class oa_wavefm : public a_output
@@ -684,54 +681,8 @@ void
 oa_wavefm::run()
 {
 	wavefm *w = (wavefm *)inb;
-#ifdef HAVE_MMSYSTEM_H
-	DWORD          dwResult;
-	WAVEFORMATEX   pFormat;
-	if (socket == -2) {
-		pFormat.wFormatTag = WAVE_FORMAT_PCM;
-		pFormat.wBitsPerSample = w->hdr.wlenb;
-		pFormat.nSamplesPerSec = w->hdr.sf1;
-		pFormat.nChannels = w->hdr.numchan;
-		pFormat.nBlockAlign = w->hdr.wlenB;
-		pFormat.nAvgBytesPerSec = w->hdr.avr1;
-		pFormat.cbSize = 0;
-		if(hWaveOut) {
-			waveOutReset(hWaveOut);
-			waveOutClose(hWaveOut);
-			hWaveOut = NULL;
-		}
-		//if(!hWaveOut){
-			if (waveOutOpen(&hWaveOut, WAVE_MAPPER, &pFormat, 0, 0L,WAVE_FORMAT_QUERY))
-				shriek(445, "Wave fmt not supported ...");
-			if (int autobus=waveOutOpen(&hWaveOut, WAVE_MAPPER,&pFormat, 0, 0L, CALLBACK_NULL))
-				shriek(445, "Cannot open wave device ...");
-			lpWaveHdr = (LPWAVEHDR)xmalloc(sizeof(WAVEHDR));
-			if (!lpWaveHdr)
-				shriek(445, "Cannot allocate wave header ...");
-		//}
-		//else
-		//{
-			//waveOutReset(hWaveOut);
-		//}
-		lpWaveHdr->lpData = w->buffer;
-		lpWaveHdr->dwBufferLength = w->hdr.buffer_idx;
-		lpWaveHdr->dwFlags = 0L;
-		lpWaveHdr->dwLoops = 0L;
-		if(waveOutPrepareHeader(hWaveOut, lpWaveHdr, sizeof(WAVEHDR)))
-			shriek(445, "Cannot prepare wave header ...");
-		dwResult = waveOutWrite(hWaveOut, lpWaveHdr, sizeof(WAVEHDR));
-		if (dwResult != 0)
-			shriek(445, "Cannot write to wave device ...");
-		report(false, 1);
-		report(true, 1);
-		attached = false;
-		inb = NULL;
-		finis(false);
-	} else {
-#endif
 	
 	if (!attached && !sleep_table[socket]) {
-//		report(true, w->written_bytes() /* + sizeof(wave_header) */);
 		w->attach(socket);
 		report(false, w->written /* + sizeof(wave_header)*/);
 		attached = true;
@@ -750,12 +701,8 @@ oa_wavefm::run()
 		attached = false;
 		delete w;
 		inb = NULL;
-//		reply("200 output OK");
 		finis(false);
 	}
-#ifdef HAVE_MMSYSTEM_H
-	}
-#endif
 }
 
 void
@@ -793,7 +740,7 @@ agent *make_agent(char *s, agent *preceding)
 			case T_TEXT:   return new oa_ascii(s);
 			case T_STML:   return new oa_stml(s);
 			case T_UNITS: shriek(448, "Units are hard to output");
-			case T_DIPHS:  return new oa_diph(s);
+			case T_DIPHS:  return new oa_seg(s);
 			case T_WAVEFM: return new oa_wavefm(s);
 			default: shriek(462, "unimplmd oa");
 		}
@@ -803,7 +750,7 @@ agent *make_agent(char *s, agent *preceding)
 		case AT_UNKNOWN: shriek(861, "Agent type bug.");
 		case AT_ASCII: return new a_ascii;
 		case AT_CHUNK: return new a_chunk;
-		case AT_DIPHS: return new a_diphs;
+		case AT_DIPHS: return new a_segs;
 		case AT_JOIN:  return new a_join;
 		case AT_PRINT: return new a_print;
 		case AT_RULES: return new a_rules;
@@ -1032,8 +979,8 @@ a_ttscp::a_ttscp(int sd_in, int sd_out) : a_protocol()
 		"server: Epos\r\n"
 		"release: " VERSION "\r\n"
 		"handle: ", cfg->sd_out);
-	reply(handle);
-	reply("");
+	sputs(		handle, cfg->sd_out);
+	sputs(	"\r\n", cfg->sd_out);
 	ctrl = NULL;
 	deps = new hash_table<char, a_ttscp>(4);
 	deps->dupdata = deps->dupkey = false;
@@ -1252,6 +1199,15 @@ fd_set block_set;
 fd_set push_set;
 socky int select_fd_max = 0;
 
+void stretch_sleep_table(socky int fd)
+{
+	if (select_fd_max <= fd) {
+		sleep_table = (agent **)xrealloc(sleep_table, (fd + 1) * sizeof(agent *));
+		for ( ; select_fd_max <= fd; select_fd_max++)
+			sleep_table[select_fd_max] = NULL;
+	}
+}
+
 /*
  *	agent::run() should return after calling block() or push()
  */
@@ -1260,11 +1216,7 @@ void
 agent::block(socky int fd)
 {
 	DEBUG(1,11,fprintf(STDDBG, "Sleeping on %d\n", fd);)
-	if (select_fd_max <= fd) {
-		sleep_table = (agent **)xrealloc(sleep_table, (fd + 1) * sizeof(agent *));
-		for ( ; select_fd_max <= fd; select_fd_max++)
-			sleep_table[select_fd_max] = NULL;
-	}
+	stretch_sleep_table(fd);
 	if (sleep_table[fd]) {
 		agent *a;
 
@@ -1285,11 +1237,7 @@ void
 agent::push(socky int fd)
 {
 	DEBUG(1,11,fprintf(STDDBG, "Pushing on %d\n", fd);)
-	if (select_fd_max <= fd) {
-		sleep_table = (agent **)xrealloc(sleep_table, (fd + 1) * sizeof(agent *));
-		for ( ; select_fd_max <= fd; select_fd_max++)
-			sleep_table[select_fd_max] = NULL;
-	}
+	stretch_sleep_table(fd);
 	if (sleep_table[fd]) {
 		agent *a;
 

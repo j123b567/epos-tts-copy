@@ -14,7 +14,7 @@ AC_PROG_CXX
 if test $GXX = yes; then 
 	if $CXX -v 2>&1 | grep -q egcs
 		then CFLAGS="-Wall -Wunused -pipe -gstabs+ -fdefer-pop"
-		else CFLAGS="-Wall -Wunused -fhandle-exceptions"
+		else CFLAGS="-Wall -Wunused -gstabs+"
 	fi
 	else CFLAGS=-O
 fi
@@ -23,9 +23,10 @@ AC_LANG_CPLUSPLUS
 
 AC_CHECK_PROGS(LNK, ld wlink, linker)
 AC_CHECK_LIB(stdc++, main)
-AC_CHECK_LIB(c, regcomp)
-AC_CHECK_LIB(rx, regcomp)
-AC_CHECK_LIB(regex, regcomp)
+dnl AC_CHECK_LIB(c, regcomp)
+dnl AC_CHECK_LIB(rx, regcomp)
+dnl AC_CHECK_LIB(regex, regcomp)
+AC_SEARCH_LIBS(regcomp, c rx regex)
 AC_CHECK_LIB(socket, main)
 AC_CHECK_LIB(lnsl, main)
 AC_LANG_CPLUSPLUS
@@ -41,6 +42,7 @@ AC_HAVE_HEADERS(wait.h)
 AC_HAVE_HEADERS(unistd.h)
 AC_HAVE_HEADERS(unix.h)
 AC_HAVE_HEADERS(signal.h)
+AC_HAVE_HEADERS(syslog.h)
 AC_HAVE_HEADERS(sys/soundcard.h)
 AC_HAVE_HEADERS(sys/audio.h)
 AC_HAVE_HEADERS(sys/stat.h)
@@ -56,8 +58,10 @@ AC_HAVE_HEADERS(linux/kd.h)
 AC_HAVE_HEADERS(sys/kernel.h)
 AC_HAVE_HEADERS(sys/name.h)
 AC_HAVE_FUNCS(strerror strdup fork getegid strcasecmp stricmp gethostname qnx_name_attach)
-AC_INLINE
-AC_CONST
+
+dnl   AC_CONST is unusable, rejects correct C++ implms (error if uninit'd const
+dnl   and breaks __attribute__((const)) in g++
+dnl   AC_INLINE is hopefully unnecessary for C++
 
 AC_CACHE_CHECK("for glibc regex error codes",
    epos_cv_symb_regeend,

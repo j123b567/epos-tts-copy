@@ -2,329 +2,124 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>               The Epos Speech System: Source Code Documentation</TITLE>
+ <TITLE>               The Epos Speech System: Security</TITLE>
+ <LINK HREF="epos-7.html" REL=next>
  <LINK HREF="epos-5.html" REL=previous>
  <LINK HREF="epos.html#toc6" REL=contents>
 </HEAD>
 <BODY>
-Next
+<A HREF="epos-7.html">Next</A>
 <A HREF="epos-5.html">Previous</A>
 <A HREF="epos.html#toc6">Contents</A>
 <HR>
-<H2><A NAME="s6">6. Source Code Documentation</A></H2>
+<H2><A NAME="s6">6. Security</A></H2>
 
 <P>
-<P>This section is of little use for anyone except for programmers willing to contribute
-to the development of Epos or going to modify its source code. It is also not
-trying to become a beginner's guide to Epos. Anyway, if you are personally missing
-something here or elsewhere, tell me and I may add it; that will become almost the only
-source of progress in this section of documentation. The section may also slowly
-become outdated due to lack of interest.
+<P>This section just summarizes security features of Epos documented elsewhere
+to assist the administrator in setting up a multi-user installation of Epos,
+especially in a UNIX-like environment.
+<P>Epos can be compiled in two ways; either as a simple monolithic binary
+or as a Text-to-Speech Control Protocol server.  For technical reasons
+(especially the latency), it is strongly recommended to choose the latter
+method for most situations.
 <P>
-<H2><A NAME="ss6.1">6.1 Design goals</A>
+<H2><A NAME="ss6.1">6.1 TTSCP-related issues</A>
+</H2>
+
+<H3>Authentication</H3>
+
+<P>
+<P>TTSCP as such includes support for user name and plain text password
+based authentication.  At the moment, Epos doesn't implement any name
+space for this authentication mechanism, except for a randomly-generated
+server password.  Thus, all connections are either completely anonymous,
+or authenticated at the "server" level (which can still be restricted
+from setting or reading specific options.)
+<P>The server password is stored in <CODE>/var/run/epos.pwd</CODE>.  Any process
+with rights sufficient to read this file is able to authenticate as the
+server over TTSCP.
+For debugging purposes, it is also possible to force Epos to accept
+an additional server password with the <CODE>debug_password</CODE> option.
+<P>
+<H3>TTSCP connection handles</H3>
+
+<P>
+<P>In TTSCP, a control connection can issue commands that affect any
+other connection (e.g. interrupt a command in progress).  To prevent
+malicious use, the handle necessary to refer to a connection is
+only available to the connection originator, and is generated at random.
+Consequently, privacy in TTSCP relies on the properties of the underlying
+network connection and on the length of the data connection handle.
+Each byte of handle length carries a perplexity of six bits; reasonable
+handle lengths (as controlled with the <CODE>handle_size</CODE> option therefore
+fall within the range <CODE>10</CODE> to <CODE>200</CODE>.  Be sure to adjust
+<CODE>max_line_len</CODE> as well if using extremely long connection handles.
+<P>
+<H3><CODE>restr.ini</CODE> file</H3>
+
+<P>
+<P>Many TTSCP options are rarely set over TTSCP, and some of them could be
+used for malicious ends.  In these cases, the administrator may restrict
+their use in the <CODE>restr.ini</CODE> as described in 
+<A HREF="epos-3.html#restricted-options">the respective section</A>.  Note especially that unlisted options can
+be set freely, and the default <CODE>restr.ini</CODE> file as distributed with Epos
+may occasionally omit a slightly dangerous option.  Therefore,
+you may want to grep out a list of <EM>all</EM> options and to leave out
+only options you're going to treat as necessary for users and harmless
+for the server.  On the other hand, almost no options affect the security
+directly, because they're only set within the context of the current
+TTSCP connection, and the few exceptions are unlikely to have been overlooked.
+<P>
+<H3>Access to the local sound card</H3>
+
+<P>
+<P>At the moment, any TTSCP client is capable of writing arbitrary waveform data
+to the local soundcard.  If you consider this a security risk, disable
+the <CODE>#localsound</CODE> output module by turning the <CODE>localsound</CODE> option off.
+<P>
+<H3>Access to the local file system</H3>
+
+<P>
+<P>TTSCP in theory offers file system based input and output modules.  For example,
+that allows the client to write some intermittent product to a server-side file
+and then the client may decide to use it repeatedly as an input to multiple streams.
+However, the name space for the files doesn't have to correspond to the file system
+root of the TTSCP server.  With Epos, you can configure the location of the
+TTSCP name space using the 
+<A HREF="epos-3.html#pseudorootdir-option">--pseudo_root_dir option</A>.
+Furthermore, writing to it is disabled by default; this restriction can be overridden
+by setting the --<CODE>writefs</CODE> option.
+<P>
+<H2><A NAME="ss6.2">6.2 Privileged executables</A>
 </H2>
 
 <P>
-<P>Overall coding priorities, approximately in order of decreasing precedence:
-<UL>
-<LI> language independence and generality</LI>
-<LI> no undocumented or implicit "features" (except for error handling)</LI>
-<LI> portability</LI>
-<LI> maintainability, clean decomposition</LI>
-<LI> clean (intuitive) protocols and programming interfaces</LI>
-<LI> scalability</LI>
-<LI> intuitive configuration</LI>
-<LI> fault tolerance</LI>
-<LI> simple algorithms</LI>
-<LI> code readability</LI>
-<LI> speed</LI>
-<LI> space</LI>
-<LI> possible parallelizability</LI>
-</UL>
+<P>It is not recommended to run Epos as a setuid or setgid binary, not because
+of a known security weakness, but because of the possibility of yet unknown
+bugs.  If necessary, Epos should run setgid to a group with minimal privileges.
+<P>Note also that the <CODE>base_dir</CODE> parameter can be given to Epos on the
+command-line, thus by-passing the restrictions specified in the <CODE>restr.ini</CODE>
+file.  This issue may be solved in later versions of Epos; at the moment
+you have to adjust the source manually.
+<P>Instead of a privileged executable, run Epos with the desired privileges
+at system start-up and use a TTSCP client to control it from then on.
 <P>
-<H2><A NAME="ss6.2">6.2 Isolated classes</A>
+<H2><A NAME="ss6.3">6.3 <CODE>local_only</CODE> option</A>
 </H2>
 
 <P>
-<P><CODE>class parser, unit, rules, text</CODE> and maybe a few others are isolated classes
-that take no advantage from inheritance. The reason for the class-oriented design
-is just a matter of code readability and decomposition in this case.
-<P>
-<H3>Class <CODE>simpleparser</CODE></H3>
-
-<P>
-<P>This class takes some input (such as a plain ASCII or STML text) and then can be
-used in conjunction with the <CODE>class unit</CODE> constructor to build the
-<A HREF="epos-2.html#tsr">text structure representation</A>. Its purpose is to
-identify the Latin text tokens (usually ASCII characters, but some traditional
-tokens like "..." would be difficult to identify later, as well as numerous other
-context dependent uses of "."). The parser also identifies the level of description
-which corresponds to the token and this is the information needed by the <CODE>class
-unit</CODE> constructor to correctly build the 
-<A HREF="epos-2.html#tsr">TSR</A>. In this process,
-the parser skips over any empty units, that is, units that contain no phones
-(simple letters) at all.
-<P>Note that it is unnecessary and counterproductive to distinguish between homographic
-tokens used at the same level of description here; such intelligence can be handled
-more flexibly by the language dependent rules. In fact, they tend to be usually
-language dependent. The parser only avoids losing information (through empty unit
-deletion) by the minimum necessary tokenization.
-<P>The STML parser is still unimplemented.
-<P>
-<H3>Class <CODE>unit</CODE></H3>
-
-<P>
-<P>This class is the fundamental element of the 
-<A HREF="epos-2.html#tsr">text structure representation</A>. Its methods are listed in
-<CODE>unit.h</CODE>.  Every object of this type represents a single
-text unit.  Every unit includes pointers to its immediate
-container, and to its contents. The contents are organized in a
-bidirectional linked list; pointers to the head and tail units
-of this lists are stored in the unit. These links, i.e. <CODE>prev</CODE>
-and <CODE>next</CODE>, also serve to locate the neighboring units; they may be
-<CODE>NULL</CODE>, indicating that this is the first/last unit in the
-immediate container.  For most uses, these pointers are not suitable
-to be used directly; the <CODE>Prev</CODE> and <CODE>Next</CODE> methods find the
-neighbor, even if a higher level boundary lies in between. It is also
-possible to mark a unit as a <CODE>scope</CODE> one. In this case, the <CODE>Next</CODE>
-and <CODE>Prev</CODE> methods will be unable to cross its boundary from inside
-out (they will return <CODE>NULL</CODE> if this is attempted).  If you need to
-modify the TSR directly, you will benefit from calling <CODE>unit::sanity</CODE>
-occasionally. This method checks the TSR structure near the unit which has
-called it and will report a severe error, if an invariant is violated,
-thus saving you from misguided error messages or crashes later.
-<P>To extract the prosodic information from a TSR, call the <CODE>effective</CODE>
-method.  It will combine the prosodic adjustments present at all the levels
-of description above the current unit.
-<P>
-<H3>Class <CODE>text</CODE></H3>
-
-<P>
-<P>This class represents a logical line-oriented text file. It handles things
-like the 
-<A HREF="epos-3.html#include-directive">@include directive</A>,
-<A HREF="epos-3.html#escaping">backslash-escaped special characters</A>,
-initial whitespace and comment stripping. It is used for the 
-<A HREF="epos-2.html#rules">rule files</A> and 
-<A HREF="epos-3.html#cfg-files">configuration files</A>,
-but <EM>not</EM> for the 
-<A HREF="epos-2.html#dictionary">dictionaries</A>.
-<P>
-<H3>Class <CODE>file</CODE></H3>
-
-<P>
-<P>This class represents a physical data file.  Its main purpose is to cache and
-share files repeatedly needed by Epos.  The <CODE>claim</CODE> function (to be found in
-<CODE>interf.cc</CODE>) should be used for opening the file (or only sharing an existing
-copy if the file is already open) and reading the data out of the file. The
-<CODE>unclaim</CODE> function is called separately for every <CODE>claim</CODE> call whenever
-the file is no more needed.
-<P>Any code which uses this class should never extract the data member out of it and
-use it independently, even if the class itself remains claimed. This is because
-if the content of the file has changed, the data in memory will be reallocated and
-re-read upon the next call to <CODE>claim</CODE> or possibly even sooner. This may cause
-invalidation of the original <CODE>data</CODE> member at any point of a control switch
-to another Epos agent.  It is possible to call <CODE>reclaim</CODE> at any time to force
-re-reading any file if its time stamp has changed.
-<P>
-<H3>Class <CODE>hash</CODE></H3>
-
-<P>
-<P><CODE>class hash</CODE> is derived from <CODE>class hash_table&lt;char,char&gt;</CODE>.
-The <CODE>hash_table</CODE> template is a generic hash table, keys and associated
-data items being its class parameters. This implementation uses balanced (AVL)
-trees to resolve collisions and is able to adjust (rehash) itself 
-when it gets too full or too sparse. It is a very robust and fast
-implementation and it is independent of the rest of Epos, so you
-may use it in other projects if you want to (subject to GPL).
-If you want to have the hash table keep a copy of its contents,
-the key and/or data may only be of a fixed size type, or a C-style
-string. Alternatively, the hash table will only store pointers
-to these items. These approaches can be mixed in any reasonable
-sense of "mixing".
-<P>The hash tables are used frequently in Epos in various type combinations
-(see <CODE>hash.cc</CODE> for a list. They're also used for parsing the 
-<A HREF="epos-2.html#dictionary">dictionary files</A>.
-<P>
-<H3>Class <CODE>rules</CODE></H3>
-
-<P>
-<P>Note the difference between <CODE>class rules</CODE> and <CODE>class rule</CODE>.
-Every set of rules in Epos (there is one per language) is a <CODE>class
-rules</CODE>, which contains a single <CODE>r_block</CODE>, which in turn
-contains the individual rules.
-The <CODE>class rules</CODE> serves as the only communication interface
-between the <CODE>rule</CODE> hierarchy and the rest of Epos, but there
-is no inheritance relation between them.
+<P>By default, the TTSCP server only binds to the loopback interface.
+That way, only local users can see and use Epos.  Turn off the
+<CODE>local_only</CODE> option to allow remote users to communicate
+with Epos on your machine.
+<P>Theoretically, this security measure should not be needed, but it is very simple
+and thus likely to reduce the risk caused by bugs hidden in more complex corners of the
+Epos TTSCP implementation.
 <P>
 <P>
 <P>
-<H2><A NAME="ss6.3">6.3 Class hierarchies</A>
-</H2>
-
-<H3>Class <CODE>rule</CODE></H3>
-
-<P>
-<P>Each <CODE>rule</CODE> object represents a rule to be applied to 
-a structure of units. The class hierarchy:
-<P>rule
-<UL>
-<LI> r_regress
-<UL>
-<LI> r_progress</LI>
-</UL>
-</LI>
-<LI> r_raise</LI>
-<LI> r_syll</LI>
-<LI> r_contour</LI>
-<LI> r_smooth</LI>
-<LI> r_regex</LI>
-<LI> r_debug</LI>
-<LI> hashing_rule
-<UL>
-<LI> r_subst
-<UL>
-<LI> r_prep</LI>
-<LI> r_postp</LI>
-</UL>
-</LI>
-<LI> r_diph</LI>
-<LI> r_prosody</LI>
-</UL>
-</LI>
-<LI> cond_rule
-<UL>
-<LI> r_inside</LI>
-<LI> r_if</LI>
-<LI> r_with</LI>
-</UL>
-</LI>
-<LI> block_rule
-<UL>
-<LI> r_block</LI>
-<LI> r_choice</LI>
-<LI> r_switch</LI>
-</UL>
-</LI>
-</UL>
-<P>Classes not beginning in <CODE>r_</CODE> can be considered abstract.
-<P>
-<H3>Class <CODE>agent</CODE></H3>
-
-<P>
-<P>Epos can be configured to support multiple simultaneous TTSCP connections
-and except for bugs, no single unauthorized connection should be able to
-create a Denial of Service situation, such as long delays in processing
-other connections.  To achieve this, Epos uses a simple cooperative multitasking
-facility called <EM>agents</EM>. An agent (process) is an entity, which is responsible
-for carrying out some task, such as reading a few bytes from a file descriptor.
-At any moment (except for the startup and the very moments of a transfer of
-control), exactly one agent is active (Epos doesn't support SMP to avoid
-the unnecessary overhead and complexity in the typical case).  If an agent has to wait
-for some event before its job is finished, for example, when the sound card reaches
-full buffers or not enough data has arrived through a network connection, the agent
-calls the <CODE>block</CODE> method (reading) or <CODE>push</CODE> method (writing) with the offending
-file descriptor.
-It is also possible for an agent to wait until some other agent
-executes; see the <CODE>block</CODE> and <CODE>push</CODE> methods' implementation for an example.
-If an agents wants
-to have another agent running, it can call the <CODE>schedule</CODE> method to add it
-to the queue of runnable processes. The scheduled agents always acquire control
-through the <CODE>run</CODE> method; when this method returns, another agent is chosen.
-If there are no more runnable agents, Epos will wait until an agent becomes runnable
-through a status change of the file descriptor the agent is <CODE>block</CODE>ing for.
-<P>Most agents get their data input through the <CODE>inb</CODE> data member and place their output
-into the <CODE>outb</CODE> data member. Whenever the agent has completed a stand-alone chunk
-of output, the agent calls the <CODE>pass</CODE> method to pass it to its successor and
-to schedule it for processing. The output agent never calls <CODE>pass</CODE> (it has actually
-no successor and it is responsible for writing the data somewhere outside Epos),
-but it calls <CODE>finis</CODE> when the data has been successfully written.
-<P>Most agents are organized into streams of interconnected agents. See the
-<A HREF="epos-4.html#strm-cmd">strm command</A> for the semantics of that.
-Other agents are responsible for individual TTSCP connections, for accepting new
-connections and other tasks. A special agent is used for deleting other
-agents when they need to delete themselves.
-<P>The <CODE>chunk</CODE> agent may perform utterance chunking, that is, splitting the
-text being processed at convenient points, such as after a period or at end
-of paragraph.  Such chunks travel through the rest of the stream independently
-and they are queued between consecutive agents if necessary.  Such a queue
-(if non-empty) is a linked list starting with <CODE>pendin</CODE> of the latter
-agent while the end is pointed to by <CODE>pendout</CODE> of the former agent.
-The <CODE>pendcount</CODE> member of the latter agent stores the current number
-of data chunks in the queue, which is used for sanity checking and
-flow control. FIXME: more
-<P>The current agents are:
-<P>agent
-<UL>
-<LI> stream</LI>
-<LI> a_accept</LI>
-<LI> a_protocol
-<UL>
-<LI> a_ttscp</LI>
-</UL>
-</LI>
-<LI> a_disconnector</LI>
-<LI> a_ascii</LI>
-<LI> a_stml</LI>
-<LI> a_rules</LI>
-<LI> a_print</LI>
-<LI> a_diphs</LI>
-<LI> a_synth</LI>
-<LI> a_io
-<UL>
-<LI> a_input</LI>
-<LI> a_output
-<UL>
-<LI> oa_ascii</LI>
-<LI> oa_stml</LI>
-<LI> oa_diph</LI>
-<LI> oa_wavefm</LI>
-</UL>
-</LI>
-</UL>
-</LI>
-</UL>
-<P>
-<H2><A NAME="ss6.4">6.4 Testing</A>
-</H2>
-
-<P>
-<P>The Epos package contains three TTSCP clients.  One of them is the standalone
-<CODE>say</CODE> utility, which is provided as a good and simple example of a TTSCP
-client.  We suggest to use it as a starting point for developing specialized
-TTSCP clients, even though it is already somewhat crufty.
-<P>The <CODE>tcpsyn</CODE> virtual synthesizer also embeds a TTSCP client; it is
-wise to check its proper functioning after making changes to the TTSCP
-server implementation.
-<P>A standalone test suite is compiled under the name <CODE>vrfy</CODE>.  It is currently
-only trying a few standard tricks to crash the server and is far from being
-a rigorous test suite.  However, it manages to catch much more programming
-errors than <CODE>say</CODE> and we recommend to run it after making any changes to
-the source code of Epos.  This test suite assumes Epos has been configured
-correctly and is listening at the standard TTSCP port.  Don't be surprised
-if a bug found by <CODE>vrfy</CODE> turns out to be a false alarm because of a bug
-in <CODE>vrfy</CODE> itself.
-<P>No part of the <CODE>vrfy</CODE> TTSCP client should be mimicked by other software
-or be used as a study material. This client tries to be as ugly as possible
-and to crash any crashable server.  Adding some ugly tests to this piece of
-code might raise the average code quality of Epos significantly.
-<P>
-<H2><A NAME="ss6.5">6.5 More information</A>
-</H2>
-
-<P>
-<P>The header files mostly define basic interfaces for individual Epos components.
-Reading the ones related to a specific piece of code may often clarify things.
-Lots of global data declarations live in <CODE>common.h</CODE>; others (especially
-small, library-like functions) can be found in <CODE>interf.h</CODE>.
-<P>If you have any code or development related comment or question about Epos, send
-it to the Epos development mailing list 
-<A HREF="mailto:epos@braille.mff.cuni.cz">epos@braille.mff.cuni.cz</A>.  You are also encouraged to subscribe to the
-list first by sending a mail containing only the text <CODE>subscribe epos</CODE> to
-<A HREF="mailto:listserv@braille.mff.cuni.cz">epos.braille.mff.cuni.cz</A>.
-Please spend a few seconds by trying to look up the answer in the documentation first.
 <HR>
-Next
+<A HREF="epos-7.html">Next</A>
 <A HREF="epos-5.html">Previous</A>
 <A HREF="epos.html#toc6">Contents</A>
 </BODY>

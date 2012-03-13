@@ -33,20 +33,20 @@ int submain()
 //	fprintf(stdout,"*********************************************\n");
 	root->fout(NULL);
 
-	if (cfg->use_diph || cfg->show_phones) {
-		if (cfg->play_diph) {
+	if (cfg->show_segs | cfg->play_segs | cfg->imm_segs | cfg->show_phones) {
+		if (cfg->play_segs) {
 			if (cfg->forking) {
 				switch (fork()) {
 					case 0:	//ds_used_cnt++;
-						play_diphones(root, this_voice);
+						play_segments(root, this_voice);
 						return 0;
-					case -1:play_diphones(root, this_voice);
+					case -1:play_segments(root, this_voice);
 					default:;
 				}
-			} else play_diphones(root, this_voice);
+			} else play_segments(root, this_voice);
 		}
 		if (cfg->show_phones) root->show_phones();
-		if (cfg->show_diph) show_diphones(root);
+		if (cfg->show_segs) show_segments(root);
 	}
 
 	if (cfg->neuronet) root->nnet_out(cfg->nnet_file, cfg->matlab_dir);

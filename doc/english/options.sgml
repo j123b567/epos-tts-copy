@@ -38,7 +38,7 @@ The average user may expect to be able to modify the voice dependent
 configuration files, but not inventory files.  Also, the inventories
 may often be distributed externally to Epos, while sample voices
 based on them may either be included with Epos, or with the
-diphone inventory, or their creation may be left to the user.
+segment inventory, or their creation may be left to the user.
 
 A set of voice options should completely describe a voice.
 A set of language options should completely describe a language,
@@ -46,7 +46,7 @@ except for voice-specific behavior. A set of global options
 should cover language independent aspects of operation.
 It should be understood that a set of options may employ various
 references to other information, especially filenames (of language
-dependent transcription rules, voice dependent diphone inventories
+dependent transcription rules, voice dependent segment inventories
 etc.)
 
 Some language and/or voice specific options may have suitable defaults
@@ -225,13 +225,13 @@ unless the current language or voice is switched during the processing.
 An example:
 
 <tscreen><verb>
-say --language german --pausing "Wie geht es?" --show_diphones
+say --language german --pausing "Wie geht es?" --show_segments
 </verb></tscreen>
 
 This sets the default language to German, enables pausing after each
 transformation rule is applied to the text (sets the <tt/pausing/ option
-to <tt/true/, in other words) and prints the diphone string generated
-in the process (sets the <tt/show&lowbar;diphones/ option to <tt/true/). The string
+to <tt/true/, in other words) and prints the segment string generated
+in the process (sets the <tt/show&lowbar;segments/ option to <tt/true/). The string
 to be transcribed and synthesized is given on the command line as well
 (it must be quoted unless it consists of a single word).
 
@@ -310,6 +310,9 @@ short options understood by the <tt/say/ utility can be obtained with
 <tt>say -h</tt>.  Such list however includes undocumented options
 which may disappear in the next releases.
 
+Please keep in mind that the say utility is only an example of a TTSCP
+client and not a full-fledged controlling interface to Epos.
+
 <sect3> Server short options
 <p>
 
@@ -338,11 +341,18 @@ which may disappear in the next releases.
 	Shut down the server.
 <tag>-l</tag>
 	List all available languages and available voices for the current language.
+<tag>-m</tag>
+	Write the waveform to a file (said.vox in the client's current directory)
+	instead of writing it to the local sound card; the output doesn't
+	include any header and is in the mu law format.
+<tag>-o</tag>
+	Write the waveform to the standard output.  In this case, no transcription
+	is performed.
 <tag>-u</tag>
 	Turn on utterance chunking.  This option has unintuitive consequences
 	when combined with <tt/-w/.
 <tag>-w</tag>
-	Write the output to a file (usually /usr/lib/epos/root/said.wav) instead
+	Write the waveform to a file (said.wav in the client's directory) instead
 	of writing it to the local sound card.
 </descrip>
 
@@ -463,11 +473,11 @@ boolean, the default <tt>default</tt> is an empty string.
 An example:
 
 <tscreen><verb>
-	soft_options   "colloquial=false:diphone_listing_file(s)=traditnl.dph"
+	soft_options   "colloquial=false:segment_listing_file(s)=traditnl.dph"
 </verb></tscreen>
 
 This example defines two options, a boolean <tt>colloquial</tt> and
-a string <tt>diphone&lowbar;listing&lowbar;file</tt>.
+a string <tt>segment&lowbar;listing&lowbar;file</tt>.
 
 The sets of soft options for individual languages are independent and never
 clash with each other. However, built-in option names may not be used
@@ -623,6 +633,16 @@ engineering dilemmata.
 	debugging situations (when a text is parsed in an unexpected way
 	and the user is trying to find out which rule has escaped his
 	attention). This option may not work with all setups.
+<tag>--debug_password <sl/password/ </tag>
+	An alternative password for server-level authentication.  Can be
+	useful when debugging the TTSCP implementation, with the obvious
+	security implications.
+<tag>--handle_size <sl/n/ </tag>
+	The TTSCP handle length in character.  The handles are always
+	generated randomly using a 64 character alphabet.  Use small
+	values for debugging the TTSCP implementation manually (and accept
+	the risk of a handle-guessing attack); use higher values in a
+	production environment.
 <tag>--shriek_art number</tag>
 	The picture to be printed to <tt/stdshriek/ in case of an error.
 	May or may not work.  Small integers such as 0, 1 or 2 are possible.
@@ -636,6 +656,17 @@ engineering dilemmata.
 	When the rules are dumped with the <tt/debug/ rule type and this
 	option is set, all of them will be displayed.  Otherwise only the
 	current rule is displayed.  That's all.
+
+<tag>--localsound</tag>
+	Enables the use of the TTSCP <tt>&num;localsound</tt> output module.
+<tag>--readfs</tag>
+	Enables the use of file system based TTSCP input modules.  See
+	the <ref id="pseudorootdir-option" name="pseudo_root_dir option">
+	for more details.
+<tag>--writefs</tag>
+	Enables the use of file system based TTSCP output modules. See
+	the <ref id="pseudorootdir-option" name="pseudo_root_dir option">
+	for more details.
 
 <tag>--unit_levels</tag>
 	Levels of description.  Must be a colon separated list which includes
@@ -672,16 +703,15 @@ that can be produced by the monolithic and server binaries equally.
 <tag>--show_phones</tag>
 	Print the sequence of sounds generated from the text processed.
 	Monolithic binary only.
-<tag>--show_diphones</tag>
-	Print the sequence of diphones generated from the text processed.
+<tag>--show_segments</tag>
+	Print the sequence of segments generated from the text processed.
 	Monolithic binary only.
-<tag>--show_raw_diphs</tag>
-	When used in conjunction with the <tt/show_diphones/ option, the diphones
+<tag>--show_raw_segs</tag>
+	When used in conjunction with the <tt/show_segments/ option, the segments
 	will be not only listed by name, but they will also include the actual
 	numbers generated.  Monolithic binary only.
-<tag>--play_diphones</tag>
-	Synthesize the waveform and say it through the sound card or write it to
-	a file, as pointed to by the <tt/wave&lowbar;file option/ option.
+<tag>--play_segments</tag>
+	Synthesize the waveform and say it through the sound card.
 	Monolithic binary only.
 <tag>--wave_header</tag>
 	When dumping the waveform into a file or a TTSCP data connection,
@@ -691,10 +721,35 @@ that can be produced by the monolithic and server binaries equally.
 	the usual ioctls).  TTSCP requires this option be always set
 	to <tt/on/; consequently, the option is only reasonably useful with the
 	monolithic binary.
-<tag>--immed_diphones</tag>
-	Print the sequence of diphones generated from the text processed
-	just after the <tt/diphones/ rule.  This is useful especially
-	in conjunction with the <tt/neuronet/ option where the diphone layer
+<tag>--ulaw</tag>
+	Generated waveform uses mu law sample encoding instead of linear encoding.
+<tag>--out_sampling_rate <sl/Hz/ </tag>
+	Voice dependent option.  May be used to downsample the output by one half.
+<tag>--autofilter</tag>
+	If this option is enabled, an appropriate low band filter is used whenever
+	downsampling.  This is necessary to avoid phantom sounds in the output.
+<tag>--label_seg</tag>
+	Output segment (diphone) labels in the output waveform using the appropriate
+	RIFF WAVE chunks.
+<label id="labelphones-option">
+<tag>--label_phones</tag>
+	Output phone labels in the output waveform.  This is only possible if
+	phone boundary information is made available for the inventory using
+	the <ref id="snlfile-option" name="snl_file option">.  For other voices,
+	this option has no effect.
+<tag>--label_sseg</tag>
+	Very experimental.  If used in conjunction with the <tt/label_phone/,
+	the phone labels are assigned not the phone level, but the highest
+	level whose boundary is detected at this place.  If you do use this
+	option, be aware that Epos will use a (very slightly) TTSCP 0
+	non-compatible internal representation for the segment (diphone) stream
+	to preserve the necessary suprasegmental unit boundary information.
+	Consequently, network voices provided by different TTSCP servers may
+	fail reporting unexpected segment numbers.
+<tag>--immed_segments</tag>
+	Print the sequence of segments generated from the text processed
+	just after the <tt/segments/ rule.  This is useful especially
+	in conjunction with the <tt/neuronet/ option where the segment layer
 	is created, but later to be discarded by the rules.
 	Monolithic binary only.
 <tag>--neuronet</tag>
@@ -737,7 +792,7 @@ to the user.  The model we use is assigning a few colors consistently
 to the individual levels of description and marking up the boundaries
 between units with parentheses, separators or both. The levels of
 description are <ref id="tsr-levels" name="defined"> in compile time.
-The <tt/diphone/ and <tt/text/ may not be applicable for some of
+The <tt/segment/ and <tt/text/ may not be applicable for some of
 these options. This model of displaying the TSR is not used for
 transmitting the text over TTSCP.
 
@@ -832,10 +887,10 @@ In fact, you can ignore this section completely, as the few hard limits tend to
 employ reasonably high values.
 
 <descrip>
-<tag>--diph_buff_size <sl/diphones/</tag>
-	Soft limit.  Maximum number of diphones generated by the diphoniser
-	and synthesized at once. It more diphones have to be generated,
-	they are synthesized in chunks of <tt/diph_buff_size/.  If this
+<tag>--seg_buff_size <sl/segments/</tag>
+	Soft limit.  Maximum number of segments generated by the diphoniser
+	and synthesized at once. It more segments have to be generated,
+	they are synthesized in chunks of <tt/seg_buff_size/.  If this
 	option is set to zero, a growable buffer is used instead, and
 	there is no limit on memory consumed.
 	This option has no effect in the monolithic Epos.
@@ -894,7 +949,7 @@ employ reasonably high values.
 This subsection lists some options defined for each language.  Additional
 language dependent options are certain directory and file names and possibly
 others.  As every voice is associated with a single language (two voices
-may share a multilingual diphone inventory if desired), every voice dependent
+may share a multilingual segment inventory if desired), every voice dependent
 option is thence language dependent.
 
 <descrip>
@@ -1006,21 +1061,31 @@ option is thence language dependent.
 	or slow network connection.
 	A value of <tt/0/ is actually a very small positive value and negative
 	values are not accepted.
+<tag>--n_segs <sl/n/ </tag>
+	The total number of segments withing the segment inventory.
 <tag>--models <sl/filename/</tag>
-	The value is a file name. The file contains the diphone inventory
+	The value is a file name. The file contains the segment inventory
 	proper. Its format is speech synthesis type dependent.
 <tag>--counts <sl/filename/</tag>
 	The value is a file name. The file contains the lengths of individual
-	diphones in this diphone inventory.
-<tag>--dph&lowbar;file <sl/filename/</tag>
-	The value is a file name. The file contains the diphone descriptions
-	in the format used by the <tt/diph/ rule. FIXME: odkaz nebo popis
+	segments in this segment inventory.
 <tag>--dpt&lowbar;file <sl/filename/</tag>
-	The value is a file name. The file contains the symbolic diphone names
+	The value is a file name. The file contains the symbolic segment names
 	for user output.
 <tag>--codebook <sl/filename/</tag>
 	The value is a file name. The file contains the code book for
 	the vector quantified LPC speech synthesis (<tt/lpc-vq/ type only).
+<label id="snlfile-option">
+<tag>--snl_file <sl/filename/</tag>
+	The value is a file name.  The file contains phone boundary information
+	for individual segments in this segment inventory.  Each line of the file
+	contains three space-separated items: segment number, relative position
+	within the segment (valued from 1 to 1024, e.g. 512 is the middle of the segment)
+	and the character (phone representation) which is to be associated with
+	the position.  Lines not conforming to this specification are ignored.
+	Currently, at most one label may be indicated for one segment, but it
+	would be easy to get rid of this limit.
+	See also <ref id="labelphones-option" name="label_phones option">.
 <tag>--init_f <sl/percentage/</tag>
 	The auditory neutral integer value for the fundamental frequency.
 	The typical value is 100.
@@ -1028,9 +1093,9 @@ option is thence language dependent.
 	The auditory neutral integer value for the volume.
 	The typical value is 100.
 <tag>--init_t <sl/percentage/</tag>
-	The auditory neutral integer value for the prosodic duration of diphones.
-	The typical value is 100.  Of course, it is diphone length relative
-	(some diphones are longer than others), just as the <tt/init_f/
+	The auditory neutral integer value for the prosodic duration of segments.
+	The typical value is 100.  Of course, it is segment length relative
+	(some segments are longer than others), just as the <tt/init_f/
 	and <tt/init_i/ options are.
 <tag>--channel <sl/channeltype/</tag>
 	The parameter, the output channel type, is one of the following:
@@ -1045,21 +1110,21 @@ option is thence language dependent.
 	This option may be used to simulate a dialogue by assigning
 	different output channels to different speakers.
 <tag>--inv_sampling_rate <sl/Hz/</tag>
-	The sampling rate this diphone inventory has been recorded at.
+	The sampling rate this segment inventory has been recorded at.
 	The algorithms we use also imply that we use the same frequency
 	for the synthesis.
 <tag>--sample&lowbar;size <sl/bits/</tag>
 	Number of bits per sample.  If some kind of a stereo output
 	is turned on, this option set the number of bits per channel.
 	Again, this is related to the quality of recording of the
-	diphone inventory.  We currently only support 8 and 16 bits.
+	segment inventory.  We currently only support 8 and 16 bits.
 </descrip>
 
 
 <sect2> Prosody generation
 <p>
 
-The options in this section control how the resulting per diphone prosodic
+The options in this section control how the resulting per segment prosodic
 information is assembled from the prosodic adjustments done to the
 structural units by the rules.  It actually controls the interpretation
 of those adjustments themselves.
@@ -1069,7 +1134,7 @@ of those adjustments themselves.
 	The asterisk stands for a @-separated symbolic name of a linguistic description
 	level, such as <tt/phone/, <tt/syll/ or <tt/word/.  The parameter
 	is an integer value primarily used for enabling (1) or disabling (0)
-	certain levels of description when the total quantities for a diphone
+	certain levels of description when the total quantities for a segment
 	are computed.  It must however be understood that when some rules
 	like <tt/smooth/ are applied, the prosodic values are distributed
 	down to the target level of such a rule and cannot be distinguished
@@ -1104,7 +1169,7 @@ of those adjustments themselves.
 
 
 <!-- unselected options: 
-.cow, .loaded, .token_esc, .value_esc, .slash_esc, .use_diph, warnings, .input_text,
+.cow, .loaded, .token_esc, .value_esc, .slash_esc, .use_segs, warnings, .input_text,
 .sd_in, .sd_out,
 -->
 
@@ -1162,6 +1227,7 @@ cd src
 </verb>
 </tscreen>
 
+<label id="pseudorootdir-option">n
 <tag>--pseudo_root_dir <sl/dirname/</tag>
 	The value is a directory name.  Sets the path prepended
 	to any file name referenced in the TTSCP <ref id="strm-cmd"
@@ -1185,11 +1251,13 @@ cd src
 <tag>--cfg&lowbar;file <sl/filename/</tag>
 	The value is a file name. This option can be used to change the file name
 	of the <tt>epos.ini</tt> file.
-<tag>--wave&lowbar;file <sl/filename/</tag>
+<tag>--local&lowbar;sound&lowbar;file <sl/filename/</tag>
 	The value is a file name. This option can be used to change the file name
-	of the file produced by the <tt/play&lowbar;diphones/ option. In many unices,
+	of the local sound card device. In many unices,
 	setting this to <tt>/dev/dsp</tt> is the recommended way to actually hear
-	Epos speak. Other unices don't have <tt>/dev/dsp</tt>, however.
+	Epos speak. Other unices don't have <tt>/dev/dsp</tt>, however.  If the
+	sound card has no file name at all, set this to the null device
+	file name.
 <tag>--input&lowbar;file <sl/filename/</tag>
 	The value is a file name. This option can be used to change the file name
 	of the implicit input text used by the monolithic version of Epos.
@@ -1216,10 +1284,6 @@ cd src
 	The language dependent value is a directory name.
 	The directory shall contain the implicit input text file for the
 	monolithic version of Epos.
-<tag>--prosody_dir <sl/dirname/</tag>
-	The language dependent value is a directory name.
-	The directory shall contain any prosody modelling related dictionaries
-	used by the rules. FIXME: fakt? chci to tak?
 <tag>--lang_base_dir <sl/dirname/</tag>
 	The value is a global directory name, not a language dependent one.
 	It serves as the base directory for looking up the newly constructed
@@ -1259,7 +1323,7 @@ cd src
 <p>
 
 The options in this section usually have no effect if changed in run time;
-change them in the configuration files instead.
+change them in the configuration files instead and restart Epos.
 
 <descrip>
 <label id="daemon-log-option">
@@ -1267,6 +1331,26 @@ change them in the configuration files instead.
 	The value is a file name. This option can be used to set the file
 	where various information about the Epos process is recorded.
 	At the moment that is of little practical use except for debugging.
+<tag>--use&lowbar;syslog</tag>
+	Log all TTSCP error messages with syslogd, if the syslog facility
+	is available.  Due to the internal design of Epos, some of these
+	messages are never actually sent over TTSCP to anyone - for example,
+	a fatal misconfiguration condition detected before the first client
+	connects.
+<tag>--full&lowbar;syslog</tag>
+	Log all TTSCP completion messages with syslogd, if the syslog facility is
+	available, including 1xx and 2xx class messages.
+<label id="authpriv-option">
+<tag>--authpriv</tag>
+	Log all security relevant TTSCP completion messages with the
+	facility <tt/authpriv/ instead of <tt/daemon/.  This includes
+	messages concerning denial of access or incorrectly specified
+	resource or password.  In that case, the <tt/err/ message level
+	is used instead of <tt/warn/.  Notice that network errors
+	are not affected by this option.
+<tag>--log&lowbar;codes </tag>
+	When set, all TTSCP messages are preceded with their numeric codes
+	as in TTSCP.
 <tag>--server&lowbar;pwd&lowbar;file <sl/filename/</tag>
 	The value is a file name. This option can be used to force the server
 	to store its internal password to a file.  This password can then
@@ -1321,7 +1405,6 @@ level | debugging messages | comment @
 1 | verbose  | too verbose @
 2 | normal   | informative @
 3 | rare     | warnings, and such @
-4 | none     | should not exist @
 <hline>
 </tabular>
 <caption>
@@ -1379,7 +1462,7 @@ level | debugging messages | comment @
 	<tt>src/unit.cc</tt> file
 <tag>--synth&lowbar;debug <sl/level/</tag>
 	Severity level threshold for the code area of low level
-	speech syntheses (diphone to speech). It covers both
+	speech syntheses (segments to speech). It covers both
 	individual algorithms and the common code.
 <tag>--always&lowbar;debug <sl/level/</tag>
 	The global positive severity level threshold. Any debugging code

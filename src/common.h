@@ -27,7 +27,7 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@cuni.cz"
-#define VERSION     "2.4.42"
+#define VERSION     "2.4.57"
 
 #include "config.h"
 
@@ -68,8 +68,7 @@ char *strdup(const char *);
 		#include <rx.h>
 	#else
 	    #ifdef HAVE_REGEX_H
-//		#include <regex.h>
-		#include "rx.h"
+		#include <regex.h>	// in some cases, "rx.h" may do better anyway
 	    #else
 		#include "rx.h"
 	    #endif
@@ -89,7 +88,7 @@ enum FIT_IDX {Q_FREQ, Q_INTENS, Q_TIME};
 #define LIST_DELIM	 ':'
 
 // enum UNIT {U_DIPH, U_PHONE, U_SYLL, U_WORD, U_COLON, U_SENT, U_TEXT, U_INHERIT, U_DEFAULT, U_ILL=255, U_VOID=127};
-// #define UNITstr "diphone:phone:syll:word:colon:sent:text:inherit:default:"
+// #define UNITstr "segment:phone:syll:word:colon:sent:text:inherit:default:"
 typedef char UNIT;
 #define UNIT_MAX 12
 #define U_ILL		127

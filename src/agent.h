@@ -211,7 +211,7 @@ extern char server_passwd[];
 
 /*
  *	make_rnd_passwd() generates a random password or handle consisting
- *	of lowercase and uppercase characters, digits, dash and underscore.
+ *	of lowercase and uppercase characters, digits, dashes and underscores.
  */
 
 void make_rnd_passwd(char *buffer, int size);
@@ -227,9 +227,9 @@ enum PAR_SYNTAX {PAR_REQ, PAR_FORBIDDEN, PAR_OPTIONAL};
 struct ttscp_cmd
 {
 //	char name[4];
-	int name;
+	int name;		/* tried const, Visual C++ then rejects initialization */
 	int(*impl)(char *param, a_ttscp *a);
-	char *short_help;
+	char *short_help;	/* was const, as above */
 	PAR_SYNTAX param;
 };
 

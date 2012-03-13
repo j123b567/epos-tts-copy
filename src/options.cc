@@ -110,6 +110,13 @@ static inline void cow_free(cowabilium *p, option *opts, void *extra)
 			free(*(char **)((char *)p + o->offset));
 		}
 	}
+	if (opts == voiceoptlist) {
+		voice *v = (voice *)p;
+		voice *par = (voice *)v->parent;
+		if (v->syn != par->syn) delete v->syn;
+		if (v->segment_names != par->segment_names) unclaim(v->segment_names);
+		if (v->sl != par->sl) free(v->sl);
+	}
 	free(p);
 	if (extra) free(extra);
 }
@@ -224,7 +231,7 @@ void restrict_options()
 	text *t = new text(cfg->restr_file, cfg->ini_dir, "", NULL, true);
 	if (!t->exists()) {
 		delete t;
-		return;		/* if no restictions file, ignore it */
+		return;		/* if no restrictions file, ignore it */
 	}
 	char *line = (char *)xmalloc(cfg->max_line);
 	while (t->getline(line)) {
@@ -266,7 +273,7 @@ option *alloc_option(option *optlist, OPT_STRUCT os)
 
 #define MAX_TOTAL_OPTION_NAME 64
 
-void alloc_level_options(option *optlist, OPT_STRUCT os, cowabilium *base, int levnum, char *levname)
+void alloc_level_options(option *optlist, OPT_STRUCT os, cowabilium *base, int levnum, const char *levname)
 {
 	char b[MAX_TOTAL_OPTION_NAME];
 
@@ -306,7 +313,7 @@ void alloc_level_options(option *optlist, OPT_STRUCT os, cowabilium *base, int l
 #define LEVNAME_PHONE	"phone"
 #define LEVNAME_TEXT	"text"
 
-char *pre_set_unit_levels(char *value)
+const char *pre_set_unit_levels(const char *value)
 {
 	if ((str2enum(LEVNAME_SEGMENT, value, U_DEFAULT) == U_ILL) ||
 		(str2enum(LEVNAME_PHONE, value, U_DEFAULT) == U_ILL) ||
@@ -328,7 +335,7 @@ char *pre_set_unit_levels(char *value)
 	return value;
 }
 
-void post_set_unit_levels(char *)
+void post_set_unit_levels(const char *)
 {
 	cfg->segm_level = str2enum(LEVNAME_SEGMENT, cfg->unit_levels, U_DEFAULT);
 	cfg->phone_level = str2enum(LEVNAME_PHONE, cfg->unit_levels, U_DEFAULT);
@@ -341,33 +348,47 @@ void post_set_unit_levels(char *)
 	for (n=0; enum2str(n, cfg->unit_levels); n++) ;
 
 	for (int i=0; i<n; i++) {
-		char *tmp = enum2str(i, cfg->unit_levels);
+		const char *tmp = enum2str(i, cfg->unit_levels);
 		alloc_level_options(optlist, OS_CFG, cfg, i, tmp);
 		alloc_level_options(langoptlist, OS_LANG, NULL, i, tmp);
 	}
 }
 
+const char *pre_init_f(const char *value)
+{
+	int v;
+	if (!sscanf(value,"%d",&v)) return value;
+	if (v < 1) return NULL;
+	else return value;
+}
+
 /*
  *	invoke_set_action gets invoked twice for options whose action bit
  *		is set.  The pre-set call receives and returns a value,
- *		the post-set call receives a NULL and returns anything.
+ *		the post-set call receives a NULL and returns NULL.
  *
  *		If a pre-set call returns a NULL, the option will not
- *		be changed and no post-set call occurs.
+ *		be changed and no post-set call occurs.  Otherwise the
+ *		value returned is used instead of the suggested one.
  *
  *		All options have initially the action bit set, and
  *		invoke_set_action shall disable the action bit for
  *		options it doesn't handle specially.
  */
 
-char *invoke_set_action(option *o, char *value)
+const char *invoke_set_action(option *o, const char *value)
 {
-	if (!strcmp(o->optname, "unit_levels") || !strcmp(o->optname, "C:unit_levels")) {
+	const char *on = strchr(o->optname, ':') ? strchr(o->optname, ':') + 1 : o->optname;
+	if (!strcmp(on, "init_f")) {
+		if (value) return pre_init_f(value);
+		else return NULL;
+	}
+	if (!strcmp(on, "unit_levels")) {
 		if (value) {
 			return pre_set_unit_levels(value);
 		} else {
-			post_set_unit_levels(value);
-			return value;
+			post_set_unit_levels(NULL);
+			return NULL;
 		}
 	}
 	o->action = false;
@@ -405,7 +426,7 @@ void parse_cfg_str(char *val)
 	*netto=0;
 }
 
-template<class T> inline void set_enum_option(option *o, char *val, char *list, char *locus)
+template<class T> inline void set_enum_option(option *o, const char *val, char *list, char *locus)
 {
 	T tmp = (T)str2enum(val, list, U_ILL);
 	if (tmp == (T)U_ILL)
@@ -413,10 +434,10 @@ template<class T> inline void set_enum_option(option *o, char *val, char *list, 
 	*(T *)locus = tmp;
 }
 
-bool set_option(option *o, char *val, void *base)
+bool set_option(option *o, const char *val, void *base)
 {
 	if (!o) return false;
-	if (o->action && !invoke_set_action(o, val)) return false;
+	if (o->action && !(val = invoke_set_action(o, val))) return false;
 	char *locus = (char *)base + o->offset;
 	switch(o->opttype) {
 		case O_BOOL:
@@ -467,13 +488,13 @@ bool set_option(option *o, char *val, void *base)
 			DEBUG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to %d\n",o->optname,*(int *)locus);)
 			break;
 		case O_STRING: 
-			if (val[0]) parse_cfg_str(val);
+			if (val[0]) parse_cfg_str(const_cast<char *>(val));
 			DEBUG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to \"%s\"\n",o->optname,val);)
 			*(char**)locus = strdup(val);	// FIXME: should be forever if monolith etc. (maybe)
 			break;
 		case O_CHAR:
 			if (!val[0]) shriek(447, fmt("Empty string given for a CHAR option %s", o->optname));
-			parse_cfg_str(val);
+			parse_cfg_str(const_cast<char *>(val));
 			if (val[1]) shriek(447, fmt("Multiple chars given for a CHAR option %s", o->optname));
 			else *(char *)locus=*val;
 //			DEBUG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to \"%s\"\n",o->optname,val);)
@@ -505,7 +526,7 @@ bool set_option(option *o, char *val, void *base)
 #define  VOICES_OFFSET  ((int)&((lang *)NULL)->voices)
 #define  VOICES_LENGTH  (this_lang->n_voices * sizeof(void *))
 
-bool set_option(option *o, char *value)
+bool set_option(option *o, const char *value)
 {
 	if (!o) return false;
 	switch(o->structype) {
@@ -522,7 +543,7 @@ bool set_option(option *o, char *value)
 	return false;
 }
 
-static inline bool set_option(char *name, char *value)
+static inline bool set_option(char *name, const char *value)
 {
 //	option *o = option_struct(name, NULL);
 //	... tvorba indexu ...
@@ -534,7 +555,7 @@ static inline bool set_option(char *name, char *value)
 	return set_option(option_struct(name, NULL), value);
 }
 
-static inline void set_option_or_die(char *name, char *value)
+static inline void set_option_or_die(char *name, const char *value)
 {
 	option *o = option_struct(name, NULL);
 	if (!o) shriek(814, fmt("Unknown option %s", name));
@@ -578,7 +599,7 @@ bool voice_switch(const char *value)
 	return false;
 }
 
-char *format_option(option *o, void *base)
+const char *format_option(option *o, void *base)
 {
 	char *locus = (char *)base + o->offset;
 	switch(o->opttype) {
@@ -610,7 +631,7 @@ char *format_option(option *o, void *base)
 	return NULL; /* unreachable */
 }
 
-char *format_option(option *o)
+const char *format_option(option *o)
 {
 	switch(o->structype) {
 		case OS_CFG:   return format_option(o, cfg);
@@ -621,7 +642,7 @@ char *format_option(option *o)
 	return NULL; /* unreachable */
 }
 
-char *format_option(const char *name)
+const char *format_option(const char *name)
 {
 	option *o = option_struct(name, this_lang->soft_options);
 	if (!o) {
@@ -660,7 +681,7 @@ void parse_cmd_line()
 		case 1:
 			for (j = ar+1; *j; j++) switch (*j) {
 				case 'b': cfg->out_verbose=false; break;
-//				case 'd': cfg->show_diph=true; break;
+//				case 'd': cfg->show_seg=true; break;
 //				case 'e': cfg->show_phones=true; break;
 				case 'f': cfg->forking=false; break;
 				case 'H': cfg->long_help=true;	/* fall through */
@@ -670,7 +691,7 @@ void parse_cmd_line()
 						this_lang->rules_file = cfg->rules_file;
 					  cfg->neuronet=true; break;
 				case 'p': cfg->pausing=true; break;
-				case 's': cfg->play_diph=true; break;
+				case 's': cfg->play_segs=true; break;
 				case 'v': cfg->version=true; break;
 				case 'D':
 					if (!cfg->use_dbg) cfg->use_dbg=true;
@@ -715,13 +736,13 @@ void load_config(const char *filename, const char *dirname, const char *what,
 	while (t->getline(line)) {
 		char *value = split_string(line);
 		if (value && *value) {
-			for (i = strlen(value)-1; strchr(WHITESPACE, value[i]) && i; i--);
+			for (i = strlen(value)-1; strchr(WHITESPACE, value[i]) && i; i--) ;
 			if (value[i-1] == ESCAPE && value[i] && i) i++;
 			if (value[i]) i++;
 			value[i] = 0;		// clumsy: strip off trailing whitespace
 		}
 		if (!set_option(line - 2, value, whither, parent_lang ? parent_lang->soft_options : (hash_table<char, option> *)NULL))
-			shriek(812, fmt("Bad option %s %s in %s", line, value, compose_pathname(filename, dirname)));
+			shriek(812, fmt("Bad option %s in %s:%d", line, t->current_file, t->current_line));
 	}
 	free(line - 2);
 	delete t;
@@ -743,7 +764,7 @@ static inline void add_language(const char *lng_name)
 	if (*lng_name) {
 		if (!cfg->langs) cfg->langs = (lang **)xmalloc(8 * sizeof (void *));
 		else if (!(cfg->n_langs-1 & cfg->n_langs) && cfg->n_langs > 4)	    // n_langs == 8, 16, 32...
-			cfg->langs = (lang **)xrealloc(cfg->langs, cfg->n_langs << 1);
+			cfg->langs = (lang **)xrealloc(cfg->langs, (cfg->n_langs << 1) * sizeof(void *));
 		cfg->langs[cfg->n_langs++] = new lang(filename, dirname);
 	}
 	free(filename);
@@ -779,7 +800,7 @@ static inline void dump_help()
 
 	printf("usage: %s [options] ['Text to be processed']\n", argv[0]);
 	printf(" -b  bare format (no frills)\n");
-//	printf(" -d  show diphones\n");
+//	printf(" -d  show segments\n");
 //	printf(" -e  show phones\n");
 	printf(" -f  disable forking (detaching) the daemon\n");
 	printf(" -n  same as --neuronet --rules_file nnet.rul\n");
@@ -847,8 +868,6 @@ void config_init()
 	cfg->warnings = true;
 	parse_cmd_line();
 	cfg->loaded=true;
-	
-	cfg->use_diph = cfg->show_diph | cfg->play_diph | cfg->imm_diph;
 	
 	hash_max_line = cfg->max_line;
 

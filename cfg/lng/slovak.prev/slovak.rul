@@ -147,7 +147,7 @@ $sonority  = 0'%<$fric$afric${stop}øØ$nasal<l<rjJ<$vowel   ;l<r because of "umrl
 	smooth	f/30/40\30	word	phone
  }
 
- diphones  kadlec.dph	colon	    ; mìlo by být posledním pravidlem
+ segments  kadlec.dph	colon	    ; mìlo by být posledním pravidlem
 
 ;--------------------  debug     elem,pause text
 

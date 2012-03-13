@@ -128,13 +128,13 @@ static int tcpsyn_connect_socket(unsigned int ipaddr, int port)
 	return sd;
 }
 
-static inline void tcpsyn_chk_cmd(int cd, char *tag, char *par)
+static inline void tcpsyn_chk_cmd(int cd, const char *tag, const char *par)
 {
 	int err = sync_finish_command(cd);
 	if (err) shriek(475, fmt("Remote returned %d for %s %s", err, tag, par));
 }
 
-static inline void tcpsyn_send_cmd(int cd, char *tag, char *par)
+static inline void tcpsyn_send_cmd(int cd, const char *tag, const char *par)
 {
 	sputs(tag, cd);
 	sputs(" ", cd);
@@ -214,19 +214,19 @@ tcpsyn::~tcpsyn()
 }
 
 void
-tcpsyn::syndiph(voice *, diphone, wavefm *)
+tcpsyn::synseg(voice *, segment, wavefm *)
 {
-	shriek(861, "abstract tcpsyn::syndiph");
+	shriek(861, "abstract tcpsyn::synseg");
 }
 
 void
-tcpsyn::syndiphs(voice *, diphone *d, int count, wavefm *w)
+tcpsyn::synsegs(voice *, segment *d, int count, wavefm *w)
 {
 	int size;
 	void *b;
 
-	ywrite(dd, d - 1,sizeof(diphone) * ++count);
-	b = tcpsyn_appl(sizeof(diphone) * count, cd, dd, &size);
+	ywrite(dd, d - 1,sizeof(segment) * ++count);
+	b = tcpsyn_appl(sizeof(segment) * count, cd, dd, &size);
 	w->become(b, size);
 	free(b);
 }

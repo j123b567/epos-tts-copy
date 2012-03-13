@@ -94,16 +94,12 @@ $prosody = ../czech/prosody
 
 regress   0>\#(!_0)	colon	; vlo¾ení pausy
 
-# diphones  ${dph_file}	colon	    ; mìlo by být zhruba posledním pravidlem
-
 if   kadlec_dph
-	diphones  kadlec.dph   colon
+	segments  kadlec.dph   colon
 if  !kadlec_dph
-	diphones  traditnl.dph colon
+	segments  traditnl.dph colon
 
-# diphones  traditnl.dph
- 
-# smooth    f/10/80\10	text diphone
+# smooth    f/10/80\10	text segment
 
 
 ;--------------------  debug     elem,pause text

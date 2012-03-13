@@ -1,4 +1,5 @@
 
+
 RECENT CHANGES can be tracked at the BOTTOM END.  The rest doesn't qualify
 for an exciting story, just skip it.
 
@@ -959,4 +960,112 @@ for an exciting story, just skip it.
 2.4.42 from 2.4.41	 16.5.00
 	- label fixes
 	- say -d option (show segments)
+
+2.4.43 from 2.4.42	  3.9.00
+	- const qualifier fixes
+	- AC_CONST and AC_INLINE removed from configure.in (suggested by Milan Zamazal)
+	- syslog support
+	- hackfile used only if syslog is not available
+
+2.4.44 from 2.4.43	 5.12.00
+	- added authpriv option
+	- fixed a unit::subst bug (M_EXACT)
+	- attempt to improve syll.dic to handle i-i junctures
+
+2.4.45 from 2.4.44	 26.1.01
+	- HAVE_SYSLOGed severity() and other NT fixes
+	- fixed a VC bug (const qualifiers in ttscp_cmd decl)
+	- fixed cfg->wav_hdr (maybe)
+	- ulaw encoding, downsampling by one half (Petr)
+	- faster waveform generation (tranformations if any moved to wavefm::translate)
+	- waveform buffer is no more char*, but unsigned short* and hdr.buffer_idx
+		MUST be translated (multiplied twice) in wavefm::translate()
+	- fixed ordinal numbers in Czech (also added the gen_ordinals option)
+
+2.4.46 from 2.4.45	15.2.01
+	- fixed waveform buffer realloc bug in wavefm::attach(int)
+	- fixed labels; configured with label_phones, label_seg, label_sseg
+	- partly added sseg labels
+
+2.4.47 from 2.4.46	27.2.01
+	- added some option documentation and other doc updates
+	- added voice::operator delete(void *, lang *) and more warning avoidance
+	- changed output_rate option to out_sampling_rate
+	- banned spurious messages in lpcsyn.cc
+	- fixed	label_ssegs
+	- chmod 644 lpcsyn
+	- short option -u (no header, ulaw encoding, file name said.vox)
+	- removed the -fhandle-exceptions option for gcc
+	- fixed a sleep table bug in agent.cc
+	- moved mmsystem code from agent.cc to waveform.cc and somewhat fixed it (untested!)
+
+2.4.48 from 2.4.47	 1.3.01
+	- mmsystem interface fixes
+	- client-side written files (said.wav, said.vox), see the -w -m -o options
+	- --localsound, --writefs, --readfs options
+	- terminology: segments are no more called diphones (in general), except for
+		the TTSCP module name
+	- various documentation updates
+	- fixed a struct segment discrepancy between hacked and unhacked TTSCP
+		(dependence on label_sseg)
+	- fixed the unit::write_segs() pointer cache
+
+2.4.49 from 2.4.48	 6.3.01
+	- terminology: fixed arch/win/epos.ini (play_segments option), say, mh, doc, etc.
+	- a minor fix in wavefm::ioctl_attach, MMSYSTEM code
+	- made wavefm::attach (and also buffer_size handling) more logical
+
+2.4.50 from 2.4.49	 7.3.01
+	- fixed waveform headers (ulaw format, alignment and other fields)
+	- optimized away wavefm::samp_size_bytes
+	- full_syslog option
+	- a more effective, though untested ulaw convertor
+		(#define OLD_9BIT_BASED_ULAW to override)
+	- treat \r as WHITESPACE 
+
+2.4.51 from 2.4.50	 21.3.01
+	- total_length is now filled in in waveforms transmitted over TTSCP
+	- label_sseg segfaults no more
+	- mmsystem wave header structure is now global, not allocated
+
+2.4.52 from 2.4.51	 26.3.01
+	- local_sound_device option
+	- mmsystem fixed not to release a live buffer data
+	- made the Bad option message less misleading
+	- some mediaeval options (concerning waveform handling) removed
+
+2.4.53 from 2.4.52	 31.3.01
+	- removed src/navel.h, src/riff.cc, src/label.cc
+	- removed a minor off-by-one bug in rule.cc
+	- fixed a LF->CRLF translation bug in say.cc (Windows only)
+	- moved most stuff from epos.ini to fixed.ini (both UNIX and Windows)
+	- adapted some option defaults and .ini file comments
+	- optimized away use_segs pseudooption
+
+2.4.54 from 2.4.53	12.4.01
+	- line-final backslash now makes the line continue with the next physical line
+	- retreat to the old ulaw code
+
+2.4.55 from 2.4.54	15.4.01
+	- odd chunk size bug fixed in wavefm::label()
+	- nine langs/voices bug fixed
+	- no waveform-initial cue point
+	- touched the NT service code a little bit
+	- wavefm.cc cleanup
+
+2.4.56 from 2.4.55	25.4.01
+	- wavefm code support for non-16-bit samples etc. fixed
+
+2.4.57 from 2.4.56	21.5.01
+	- minor fixes in wavefm code
+	- autoconf now avoids an unnecessary perverse librx.so
+	- made \n a word level character (for Czech)
+	- fixed the "daemon_log file cannot be created" scenario behavior
+	- declared the server shutdown flag volatile
+	- changed all debugging level 4 messages to level 3
+	- fixed parser aliasing for \r  (from space to newline)
+	- some read-only off-by-one bugs efenced off
+	- pre-set hooks allowed to return a new value, pre_init_f added
+	- memory leak in cow_free fixed (not freeing voice->syn etc.)
+	- wavefm::translate_data() fixed (zeroed data bug)
 

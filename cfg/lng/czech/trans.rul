@@ -24,7 +24,7 @@ $lower_case = aábcèdïeéìfghiíjklmnòoópqrøs¹t»uúùvwxyýz¾
 $upper_case = AÁBCÈDÏEÉÌFGHIÍJKLMNÒOÓPQRØS©T«UÚÙVWXYÝZ®
 
 #  \Z oznaèuje teèku oznaèující øadovou èíslovku.  Tu je nutno rozli¹it
-#  od teèky obyèejné, vìtu vydìlující, dokud se neztratí rozdíl mezi velkými
+#  od teèky obyèejné, vìtu vydìlující, ne¾li se ztratí rozdíl mezi velkými
 #  a malými písmeny.  Následuje-li toti¾ za teèkou velké písmeno, posuzuje
 #  se v¾dy jako konec vìty.
 #  Nìkteré významy teèky, jako napø. desetinná teèka, u¾ vyøe¹il parser,
@@ -34,7 +34,8 @@ inside .  sent
 {
 	regex /([0123456789])\$/\1\Z/	word
 }
-regex  /\Z(.[${upper_case}])/\1/	text
+regex  /(\Z)\\.([${lower_case}])/\1\2/	text
+regex  /\Z(\\.)([${upper_case}])/\1\2/	text
 
 
 # Pravidla pro ètení zkratek apod.: velké písmeno na jiném,

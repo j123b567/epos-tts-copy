@@ -151,7 +151,7 @@ lang::add_voice(const char *voice_name)
 	if (*voice_name) {
 		if (!voices) voices = (voice **)xmalloc(8*sizeof (void *));
 		else if (!(n_voices-1 & n_voices) && n_voices > 4)  // if n_voices==8,16,32...
-			voices = (voice **)xrealloc(voices, n_voices << 1);
+			voices = (voice **)xrealloc(voices, (n_voices << 1) * sizeof (void *));
 		voices[n_voices++] = new(this) voice(filename, dirname, this);
 	}
 	free(filename);
@@ -181,7 +181,7 @@ lang::add_soft_option(const char *optname)
 {
 	char *dflt = (char *)strchr(optname, EQUALSIGN);
 	if (dflt) *dflt++ = 0;
-	else dflt = "";
+	else dflt = const_cast<char *>("");
 	char *closing = (char *)strchr(optname, CLOSING);
 
 	option o;
@@ -287,7 +287,7 @@ voice::voice(const char *filename, const char *dirname, lang *parent_lang) : cow
 		name = nname;
 	}
 
-	diphone_names = NULL;
+	segment_names = NULL;
 	sl = NULL;
 	syn = NULL;
 }
@@ -295,9 +295,9 @@ voice::voice(const char *filename, const char *dirname, lang *parent_lang) : cow
 void
 voice::claim_all()
 {
-	if (!diphone_names && dptfile && *dptfile)
-		diphone_names = claim(dptfile, loc, cfg->inv_base_dir, "rt", "diphone names", NULL);
-	if (cfg->show_labels && !sl) {
+	if (!segment_names && dptfile && *dptfile)
+		segment_names = claim(dptfile, loc, cfg->inv_base_dir, "rt", "segment names", NULL);
+	if (cfg->label_phones && !sl) {
 		sl = (sound_label *)xmalloc(sizeof(sound_label) * n_segs);
 		for (int i = 0; i < n_segs; i++) sl[i].pos = NO_SOUND_LABEL;
 		text *t;
@@ -310,17 +310,17 @@ voice::claim_all()
 				if (sl[a].pos != -1) shriek(861, "Multilabelled units unimplmd");
 				sl[a].pos = b;
 				sl[a].labl = c;
-			};
+			}
 		}
 	}
 }
 
 voice::~voice()
 {
-	if (diphone_names) unclaim(diphone_names);
+	if (segment_names) unclaim(segment_names);
 	if (sl) free(sl);
 //	if (buffer) detach();
-	delete syn;
+	if (syn) delete syn;
 }
 
 void *
@@ -339,6 +339,12 @@ voice::operator new(size_t size, lang *parent_lang)
 
 void
 voice::operator delete(void *ptr)
+{
+	free(ptr);
+}
+
+void
+voice::operator delete(void *ptr, lang *l)
 {
 	free(ptr);
 }

@@ -1,9 +1,9 @@
 Bugs
-- after a single nonsense char is processed, Epos goes silent and may get looping with say -w
 - better prosody modelling for monosyllaba
 - with windows sokec, files as stream input modules crash the server
 - with windows sokec, files as output modules with disk full crash the server
-- &commat;s in the documentation for latex
+- fix regress behavior wrt literal zero characters
+- what if make install fails to create /usr/lib/epos
 
 Features
 - pause hierarchy rules
@@ -13,7 +13,6 @@ Features
 - properly cased ordinal numerals
 - Roman numerals
 - URLs, email addresses...
-- permissions to access #localsound etc.
 - STML parser
 - language dependent options on the server command line
 - asynchronous, more robust tcpsyn
@@ -28,12 +27,11 @@ Features
 - reasonable logging
 - investigate the optimum pause lengths
 - integrate the neural network stuff
-- config files should ignore trailing carriage returns
 
 Inventory omissions
-- unknown diphone - no. 19 (consonant---r)
-- missing i/ (?i0) diphones, "i" being any vowel, in traditnl.dph
-- diphone 245 et al. is never used, syllabic r and glottal stops as well
+- unknown segment - no. 19 (consonant---r)
+- missing i/ (?i0) segments, "i" being any vowel, in traditnl.dph
+- segment 245 et al. is never used, syllabic r and glottal stops as well
 - su.psl et al. missing in kadlec et al.
 - cz "euthanasie": missing #eu in lpc
 - check whether ptacek97 handles diphtongs correctly
@@ -55,3 +53,6 @@ Miscelannea
 
 Should Check
 - behavior of intr with something other than oa_wavefm (may miss 123 or 122)
+- investigate segment free utterance handling
+- load_config skips trailing whitespace in a very strange way
+

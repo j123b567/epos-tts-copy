@@ -12,7 +12,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License in doc/COPYING for more details.
  *
- *	This class represents a single front end diphone inventory.
+ *	This class represents a single front end segment inventory.
  */
 
 class rules;
@@ -82,7 +82,7 @@ struct voice : public cowabilium
    #include "options.lst"
 
    public:
-	file *diphone_names;
+	file *segment_names;
 	sound_label *sl;
 	
 	synth *syn;
@@ -93,7 +93,7 @@ struct voice : public cowabilium
 	void claim_all();
 
 	void *operator new(size_t, lang *parent_lang);
-//	void  operator delete(void *p, lang *) { delete p; };
+	void  operator delete(void *p, lang *);
 	void  operator delete(void *);
 };
 

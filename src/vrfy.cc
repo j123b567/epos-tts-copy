@@ -36,7 +36,7 @@
 #define TTSCP_PORT	8778
 
 const char *COMMENT_LINES = "#;\n\r";
-const char *WHITESPACE = " \t";
+const char *WHITESPACE = " \t\r";
 
 // const char *output_file = "/dev/dsp";
 
@@ -50,7 +50,7 @@ char *data = NULL;
 char *chandle[10];
 char *dhandle[10];
 
-char *testname = "";
+const char *testname = "";
 
 
 int connect_socket(unsigned int, int);
@@ -122,7 +122,7 @@ void spk_strm(int c, int d)
 	sputs("\r\n", ctrld[c]);
 }
 
-void spk_appl(int c, int d, char *data)
+void spk_appl(int c, int d, const char *data)
 {
 	sputs("appl ", ctrld[c]);
 	sprintf(scratch, "%d", (int)strlen(data));

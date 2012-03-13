@@ -42,7 +42,7 @@ Some aspects of user-definable
 behavior don't fit into the concept of a rules file, and are therefore settable
 with various options in conventional configuration files.  Finally, many other
 external files can be referenced either by the rules file, or a configuration
-file, such as diphone inventories or dictionaries.
+file, such as segment inventories or dictionaries.
 <P>Most of these files have to be processed before any actual TTS processing
 has finished. That's why Epos is implemented as a background process;
 it reserves a TCP/IP port for any communication with client applications.
@@ -53,10 +53,10 @@ has been provided.  This client instructs the daemon to process the text
 sent by the client and to write the resulting waveform into <CODE>/dev/dsp</CODE>,
 which is hopefully a sound card device.
 <P>Epos currently supports three main speech generation algorithms.  Two ones
-employ diphone concatenation in the time domain; these have been contributed by
+employ segment concatenation in the time domain; these have been contributed by
 Zdenek Kadlec, Masaryk University, Brno, and Martin Petriska, Slovak Technical
 University, Bratislava, respectively.  These algorithms, including low quality
-diphone inventories, are available as part of Epos subject to GPL.  The third one
+segment inventories, are available as part of Epos subject to GPL.  The third one
 is a linear prediction coding speech synthesis written by Ellen V&iacute;chov&aacute;,
 which
 actually gives good results, but is not freely available (existing commercial

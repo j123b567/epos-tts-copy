@@ -16,10 +16,10 @@
 
 #include "common.h"
 
-#define QUESTION_MARK      '?'    // ignored context character (in diphone names)
+#define QUESTION_MARK      '?'    // ignored context character (in segment names)
 
 #define SSEG_QUESTION_LEN 32	        // see unit::sseg()
-#define OMEGA          10000            // Random infinite number, see unit::diph()
+#define OMEGA          10000            // Random infinite number, see unit::seg()
 
 
 unit EMPTY;
@@ -90,21 +90,37 @@ unit::~unit()
 }
 
 /****************************************************************************
- Dumps the diphones to an array of "struct diphone". Returns how many dumped.
+ Dumps the segments to an array of "struct segment". Returns how many dumped.
+ 
+ Note:	iucache,ifcache and ocache is a primitive one-line cache of
+ 	where to start dumping the segments.  If could speed up
+ 	the dumping of a very very long utterance (it can be slow
+ 	to find the "first" segment in general, but it is likely to be the
+ 	one following the last one dumped in the previous run).
+ 	So the cache hits if we just want to continue the dump.
+ 	
+ 	There's a catch in this scheme.  The iucache may be equal to "this"
+ 	also if iucache's storage has been freed and reused.  To avoid
+ 	very funny problems, YOU MUST ALWAYS DUMP WITH first==0 FIRST
+ 	(with any "this" you want ever to dump).  That clears the cache.
+ 	The cache is safe wrt multitasking, if you keep the above rule
+ 	and don't blatantly reallocate units during their lifetime.
+
+ 	If you can't keep the rule, just comment out the cache.
  ****************************************************************************/
 
 
 int
-unit::write_diphs(diphone *whither, int first, int n)
+unit::write_segs(segment *whither, int first, int n)
 {
 	bool tmpscope = scope;
 	int m;
 	unit *tmpu;
 	static unit *iucache; static int ifcache; static unit *ocache;
 	 
-	if (!whither) shriek (861, fmt("NULL ptr passed to write_diphs() n=%d", n));
+	if (!whither) shriek (861, fmt("NULL ptr passed to write_segs() n=%d", n));
 	scope = true;
-	if (first == ifcache && iucache == this) tmpu=ocache;
+	if (first && first == ifcache && iucache == this) tmpu=ocache;
 	else for (m = first, tmpu = LeftMost(cfg->segm_level); m--; tmpu = tmpu->Next(cfg->segm_level));
 	for (m=0; m<n && tmpu != &EMPTY; m++, tmpu = tmpu->Next(cfg->segm_level)) {
 		tmpu->sanity();
@@ -112,6 +128,18 @@ unit::write_diphs(diphone *whither, int first, int n)
 		whither[m].f = tmpu->effective(Q_FREQ);
 		whither[m].e = tmpu->effective(Q_INTENS);
 		whither[m].t = tmpu->effective(Q_TIME);
+		whither[m].nothing = 0;
+		whither[m].ll = 0;
+		if (cfg->label_sseg) {
+			unit *z;
+			int prelevel = 0;
+			for (z = tmpu; z && !z->next && z->father; z = z->father)
+				prelevel++;
+			int postlevel = 0;
+			for (z = tmpu; z && !z->prev && z->father; z = z->father)
+				postlevel++;
+			whither[m].ll = prelevel /* > postlevel ? prelevel : postlevel */;
+		}
 	}
 	scope = tmpscope;
 	iucache = this; ifcache = first+m; ocache = tmpu;
@@ -158,7 +186,7 @@ unit::fout(char *filename)      //NULL means stdout
  unit::fdump
  ****************************************************************************/
 
-inline char *
+inline const char *
 fmtchar(char c)
 {
 	static char b[2];
@@ -347,7 +375,7 @@ unit::gather(char *buffer_now, char *buffer_end, bool suprasegm)
 		if(buffer_now >= buffer_end) 
 			return NULL;
 		if (depth < cfg->phone_level) 
-			// shriek(811, "Cannot gather diphonized units (reorder rules)");
+			// shriek(811, "Cannot gather segments (reorder rules)");
 			return buffer_now;
 		*(buffer_now++) = (char)cont; 
 	}
@@ -483,31 +511,22 @@ unit::subst(hash *table, SUBST_METHOD method)
 
 	char *b;
 	
-//	unsigned int safe_grow;		/* Bytes that can be added in situ */
-	
 	sanity();
 	if ((method & M_LEFT) && !prev) return false;
 	if ((method & M_RIGHT) && !next) return false;
+	bool exact = ((method & M_PROPER) == M_EXACT);
 	for (int i = cfg->multi_subst; i; i--) {
-//		*_gather_buff='^';
-//		strend=gather(_gather_buff+1, _gather_buff+MAX_GATHER, (method&M_PROPER)!=M_EXACT);
-//		if (!strend) return false;	// gather overflow
-//		*strend=0;
-//		safe_grow = _gather_buff - strend + MAX_GATHER;
-		b = gather(&l, true, (method & M_PROPER) != M_EXACT);
-//		safe_grow = sbsize - l;
+		b = gather(&l, !exact, !exact);
 		strend = gb + l;
 
 		// if (safe_grow>300) shriek("safe_grow");	// fixme
 		DEBUG(1,3,fprintf(STDDBG,"inner unit::subst %s, method %d\n", gb + 1, method);)
 		sanity();
-		if ((method & M_PROPER) == M_EXACT) {
-			if (subst(table, l, NULL, NULL, gb + 1, NULL, NULL))
+		if (exact) {
+			if (subst(table, l, NULL, NULL, gb, NULL, NULL))
 				goto break_home;
 		}
 		if (b[l-1] == cont) --l;
-//		if (strend[-1]==cont) --strend;
-//		*strend='$';*++strend=0;
 		if (method & M_END)
 			for(tail = gb; *tail && tail - gb < gbsize; tail++)
 				if (subst(table, l, gb + 1, tail, tail, NULL, NULL))
@@ -989,20 +1008,20 @@ unit::raise(bool *whattab, bool*whentab, UNIT whither, UNIT whence)
 }
 
 /****************************************************************************
- unit::diph    (innermost - creates a single "diphone" unit, if possible)
+ unit::seg     (innermost - creates a single "segment" unit, if possible)
  		The for (;;) cycle will normaly execute exactly once, if
- 		a diphone is found; otherwise, nothing happens, because
+ 		a segment is found; otherwise, nothing happens, because
  		a negative value is returned by translate_int(). 
 
- 		You may, however, add a multiply of OMEGA to the diphone
- 		number to have this diphone repeated a few times, whenever
+ 		You may, however, add a multiply of OMEGA to the segment
+ 		number to have this segment repeated a few times, whenever
  		it occurs in a given environment, in any .dph .
  ****************************************************************************/
 
-char _d_descr[4];       //this buffer is an implicit parameter to diph()
+char _d_descr[4];       //this buffer is an implicit parameter to seg()
 
 inline void 
-unit::diph(hash *dinven)   //_d_descr should contain a diphone name
+unit::seg(hash *dinven)   //_d_descr should contain a segment name
 {
 	int n;
 	for (n = dinven->translate_int(_d_descr); n >= 0; n -= OMEGA) {
@@ -1014,20 +1033,20 @@ unit::diph(hash *dinven)   //_d_descr should contain a diphone name
 }
 
 /****************************************************************************
- unit::diphs     (outer - public)    creates the diphones' layer
+ unit::segs      (outer - public)    creates the segments' layer
                  Basically, we'll try out "LX?" "?X?" "?XR" (in _d_descr),
-                 respectively, as the possible subdiphones of this phone
+                 respectively, as the possible subsegments of this phone
  ****************************************************************************/
  
 void
-unit::diphs(UNIT target, hash *dinven) 
+unit::segs(UNIT target, hash *dinven) 
 {
 	unit *tmpu;
 
-	DEBUG(0,5,fprintf(STDDBG,"Entering outer unit::diphs in depth %d cont %c tar %d\n", depth, cont,target);)
+	DEBUG(0,5,fprintf(STDDBG,"Entering outer unit::segs in depth %d cont %c tar %d\n", depth, cont,target);)
 	sanity();    
 	if (depth==target) {
-		DEBUG(1,5,fprintf(STDDBG,"unit::diphs %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
+		DEBUG(1,5,fprintf(STDDBG,"unit::segs %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
 		if (!dinven->items) {
 			delete firstborn, firstborn=lastborn=NULL;
 			return;
@@ -1036,17 +1055,17 @@ unit::diphs(UNIT target, hash *dinven)
 		_d_descr[2]=QUESTION_MARK;
 		_d_descr[1]=inside();
 		_d_descr[0]=Prev(depth)->inside();
-		diph (dinven);
+		seg (dinven);
 		_d_descr[0]=QUESTION_MARK;
-		diph (dinven);
+		seg (dinven);
 		_d_descr[2]=Next(depth)->inside();
-		diph (dinven);
+		seg (dinven);
 		_d_descr[0]=Prev(depth)->inside();
-		diph (dinven);
-		DEBUG(1,5,fprintf(STDDBG,"unit::diphs is done in: %c\n", cont);)
+		seg (dinven);
+		DEBUG(1,5,fprintf(STDDBG,"unit::segs is done in: %c\n", cont);)
 	}
-	else for (tmpu = firstborn; tmpu; tmpu = tmpu->next) tmpu->diphs(target, dinven);
-	DEBUG(1,5,fprintf(STDDBG,"Exiting outer unit::diphs tar %d (finished)\n", target);)
+	else for (tmpu = firstborn; tmpu; tmpu = tmpu->next) tmpu->segs(target, dinven);
+	DEBUG(1,5,fprintf(STDDBG,"Exiting outer unit::segs tar %d (finished)\n", target);)
 	sanity();
 }
 
@@ -1089,7 +1108,7 @@ unit::unlink(REPARENT rmethod)
 	_unit_just_unlinked=this;
 
 	if (father && !father->firstborn) {
-		DEBUG(4,2,fprintf(STDDBG, "Unsafe unlink - may need more fixing\n"););	// as above
+		DEBUG(3,2,fprintf(STDDBG, "Unsafe unlink - may need more fixing\n"););	// as above
 		father->unlink(M_DELETE);
 	}
 	DEBUG(0,2,fprintf(STDDBG,"unit deleted, farewell\n");)

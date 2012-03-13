@@ -1,4 +1,5 @@
 
+
 <sect> Source Code Documentation
 <p>
 
@@ -238,7 +239,7 @@ and they are queued between consecutive agents if necessary.  Such a queue
 agent while the end is pointed to by <tt/pendout/ of the former agent.
 The <tt/pendcount/ member of the latter agent stores the current number
 of data chunks in the queue, which is used for sanity checking and
-flow control. FIXME: more
+flow control.
 
 The current agents are:
 

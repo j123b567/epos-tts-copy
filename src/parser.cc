@@ -140,19 +140,20 @@ parser::gettoken()
 				}
 				while (current[1] == '-') current++;
 				break;
-			case '<': if (cfg->stml) shriek(462, "STML not implemented"); else break;
-			case '&': if (cfg->stml) shriek(462, "STML not implemented"); else break;
+//			case '<': if (cfg->stml) shriek(462, "STML not implemented"); else break;
+//			case '&': if (cfg->stml) shriek(462, "STML not implemented"); else break;
 			default : ;
 		}
 		level = chrlev(token);
 		f = i = t = 0;
 		if (level == cfg->text_level) {
 			DEBUG(2,7,fprintf(STDDBG,"Parser: end of text reached, changing the policy\n");)
-			initables(ST_EMPTY);
-			*current = NO_CONT;  // return '_' or something instead of quirky '\0'
+			return ret;
+//			initables(ST_EMPTY);
+//			*current = NO_CONT;  // return '_' or something instead of quirky '\0'
 		}
 		current++;
-	} while (level <= lastlev && level > cfg->phone_level);
+	} while (level <= lastlev && level > cfg->phone_level && level < cfg->text_level);
 		// (We are skipping any empty units, except for phones.)
 	DEBUG(0,7,fprintf(STDDBG,"Parser: char requested, '%c' (level %u), next: '%c' (level %u)\n", ret, lastlev, *current, level);)
 
@@ -162,7 +163,7 @@ parser::gettoken()
 void
 parser::done()
 {
-	if (current <= text + txtlen) 
+	if (current < text + txtlen) 
 		shriek(463, fmt("Too high level symbol in a dictionary, parser contains %s", (char *)text));
 }
 
@@ -173,7 +174,7 @@ parser::chrlev(unsigned char c)
 	if (CHRLEV[c] == U_ILL)
 	{
 		if (cfg->relax_input) return CHRLEV[cfg->dflt_char];
-DEBUG(4,7,{	if (c>127) fprintf(cfg->stdshriek,"Seems you're mixing two Czech character encodings?\n");
+DEBUG(3,7,{	if (c>127) fprintf(cfg->stdshriek,"Seems you're mixing two Czech character encodings?\n");
 		fprintf(cfg->stdshriek,"Fatal: parser dumps core.\n%s\n",(char *)current-2);
 })
 		shriek(431, fmt("Parsing an unhandled character  '%c' - ASCII code %d", (unsigned int) c, (unsigned int) c));
@@ -200,9 +201,9 @@ parser::alias(const char *canonicus, const char *alius)
 {
 	int i;
 	if (!canonicus || !alius) shriek(861, "Parser configuration: Aliasing NULL");
-	for(i=0; (unsigned char *)canonicus[i] && (unsigned char *)alius[i]; i++)
+	for(i=0; canonicus[i] && alius[i]; i++)
 		TRANSL_INPUT[((unsigned char *)alius)[i]] = ((unsigned char *)canonicus)[i];
-	if((unsigned char *)canonicus[i] || (unsigned char *)alius[i]) 
+	if(canonicus[i] || alius[i]) 
 		shriek(861, "Parser configuration: Can't match aliases");
 }
 
@@ -217,7 +218,7 @@ parser::initables(SYMTABLE table)
 	for(c=1; c<256; c++) CHRLEV[c] = U_ILL; *CHRLEV = cfg->text_level;
 	switch (table) {
 	case ST_ROOT:
-		alias("  ","\r\t");
+		alias(" \n","\t\r");
 	case ST_RAW:
 		for (u = cfg->phone_level; u < cfg->text_level; u = (UNIT)(u+1))
 			regist(u, this_lang->perm[u]);

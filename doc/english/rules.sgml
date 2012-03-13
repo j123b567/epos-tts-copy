@@ -37,7 +37,7 @@ Level name | written TSR semantics | spoken TSR semantics @
 <tt/word/ |	word	| stress unit	@
 <tt/syll/ |	word	| syllable	@
 <tt/phone/|	letter	| sound		@
-<tt/diphone/|		| diphone	@
+<tt/segment/|		| segment	@
 <hline>
 </tabular>
 <caption>
@@ -240,29 +240,29 @@ and replacee are separated with a comma.
   name="More details below">.
 
 
-<sect2> Type <tt>diphones</tt>
+<sect2> Type <tt>segments</tt>
 <p>
 
-  Setup the diphone layer below the phone layer.
+  Setup the segment layer below the phone layer.
   The parameter names a file, which contains
-  phone to diphone mappings, again in the dictionary format
+  phone to segment mappings, again in the dictionary format
   The replacees represent three character
-  diphone identifiers, the replacers are the respective diphone
+  segment identifiers, the replacers are the respective segment
   numbers (decimal).
   It is possible, and indeed typical to include multiple identifiers
-  for the same diphone number.
+  for the same segment number.
 
-  The middle character denotes the phone the resulting diphone will
+  The middle character denotes the phone the resulting segment will
   be assigned to.  The left hand and right hand characters may either
   be a question mark, or they may specify the right hand and/or left
   hand neighbors to match a specific character.  The question mark is
   therefore a kind of wildcard.
 
-  If both fully specified and partly specified diphones exist for
+  If both fully specified and partly specified segments exist for
   a given triplet of phones, they will be placed from left to right
   in this order: <tt/lt?, ?t?, ?tr, ltr/.
 
-A sentence may contain these diphones with the Czech diphone inventory
+A sentence may contain these segments with the Czech segment inventory
 by Tomas Dubeda:
 
 <tscreen><verb>
@@ -270,7 +270,7 @@ by Tomas Dubeda:
   0p?   pl? ?lo   ?o? ou?  ?u?    ut? ?te  ?e?    ef? ?f0
 </verb></tscreen>
   
-or, with the traditional Czech diphone inventory:
+or, with the traditional Czech segment inventory:
 
 <tscreen><verb>
     p       l       o       u       t       e       f
@@ -278,23 +278,23 @@ or, with the traditional Czech diphone inventory:
 </verb></tscreen>
  
 (In this second example, for instance the diphones <tt/?pl/
-and <tt/?pt/ would actually share the diphone number and
+and <tt/?pt/ would actually share the segment number and
 would correspond to the <tt/p-any consonant/ diphone.)   
   
-There are more possibilities for representing a diphone
+There are more possibilities for representing a segment
 inventory; it is necessary to decide for the major diphone
 types, whether they should live in their initial or
 final sound.  That is unfortunate, but it is the way it is.
 Punctuation never plays a role of segments in Epos, and
 the same is true here.
 
-It is possible to repeat a diphone a few times.  This effect
+It is possible to repeat a segment a few times.  This effect
 can be controlled by adding 10000 times the number of extra
-repetitions to the diphone number.  Therefore, 
+repetitions to the segment number.  Therefore, 
 <tscreen><verb>
 ?e?	20241
 </verb></tscreen>
-generates three identical diphones number 241 for the stationary
+generates three identical segments number 241 for the stationary
 part of the specified vowel.
 
 <sect2> Type <tt>with</tt>
@@ -329,8 +329,9 @@ general <tt/subst/ rule, so they should be used whenever possible.
   "no element", and it can be used to insert new units, delete the old ones,
   and to limit the change to the beginning or the end of the scope unit,
   respectively.  On the other hand, if the contents of some unit is literal <tt>0</tt>
-  before the application of this rule, it will stay untouched.  Use e.g.
-  <tt>regex</tt> or <tt>subst</tt> rules to handle this case properly.
+  before the application of this rule, it should, in theory, stay untouched.  Use e.g.
+  <tt>regex</tt> or <tt>subst</tt> rules to handle this case properly, as Epos presently
+  confuses no-element zeroes and real zero characters.
 
   Examples:   
 <tscreen><verb>
@@ -421,13 +422,13 @@ structure units (possibly at multiple levels of description):
 
 Currently, these are values per cent, 100 being the neutral
 value.  <footnote> Epos doesn't currently provide sets
-of diphone inventories for multiple pitch ranges, therefore
+of segment inventories for multiple pitch ranges, therefore
 extreme values, such as 15 or 1500 may sound very unnatural.
 </footnote>  The prosody adjustments at different levels
 sum up for the actual values assigned to the generated
-diphones.  For example, a phone with the frequency (pitch)
+segments.  For example, a phone with the frequency (pitch)
 value of 130 in a word with the value of 120 will contain
-diphones (after the <tt/diphones/ rule is applied) with
+segments (after the <tt/segments/ rule is applied) with
 frequency of 150.  Alternatively, it is possible to multiply
 the values for pitch, volume and duration instead, by setting the
 <tt/pros_eff_multiply_f/, <tt/pros_eff_multiply_i/ and
@@ -524,7 +525,7 @@ units as necessary to stretch the contour over the scope unit.
 
    It is important to understand the difference between
    e.g. a syllable and its phones: the syllable can have an entirely
-   different prosodic value than its phones; for every given diphone,
+   different prosodic value than its phones; for every given segment,
    the value for any prosodic quantity is obtained by totalling
    the values for all of higher levels units it is contained in.
    This independence of levels of description might theoretically
@@ -752,14 +753,15 @@ if   !colloquial
 
   Regular expression substitution.  The parameter is of the form
   <tt>/regular&lowbar;expression/replacement/</tt>.  This rule type is similar to <tt>subst</tt>,
-  but it is more powerful and more arcane; it is not intended for end
+  but it is often more powerful and more arcane; it is not intended for end
   wizards.  Skip it.
   
   For a regular expressions' overview  try <tt>man grep</tt>.  Note a difference:
   in "regular" regular expressions, parentheses match themselves, while
   the open group and close group operators are <tt>&bsol;(</tt> and <tt>&bsol;)</tt>, respectively.
   As we use groups heavily and next to none real parentheses, we decided
-  to do it the other way round.
+  to do it the other way round.  Also, <tt>sed</tt> users may be surprised
+  by the iterative behavior of this rule type.
   
   The replacement may contain escape sequences referring to the match of
   the <tt>n</tt>-th group within the regular expression: <tt>&bsol;1</tt> to <tt>&bsol;9</tt>.

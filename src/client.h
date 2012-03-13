@@ -42,7 +42,7 @@ int getaddrbyname(const char *inet_name);
  *	xmit_option() send the "set" command appropriate for setting a named
  *	option to a specified value. 
  */
-void xmit_option(char *name, char *value, int sd);
+void xmit_option(const char *name, const char *value, int sd);
 
 /*
  *	get_handle() should be called before any TTSCP command is issued.

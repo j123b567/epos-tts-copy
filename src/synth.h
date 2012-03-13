@@ -16,15 +16,15 @@
 /*
  *	Read this if you ever derive a new synthesis from class synth.
  *
- *	Every synthesis must provide either a syndiph() or syndiphs()
- *	method. The easiest approach is to override syndiph() with
- *	code to synthesize a single diphone. It will only be called
- *	by synth::syndiphs() - it adjusts the prosody by the values
+ *	Every synthesis must provide either a synseg() or synsegs()
+ *	method. The easiest approach is to override synseg() with
+ *	code to synthesize a single segment. It will only be called
+ *	by synth::synsegs() - it adjusts the prosody by the values
  *	specified for the current voice for you.
  *
- *	On the other hand, if you override syndiphs(), you'll have
+ *	On the other hand, if you override synsegs(), you'll have
  *	to implement these adjustments yourself. In this case you
- *	should also override syndiph() with a dummy function (it
+ *	should also override synseg() with a dummy function (it
  *	would never be called except by common code, but it the
  *	compiler needs it at least declared).
  */
@@ -39,8 +39,8 @@ class synth
 
 	synth();
 	virtual ~synth(void);
-	virtual void syndiph(voice *v, diphone d, wavefm *w) = 0;
-	virtual void syndiphs(voice *v, diphone *d, int count, wavefm *w);
+	virtual void synseg(voice *v, segment d, wavefm *w) = 0;
+	virtual void synsegs(voice *v, segment *d, int count, wavefm *w);
 };
 
 class voidsyn: public synth
@@ -48,9 +48,9 @@ class voidsyn: public synth
    public:
 	voidsyn() : synth() {};
 	virtual ~voidsyn() {};
-	virtual void syndiph(voice *v, diphone d, wavefm *w);
+	virtual void synseg(voice *v, segment d, wavefm *w);
 };
 
-void play_diphones(unit *root, voice *v);
-void show_diphones(unit *root);
+void play_segments(unit *root, voice *v);
+void show_segments(unit *root);
 synth *setup_synth(voice *v);

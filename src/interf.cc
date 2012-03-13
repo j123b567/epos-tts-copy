@@ -43,6 +43,11 @@
 	#include <sys/stat.h>
 #endif
 
+
+#ifdef HAVE_SYSLOG_H
+	#include <syslog.h>
+#endif
+
 #if (('a'-'A')!=32 || '9'-'0'!=9)	//Well, we rely on these a few times I think
 #error If this machine doesn't believe in ASCII, I wouldn't port it hither.
 #error Hmmm... but you will manage it.
@@ -55,6 +60,24 @@ char *esctab = NULL;
 int unused_variable;
 
 void *xmall_ptr_holder;
+
+#ifdef HAVE_SYSLOG_H
+int severity(int code)
+{
+	if (code > 899 || code < 100)	return LOG_ERR;		/* that is, meta-error */
+	if (code / 10 == 80) return LOG_NOTICE;
+	if (code >= 610) return LOG_CRIT;
+	if (code / 10 == 45 || code == 444 || code == 445) {
+		if (cfg->authpriv) return LOG_ERR | LOG_AUTHPRIV;
+		return LOG_WARNING;
+	}
+	if (code / 10 == 46) return LOG_ERR;
+	if (code / 10 == 47) return LOG_WARNING;
+	if (code < 210) return LOG_DEBUG;
+	if (code == 600) return LOG_DEBUG;
+	return LOG_INFO;
+}
+#endif
 
 
 void shriek(int code, const char *s) 
@@ -69,12 +92,18 @@ void shriek(int code, const char *s)
 	fprintf(cfg->stdshriek, "Fatal: %s\n",s); 
 	color(cfg->stdshriek, cfg->normal_col);
 
+
+#ifdef HAVE_SYSLOG_H
+	if (cfg->use_syslog)
+		if (cfg->log_codes) syslog(LOG_DAEMON | severity(code), "%3d %s", code, s);
+		else syslog(LOG_DAEMON | severity(code), s);
+#else
 	FILE *hackfile = fopen("hackfile","w");
 	if (hackfile) {
 		fprintf(hackfile, s);
 		fclose(hackfile);
 	}
-
+#endif
 	command_failed *xcf;
 
 	switch (code / 100) {
@@ -180,7 +209,7 @@ FILE *
 fopen(const char *filename, const char *flags, const char *reason)
 {
 	FILE *f;
-	char *message;
+	const char *message;
 
 	if (!filename || !*filename)
 //		return *flags == 'r' ? stdin : stdout;		// has to be dupped
@@ -252,7 +281,7 @@ UNIT str2enum(const char *item, const char *list, int dflt)
 
 char _enum2str_buff[MAX_SYMBOLIC];
 
-char *enum2str(int item, const char *list)
+const char *enum2str(int item, const char *list)
 {
 	const char *i;
 //	char *b = _enum2str_buff;
@@ -463,7 +492,7 @@ inline bool reclaim(file *ff, const char *flags, const char *description, void o
 	rewind(f);
 	len = fread(ff->data, 1, tmp, f);
 	if (len < 0) {
-		if (!description) return NULL;
+		if (!description) description = "an unspecified stuff";
 		shriek(445, fmt("Failed to read %s from %s", description, ff->filename));
 	}
 	ff->data[len] = 0;
@@ -601,6 +630,10 @@ void epos_init(int argc_, char**argv_)	 //Some global sanity checks made here
 
 void epos_init()	 //Some global sanity checks made here
 {
+#ifdef HAVE_SYSLOG_H
+	openlog("epos", LOG_CONS, LOG_DAEMON);
+#endif
+
 	if (!cfg->loaded)	cfg->stddbg = stdout,
 				cfg->stdshriek = stderr;
 	if (sizeof(int)<4*sizeof(char) || sizeof(int *)<4*sizeof(char)) 
@@ -608,9 +641,10 @@ void epos_init()	 //Some global sanity checks made here
 	if (sizeof(int) > sizeof(void *)) shriek(862, "Your integers are longer than pointers!\n"
 				"Turn hash_table::forall() fns in hash.h the other way round.");
 	if ((unsigned char)-1 != 255) shriek(862, "Your chars are not 8-bit? Funny.");
+	if (sizeof(unsigned short int) != 2) shriek(862, "Short ints not short enough");
 	if (*(short int *)"wxyz" == 256 * 'w' + 'x') cfg->big_endian = true;
 	if (*(short int *)"wxyz" != 256 * 'x' + 'w' && !cfg->big_endian) shriek(862,
-				"Endianness detection failed");		// FIXME
+				"Not little-endian nor big-endian. Whew!");
 
 	srand(time(NULL));	// randomize
 
@@ -658,6 +692,10 @@ void epos_catharsis()
 	cfg->shutdown();
 
 	shutdown_file_cache();
+	
+#ifdef HAVE_SYSLOG_H
+	closelog();
+#endif
 }
 
 void epos_done()

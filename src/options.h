@@ -85,10 +85,16 @@ void config_release();
 // void process_options(hash *tab, option *list, void *base);
 // char *get_named_cfg(const char *option_name);
 option *option_struct(const char *name, hash_table<char, option> *softopts);
-bool set_option(option *o, char *value);
-bool set_option(option *o, char *value, void *whither);
-char *format_option(option *name);	// may return scratch etc.
-char *format_option(const char *name);  // ditto
+
+/* For the following two functions, the value MAY get changed by set_option()
+   (in-place), if o->opttype is O_STRING or O_CHAR and value contains
+   backslashes or double quotes  		*/
+bool set_option(option *o, const char *value);			// the const qualifier IS A LIE
+bool set_option(option *o, const char *value, void *whither);	// the const qualifier IS A LIE
+
+
+const char *format_option(option *name);	// may return scratch etc.
+const char *format_option(const char *name);  // ditto
 
 bool lang_switch(const char *name);
 bool voice_switch(const char *name);

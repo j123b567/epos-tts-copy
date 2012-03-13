@@ -1,3 +1,50 @@
+<sect> Logging
+<p>
+
+A very short section which just doesn't seem to belong anywhere else.
+
+Epos supports error logging via syslog (on systems where syslogd
+is running).  At the moment, only (the most of) TTSCP completion codes
+together with the associated messages can be logged; this includes
+all abnormal server termination states (except for a plain old fatal
+signal).  If syslog should be available (the <tt>syslog.h</tt> header
+file is present), but isn't, the error messages are logged directly
+to the system console.  If the syslog facility is being missed at
+compilation time, Epos opens a file called <tt>hackfile</tt> in the
+current directory whatever it may be and writes some debugging information
+there instead.
+
+The syslog message levels are set according to the <ref id="syslogs"
+name="syslog message levels"> table.  In all cases, Epos messages
+are logged with the <tt/daemon/ facility.
+
+
+<table loc="h">
+<tabular ca="|l|l|">
+<hline>
+<label id="syslogs">
+level		|  used for @
+<hline>
+<tt>debug</tt>	|  trivial success TTSCP codes @
+<tt>info</tt>	|  silly errors and other messages @
+<tt>notice</tt>	|  shutting down as requested @
+<tt>warning</tt>|  security or network error @
+<tt>err</tt>	|  internal error @
+<tt>crit</tt>	|  abnormal termination @
+<hline>
+</tabular>
+<caption>
+	syslog message levels
+</caption>
+</table>
+
+See also the <ref id="authpriv-option" name="<tt>authpriv</tt> option">
+which may change this behavior for possibly security-related errors,
+but not network errors.
+
+Any debugging output together with error messages etc. is also often logged
+to <tt>/var/log/epos</tt> as specified with the <tt/daemon_log/ option.
+
 <sect> Security
 <p>
 
@@ -61,8 +108,20 @@ TTSCP connection, and the few exceptions are unlikely to have been overlooked.
 <p>
 
 At the moment, any TTSCP client is capable of writing arbitrary waveform data
-to the local soundcard.  This will change in future versions of Epos,
-even if this is not a serious security risk.
+to the local soundcard.  If you consider this a security risk, disable
+the <tt/&num;localsound/ output module by turning the <tt/localsound/ option off.
+
+<sect2> Access to the local file system
+<p>
+
+TTSCP in theory offers file system based input and output modules.  For example,
+that allows the client to write some intermittent product to a server-side file
+and then the client may decide to use it repeatedly as an input to multiple streams.
+However, the name space for the files doesn't have to correspond to the file system
+root of the TTSCP server.  With Epos, you can configure the location of the
+TTSCP name space using the <ref id="pseudorootdir-option" name="--pseudo_root_dir option">.
+Furthermore, writing to it is disabled by default; this restriction can be overridden
+by setting the --<tt/writefs/ option.
 
 <sect1> Privileged executables
 <p>

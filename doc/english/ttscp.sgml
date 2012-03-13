@@ -108,9 +108,9 @@ server may be obsolete or an unrelated protocol may be used at the
 port.
 
 In this document, a "newline" produced by the server or the client should be
-a <tt/CR LF/ character sequence.  It is recommended for both parties to
+a <tt/CR LF/ character sequence.  It is allowed for both parties to
 accept a <tt/LF/ character without a preceding <tt/CR/ character as a valid
-line separator.  Subject to change.
+line separator, but it is never legal to rely on this practice.
 
 <sect1>Session header keywords
 <p>
@@ -166,7 +166,7 @@ The data is passed between modules in one of the following formats:
 	<item> plain ASCII text
 	<item> Spoken Text Markup Language (STML)
 	<item> phonetic structure of the text
-	<item> sequence of diphones
+	<item> sequence of segments
 	<item> waveform file
 </itemize>
 
@@ -187,20 +187,21 @@ name="text structure representation overview">.
 
 Conversion to plain ASCII text dismisses prosody.
 
-Conversion to plain ASCII text or STML dismisses diphone layer if any.
+Conversion to plain ASCII text or STML dismisses segment layer if any.
 
-<sect2> Sequence of diphones
+<sect2> Sequence of segments
 <p>
 
-Every diphone is a quadruple of diphone number, assigned frequency (pitch),
-intensity (volume) and time factor (speed). The initial diphone is dummy
-(to be skipped); its diphone number contains the total number of diphones
+Every segment is a quadruple of segment number, assigned frequency (pitch),
+intensity (volume) and time factor (speed). The initial segment is dummy
+(to be skipped); its segment number contains the total number of segments
 in this sequence. The corresponding prosodic parameters are undefined.
 They should preferably be zero.
 
 This format is going to be replaced by a human readable format with
-the ability to specify multiple pitch points per diphone.  For the time
-being, the integer values should be encoded as 32-bit little endian integers.
+the ability to specify multiple pitch points per segment.  For the time
+being, the integer values should be encoded as 32-bit little endian
+integers.  
 
 <sect2> Waveform
 <p>
@@ -222,7 +223,10 @@ the length of the <tt/data/ chunk shall be determined from the
 total length of the RIFF form. (Epos never actually takes advantage
 of this rule.)
 
-FIXME: labels
+This format allows storing labels (i.e. pointers to specific
+positions within the waveform); Epos does use this feature
+if enabled e.g. using the
+<ref id="labelphones-option" name="label_phones option">.
 
 
 <sect1> TTSCP Commands
@@ -437,7 +441,7 @@ with error code 442.
 <tt/show languages/ and <tt/show voices/ may be used for listing
 available languages, as well as available voices for the current
 language.  The language or voice names are given on separate lines
-each; subject to change.
+each.
 
 <sect2> <tt> strm </tt> <label id="strm-cmd">
 <p>
@@ -462,7 +466,12 @@ the TTSCP connection, then it is deleted.
 <sect2> <tt> user </tt>
 <p>
 
-Should precede all TTSCP exchanges. Its parameter is "anonymous"
+The <tt/user/ command is still not implemented properly and
+its semantics may change.  Epos is currently configured
+not to need and not to use it.  The tentative theory of
+TTSCP authentication goes as follows:
+
+The <tt/user/ command should precede all TTSCP exchanges. Its parameter is "anonymous"
 or a local or configured user account name. Some other user names
 may acquire special meaning. We'll see.
 
@@ -475,8 +484,6 @@ If no <tt/user/ command is issued, "user anonymous" is assumed.
 
 If the user doesn't exist, anonymous access is granted.
 
-The <tt/user/ command is still not implemented properly and
-its semantics may change.
 
 <sect1> TTSCP modules
 
@@ -488,12 +495,10 @@ If the module name begins with a <tt/&dollar;/, the rest of the name
 is a data connection handle. If it begins with a slash, it is
 an absolute file name.  Such absolute file names however form a name
 space distinct from that of the underlying operating system.  In Epos, the
-name space is a single directory defined by the <tt/pseudo_root_dir/
+name space is a single directory defined by the <ref id="pseudorootdir-option"
+name="<tt/pseudo_root_dir/">
 option.  It must be impossible to escape from such name space by inserting
 parent directory references in a file name or otherwise.
-
-
-<!--File names relative to ??? can be given beginning with a dot (unimplemented yet).-->
 
 If the module name begins with a <tt/&num;/, the rest of the name is a special
 input/output module identifier.  The only identifier generally supported is
@@ -530,8 +535,8 @@ processing. All of them have fixed names and types.
  stml	  | STML text	| TSR			| parses STML@
  rules	  | TSR		| TSR			| @
  print	  | TSR		| plain text		| @
- diphs	  | TSR		| diphones		| extract diphones@
- synth	  | diphones	 | waveform		| speech synthesis@
+ diphs	  | TSR		| segments		| extract segments@
+ synth	  | segments	 | waveform		| speech synthesis@
 <hline>
 </tabular>
 <caption> Available processing modules </caption>
@@ -583,11 +588,11 @@ sequences.  Ideally, the successive application of the <tt/raw/ and
 <sect3> <tt> diphs </tt> 
 <p>
 
-This module extracts the diphone layer from the input TSR into
-the linear diphone stream format; the rest of TSR is discarded.
+This module extracts the segment layer from the input TSR into
+the linear segment stream format; the rest of TSR is discarded.
 
 There may be an implementation-dependent limit on the size
-of the diphone stream produced.  If more diphones should be produced,
+of the segment stream produced.  If more segments should be produced,
 the module may emit more subtasks; see the <ref id="appl-cmd" 
 name="appl"> command for discussion concerning subtask reporting.
 t
@@ -595,7 +600,7 @@ t
 <sect3> <tt> synth </tt> 
 <p>
 
-The input diphone stream is synthesised in a voice dependent way.
+The input segment stream is synthesised in a voice dependent way.
 
 
 
@@ -635,7 +640,7 @@ brackets.  The available data types are indicated by letters listed in
  t | plain text  @
  s | STML text  @
  i | the server-internal text structure representation @
- d | diphones @
+ d | segments @
  w | waveform @
 <hline>
 </tabular>
@@ -713,7 +718,7 @@ not to issue them except in emergency). If such a reply is ever
 received, the server has abnormally terminated.
 
 The messages accompanying 3xx and higher response codes are likely
-to be interesting to the user if any. Any message without an error
+to be interesting to the user if there is one. Any message without an error
 code is a data flow primarily meant for the user if any; a sequence
 of these may occur only after some 1xx response, except for debugging
 messages if on.
@@ -791,7 +796,7 @@ code      | error type      | suggested action@
 421	| output voice busy@
 422	| out of memory@
 431	| unknown character in text@
-432	| received bad diphones@
+432	| received bad segments@
 435	| received bad waveform (unused)@
 436	| data connection disconnected@
 437	| permanent read error@

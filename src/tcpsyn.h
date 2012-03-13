@@ -13,7 +13,7 @@
     GNU General Public License in doc/COPYING for more details.
  *
  *	tcpsyn is a special synthesis which connects to another TTSCP server
- *	and uses it to synthesize the diphones. This incarnation
+ *	and uses it to synthesize the segments. This incarnation
  *	is unfortunately synchronous (waits for completion).
  */
 
@@ -25,8 +25,8 @@ class tcpsyn : public synth
    public:
 	tcpsyn(voice *v);
 	virtual ~tcpsyn(void);
-	virtual void syndiph(voice *v, diphone d, wavefm *w);
-	virtual void syndiphs(voice *v, diphone *d, int count, wavefm *w);
+	virtual void synseg(voice *v, segment d, wavefm *w);
+	virtual void synsegs(voice *v, segment *d, int count, wavefm *w);
 };
 
 

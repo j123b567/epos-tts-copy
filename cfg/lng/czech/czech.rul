@@ -12,7 +12,6 @@
 #
 #
 
-
 # pøidat èárku pøed "a":
 with  "a"  word
 {
@@ -32,7 +31,7 @@ regress \X>a(!_!)
 
 with "mi mì se si ho mu ti tì"
 {
-	regress  _\ >~(!_!)   word  word
+	regress  _\ \n>~(!_!)   word  word
 }
 
 #
@@ -63,22 +62,24 @@ if   !naive_prosody
 	@include "prosody.rul"
 }
 
-regress   0>\#(!_0)	colon	; vlo¾ení pausy
-inside	\#	phone
+if    phr_break
 {
-	contour   t/-65   phone
+	regress   0>\#(!_0)	colon	; vlo¾ení pausy
+	inside	\#	phone
+	{
+		contour   t/-65   phone
+	}
+	5x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
 }
 
-5x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
-
 if   kadlec_dph
-	diphones  kadlec.dph    colon
+	segments  kadlec.dph    colon
 if   !kadlec_dph
 {
    if ptacek97_dph
-	diphones  ptacek97.dph  colon
+	segments  ptacek97.dph  colon
    if !ptacek97_dph
-	diphones  traditnl.dph  colon
+	segments  traditnl.dph  colon
 }
 
 #

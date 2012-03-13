@@ -11,6 +11,26 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License in doc/COPYING for more details.
+ *
+ *	In Epos, waveforms are externally (as required by TTSCP) and
+ *	also internally represented by the RIFF waveform pseudostandard
+ *	format.  As generating the waveform is likely to become
+ *	a performance bottleneck, and quite a few aspects of this process
+ *	have been gradually made configurable, the sample() method
+ *	has been made inline in this header file.
+ *
+ *	The design is that the synthesizer calls a wavefm object's sample()
+ *	method every time it outputs a sample.  In theory, the sample
+ *	should be processed using configuration parameters.  This is
+ *	however rather slow for a lightning-fast synthesizer: loop
+ *	optimization won't probably work here, because the optimizer is afraid
+ *	of configuration parameters and/or any internal wavefm structure
+ *	members being pointed to by the buffer being filled, and thus it
+ *	doesn't see they're really invariant.  So we just store the samples
+ *	in the buffer and we translate the header and/or buffer later
+ *	if necessary.  No translation should be needed if you request
+ *	a 16-bit monophonic waveform at its "natural" (recorded) sampling
+ *	rate.
  */
 
 void async_close(int fd);
@@ -19,13 +39,20 @@ int yread(int, void *, int size);
 
 #define	RIFF_HEADER_SIZE	8
 
+#ifdef SAMPLE
+	#error Macro conflict: SAMPLE
+#endif
+
+#define SAMPLE		unsigned short	/* working sample type */
+#define SIGNED_SAMPLE	signed short	/* FIXME: get rid of this */
+
 struct wave_header
 {
 	char string1[4];
 	int  total_length;
 	char string2[8];
-	int  xnone;
-	short int  datform, numchan, sf1, sf2, avr1, avr2, wlenB, wlenb;
+	int  fmt_length;
+	short int  datform, numchan, sf1, sf2, avr1, avr2, alignment, samplesize;
 	char string3[4];
 	int  buffer_idx;
 };			// .wav file header
@@ -46,52 +73,54 @@ struct adtl_header
 	char string2[4];
 };
 
+struct labl;
+
 struct w_ophase;
 
 class wavefm
 {
-   public:	/* FIXME - a global initializer in waveform.cc needs this */
 	wave_header hdr;
 	cue_header cuehdr;
 	adtl_header adtlhdr;
 
-	char *buffer;
-//	int written_bytes;
+	SAMPLE *buffer;
 	int buff_size;
-	int samp_size_bytes;
+
+//	int samp_size_bytes;
 	int samp_rate;
 	CHANNEL_TYPE channel;
 	int fd;
 
 	int current_cp;
-	int last_offset;
 	cue_point *cp_buff;
 	char *adtl_buff;
-//	int adtl_offs;
 	int adtl_max;
 
-//	char *bbf;		/* buffer being flushed */
-//	int  bbf_len;		/* buffer being flushed len */
-//	void update_bbf();
-
+	static const w_ophase ophases[];
 	int ophase;
 	int ooffset;
 
 	bool update_ophase();	/* returns whether more work to do */
-	char *get_ophase_buff(w_ophase *);
-	int get_ophase_len(w_ophase *);
+	char *get_ophase_buff(const w_ophase *);
+	int get_ophase_len(const w_ophase *);
+	int get_total_len();
 
 	bool flush_deferred();
+	
+	void translate_data(char *new_buff);	/* recode data from buffer to new_buff */
+	void translate();	/* downsample, stereophonize, eightbitize or ulawize */
+	void band_filter();	/* low band filter applied if downsampling */
+	bool translated;
+	int downsamp;
+	
+	void put_chunk(labl *chunk_template, const char *label);
 
    public:
 	wavefm(voice *);
 	~wavefm();
 
+	int get_buffer_index() {return hdr.buffer_idx;};
 	int written;		// bytes written by the last flush() only
-//	inline int offset()
-//	{
-//		return written + buffer_idx;
-//	}
 
 	bool flush();		// write out at least something
 				// see waveform.cc for more documentation
@@ -103,33 +132,22 @@ class wavefm
 	void brk();		// forgets pending data; does not detach()
 //	void skip_header();	// see waveform.cc for comments
 	void write_header();
-
-	inline void put_sample(unsigned int sample)
-	{
-		if (buff_size <= hdr.buffer_idx + samp_size_bytes)
-			flush();
-		switch (samp_size_bytes)
-		{
-			case 1:	*(unsigned char *) (buffer + hdr.buffer_idx) = sample; break;
-			case 2:	*(unsigned short *)(buffer + hdr.buffer_idx) = sample; break;
-		}
-		hdr.buffer_idx += samp_size_bytes;
-	}
-
+	
 	inline void sample(unsigned int sample)
 	{
-		switch(channel)
-		{
-			case CT_MONO:	put_sample(sample); break;
-			case CT_LEFT:	put_sample(sample); put_sample(0); break;
-			case CT_RIGHT:	put_sample(0); put_sample(sample); break;
-			case CT_BOTH:	put_sample(sample); put_sample(sample); break;
-		}
+		if (buff_size <= hdr.buffer_idx + 1)
+			flush();
+		buffer[hdr.buffer_idx] = sample;
+		hdr.buffer_idx ++;
 	}
 
-	void label(int position, char *label, char *note);
+	void label(int position, char *label, const char *note);
 
 	void become(void *buffer, int size);
 
 	inline int written_bytes() { return hdr.total_length + RIFF_HEADER_SIZE; }
 };
+
+
+
+

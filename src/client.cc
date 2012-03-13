@@ -163,7 +163,7 @@ char *get_handle(int sd)
 	return strdup(scratch + 8);
 }
 
-void xmit_option(char *name, char *value, int sd)
+void xmit_option(const char *name, const char *value, int sd)
 {
 	sputs("setl ", sd);
 	sputs(name, sd);

@@ -40,7 +40,7 @@ eposversionfile = $(LIBDIR)/version
 SHELL = /bin/sh
 
 HEADERS=common.h defaults.h unit.h parser.h rule.h text.h interf.h options.h hash.h synth.h voice.h exc.h
-MOREHEADERS=waveform.h ktdsyn.h ptdsyn.h lpcsyn.h tcpsyn.h slab.h navel.h rx.h client.h agent.h 
+MOREHEADERS=waveform.h ktdsyn.h ptdsyn.h lpcsyn.h tcpsyn.h slab.h rx.h client.h agent.h 
 SOURCES=parser.cc unit.cc rule.cc block.cc text.cc interf.cc options.cc exc.cc hash.cc hashtmpl.cc synth.cc waveform.cc voice.cc say.cc options.lst nnet.cc monolith.cc daemon.cc agent.cc ttscp.cc client.cc qnxipc.cc ktdsyn.cc ptdsyn.cc lpcsyn.cc tcpsyn.cc rx.c
 DOSSOURCES=epos.cpp config.dos README.dos
 MODULES=parser.o unit.o rule.o text.o interf.o options.o synth.o ktdsyn.o ptdsyn.o lpcsyn.o tcpsyn.o voice.o waveform.o
@@ -180,7 +180,7 @@ monolith.o: monolith.cc $(HEADERS) $(MAKEFILE) options.lst $(SHELL)
 daemon.o: daemon.cc qnxipc.cc $(HEADERS) agent.h client.h $(MAKEFILE) options.lst $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ daemon.cc
 
-agent.o: agent.cc $(HEADERS) agent.h navel.h client.h waveform.h $(MAKEFILE) options.lst $(SHELL)
+agent.o: agent.cc $(HEADERS) agent.h client.h waveform.h $(MAKEFILE) options.lst $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ agent.cc
 
 ttscp.o: ttscp.cc $(HEADERS) agent.h $(MAKEFILE) options.lst $(SHELL)
@@ -232,7 +232,7 @@ lpcsyn.o: lpcsyn.h waveform.h synth.h lpcsyn.cc interf.h options.lst $(MAKEFILE)
 	$(CC) $(FLAGS) -c -o $@ lpcsyn.cc
 
 #lpcsyn.cc lpcsyn.h:
-#	@if [ ! -f $@ ]; then if [ -f ../../$@ ]; then ln ../../$@ .; else echo "">$@; fi; else touch $@; fi
+#	@if [ -f ../../$@ ]; then ln ../../$@ .; else touch $@; fi
 
 tcpsyn.o: tcpsyn.h tcpsyn.cc client.h waveform.h interf.h options.lst $(MAKEFILE)
 	$(CC) $(FLAGS) -c -o $@ tcpsyn.cc

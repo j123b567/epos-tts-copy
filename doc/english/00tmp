@@ -1,0 +1,29 @@
+<table loc="htbp">
+<tabular ca="|l|l|">
+<hline>
+600	| session ended normally@
+<hline>
+800	| server shutting down as requested by client@
+801	| error explicitly reported in config files@
+811	| rules file syntax@
+812	| generic configuration file syntax@
+813	| impossibilia referenced in config files@
+814	| bad command line@
+841	| cannot open necessary configuration file@
+842	| no voices configured@
+843	| up-to-date configuration files not found@
+861	| internal error: impossible branch of execution@
+862	| internal error: invariance violation@
+863	| internal error: buffer overflow@
+864	| insufficient capacity@
+865	| server crashed, reason unspecified@
+869	| double fault@
+871	| network unreachable@
+872	| server already running@
+<hline>
+</tabular>
+<caption>
+	TTSCP session termination codes as issued by Epos
+</caption>
+</table>
+

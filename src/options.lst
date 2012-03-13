@@ -340,8 +340,8 @@ OPTION (limit_dbg,  "limit_debug", INT, 0)      // Never debug under this level,
 OPTION (loaded, "",               BOOL, false)  // Do we have already compiled the .ini files?
 OPTION (fixedfile,"fixed_ini_file",STR, "fixed.ini")
 OPTION (inifile, "cfg_file",       STR, "epos.ini")	// What is our favourite .ini file?
-OPTION (token_esc, "",             STR, "nt[eE\\ #;@~.-mXYZWVU")  // Escape sequences usable in the .ini files
-OPTION (value_esc, "",             STR, "\n\t\033\033\033\\\377#;@\1\2\3\4\037\036\035\034\032\031")
+OPTION (token_esc, "",             STR, "nrt[eE\\ #;@~.-mXYZWVU")  // Escape sequences usable in the .ini files
+OPTION (value_esc, "",             STR, "\n\r\t\033\033\033\\\377#;@\1\2\3\4\037\036\035\034\032\031")
 OPTION (slash_esc, "",            CHAR, '/')	// Path separator ('/' or '\') .ini escape seq
 
 OPTION (hash_full, "hashes_full",  INT, 100)    // How full should a hash table become?
@@ -358,7 +358,7 @@ OPTION (long_help, "long_help",   BOOL, false)	// Print also a simple list of lo
 OPTION (neuronet, "neuronet",     BOOL, false)  // Allow nnet_out()?
 OPTION (trusted, "trusted",       BOOL, false)  // Are sanity checks in unit::sanity() unnecessary?
 OPTION (paranoid, "paranoid",     BOOL, true)   // Are config files out to get us? (strict syntax)
-OPTION (stml, "stml",	          BOOL, false)	// Input text are STML (as opposed to plain ASCII)?
+// OPTION (stml, "stml",	          BOOL, false)	// Input text are STML (as opposed to plain ASCII)?
 OPTION (showrule, "show_rule",    BOOL, false)  // Print each rule before its application? DEBUGGING only!
 OPTION (pausing, "pausing",       BOOL, false)  // Pause after each rule application?
 OPTION (r_dbg_sh_all, "verbose",  BOOL, false)  // When dumping rules, print them all?
@@ -380,13 +380,13 @@ OPTION (eof_char, "end_of_file",  CHAR, '\033') // Which key should terminate us
 LNG_OPTION (rules_dir, rules_dir, "rules_dir", STR, ".")  // path to the rules and banner files
 LNG_OPTION (hash_dir, hash_dir, "hash_dir",    STR, ".")  //  to the dictionaries
 LNG_OPTION (input_dir, input_dir, "input_dir", STR, ".")  //  to the input file
-// VOICE_OPTION (invent_dir, inv_dir, "invent_dir", STR, ".")  //  to the diphone inventories
+// VOICE_OPTION (invent_dir, inv_dir, "invent_dir", STR, ".")  //  to the segment inventories
 // LNG_OPTION (pros_dir, pros_dir, "prosody_dir", STR, ".")  //  to the prosody files
 OPTION (pseudo_root_dir, "pseudo_root_dir",STR, "root")	  //  to the virtual file tree
 OPTION (help_dir, "ttscp_help_dir",    STR, "ttscp/help") //  to the ttscp help topics
 OPTION (lang_base_dir, "lang_base_dir",    STR, "lng")    //  to the language descriptions
 OPTION (voice_base_dir, "voice_base_dir",  STR, "voice")  //  to the voice descriptions
-OPTION (inv_base_dir, "inv_base_dir",  STR, "inv")	  //  to the diphone inventories
+OPTION (inv_base_dir, "inv_base_dir",  STR, "inv")	  //  to the segment inventories
 OPTION (ini_dir, "ini_dir",	   STR, "cfg")  //      to fixed.ini
 OPTION (matlab_dir, "matlab_dir",  STR, ".")	//      where to store nnet output
 OPTION (wav_dir, "wav_dir",        STR, ".")	//      where to store .wav files
@@ -400,24 +400,26 @@ OPTION (stdshriek_file,"stdshriek_file",STR, NULL)   // file to write fatal erro
 
 // OPTION (trans, "show_transcript", BOOL, true)	// Should we display transcription on exit?
 OPTION (show_phones,"show_phones",BOOL, false)	// Should we display the sounds on exit?
-OPTION (use_diph,"",		  BOOL, true)	// (enabled if one of the following is on)
-OPTION (show_diph,"show_diphones",BOOL, false)  // Should we display the diphones on exit?
-OPTION (show_labels,"show_labels",BOOL, false)  // Should we display the diphone labels?
-OPTION (play_diph,"play_diphones",BOOL, false)  // Should we write the sound to a file?
-OPTION (diph_raw,"show_raw_diphs",BOOL, false)  // show_diphones including diphone numbers?
+OPTION (show_segs,"show_segments",BOOL, false)  // Should we display the segments on exit?
+// OPTION (show_labels,"show_labels",BOOL, false)  // Should we display the segment labels?
+OPTION (label_seg,"label_seg",    BOOL, false)  // Should we output the segment labels?
+OPTION (label_phones,"label_phones",BOOL, false)// Should we output the phone labels?
+OPTION (label_sseg,"label_sseg",  BOOL, false)  // Mark suprasegmental boundaries in labels?
+OPTION (play_segs,"play_segments",BOOL, false)  // Should we write the sound to a file?
+OPTION (seg_raw,"show_raw_segs",  BOOL, false)  // show_segments including segment numbers?
 // OPTION (show_crc, "show_crc",     BOOL, false)	// Near-unique signature of the sound
-OPTION (wav_file, "wave_file",     STR, NULL)	// File to write .wav into if play_diphones
-OPTION (imm_diph,"immed_diphones",BOOL, false)  // Should we output them after a DIPHONES rule?
+OPTION (local_sound_device, "local_sound_device", STR, NULL)	// File to write .wav into if play_segments
+OPTION (imm_segs,"immed_segments",BOOL, false)  // Should we output them after a SEGMENTS rule?
 
 VOICE_OPTION (inv_name, name, "name",	   STR, "(unnamed)")
 VOICE_OPTION (inv_type, type, "type",       TYPE, S_NONE)	// Int, float, vector quantified...
 VOICE_OPTION (inv_ct,channel, "channel", CHANNEL, CT_MONO)// (unused; not stereo)
 VOICE_OPTION (inv_size, n_segs, "n_segs",    INT, 0)	// Total number of segments
-VOICE_OPTION (inv_counts, counts, "counts",  STR, NULL)	// File with the model counts for every diphone?
+VOICE_OPTION (inv_counts, counts, "counts",  STR, NULL)	// File with the model counts for every segment?
 VOICE_OPTION (inv_models, models, "models",  STR, NULL)	// File with the models themselves?
 VOICE_OPTION (inv_book, book, "codebook",    STR, NULL)	// No idea what this file is
-// VOICE_OPTION (inv_dph, dphfile, "dph_file",  STR, NULL)	// File describing the diphones?
-VOICE_OPTION (inv_dpt, dptfile, "dpt_file",  STR, NULL)	// File naming the diphones?
+// VOICE_OPTION (inv_dph, dphfile, "dph_file",  STR, NULL)	// File describing the segments?
+VOICE_OPTION (inv_dpt, dptfile, "dpt_file",  STR, NULL)	// File naming the segments?
 VOICE_OPTION (inv_snl, snlfile, "snl_file",  STR, NULL)	// Sound labels file?
 VOICE_OPTION (inv_f0, init_f, "init_f",      INT, 100)	// Neutral frequency for the inventory
 VOICE_OPTION (inv_i0, init_i, "init_i",      INT, 100)	// Neutral intensity
@@ -427,19 +429,31 @@ VOICE_OPTION (inv_st, st, "st_length",       INT, 400)	// Length of ST signals (
 VOICE_OPTION (inv_hz, samp_rate, "inv_sampling_rate", INT, 8000)	// The real sampling rate of the inventory
 VOICE_OPTION (inv_samp_size, samp_size, "sample_size",INT, 16)	// (not supported)
 
-OPTION (wav_hdr, "wave_header",	  BOOL, false)  // Should .wav output contain .wav file header?
+VOICE_OPTION (inv_out_rate, out_rate, "out_sampling_rate", INT, 0)	// 0 means equal to samp_rate
+	// positive value specifies the required output rate (samp_rate divided by an integer)
+OPTION (autofilter, "autofilter", BOOL, true)	// When downsampling, band filter as necessary
+
+OPTION (wav_hdr, "wave_header",	  BOOL, true)   // Should .wav output contain .wav file header?
+OPTION (ulaw, "ulaw",		  BOOL, false)	// Should .wav output use the mu law encoding?
 // VOICE_OPTION (ioctlable, ioctlable, "ioctlable",	BOOL, false)  // Is the voice a real device not file?
 
 OPTION (daemon_log, "daemon_log",  STR, NULL)	// Log file of daemon.cc activities (TTSCP server)
+OPTION (use_syslog, "use_syslog", BOOL, true)	// Use syslogd for logging if available
+OPTION (full_syslog,"full_syslog",BOOL, false)	// Use syslogd for logging all TTSCP traffic?
+OPTION (authpriv, "authpriv",     BOOL, false)  // Use authpriv facility for security relevant syslog messages?
+OPTION (log_codes, "log_codes",   BOOL, false)  // Should logged messages contain TTSCP codes?
 OPTION (pwdfile, "server_pwd_file",STR, NULL)	// File to store the server passwd for TTSCP auth
 OPTION (dbg_pwd, "debug_password", STR, "")	// Additional server password (insecure)
 OPTION (restr_file, "restr_file",  STR, "restr.ini") // restricted options
-OPTION (db_size, "diph_buff_size", INT, 0)	// max n of diphones to be synthesized at once
+OPTION (db_size, "seg_buff_size",  INT, 0)	// max n of segments to be synthesized at once
 OPTION (buffer_size, "buffer_size",INT, 8192)	// buffer size for wave files
 OPTION (max_net_cmd, "max_net_cmd",INT, 16384)  // Max TCP command length
 OPTION (listen_port, "listen_port",INT, TTSCP_PORT) // TCP port where the daemon should listen
 OPTION (handle_size, "handle_size",INT, 15)	// TTSCP handle size
-OPTION (local_only, "local_only",  BOOL, true) // visible only to local clients ?
+OPTION (local_only, "local_only",  BOOL, true)  // visible only to local clients ?
+OPTION (localsound, "localsound",  BOOL, false) // sound card available to any client?
+OPTION (readfs, "readfs",	   BOOL, false) // may read files in the pseudo_root_dir?
+OPTION (writefs, "writefs",	   BOOL, false) // may write files in the pseudo_root_dir?
 OPTION (deadlk_timeout, "deadlock_timeout", INT, 5)	// remote voice timeout
 VOICE_OPTION (inv_loc, loc, "location", STR, "")
 // OPTION (sd, "",		   INT, 0)	// network socket of the current session
@@ -509,7 +523,7 @@ OPTION (default_target, "default_target",         ELEM, 0)
 LNG_OPTIONARRAY (perm, "perm", STR, "", UNIT_MAX)
 
 // OPTIONAGGR (int pros_weight[UNIT_MAX])
-// OPTIONITEM (pros_weight[U_DIPH],"pros_weight_diph",INT,1)
+// OPTIONITEM (pros_weight[U_DIPH],"pros_weight_seg",INT,1)
 // OPTIONITEM (pros_weight[U_PHONE],"pros_weight_phone",INT,1)
 // OPTIONITEM (pros_weight[U_SYLL],"pros_weight_syll",INT,1)
 // OPTIONITEM (pros_weight[U_WORD],"pros_weight_word",INT,1)
@@ -534,7 +548,7 @@ OPTIONITEM (pros_neutral[Q_INTENS], "pros_neutral_i",   INT, 100) // Neutral int
 OPTIONITEM (pros_neutral[Q_TIME], "pros_neutral_t",	INT, 100) // Neutral time factor
 OPTIONAGGRENDS
 
-// VOICE_OPTION (ti_adj, t_i_adjustments, "t_i_adj", BOOL, false)	// Adjust neutral time/intensity for some diphones
+// VOICE_OPTION (ti_adj, t_i_adjustments, "t_i_adj", BOOL, false)	// Adjust neutral time/intensity for some segments
 
 
 
@@ -580,7 +594,7 @@ OPTIONARRAY (out_separ, "separ", STR, "", UNIT_MAX)
 OPTIONARRAY (out_closing, "close", STR, "", UNIT_MAX)
 
 // OPTIONAGGR (const char *out_color[UNIT_MAX])
-// OPTIONITEM (out_color[U_DIPH],"color_diphone",STR,"")
+// OPTIONITEM (out_color[U_DIPH],"color_segment",STR,"")
 // OPTIONITEM (out_color[U_PHONE],"color_phone",STR,"")
 // OPTIONITEM (out_color[U_SYLL],"color_syll",STR,"")
 // OPTIONITEM (out_color[U_WORD],"color_word",STR,"")

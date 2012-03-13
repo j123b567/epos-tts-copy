@@ -32,6 +32,8 @@ copy ..\arch\win\eposm.dsp .
 copy ..\arch\win\say.dsp .
 copy ..\arch\win\epos.dsw .
 
+copy ..\arch\win\service\*.* .
+
 if not exist client.cc echo #include "client.cpp" > client.cc
 
 cd ..\cfg\cfg

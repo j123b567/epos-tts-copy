@@ -20,7 +20,7 @@
 
 #define DIPH_BUFF_SIZE  1000 //unimportant
 
-#define OPCODEstr "subst:regex:postp:prep:diphones:prosody:contour:progress:regress:insert:syll:smooth:raise:debug:if:inside:with:{:}:[:]:<:>:nothing:error:"
+#define OPCODEstr "subst:regex:postp:prep:segments:prosody:contour:progress:regress:insert:syll:smooth:raise:debug:if:inside:with:{:}:[:]:<:>:nothing:error:"
 enum OPCODE {OP_SUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_DIPH, OP_PROSODY, OP_CONTOUR, OP_PROGRESS, OP_REGRESS, 
 	OP_INSERT, OP_SYLL, OP_SMOOTH, OP_RAISE, OP_DEBUG, OP_IF, OP_INSIDE, OP_WITH,
 	OP_BEGIN, OP_END, OP_CHOICE, OP_CHOICEND, OP_SWITCH, OP_SWEND, OP_NOTHING, OP_ERROR};
@@ -55,7 +55,7 @@ extern char * _rules_buff;
 #define SPACE		' '	// to delimit lists in literal hash tables
 #define TILDE		'~'
 
-#define UNDIPHONE "~"			//OP_DIPH only, means "delete diphones if any"
+#define UNDIPHONE "~"			//OP_DIPH only, means "delete segments if any"
 
 class rule
 {
@@ -156,10 +156,13 @@ rule::debug_tag()
 	char *tmp;
 	if (dbg_tag) {
 		tmp=strchr(dbg_tag, ':');
-		if (!tmp) tmp=" not specified";
-		*tmp++=0;
-		sprintf(wholetag, " in file %s line %s", dbg_tag, tmp);
-		tmp[-1]=':';
+		if (!tmp) {
+			sprintf(wholetag, "in unnumbered place %s", dbg_tag);
+		} else {
+			*tmp++=0;
+			sprintf(wholetag, " in file %s line %s", dbg_tag, tmp);
+			tmp[-1]=':';
+		}
 	} else
 #endif
 	{
@@ -324,21 +327,21 @@ r_subst::apply(unit *root)
 }
 
 /************************************************
- r_diph   The following rule class constructs
- 	  the diphone layer according to diphone
+ r_seg   The following rule class constructs
+ 	  the segment layer according to segment
  **	  numbers found in the dictionary
  ************************************************/
 
 
-class r_diph: public hashing_rule
+class r_seg: public hashing_rule
 {
 	virtual OPCODE code() {return OP_DIPH;};
    public:
-		r_diph(char *param);
+		r_seg(char *param);
 	virtual void apply(unit *root);
 };
 
-r_diph::r_diph(char *param) : hashing_rule(param)
+r_seg::r_seg(char *param) : hashing_rule(param)
 {
 	if (!strcmp(param, UNDIPHONE)) {
 		free(raw);
@@ -347,30 +350,29 @@ r_diph::r_diph(char *param) : hashing_rule(param)
 }
 
 /************************************************
- r_diph::apply()
+ r_seg::apply()
  ************************************************/
 
 void
-r_diph::apply(unit *root)
+r_seg::apply(unit *root)
 {
-	if (!cfg->use_diph) return;
 	if (!dict) load_hash();
-	root->diphs(target, dict);
+	root->segs(target, dict);
 	if (cfg->lowmemory) {
 		DEBUG(2,2,fprintf(STDDBG,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict=NULL;
 	}
 
-	DEBUG(1,2,fprintf(STDDBG,"Diphones w%s be dumped just after the DIPHONES rule\n", cfg->imm_diph?"ill":"on't");)
-	if (cfg->imm_diph) {
-		static diphone d[DIPH_BUFF_SIZE];   //every item is 16 bytes long
+	DEBUG(1,2,fprintf(STDDBG,"Diphones w%s be dumped just after the DIPHONES rule\n", cfg->imm_segs?"ill":"on't");)
+	if (cfg->imm_segs) {
+		static segment d[DIPH_BUFF_SIZE];   //every item is 16 bytes long
 		
 		int i=DIPH_BUFF_SIZE;
 		for (int k=0; i==DIPH_BUFF_SIZE; k+=DIPH_BUFF_SIZE) {
-			i=root->write_diphs(d,k,DIPH_BUFF_SIZE);
+			i=root->write_segs(d,k,DIPH_BUFF_SIZE);
 			for (int j=0;j<i;j++) 
-				fprintf(STDDBG,"diphone number=%3d f=%d t=%d i=%d\n", d[j].code, d[j].f, d[j].t, d[j].e);
+				fprintf(STDDBG,"segment number=%3d f=%d t=%d i=%d\n", d[j].code, d[j].f, d[j].t, d[j].e);
 		}
 	}
 }
@@ -587,7 +589,7 @@ r_regress::r_regress(char *param) : rule(param)
 	*right++=0;
 	fn=strchr(right,ASSIM_DELIM4);if(!fn) shriek(811, fmt("Bad param%s", debug_tag()));
 	*fn++=0;if(*fn) shriek(811, fmt("Strange appendix to param%s", debug_tag()));
-	DEBUG(1,4,fprintf(STDDBG,"Parsed assim param \"%s>%s(%s_%s)\"\n",aff,eff,left,right);)
+	DEBUG(0,4,fprintf(STDDBG,"Parsed assim param \"%s>%s(%s_%s)\"\n",aff,eff,left,right);)
 	fn=fntab(aff,eff);ltab=booltab(left);rtab=booltab(right);
 	free(aff);
 	
@@ -653,7 +655,7 @@ r_syll::r_syll(char *param) : rule(param)
 		else son[(unsigned char)(*tmp)]=lv;
 		DEBUG(0,1,fprintf(STDDBG,"Giving to %c sonority %d\n", *tmp, lv);)
 	}
-	DEBUG(1,1,fprintf(STDDBG,"rules::parse_syll going to call syllabify()\n");)
+	DEBUG(0,1,fprintf(STDDBG,"rules::parse_syll going to call syllabify()\n");)
 }
 
 r_syll::~r_syll()
@@ -700,7 +702,7 @@ class r_raise: public rule
 r_raise::r_raise(char *param) : rule(param)
 {
 	char *cond;
-	if ((cond=strchr(raw,RAISE_DELIM))) *cond++=0; else cond="!";
+	if ((cond = strchr(raw,RAISE_DELIM))) *cond++=0; else cond=(char *)"!";
 	whattab = booltab(raw);
 	whentab = booltab(cond);
 }
@@ -755,7 +757,7 @@ r_regex::r_regex(char *param) : rule(param)
 	
 	for(int i=0, j=0; ; i++,j++) {
 		if (param[i]==PAREN_OPEN || param[i]==PAREN_CLOS) {
-			if (scratch[j-1]==ESCAPE && j) j--;
+			if (j && scratch[j-1]==ESCAPE) j--;
 			else {
 				scratch[j++] = ESCAPE;
 				parens++;
@@ -768,9 +770,8 @@ r_regex::r_regex(char *param) : rule(param)
 	param = strdup(scratch);
 
 	matchbuff = (regmatch_t *)xmalloc((parens+2)*sizeof(regmatch_t));
-	DEBUG(1,1,fprintf(STDDBG, "Compiling regex %s\n", param);)
+	DEBUG(0,1,fprintf(STDDBG, "Compiling regex %s\n", param);)
 	result = regcomp(&regex, param, 0);
-	DEBUG(0,1,fprintf(STDDBG, "...hm...\n");)
 	switch (result) {
 		case 0: break;
 		case REG_BADBR:
@@ -803,7 +804,7 @@ r_regex::r_regex(char *param) : rule(param)
 	if (tmp[1]) shriek(811, fmt("garbage follows replacement%s", debug_tag()));
 	*tmp=0;
 	repl=strdup(repl);
-	DEBUG(1,1,fprintf(STDDBG,"regex%s is okay\n", debug_tag());)
+	DEBUG(0,1,fprintf(STDDBG,"regex%s is okay\n", debug_tag());)
 }
 
 #undef rshr

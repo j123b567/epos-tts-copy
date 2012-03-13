@@ -102,6 +102,11 @@ if   colloquial   text
 	regex	/1/~jedna/	colon
 }
 
+if   !gen_ordinals
+{
+	regex /\Z//
+}
+
 subst  numsimple.dic
 regex   /0//
 

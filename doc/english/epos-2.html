@@ -47,7 +47,7 @@ Level name </TD><TD> written TSR semantics </TD><TD> spoken TSR semantics </TD><
 <CODE>word</CODE> </TD><TD>     word    </TD><TD> stress unit   </TD></TR><TR><TD>
 <CODE>syll</CODE> </TD><TD>     word    </TD><TD> syllable      </TD></TR><TR><TD>
 <CODE>phone</CODE></TD><TD>     letter  </TD><TD> sound </TD></TR><TR><TD>
-<CODE>diphone</CODE></TD><TD> </TD><TD> diphone </TD></TR><TR><TD>
+<CODE>segment</CODE></TD><TD> </TD><TD> segment </TD></TR><TR><TD>
 
 <CAPTION>       Available Text Structure Representation layers (an example)</CAPTION>
 </TD></TR></TABLE></CENTER>
@@ -236,26 +236,26 @@ of prosodic adjustments to be applied.
 <A HREF="#prosody-rule">More details below</A>.
 <P>
 <P>
-<H3>Type <CODE>diphones</CODE></H3>
+<H3>Type <CODE>segments</CODE></H3>
 
 <P>
-<P>Setup the diphone layer below the phone layer.
+<P>Setup the segment layer below the phone layer.
 The parameter names a file, which contains
-phone to diphone mappings, again in the dictionary format
+phone to segment mappings, again in the dictionary format
 The replacees represent three character
-diphone identifiers, the replacers are the respective diphone
+segment identifiers, the replacers are the respective segment
 numbers (decimal).
 It is possible, and indeed typical to include multiple identifiers
-for the same diphone number.
-<P>The middle character denotes the phone the resulting diphone will
+for the same segment number.
+<P>The middle character denotes the phone the resulting segment will
 be assigned to.  The left hand and right hand characters may either
 be a question mark, or they may specify the right hand and/or left
 hand neighbors to match a specific character.  The question mark is
 therefore a kind of wildcard.
-<P>If both fully specified and partly specified diphones exist for
+<P>If both fully specified and partly specified segments exist for
 a given triplet of phones, they will be placed from left to right
 in this order: <CODE>lt?, ?t?, ?tr, ltr</CODE>.
-<P>A sentence may contain these diphones with the Czech diphone inventory
+<P>A sentence may contain these segments with the Czech segment inventory
 by Tomas Dubeda:
 <P>
 <BLOCKQUOTE><CODE>
@@ -264,7 +264,7 @@ by Tomas Dubeda:
   0p?   pl? ?lo   ?o? ou?  ?u?    ut? ?te  ?e?    ef? ?f0
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>or, with the traditional Czech diphone inventory:
+<P>or, with the traditional Czech segment inventory:
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -273,24 +273,24 @@ by Tomas Dubeda:
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>(In this second example, for instance the diphones <CODE>?pl</CODE>
-and <CODE>?pt</CODE> would actually share the diphone number and
+and <CODE>?pt</CODE> would actually share the segment number and
 would correspond to the <CODE>p-any consonant</CODE> diphone.)   
-<P>There are more possibilities for representing a diphone
+<P>There are more possibilities for representing a segment
 inventory; it is necessary to decide for the major diphone
 types, whether they should live in their initial or
 final sound.  That is unfortunate, but it is the way it is.
 Punctuation never plays a role of segments in Epos, and
 the same is true here.
-<P>It is possible to repeat a diphone a few times.  This effect
+<P>It is possible to repeat a segment a few times.  This effect
 can be controlled by adding 10000 times the number of extra
-repetitions to the diphone number.  Therefore, 
+repetitions to the segment number.  Therefore, 
 <BLOCKQUOTE><CODE>
 <PRE>
 ?e?     20241
 </PRE>
 </CODE></BLOCKQUOTE>
 
-generates three identical diphones number 241 for the stationary
+generates three identical segments number 241 for the stationary
 part of the specified vowel.
 <P>
 <H3>Type <CODE>with</CODE></H3>
@@ -325,8 +325,9 @@ interpretations of "corresponding".
 "no element", and it can be used to insert new units, delete the old ones,
 and to limit the change to the beginning or the end of the scope unit,
 respectively.  On the other hand, if the contents of some unit is literal <CODE>0</CODE>
-before the application of this rule, it will stay untouched.  Use e.g.
-<CODE>regex</CODE> or <CODE>subst</CODE> rules to handle this case properly.
+before the application of this rule, it should, in theory, stay untouched.  Use e.g.
+<CODE>regex</CODE> or <CODE>subst</CODE> rules to handle this case properly, as Epos presently
+confuses no-element zeroes and real zero characters.
 <P>Examples:   
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -426,13 +427,13 @@ structure units (possibly at multiple levels of description):
 <P>Currently, these are values per cent, 100 being the neutral
 value.  
 <BLOCKQUOTE> Epos doesn't currently provide sets
-of diphone inventories for multiple pitch ranges, therefore
+of segment inventories for multiple pitch ranges, therefore
 extreme values, such as 15 or 1500 may sound very unnatural.</BLOCKQUOTE>
   The prosody adjustments at different levels
 sum up for the actual values assigned to the generated
-diphones.  For example, a phone with the frequency (pitch)
+segments.  For example, a phone with the frequency (pitch)
 value of 130 in a word with the value of 120 will contain
-diphones (after the <CODE>diphones</CODE> rule is applied) with
+segments (after the <CODE>segments</CODE> rule is applied) with
 frequency of 150.  Alternatively, it is possible to multiply
 the values for pitch, volume and duration instead, by setting the
 <CODE>pros_eff_multiply_f</CODE>, <CODE>pros_eff_multiply_i</CODE> and
@@ -528,7 +529,7 @@ for some lengths which have to be handled separately.
 adjustments for a certain unit, the adjustments are summed.
 <P>It is important to understand the difference between
 e.g. a syllable and its phones: the syllable can have an entirely
-different prosodic value than its phones; for every given diphone,
+different prosodic value than its phones; for every given segment,
 the value for any prosodic quantity is obtained by totalling
 the values for all of higher levels units it is contained in.
 This independence of levels of description might theoretically
@@ -756,13 +757,14 @@ the <CODE>if</CODE> rule itself.
 <P>
 <P>Regular expression substitution.  The parameter is of the form
 <CODE>/regular_expression/replacement/</CODE>.  This rule type is similar to <CODE>subst</CODE>,
-but it is more powerful and more arcane; it is not intended for end
+but it is often more powerful and more arcane; it is not intended for end
 wizards.  Skip it.
 <P>For a regular expressions' overview  try <CODE>man grep</CODE>.  Note a difference:
 in "regular" regular expressions, parentheses match themselves, while
 the open group and close group operators are <CODE>\(</CODE> and <CODE>\)</CODE>, respectively.
 As we use groups heavily and next to none real parentheses, we decided
-to do it the other way round.
+to do it the other way round.  Also, <CODE>sed</CODE> users may be surprised
+by the iterative behavior of this rule type.
 <P>The replacement may contain escape sequences referring to the match of
 the <CODE>n</CODE>-th group within the regular expression: <CODE>\1</CODE> to <CODE>\9</CODE>.
 <CODE>\0</CODE> represents the entire match, but this is probably unusable under the

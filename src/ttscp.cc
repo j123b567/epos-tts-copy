@@ -21,20 +21,38 @@
 
 #include <signal.h>
 
+#ifdef HAVE_SYSLOG_H
+	#include <syslog.h>
+	
+	int severity(int code);
+#endif
+
 hash_table<char, a_ttscp> *data_conns = new hash_table<char, a_ttscp> (30);
 hash_table<char, a_ttscp> *ctrl_conns = new hash_table<char, a_ttscp> (30);
 a_accept *accept_conn = NULL;
 
-void reply(const char *text)
+static inline void sendstring(const char *text)
 {
 	sputs(text, cfg->sd_out);
 	sputs("\r\n", cfg->sd_out);
 }
 
+void reply(const char *text)
+{
+#ifdef HAVE_SYSLOG_H
+	if (cfg->use_syslog && (cfg->full_syslog || text[0] > '2')) {
+		if (text[3] != ' ') shriek(461, "No TTSCP error code supplied");
+		syslog(severity(text[0]*100 + text[1]*10 + text[2] - '0'*111),
+			cfg->log_codes ? text : text+4);
+	}
+#endif
+	sendstring(text);
+}
+
 void reply(int code, const char *text)
 {
 	if (code == MUTE_EXCEPTION) return;
-	fflush(NULL);
+	if (0) fflush(NULL);
 	char c[5];
 	c[0] = code / 100 + '0';
 	c[1] = code / 10 % 10 + '0';
@@ -42,7 +60,7 @@ void reply(int code, const char *text)
 	c[3] = ' ';
 	c[4] = 0;
 	sputs(c, cfg->sd_out);
-	reply(text);
+	sendstring(text);
 }
 
 static inline void reply(const char *text, context *real_context)
@@ -127,7 +145,6 @@ static inline int do_set(char *param, context *real)
 			else reply ("412 illegal value", real);
 		} else reply ("451 Access denied", real);
 	} else {
-		if (!param) param = "";
 		reply("442 No such option", real);
 	}
 	return PA_NEXT;
@@ -175,7 +192,7 @@ int cmd_help(char *param, a_ttscp *)
 		while (cmd->name && strncmp((char *)&cmd->name, param, 4)) cmd++;
 		if (cmd->name) {
 			sprintf(scratch, "%.4s %s", (char *)&cmd->name, cmd->short_help);
-			reply(scratch);
+			sendstring(scratch);
 		}
 
 		pathname = compose_pathname(param, cfg->help_dir);
@@ -194,7 +211,7 @@ int cmd_help(char *param, a_ttscp *)
 	} else
 		for (ttscp_cmd *cmd = ttscp_cmd_set; cmd->name; cmd++) {
 			sprintf(scratch, "%.4s %s", (char *)&cmd->name, cmd->short_help);
-			reply(scratch);
+			sendstring(scratch);
 		}
 	reply("200 OK");
 	return PA_NEXT;
@@ -238,18 +255,17 @@ int do_show(char *param)
 	if (o) {
 		if (access_level(this_context->uid) >= o->readable) {
 			sputs(SHOW_SPACE, cfg->sd_out);
-			reply(format_option(o));
+			sendstring(format_option(o));
 			reply("200 OK");
 		} else reply("451 Access denied");
 	} else {
-		if (!param) param = "";
 //		if (!strcmp("language", param)) {
-//			reply(this_lang->name);
+//			sendstring(this_lang->name);
 //			reply("200 OK");
 //			return PA_NEXT;
 //		}
 //		if (!strcmp("voice", param)) {
-//			reply(this_voice->name);
+//			sendstring(this_voice->name);
 //			reply("200 OK");
 //			return PA_NEXT;
 //		}
@@ -262,7 +278,7 @@ int do_show(char *param)
 				strcat(result, cfg->comma);
 				strcat(result, cfg->langs[i]->name);
 			}
-			reply(result);
+			sendstring(result);
 			free(result);
 			reply("200 OK");
 			return PA_NEXT;
@@ -277,7 +293,7 @@ int do_show(char *param)
 				strcat(result, cfg->comma);
 				strcat(result, this_lang->voices[i]->name);
 			}
-			reply(result);
+			sendstring(result);
 			free(result);
 			reply("200 OK");
 			return PA_NEXT;
@@ -367,7 +383,7 @@ int cmd_delhandle(char *param, a_ttscp *a)
  *	in real world TTSCP sessions, for efficiency reasons.
  */
 
-#define TTSCP_COMMAND(x,y,s,p) {*(int *)x, &y, s, p},
+#define TTSCP_COMMAND(x,y,s,p) {(*(const int *)x), (&y), (s), (p)},
 
 ttscp_cmd ttscp_cmd_set[] = {
 	TTSCP_COMMAND("appl", cmd_apply, "n",		   PAR_REQ)

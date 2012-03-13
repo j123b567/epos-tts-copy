@@ -14,9 +14,9 @@ elsewhere using epos.ini.
 /usr/lib/epos/cfg		various global configuration files read by Epos
 /usr/lib/epos/lng/*		various language specific cfg files
 /usr/lib/epos/voice/*		various voice specific cfg files
-/usr/lib/epos/inv/*		various diphone inventory stuff, to be installed separately
+/usr/lib/epos/inv/*		various segment inventory stuff, to be installed separately
 /usr/lib/epos/lng/*/*.dic	various word lists &c, used by the current rules
-/usr/lib/epos/lng/*/*.dp[ht]	descriptions of diphone inventories, used by the rules
+/usr/lib/epos/lng/*/*.dp[ht]	descriptions of segment inventories, used by the rules
 /usr/lib/epos/cfg/fixed.ini	presumably never-changing (but changeable) parameters
 /usr/lib/epos/cfg/epos.ini	presumably often changing tunable parameters
 /usr/lib/epos/cfg/default.ini	default values (used only in epos_reinit() - do not change)
@@ -42,6 +42,7 @@ doc/Changes		what is new, improved or newly broken in this version
 			how old are the individual features of Epos
 doc/Todo		things I'd add/change if I knew how and had the time
 doc/Files		(this file)
+doc/FAQ			Frequently Asked Questions.  No questions qualified as yet.
 doc/COPYING		the GNU license - distribution conditions
 
 dos			if you do a "make dos" ("make dos1250" etc.), a DOS

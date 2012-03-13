@@ -24,9 +24,6 @@
 /* Define if your compiler incorrectly treats enum bit fields as signed */
 #undef BROKEN_ENUM_BITFIELDS
 
-/* Define to empty if the keyword does not work.  */
-#undef const
-
 /* Define if your compiler somehow offers a boolean type.  */
 #undef HAVE_BOOL
 
@@ -54,9 +51,6 @@
 
 /* Define if you have <vfork.h>.  */
 #undef HAVE_VFORK_H
-
-/* Define as __inline if that's what the C compiler calls it.  */
-#undef inline
 
 /* Define if int is 16 bits instead of 32.  */
 #undef INT_16_BITS

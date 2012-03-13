@@ -38,16 +38,16 @@ class lpcsyn : public synth
 	long iyold, ifilt[8], kyu;
 	int nvyrov, lold;
    protected:
-	file *diph_len;
+	file *seg_len;
 	file *models;
-	int *diph_offs;
+	int *seg_offs;
    public:
-//	char (*tdiph)[4];
+//	char (*tseg)[4];
 	lpcsyn(voice *v);
 	virtual ~lpcsyn(void);
 	inline void synmod(model mod, wavefm *w);
-	void syndiph(voice *v, diphone d, wavefm *w);
-	virtual void frobmod(int imodel, diphone d, model *m, int &incrl, int &znely) = 0;
+	void synseg(voice *v, segment d, wavefm *w);
+	virtual void frobmod(int imodel, segment d, model *m, int &incrl, int &znely) = 0;
 };
 
 class lpcint : public lpcsyn
@@ -57,8 +57,8 @@ class lpcint : public lpcsyn
 	short int *kor_i;
    public:
 	lpcint(voice *v);
-	void adjust(diphone d);
-	virtual void frobmod(int imodel, diphone d, model *m, int &incrl, int &znely);
+	void adjust(segment d);
+	virtual void frobmod(int imodel, segment d, model *m, int &incrl, int &znely);
 };
 
 
@@ -71,7 +71,7 @@ class lpcfloat : public lpcsyn
 	float *fkor_i;
    public:
 	lpcfloat(voice *v);
-	virtual void frobmod(int imodel, diphone d, model *m, int &incrl, int &znely);
+	virtual void frobmod(int imodel, segment d, model *m, int &incrl, int &znely);
 };
 
 class lpcvq : public lpcsyn
@@ -83,7 +83,7 @@ class lpcvq : public lpcsyn
    public:
 	lpcvq(voice *v);
 	virtual ~lpcvq();
-	virtual void frobmod(int imodel, diphone d, model *m, int &incrl, int &znely);
+	virtual void frobmod(int imodel, segment d, model *m, int &incrl, int &znely);
 };
 
 #endif		// LPC_H

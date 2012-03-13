@@ -45,7 +45,7 @@ class ktdsyn : public synth
 //	     ktdsyn (int, int);
 	     ktdsyn (voice *);
 	    ~ktdsyn ();
-	virtual void syndiph (voice *v, diphone d, wavefm *w);
+	virtual void synseg (voice *v, segment d, wavefm *w);
 	
 };
 

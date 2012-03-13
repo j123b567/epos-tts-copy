@@ -64,7 +64,6 @@ void shriek(int code, const char *msg)
 	__attribute__((__noreturn__))
 #endif
 					;
-
 char *split_string(char *string);	// 0-terminate the first word, return the rest
 
 FILE *fopen(const char *filename, const char *flags, const char *reason);
@@ -94,7 +93,7 @@ extern char *scratch;
 
 FIT_IDX fit(char c);		 // converts 'f', 'i' or 't' to 0, 1 or 2, respectively
 UNIT str2enum(const char *item, const char *list, int dflt);
-char *enum2str(int item, const char *list);
+const char *enum2str(int item, const char *list);
 // hash *str2hash(const char *list, unsigned int max_item_len);
 unit *str2units(const char *text);
 char *fntab(const char *s, const char *t); //will calloc and return 256 bytes not freeing s,t
@@ -122,10 +121,12 @@ void unclaim(file *);
 // void list_voices();
 
 class unit;
-void process_diphones(unit *root);
+void process_segments(unit *root);
 
-struct diphone {
-	int code;
+struct segment {
+	short code;
+	char nothing;
+	char ll;
 	int f,e,t;
 };
 

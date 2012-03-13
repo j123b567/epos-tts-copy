@@ -61,7 +61,7 @@ ktdsyn::~ktdsyn()
 	/* uzavrit wavout */
 }
 
-void ktdsyn::syndiph(voice *v, diphone d, wavefm *w)
+void ktdsyn::synseg(voice *v, segment d, wavefm *w)
 {
 	DEBUG(1,9,fprintf(STDDBG, "Diphone %d for ktdsyn\n", d.code);)
 	if (v->samp_size != 8) shriek(813, "ktd synth still supports only 8bit channels, sorry\n");
