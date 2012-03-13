@@ -19,8 +19,8 @@
 
 #include <afxwin.h>
 
-#define SERVER_SIDE_CODE
-#include "service.h"	/* This includes all Epos-specific stuff */
+#include "service.h"
+#include "globals.h"		/* This includes all Epos-specific stuff */
 
 SERVICE_STATUS ss;
 SERVICE_STATUS_HANDLE ssh;
@@ -29,6 +29,7 @@ HANDLE hthread;		/* handle of the worker thread */
 #define ERROR_UGLY_EXCEPTION	1001
 #define ERROR_SOMETHING_WRONG	1002
 
+#define MBOX(x)  MessageBox(NULL, x, "TTS service Epos", MB_OK | MB_SERVICE_NOTIFICATION | MB_SERVICE_NOTIFICATION_NT3X)
 
 int stop_service()
 {
@@ -67,6 +68,7 @@ HANDLE get_thread_handle()
 	if (!DuplicateHandle(GetCurrentProcess(), GetCurrentThread(), GetCurrentProcess(),
 				&tmp, THREAD_SUSPEND_RESUME, TRUE, 0)) {
 		MBOX("Could not get current thread handle!");
+		return NULL;
 	}
 	return tmp;
 }

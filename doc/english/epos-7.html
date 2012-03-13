@@ -367,7 +367,8 @@ how to proceed step by step with Visual C++.
 
 <P>
 <P>The port is planned soon, but not available at the moment.  Ask us if you
-need it.
+need it.  Files specific for this port can be currently found at
+<CODE>arch/win-ce</CODE>.
 <P>
 <H3>Windows 95, 98 etc.</H3>
 
@@ -389,14 +390,14 @@ compilers, please.
 
 <P>
 <P>Please contact the authors for advice with any OS significantly different from
-the UNIX and Windows families.  However, the general requirements are:
+the UNIX and Windows families.  However, the approximate requirements are:
 <P>
 <UL>
 <LI> Architecture: 32bit little endian</LI>
 <LI> Reliable and complete C++ compiler</LI>
-<LI> Standard C library, preferably including regular expressions</LI>
-<LI> Regular expression library (or Epos supplies one)</LI>
+<LI> Standard C library, preferably including regular expression handling</LI>
 <LI> 8-bit ASCII based character set</LI>
+<LI> TCP/IP networking</LI>
 </UL>
 <P>Note that the architectural requirements are only a guideline and are enforced
 rather for lack of energy for debugging Epos on every perverse 36-bit machine
@@ -404,6 +405,9 @@ with PDP byte ordering.  Epos supports big endian architectures, but the
 corresponding code still needs to be tested.  The integers and pointers can
 be any size not less than 32 bits as long as the integers are not longer than
 pointers.  If they were, a single code change would do the port.
+<P>TCP/IP networking is not strictly necessary, but if you don't have it, you
+can either try to adapt the QNX IPC proxy for your favourite IPC interface,
+or you can build the monolithic binary of Epos.  
 <P>A bourne-compatible shell is helpful, as it allows to run a configure
 script.  Otherwise you have to write a <CODE>src/config.h</CODE> file by hand
 as we have done with the Windows port.  A plain old <CODE>make</CODE> utility

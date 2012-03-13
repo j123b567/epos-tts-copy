@@ -1,59 +1,71 @@
 #
-#	(c) Jirka Hanika <geo@ff.cuni.cz>
-#       (c) Martin Petriska <petriska@pobox.sk>
+#	(c) Jirka Hanika <geo@cuni.cz>
+#
 
-$voiced    = bdïgZ®z¾hv
-$voiceless = pt»kcès¹xf
-$fric      = sz¹¾fvhx
-$afric     = cZè®
-$stop      = pbt»dïkg
+$lower_case = aáäbcèdïeéìfghiíjklµåmnòoóôpqrøàs¹t»uúùvwxyýz¾
+$upper_case = AÁÄBCÈDÏEÉÌFGHIÍJKL¥ÅMNÒOÓÔPQRØÀS©T«UÚÙVWXYÝZ®
+
+$labial    = pbmvw
+$voiced    = bdïgvz¾Z®h
+$voiceless = pt»kfs¹cèx
+$VOICELESS = PT«KFS©CÈX
 $nasal     = mnòN
-$sonant    = jlr$nasal
-$short     = aeiouyäì
-$long      = áéíóúýäì
-$diphtong  = AEUOô
-$vowel     = $short$long$diphtong
-$consonant=$voiced$voiceless$sonant
-$everywhere= !_!
-$numbers   = 1234567890
-$sonority  = 0'<$fric$afric${stop}<$nasal<l<rj<àå$vowel   ;l<r viz "umrlec" etc. Ani systematické, ani bezpeèné.
+$sonant    = jlårà$nasal
+$nonsonant = $voiced$voiceless
+$consonant = $nonsonant$sonant
+$diphtong  = AEUô
+$vowel     = aeiouyáéíóúýôä$diphtong
+$sonority  = 0<'$nonsonant<$nasal<l<ràåj<$vowel
 
-$lower_case = aáäbcèdïeéìfghiíjklµåmnòoóôpqràs¹t»uúvwxyýz¾
-$upper_case = AÁÄBCÈDÏEÉÌFGHIÍJKL¥ÅMNÒOÓÔPQRÀS©T«UÚVWXYÝZ®
+$everywhere = !_!
 
-# Pravidla pro ètení zkratek apod.: velké písmeno na jiném,
-#   ne¾ prvním místì ve slovì indikuje zkratku a hláskuje se.
-#   Stejnì tak jednotlivé písmeno pøed cifrou nebo speciálním znakem.
-subst skratky.dic
+inside .  sent
+{
+	regex /([0123456789])\$/\1\Z/	word
+}
+regex  /(\Z)\\.([${lower_case}])/\1\2/	text
+regex  /\Z(\\.)([${upper_case}])/\1\2/	text
+
 regress	 ${lower_case}>${upper_case}(0_!${lower_case})			colon
 regress  ${upper_case}>${lower_case}(0_${lower_case})			word
 regress  ${upper_case}>${lower_case}(0_${lower_case})			colon
+if	spellout
+{
+	regex	/^([^\Y\ ~]*)(.\?)\$/\1\Y\1\2/	word
+	progress ${lower_case}>${upper_case}(\Y${upper_case}_!)
+	regex	/\Y/./		text
+}
 subst	 abbrevs.dic							colon
 regress  ${upper_case}>${lower_case}($everywhere)			colon
 
+@include "numerals.rul"
 
-#include "numerals.rul"
+subst main.dic		; exceptions
 
- subst	   main.dic		   ;Rôzne výnimky
+if  !aecg
+{
+	progress ä>e(!_!)
+}
 
+# Eliminace èeských grafémù ì,ø,ù:
+progress  ù>ú($everywhere)
+progress  ø>r($everywhere)
+progress  0>i(!dtn_ì)
+progress  ì>e($everywhere)
 
- progress  0>s(x_!)
- progress  u0>0v(q_!)              ; Rozlo¾enie x,q na ks, kv
- regress   xq>k($everywhere)
- regress   h>x(c_!)                ; Spøe¾ka ch > x
- regress   z¾>Z®(d_!)              ; Spøe¾ky dz,d¾ > Z,® 
- progress  cd>0(!_xZ®)
- 
+# Eliminace latinských grafémù x,q,w:
+progress  0>s(x_!)
+progress  u0>0v(q_!)
+regress   xq>k($everywhere)
+progress  w>v(0_!)
+regress   v>w(!0_$consonant&0)
 
- regress 0>o(ô_!)
- regress ô>u($everywhere)          ;ô zatial nahradené spojením uo
- progress  w>v($everywhere)       
- 
- regress v>ô($vowel_!$vowel)	   ; §74 Kral, fonema W zatial neexistuje	
- regress ô>u($everywhere)          ; takze je nahradena u
+progress ä>e(!$labial_!)
 
- progress ä>e($everywhere)         ; nahrada ä za e
-
+# Spøe¾ky ch,dz,d¾
+regress   h>x(c_!)                ; Spøe¾ka ch > x
+regress   z¾>Z®(d_!)              ; Spøe¾ky dz,d¾ > Z,®
+progress  cd>0(!_xZ®)
 
 # Následující pravidla jednak zmìní vìty vydìlené dvojteèkou
 #   na vìty vydìlené teèkou (to je spí¹e ¹patnì ne¾ dobøe),
@@ -64,59 +76,67 @@ regress  ${upper_case}>${lower_case}($everywhere)			colon
 #
 # Fonetik vidí, ¾e jsem právì "definoval" doplòovací otázky.
 
- progress  :>.($everywhere)	text	sent
- subst     wh.dic				; Doplòovací otázky
- raise     Q:_			colon	phone
- progress  Q>_(!0_!)		sent	colon	;  jen v první klausi
- raise     Q:?			sent	colon
- progress  Q>0($everywhere)			;  úklid v¹ech úrovní
- progress  Q>_($everywhere)	sent	colon
- progress  Q>:($everywhere)	text	sent
+progress  :>.($everywhere)	text	sent
+subst     wh.dic				; Doplòovací otázky
+raise     Q:_			colon	phone
+progress  Q>_(!0_!)		sent	colon	;  jen v první klausi
+raise     Q:?			sent	colon
+progress  Q>0($everywhere)			;  úklid v¹ech úrovní
+progress  Q>_($everywhere)	sent	colon
+progress  Q>:($everywhere)	text	sent
 
- 
+# subst     syll.dic		; Rozsadit vokály - ve sloven¹tinì spí¹ ne
+regress   0>'(0_$vowel)		colon		; Rázy
 
- subst     syll.dic		; Rozsadit vokály
- 
- regress   0>'(0_$vowel)	; Rázy
-
- 
-
-
- prep	nonsyl.dic		syll
-
-
-
-
-
-
- regress   dtnl>ï»òµ(!_íie)
-  
- progress  yýì>iíe($everywhere)
-
- regress   z>q(t_!)		   ; tz -> c Hertz	
- progress t>0(!_q)
- regress q>c($everywhere)
- 
- regress t>0(s_s)                 ;mestsky -> mesky
- regress s>0(s_!)
- 
- regress s>q(Zdt_k)                  ; Zsk,tsk,dsk -> ck 	
- progress Zdt>0(!_q)                 ; § 246
- regress q>c($everywhere)
-
- regress s>q(»tïd_t)		   ; »st,ïst,dst,tst-> ct
- progress »tïd>0(!_q)
- regress q>c($everywhere)
-  
- regress »>0(!_ï)		  ; »ï->ï devä»desiat
-
-# regress   $voiced>${voiceless}(!_$voiceless&0')       	; Asimilace znìlosti
- regress   $voiced>${voiceless}(!_$voiceless&0')  colon     	; Asimilace znìlosti
-
- regress   $voiceless>$voiced(!_$voiced!v)       colon
+with "mòa ma mne mi mne mnou nás nám nami vás vám vami\
+	jeho neho mu nemu òom ním nich nimi òou nej òu jeho jemu jej"	word
+{
+	regress 0>Q(0_!)
+	regress \ ~_>Q(!_!)  word  word
+}
+with "so ku"   word
+{
+	regress \ ~_>P(!_!)  word  word
+}
+regress P>\ (!_Q)	colon	word
+inside P word
+{
+	regress $voiceless>$voiced(!_!)
+}
+with	preps.dic		word	word
+{
+	regress   _\ ~>P(!_!)	word   word
+}
+regress	P>\ (!_P)	colon  word	; dvì pøedlo¾ky za sebou
+regress  _\ ~>F(!_0)		colon	word
+regress P>\ (!_Q)	colon	word
+inside	 P			word
+{
+	prep	preps.dic	word
+}
+progress  P>\ ($everywhere)	word	word
 
 
- 
-# progress  n>N(!_kg)
+subst     "^ná¹mu\$,ná¾mu    ^vá¹mu\$,vá¾mu    me\$,Me"	; lze posunout do jiných výjimek
+regress   $voiced>$voiceless(!_$voiceless&0')
+regress   $voiceless>$VOICELESS(!_0M)	syll
+regress   M>m(!_!)
+regress   $voiceless>$voiced(!_$voiced!v)
+regress   $VOICELESS>$voiced(!_$voiced$sonant$vowel)       colon
+regress   $VOICELESS>$voiceless(!_!)
+regress   Q>0(!_!)
+regress   QP>\ (!_!)	word	word
 
- syll      $sonority	syll	; Rozklad_na_slabiky
+subst     hard.dic
+regress   dtnl>ï»òµ(!_iíe)
+regress   Eyý>eií(!_!)
+
+prep      nonsyl.dic	syll
+
+progress  n>N(!_kg)
+
+syll      $sonority	syll	; Rozklad_na_slabiky
+
+progress  aeu>AEU(i_!)
+progress  i>0(!_AEU)
+

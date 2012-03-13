@@ -154,6 +154,12 @@ extern char *esctab;
 
 #define DEBUGGING     
 
+#ifdef DEBUG	
+	#ifdef DEBUGGING
+		#undef DEBUG	/* this is tricky, will be fixed in 2.5 */
+	#endif
+#endif
+
 #ifdef DEBUGGING
 
 extern char *current_debug_tag;

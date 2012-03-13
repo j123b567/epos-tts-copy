@@ -39,3 +39,18 @@ bool start_service()
 
 	return true;
 }
+
+
+bool stop_service()
+{
+	SERVICE_STATUS r;
+
+	SC_HANDLE m = OpenSCManager(NULL, SERVICES_ACTIVE_DATABASE, SC_MANAGER_CONNECT | SC_MANAGER_ENUMERATE_SERVICE | SC_MANAGER_QUERY_LOCK_STATUS);
+	if (!m) return false;
+	SC_HANDLE s = OpenService(m, SERVICE_NAME, SERVICE_STOP | SERVICE_INTERROGATE);
+	if (!s) return false;
+	if (!ControlService(s, SERVICE_CONTROL_STOP, &r)) return false;
+	if (!CloseServiceHandle(s)) return false;
+
+	return true;
+}

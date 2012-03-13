@@ -1,153 +1,106 @@
 #
-#	(c) Martin Petriska <petriska@decef.stuba.sk>
-#
-# Prozatímní pravidla pro pøepis slovenèiny
+#	(c) Jirka Hanika <geo@ff.cuni.cz>
+#       (c) Martin Petriska <petriska@pobox.sk>
+# Pravidla pro zpracování slovenèiny
 
-$prosody_dir	external
-$base_dir	external
-
-$prosody   = ${base_dir}/${prosody_dir}
-
-$voiced    = bdïgZ®z¾hv
-
-$voiceless = pt»kcès¹xf
-$fric      = sz¹¾fvhx
-$afric     = cZè®
-$stop      = pt»kbdïg
-$nasal     = mnòµåN
-$sonant    = jlr$nasal
-$short     = aeiouyä
-$long      = áéíóúýä
-$diphtong  = OAE
-$vowel     = $short$long$diphtong
-#$consonant=$voiced$voiceless$sonant
-$everywhere= !_!
-$sonority  = 0'%<$fric$afric${stop}øØ$nasal<l<rjJ<$vowel   ;l<r because of "umrlec" etc. Not outright systematic nor safe.
-
- subst	   main.dic		   ;Rùzné výjimky
-
- progress  ä>e($everywhere)
-
- progress  0>s(x_!)
- progress  u0>0v(q_!)              ; Rozlo¾ení x,q na ks, kv
- regress   xq>k($everywhere)
- regress   h>x(c_!)                ; Spøe¾ka ch > x
- regress   z¾>Z®(d_!)              ; Spøe¾ky dz,d¾ > Z,®
- progress  cd>0(!_xZ®)
- regress   0>o(ô_!)
- regress   ô>u($everywhere) ; Rozlo¾enie ô na uo 
-
-# Následující pravidla jednak zmìní vìty vydìlené dvojteèkou
-#   na vìty vydìlené teèkou (to je spí¹e ¹patnì ne¾ dobøe),
-#   dále pak oznaèí dvojteèkou (místo otazníku) ty vìty, které
-#   obsahovaly ve své první klausi nìkteré ze slov uvedených
-#   ve slovníku wh.dic, nemìly tuto klauzi zvlá¹» vydìlenou
-#   ¾ádnou interpunkcí, a byly samy vydìleny otazníkem.
-#
-# Fonetik vidí, ¾e jsem právì "definoval" doplòovací otázky.
-
- progress  :>.($everywhere)	text	sent
- subst     wh.dic		; Doplòovací otázky
- raise     q:_			colon	phone
- progress  q>_(!0_!)		sent	colon	;  jen v první klausi
- raise     q:?			sent	colon
- progress  q>0($everywhere)			;  úklid v¹ech úrovní
- progress  q>_($everywhere)	sent	colon
- progress  q>:($everywhere)	text	sent
-
- subst     syll.dic		; Rozsadit vokály
- regress   0>'(0_$vowel)	; Rázy
- progress  0>q(!q_sz¹¾)	 colon  
- progress  q>0(!_!0)     word   ; "q" jen pøed hranicí slov, za ní¾ je sykavka
- prep	   seq.dic
- progress  q>0($everywhere)
- prep      preps.dic 	     ; Fúze pøedlo¾ek, postpozic
- prep      nonsyl.dic    syll
- postp     postps.dic
-
- regress   h>0(t_!)		; pathologie, plethora, thanatos. Pochybné.
- regress   v>u($vowel_0)        ; spodobovanie v na u na konci
- 
- regress   v>ô($vowel_!$vowel)  ;
- regress   0>v(ô_!)		;
- regress   ô>u($everywhere)	;
-
- 
- regress   $voiced>${voiceless}(!_$voiceless&0')       	; Asimilace znìlosti
- regress   $voiceless>$voiced(!_$voiced!v)       colon
-
- regress   dtnl>ï»òµ(!_iíe)
- 
- progress  yý>ií($everywhere)
- progress  i>j($vowel_!) syll   ; slabièné èlenìní? Leda výjimeènì 
- progress  w>v($everywhere)     ; vìt¹inou ale "w" odstraní výjimky
- progress  n>N(!_kg)
-
- regress   b>0(!_b)		; pochybný heuristický odstaveèek
- regress   n>0(!_nò)		; proti geminátám
- regress   s>0(!_s)
- regress   t>0(!_t)
+$invent_dir	external
+#$prosody_dir	external
+#$base_dir	external
+#$dph_file	external
 
 
- syll      $sonority	syll	; Rozklad_na_slabiky
-# prep      nonsyl.dic	syll	; Likvidace poboèných slabik
+#$inv_dph =	$dph_file
 
- progress  oae>OAE(!_u)		; Dvojhlásky
- regress   u>0(OAE_!)
- regress   0>d(!_Z®)	syll	; Afrikáty zase zru¹it, smùla
- regress   Z®>z¾($everywhere)
+#$prosody   = ${base_dir}/${prosody_dir}
+#$dph_file  = ${base_dir}/${invent_dir}/${inv_dph}
 
+$prosody = ../czech/prosody
 
- progress  0>~($vowel_0) syll	; Oznaèení otevøených vokalických slabik
- raise     ~:!		 syll
- progress  ~>0($vowel_0) syll
+#include "trans.rul"
 
-
- prosody	${prosody}/stress.dic      word	syll
+ inside  .?:!	sent		; Pochybné - nemá zasáhnout vìty bez interpunkce
+ {
+	 prosody	$prosody/accent.dic      word	syll
+ }
 
  inside  ,    colon
  {
-	prosody	  ${prosody}/nonterm.dic	colon	phone
-	smooth	f/5/25/40\25\5	word	phone
-	smooth	f/25/50\25	colon	phone
+	prosody	  $prosody/nonterm.dic	colon	phone
+#	smooth	f/5/40\35\15\5			colon   syll
  }
 
-# if      irony		colon
-# {
-#	inside  , colon
-#	{
-#		prosody  ${prosody}/irony.dic colon phone
-#		smooth f/10/20/40\20\10		word	phone
-#	}
-# }
-
- inside  .:   sent    ; Následující jen pro oznamovací vìty a doplòovací otázky
+ if      irony		sent
  {
-	prosody   ${prosody}/fadeoutp.dic	sent	phone
+	inside  ,- colon		; tohle nefunguje rozumnì
+	{
+		prosody  $prosody/ir_unter.dic colon phone
+#		debug pause
+		smooth f/10/20/40\20\10		word	phone
+	}
+	regress   _>L(!_0)			sent    word
+	inside	  L				word	        ; poslední slovo
+	{
+		prosody	  $prosody/irony.dic	word	syll
+	}
+	regress   L>_($everywhere) 		sent	word
+ }
+
+ inside  .:\~   sent    ; Následující jen pro oznamovací vìty a doplòovací otázky
+ {
+	inside   :   sent
+	{
+		prosody   $prosody/wh.dic		sent	syll
+	}
+#	prosody   ${prosody}/fadeoutp.dic	sent	phone
 	prosody   ${prosody}/fadeouts.dic	sent	syll
-	prosody   ${prosody}/fadeoutw.dic	sent	word
+
+	inside    .   sent
+	{
+		prosody   $prosody/fadeoutw.dic	sent	word
+	}
 
 	smooth	f/30/40\30			word	phone
  }
 
  inside   ?	sent	; Následující jen pro otázky zji¹»ovací
  {
-#	prosody   ${prosody}/fadeoutp.dic	sent	phone
+	prosody   $prosody/fadeoutp.dic	sent	phone
+	prosody	  $prosody/fadeoutw.dic	sent	word
+
+
 	regress   _>L(!_0)			sent    word
 	inside	  L				word	        ; poslední slovo
-	{
-		prosody	  ${prosody}/fadeoutq.dic	word	syll
-	}
-	inside    !L				; jiné ne¾ poslední slovo
-	{
+		{
+		regress   _>L(0_0)		word	syll	; monosylabon
+		inside    L			syll
+		{
+			prosody   $prosody/questend.dic	syll	phone
+		}
+		regress   L>_($everywhere)	word	syll
+		smooth	  f/20/30\30\20		word	phone
+
+		prosody	  $prosody/questup.dic	word	syll
+		smooth	f/5/5/15/25/40\10	word	phone
 	}
 	regress   L>_($everywhere) 		sent	word
-	prosody	  ${prosody}/fadeoutw.dic	sent	word
 
-	smooth	f/30/40\30	word	phone
  }
 
- segments  kadlec.dph	colon	    ; mìlo by být posledním pravidlem
+ inside   \!	sent	; Vìtný dùraz pro vìty s vykøièníkem
+ {
+	prosody   $prosody/exclaim.dic	sent	word
+	prosody   $prosody/exclafad.dic	sent	syll
+ }
+
+regress   0>\#(!_0)	colon	; vlo¾ení pausy
+
+if   kadlec_dph
+	segments  ../czech/kadlec.dph   colon
+if  !kadlec_dph
+	segments  traditnl.dph colon
+
+# smooth    f/10/80\10	text segment
+
 
 ;--------------------  debug     elem,pause text
 

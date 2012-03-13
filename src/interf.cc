@@ -29,6 +29,10 @@
 
 #ifdef HAVE_WINSOCK2_H
 	#include <winsock2.h>
+#else
+	#ifdef HAVE_WINSOCK_H
+		#include <winsock.h>
+	#endif
 #endif
 
 #ifdef HAVE_IO_H
@@ -117,7 +121,7 @@ void shriek(int code, const char *s)
 
 		case 8 :
 			printf("Abnormal condition: %s (code %d)\n", s, code);
-			if (errno) printf("Current errno value: %d (%s)\n", errno, strerror(errno));
+			if (errno && EAGAIN) printf("Current errno value: %d (%s)\n", errno, strerror(errno));
 			throw new fatal_error (code, s);
 
 			printf("Your compiler does NOT support exception handling, aborting\n");
@@ -462,10 +466,13 @@ char *limit_pathname(const char *filename, const char *dirname)
 
 int get_timestamp(char *filename)
 {
+#ifdef HAVE_SYS_STAT_H
 	struct stat buff;
-	if (stat(filename, &buff)) return 0;
-	return buff.st_ctime;
+	if (!stat(filename, &buff)) return buff.st_ctime;
+#endif
+	return 0;
 }
+
 
 file::~file()
 {
@@ -623,7 +630,9 @@ void epos_init()	 //Some global sanity checks made here
 	if (*(short int *)"wxyz" != 256 * 'x' + 'w' && !cfg->big_endian) shriek(862,
 				"Not little-endian nor big-endian. Whew!");
 
+#ifdef HAVE_TIME_H
 	srand(time(NULL));	// randomize
+#endif
 
 	if (!esctab) esctab = FOREVER(fntab(cfg->token_esc, cfg->value_esc));
 

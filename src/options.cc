@@ -807,7 +807,7 @@ static inline void dump_help()
 {
 	int i,j,k;
 
-	printf("usage: %s [options] ['Text to be processed']\n", argv_copy[0]);
+	printf("usage: %s [options] ['Text to be processed.']\n", argv_copy[0]);
 	printf(" -b  bare format (no frills)\n");
 //	printf(" -d  show segments\n");
 //	printf(" -e  show phones\n");

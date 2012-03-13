@@ -13,10 +13,8 @@
     GNU General Public License in doc/COPYING for more details.
  *
  *	This file declares the common information for instserv.exe
- *	and epos.exe if running as an NT service.  For clarity, and
- *	to keep this port as maintainance-free as possible, the very
- *	few interfaces to Epos proper are re-declared here, so that
- *	service.cpp doesn't include any other common Epos code.
+ *	and epos.exe if running as an NT service.  
+ *	It is also included by the say utility to start the Epos service.
  */
 
 /* NT service */
@@ -29,26 +27,5 @@
 #define EPOS_CFG_HKEY	HKEY_LOCAL_MACHINE
 #define EPOS_CFG_SUBKEY "SOFTWARE\\Epos\\Setup"
 #define EPOS_CFG_VALUE	"Path"
-
-
-#ifdef  SERVER_SIDE_CODE
-
-/* What the service code must necessarily know about Epos internals */
-void epos_init();
-extern volatile bool server_shutting_down;
-void server();
-bool running_at_localhost();
-void lest_already_running();
-void set_base_dir(char *);
-
-#include "exc.h"
-
-/* A nice macro to provide troubleshooting hints to the user.
- * Feel free to comment it out.
- */
-
-#define MBOX(x)  MessageBox(NULL, x, "TTS service Epos", MB_OK)
-
-#endif	// SERVER_SIDE_CODE
 
 

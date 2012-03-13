@@ -32,6 +32,10 @@
 
 #ifdef HAVE_WINSOCK2_H
 	#include <winsock2.h>
+#else
+	#ifdef HAVE_WINSOCK_H
+		#include <winsock.h>
+	#endif
 #endif
 
 #ifdef HAVE_IO_H

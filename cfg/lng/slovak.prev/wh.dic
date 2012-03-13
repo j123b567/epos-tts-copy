@@ -1,55 +1,80 @@
 # dosti neúplný seznam slov obsa¾ených ve zji¹»ovacích otázkách
 
-^kdo$	kdoq
-^koho$	kohoq
-^komu$	komuq
-^kom$	komq
-^kým$	kýmq
+^kto$	ktoQ
+^koho$	kohoQ
+^komu$	komuQ
+^kom$	komQ
+^kým$	kýmQ
 
-^co$	coq
-^èeho$	èehoq
-^èemu$	èemuq
-^èem$	èemq
-^èím$	èímq
+^èo$	èoQ
+^èoho$	èohoQ
+^èomu$	èomuQ
+^èom$	èomQ
+^èím$	èímQ
 
-^èí$	èíq
-^èího$	èíhoq
-^èích$	èíchq
-^èími$	èímiq
-^èíma$	èímaq
+^èí$	èíQ
+^èieho$	èiehoQ
+^èích$	èíchQ
+^èími$	èímiQ
+^èíma$	èímaQ
 
-^který$	kterýq
-^které$	kteréq
-^která$	kteráq
-^kterého$	kteréhoq
-^kterému$	kterémuq
-^kterou$	kterouq
-^kterém$	kterémq
-^kterým$	kterýmq
-^kteøí$	kteøíq
-^kterých$	kterýchq
-^kterejm$	kterejmq
-^kterými$	kterýmiq
-^kterejma$	kterejmaq
-^kterýma$	kterýmaq
-^kterej$	kterejq
-^kterejch$	kterejchq
+^ktorý$		ktorýQ
+^ktoré$		ktoréQ
+^ktorá$		ktoráQ
+^ktorého$	ktoréhoQ
+^ktorému$	ktorémuQ
+^ktorú$		ktorúQ
+^ktorom$	ktoromQ
+^ktorým$	ktorýmQ
+^ktorí$		ktoríQ
+^ktorých$	ktorýchQ
+^ktorejm$	ktorejmQ
+^ktorými$	ktorýmiQ
+^ktorejma$	ktorejmaQ
+^ktorýma$	ktorýmaQ
+^ktorej$	ktorejQ
+^ktorejch$	ktorejchQ
 
-#...a toté¾ pro "jaký" plus zapomenuté tvary
+^aký$		akýQ
+^aké$		akéQ
+^aká$		akáQ
+^akého$		akéhoQ
+^akému$		akémuQ
+^akú$		akouQ
+^akom$		akomQ
+^akým$		akýmQ
+^akí$		akíQ
+^akých$		akýchQ
+^akými$		akýmiQ
+^akej$		akejQ
 
-^kdy$	kdyq
-^odkdy$	odkdyq
-^dokdy$	dokdyq
-^kde$	kdeq
-^kudy$	kudyq
-^odkud$	odkudq
-^kam$	kamq
-^kolik$	kolikq
-^zaè$	zaèq
-^naè$	naèq
-^jak$	jakq
-^proè$	proèq
-^jak¾e$	jak¾eq
-^jakto¾e$	jakto¾eq
-^co¾e$	co¾eq
+^koµký$		koµkýQ
+^koµké$		koµkéQ
+^koµká$		koµkáQ
+^koµkého$	koµkéhoQ
+^koµkému$	koµkémuQ
+^koµkú$		koµkúQ
+^koµkom$	koµkomQ
+^koµkým$	koµkýmQ
+^koµkí$		koµkíQ
 
+
+#...plus zapomenuté tvary
+
+^kedy$	kedyQ
+^odekdy$	odekdyQ
+^dokedy$	dokedyQ
+^kde$	kdeQ
+^kadiaµ$	kadiaµQ
+^odkiaµ$	odkiaµQ
+^kam$	kamQ
+^koµko$	koµkoQ
+^koµkými$	koµkýmiQ
+^zaèo$	zaèoQ
+^naèo$	naèoQ
+^ak$	akQ
+^preèo$	preèoQ
+^ako¾e$	ako¾eQ
+^akoto$	akotoQ
+^èo¾e$	èo¾eQ
+^oèo$	oèoQ

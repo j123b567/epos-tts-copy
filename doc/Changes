@@ -1,6 +1,8 @@
 
 
 
+
+
 RECENT CHANGES can be tracked at the BOTTOM END.  The rest doesn't qualify
 for an exciting story, just skip it.
 
@@ -1085,4 +1087,16 @@ for an exciting story, just skip it.
 	- hash.cc split to hash.cc and hashd.cc, the latter includes the former
 	- global is_monolith flag instead of a #define
 	- only options accepted on Epos server command line
+
+2.4.60 from 2.4.59	 8.6.01
+	- removed monolith-only hacks in synth.cc
+	- preparing for a Windows CE port (kludges for missing APIs)
+	- split service.h to service.h and globals.h
+	- say.exe -k now can stop TTSCP service (NT only)
+
+2.4.61 from 2.4.60	 1.8.01
+	- tweaked subst() behavior (temporarily hiding the final separator)
+	- if paranoid, hashing rules don't postpone loading the dictionaries
+	- removed a few duplicate dph files
+	- new rules for Slovak
 

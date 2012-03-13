@@ -4,9 +4,9 @@
 
 $voiced    = bdïgvz¾Z®hø
 $voiceless = pt»kfs¹cèxØ
-$fric      = sz¹¾fvhx
-$afric     = cZè®
-$stop      = pt»kbdïg
+# $fric      = sz¹¾fvhx
+# $afric     = cZè®
+# $stop      = pt»kbdïg
 $nasal     = mnòN
 $NASAL     = MQÒW
 $sonant    = jlr$nasal
@@ -15,10 +15,10 @@ $short     = aeiouyì
 $long      = áéíóúýì
 $diphtong  = OAE
 $vowel     = $short$long$diphtong
-$consonant=$voiced$voiceless$sonant
+$consonant = $voiced$voiceless$sonant
 $everywhere= !_!
 $numbers   = 1234567890
-$sonority  = 0'<$fric$afric${stop}øØ<$nasal<l<rjJ<$vowel   ;l<r viz "umrlec" etc. Ani systematické, ani bezpeèné.
+$sonority  = 0'<$voiceless$voiced<$nasal<l<rjJ<$vowel   ;l<r viz "umrlec" etc. Ani systematické, ani bezpeèné.
 
 $lower_case = aábcèdïeéìfghiíjklmnòoópqrøs¹t»uúùvwxyýz¾
 $upper_case = AÁBCÈDÏEÉÌFGHIÍJKLMNÒOÓPQRØS©T«UÚÙVWXYÝZ®

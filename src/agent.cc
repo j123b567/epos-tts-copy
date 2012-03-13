@@ -37,6 +37,10 @@
 
 #ifdef HAVE_WINSOCK2_H
 	#include <winsock2.h>
+#else
+	#ifdef HAVE_WINSOCK_H
+		#include <winsock.h>
+	#endif
 #endif
 
 #ifdef HAVE_SYS_STAT_H
@@ -1090,7 +1094,7 @@ a_ttscp::disconnect()
 
 void make_nonblocking(int f)
 {
-#ifdef HAVE_WINSOCK2_H
+#ifdef HAVE_WINSOCK
 	ioctlsocket((unsigned long)f, FIONBIO, (unsigned long *)&make_nonblocking);	// &make_nonblocking is a dummy non-NULL pointer
 #else
 	fcntl(f, F_SETFL, O_NONBLOCK);

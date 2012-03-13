@@ -73,6 +73,7 @@ class rule
 	virtual void set_dbg_tag(text *file);
 	virtual void check_child(rule *r);
 	virtual void check_children();
+	virtual void verify() {};
 	virtual void apply(unit *root) = 0;
 	virtual void debug();
 #ifdef DEBUGGING
@@ -88,7 +89,8 @@ class hashing_rule: public rule
    public:
 		hashing_rule(char *param);
 	virtual ~hashing_rule();
-	inline void load_hash();
+	virtual void verify();
+	void load_hash();
 };
 
 rule::rule(char *param)
@@ -227,7 +229,13 @@ hashing_rule::~hashing_rule()
 	if (dict) delete dict;
 }
 
-inline void
+void
+hashing_rule::verify()
+{
+	if (cfg->paranoid) load_hash();
+}
+
+void
 hashing_rule::load_hash()
 {
 	if (dict) shriek(862, "unwanted load_hash");

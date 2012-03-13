@@ -76,14 +76,25 @@ char scratch[SCRATCH_SPACE + 2];
 
 #ifdef HAVE_WINSOCK2_H
 	#include <winsock2.h>
+	#define HAVE_WINSOCK
+#else
+	#ifdef HAVE_WINSOCK_H
+		#include <winsock.h>
+		#define HAVE_WINSOCK
+	#endif
 #endif
 
 #ifdef HAVE_ERRNO_H
 	#include <errno.h>
 #endif
 
-#include <sys/types.h>
-#include <signal.h>
+#ifdef HAVE_SYS_TYPES_H
+	#include <sys/types.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+	#include <signal.h>
+#endif
 
 /*
  *	blocking sgets() 

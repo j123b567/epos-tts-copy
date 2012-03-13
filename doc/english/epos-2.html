@@ -194,6 +194,11 @@ them literally).
 of the dictionary directly; this is done by encapsulating the contents
 in double quotes.  Dictionary items are whitespace-separated, the replacer
 and replacee are separated with a comma.
+<P>The dictionary may either be parsed and loaded into memory at Epos startup
+or at the moment of the first use.  The former option's advantage is
+early error reporting, while the latter can sometimes completely avoid
+loading a huge unused dictionary.  Use the option <CODE>paranoid</CODE> to choose
+your preference.
 <P>
 <H3>Type <CODE>subst</CODE></H3>
 
@@ -203,13 +208,21 @@ of their respective replacees; longer matches are matched first; the
 process is iterated until no replacee occurs in the string.  It is required
 either to have a <CODE>phone</CODE> target, or to keep all the replacers
 and replacees of the same length, because it is not obvious how to handle the
-children of the units affected.
+children of the units affected.  Note also that to be considered a match
+with the <CODE>phone</CODE> target, all characters other than phones also
+have to match (must be found or not found on the same positions in both
+the replacee and the occurrence in question) except for the terminating
+scope-level separator (if any), which is invisible to this rule type.
 <P>Any replacer may begin with a ^ or end with a $. That forces
 the substring being replaced to be at the beginning or the end
 of the scope unit, respectively.
 <P>The replacer should not contain units of the scope level or higher.
 Unless the <CODE>paranoid</CODE> option is set, this is tolerated, but the
 replacer is truncated at the first such character.
+<P>With the <CODE>phone</CODE> target, this rule type will drop the
+internal structure of the replaced text as soon as a match is found.
+In other words: an affected scope unit with a replacer is parsed as
+any other plain text.
 <P>Infinitely looping substitutions are currently reported as an error
 condition.
 <P>

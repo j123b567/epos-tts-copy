@@ -15,34 +15,33 @@
  */
  
 #include "common.h"
-#include <fcntl.h>
+
+#ifdef HAVE_FCNTL_H
+	#include <fcntl.h>
+#endif
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+	#include <unistd.h>
 #endif
 
 #ifdef HAVE_SYS_IOCTL_H
-#include <sys/ioctl.h>
+	#include <sys/ioctl.h>
 #endif
 
 #ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
+	#include <sys/stat.h>
 #endif
 
 #ifdef HAVE_SYS_AUDIO_H
-#include <sys/audio.h>
+	#include <sys/audio.h>
 #endif
 
 //#ifdef HAVE_SYS_SOUNDCARD_H
 //#include <sys/soundcard.h>
 //#endif
 
-#ifdef HAVE_LINUX_KD_H
-#include <linux/kd.h>	// too unimportant
-#endif
-
 #ifdef HAVE_IO_H
-#include <io.h>		/* open, write, (ioctl,) ... */
+	#include <io.h>		/* open, write, (ioctl,) ... */
 #endif
 
 //#pragma hdrstop

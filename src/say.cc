@@ -23,14 +23,19 @@
 
 #ifdef HAVE_WINSVC_H
 	bool start_service();
+	bool stop_service();
 #else
 	bool start_service() { return true; }
+	bool stop_service() { return true; }
 #endif
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
+
+#ifdef HAVE_ERRNO_H
+	#include <errno.h>
+#endif
 
 #define TTSCP_PORT	8778
 
@@ -197,7 +202,7 @@ void send_option(const char *name, const char *value)
 
 void dump_help()
 {
-	printf("usage: say [options] ['text to be processed']\n");
+	printf("usage: say [options] ['Text to be processed.']\n");
 	printf(" -b  bare format (no frills)\n");
 	printf(" -c  casual pronunciation\n");
 	printf(" -d  show segments\n");
@@ -245,7 +250,10 @@ void send_cmd_line(int argc, char **argv)
 				case 'h': dump_help(); exit(0);
 				case 'k': FILE *f;
 					  f = fopen("/var/run/epos.pwd", "r");
-					  if (!f) shriek("Cannot open /var/run/epos.pwd");
+					  if (!f) {
+					  	stop_service();
+					  	shriek("Cannot open /var/run/epos.pwd");
+					  }
 					  sputs("pass ", ctrld);
 					  scratch[fread(scratch, 1, 1024, f)] = 0;
 					  sputs(scratch, ctrld);
@@ -299,7 +307,7 @@ void send_cmd_line(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-#ifdef HAVE_WINSOCK2_H
+#ifdef HAVE_WINSOCK
 	if (WSAStartup(MAKEWORD(2,0), (LPWSADATA)scratch)) shriek(464, "No winsock");
 #endif
 	start_service();		/* Windows NT etc. only */

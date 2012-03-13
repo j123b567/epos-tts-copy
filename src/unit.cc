@@ -511,10 +511,12 @@ unit::subst(hash *table, SUBST_METHOD method)
 
 	char *b;
 	
+	
 	sanity();
 	if ((method & M_LEFT) && !prev) return false;
 	if ((method & M_RIGHT) && !next) return false;
 	bool exact = ((method & M_PROPER) == M_EXACT);
+	char separ = cont; cont = NO_CONT;
 	for (int i = cfg->multi_subst; i; i--) {
 		b = gather(&l, !exact, !exact);
 		strend = gb + l;
@@ -547,9 +549,11 @@ unit::subst(hash *table, SUBST_METHOD method)
 						goto break_home;
 			}
 		}
+		cont = separ;
 		return i != cfg->multi_subst;
     
 		break_home:
+		cont = separ;
 		DEBUG(1,3,fprintf(STDDBG,"inner unit::subst has made the subst, relinking l/r, method %d\n", method);)
 		sanity();
 		if (method & (M_LEFT | M_RIGHT)) 
@@ -557,6 +561,7 @@ unit::subst(hash *table, SUBST_METHOD method)
 		if (method & M_ONCE) return true;
 	}
 	shriek(463, fmt("Infinite substitution loop detected on \"%s\"", gb));
+	cont = separ;
 	sanity();
 	return true;
 }

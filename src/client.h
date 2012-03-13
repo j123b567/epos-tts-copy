@@ -124,14 +124,19 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 		return read(fd, (char *)buffer, size);
 	}
 
-	#ifdef HAVE_WINSOCK2_H
+	#if defined(HAVE_WINSOCK2_H) || defined(HAVE_WINSOCK_H)
 		#error Funny - UNIX does not rhyme with winsock
 	#endif
 
 #else
 	#ifdef HAVE_WINSOCK2_H
 		#include <winsock2.h>
+	#else
+		#ifdef HAVE_WINSOCK_H
+			#include <winsock.h>
+		#endif
 	#endif
+	
 
 	#ifdef HAVE_IO_H
 		#include <io.h>

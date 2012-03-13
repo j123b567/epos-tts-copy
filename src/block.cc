@@ -510,6 +510,7 @@ next_rule(text *file, hash *vars, int *count)
 
 	result->set_level(scope, target);
 	result->set_dbg_tag(file);
+	result->verify();
 	
 	DEBUG(0,1,fprintf(STDDBG,"str2rule about to return OK, %s\n", word[param]);)
 

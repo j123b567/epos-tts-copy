@@ -66,8 +66,13 @@
 	#include <sys/termios.h>
 #endif
 
-#include <fcntl.h>
-#include <errno.h>
+#ifdef HAVE_FCNTL_H
+	#include <fcntl.h>
+#endif
+
+#ifdef HAVE_ERRNO_H
+	#include <errno.h>
+#endif
 
 #ifdef HAVE_QNX_NAME_ATTACH
 	#include "qnxipc.cc"
@@ -76,7 +81,7 @@
 #endif
 
 
-#ifdef HAVE_WINSOCK2_H
+#ifdef HAVE_WINSOCK
 class wsa_init			/* initialise winsock before main() is entered  */
 {
    public:
