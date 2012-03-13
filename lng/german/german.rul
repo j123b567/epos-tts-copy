@@ -1,4 +1,7 @@
-
+#
+#	provisorische Regeln, Jirka Hanika <geo@ff.cuni.cz>
+#
+#
 
 $voiced    = bdgvzZhž
 $voiceless = ptkfscxš
