@@ -152,7 +152,8 @@ wavefm::wavefm(voice *v)
 	buffer = NULL;
 	hdr.buffer_idx = 0;
 
-	cuehdr.len = adtlhdr.len = 0;
+	cuehdr.len = 4;
+	cuehdr.n = adtlhdr.len = 0;
 	memcpy(cuehdr.string1, "cue ", 4);
 	memcpy(adtlhdr.string1, "LIST", 4);
 	memcpy(adtlhdr.string2, "adtl", 4);
@@ -641,6 +642,7 @@ wavefm::label(char *lbl)
 	int offs = cp_buff[current_cp].pos = cp_buff[current_cp].sample_offset = hdr.buffer_idx;
 	current_cp++;
 	cuehdr.len += sizeof(cue_point);
+	cuehdr.n++;
 
 	if (!lbl) return;
 

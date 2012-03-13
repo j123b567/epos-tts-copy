@@ -131,6 +131,7 @@ class unit
 	static char *sb;		// subst buffer
 	static int sbsize;
 	static void done();		// free buffers
+	static void assert_sbsize(int);	// at least that big sbsize
 };
 
 // extern char * _subst_buff;

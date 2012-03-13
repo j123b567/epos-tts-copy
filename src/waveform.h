@@ -36,6 +36,7 @@ struct cue_header
 {
 	char string1[4];
 	int len;
+	int n;
 };
 
 struct adtl_header

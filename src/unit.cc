@@ -358,10 +358,10 @@ char *
 unit::gather(int *l, bool delimited, bool suprasegm)
 {
 	char *r;
-	if (!gb) {
-		gbsize = INIT_GB_SIZE;
-		gb = (char *)xmalloc(gbsize);
-	}
+//	if (!gb) {
+//		gbsize = INIT_GB_SIZE;
+//		gb = (char *)xmalloc(gbsize);
+//	}
 	do {
 		char *b = gb;
 		if (delimited) *b++ = '^';
@@ -386,10 +386,19 @@ unit::gather(int *l, bool delimited, bool suprasegm)
 // char *_subst_buff = NULL;
 // char *_gather_buff = NULL;
 
-char *unit::gb = 0;
-int unit::gbsize = 0;
-char *unit::sb = 0;
-int unit::sbsize = 0;
+char *unit::gb = (char *)malloc(INIT_GB_SIZE);
+int unit::gbsize = INIT_GB_SIZE;
+char *unit::sb = (char *)malloc(INIT_GB_SIZE);
+int unit::sbsize = INIT_GB_SIZE;
+
+inline void
+unit::assert_sbsize(int k)
+{
+	if (sbsize <= k + 1) {
+		while (sbsize <=k + 1) sbsize <<= 1;
+		sb = (char *)realloc(sb, sbsize);
+	}
+}
 
 
 inline void
@@ -637,7 +646,7 @@ commit:
  unit::regex
  ****************************************************************************/
 
-// FIXME: unit::regex doesn't handle sb overflow !
+// FIXME: more efficient strcpys
 
 void
 unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
@@ -657,13 +666,17 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 		sanity();
 		DEBUG(1,3,fprintf(STDDBG,"unit::regex matched %s\n", gb);)
 		
-		for (k = 0; k < subexp[0].rm_so; k++) sb[k] = gb[k];
+		k = subexp[0].rm_so;
+		assert_sbsize(k);
+		strncpy(sb, gb, k);
+//		for (k = 0; k < subexp[0].rm_so; k++) sb[k] = gb[k];
 		
 		for (j = 0; ; j++) {
 			if (repl[j]==ESCAPE && repl[j+1]>='0' && repl[j+1]<='9') {
 				int index = repl[j+1] - '0';
 				if (index >= subexps) 
 					shriek(463, fmt("Index %d too big in regex replacement", index));
+				assert_sbsize(k + subexp[index].rm_eo - subexp[index].rm_so);
 				for (l = subexp[index].rm_so; l < subexp[index].rm_eo; l++) {
 					if (l<0) shriek(463, "regex - alternative not taken, sorry");
 					sb[k++] = gb[l];
@@ -674,9 +687,14 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 			sb[k] = repl[j];
 			if (!repl[j]) break;
 			k++;
+			assert_sbsize(k);
 		}
 
-		for (l = subexp[0].rm_eo; (sb[k] = gb[l]); k++,l++);
+		int len = strlen(gb + subexp[0].rm_eo) + 1;
+		assert_sbsize(k + len);
+		strncpy(sb + k, gb + subexp[0].rm_eo, len);
+		k += len;
+//		for (l = subexp[0].rm_eo; (sb[k] = gb[l]); k++,l++);
 
 		subst();
 	}
