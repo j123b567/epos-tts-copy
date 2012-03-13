@@ -1,10 +1,6 @@
 Bugs
-- better prosody modelling for monosyllaba
-- with windows sokec, files as stream input modules crash the server
-- with windows sokec, files as output modules with disk full crash the server
+- better prosody modelling for monosyllaba	- 2.5
 - fix regress behavior wrt literal zero characters
-- what if make install fails to create /usr/lib/epos
-- Cz trans: ${vowel}i$consonant\$
 
 Features
 - pause hierarchy rules
@@ -57,4 +53,5 @@ Should Check
 - behavior of intr with something other than oa_wavefm (may miss 123 or 122)
 - investigate segment free utterance handling
 - load_config skips trailing whitespace in a very strange way
+- TTSCP error codes, esp. those related to options and values, should be revised
 

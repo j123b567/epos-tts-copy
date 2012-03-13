@@ -1,4 +1,3 @@
-
 /*
  *	(c) 1998-01 Jirka Hanika <geo@cuni.cz>
  *
@@ -304,6 +303,16 @@ void send_cmd_line(int argc, char **argv)
 	if (data) for(char *p=data; *p; p++) if (*p=='\n') *p=' ';
 }
 
+/*
+ *	main() implements what most TTSCP clients do: it opens two TTSCP connections,
+ *	converts one of them to a data connection dependent on the other one.
+ *	Then, commands in a file found using the TTSCP_USER environment variable
+ *	are transmitted and synthesis and transcription procedures invoked.
+ *	Last, general cleanup is done (the connections are gracefully closed.)
+ *
+ *	Note that the connection establishment code is less intuitive than it
+ *	it could be because of paralelism oriented code ordering.
+ */
 
 int main(int argc, char **argv)
 {
@@ -313,16 +322,15 @@ int main(int argc, char **argv)
 	start_service();		/* Windows NT etc. only */
 
 	ctrld = connect_socket(0, TTSCP_PORT);
-	ch = get_handle(ctrld);
 	datad = connect_socket(0, TTSCP_PORT);
 	sputs("data ", datad);
+	ch = get_handle(ctrld);
 	sputs(ch, datad);
 	sputs("\r\n", datad);
 	free(ch);
+	send_cmd_line(argc, argv);
 	dh = get_handle(datad);
 	get_result(datad);
-	send_cmd_line(argc, argv);
-//	sputs("intr\r\n", ctrld);
 
 // #ifdef HAVE_GETENV
 	FILE *f = NULL;

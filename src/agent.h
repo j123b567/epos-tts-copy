@@ -115,7 +115,7 @@ class agent
 	DATA_TYPE out;
 	agent(DATA_TYPE typein, DATA_TYPE typeout);
 	virtual ~agent();
-	virtual void brk();	/* cancel your work to do, forget inb/outb	*/
+	virtual bool brk();	/* cancel your work to do, forget inb/outb, return whether brk did something	*/
 	void timeslice();	/* switch context and agent::run()	*/
 };
 
@@ -139,7 +139,7 @@ class stream : public agent
    public:
 	stream(char *, context *);
 	virtual ~stream();
-	virtual void brk();
+	virtual bool brk();
 	void apply(agent *ref, int bytes);
 	void release_agents();
 	bool foreground() {return callbk ? true : false; };
@@ -167,7 +167,7 @@ class a_ttscp : public a_protocol
 	char *handle;
 	a_ttscp(int sd_in, int sd_out);
 	virtual ~a_ttscp();
-	virtual void brk();
+	virtual bool brk();
 	virtual void disconnect();
 };
 

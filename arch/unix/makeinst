@@ -12,7 +12,7 @@ elder=n
 ignored=n
 link=n
 
-mkdir -p $cfgdir
+mkdir -p $cfgdir || exit 1
 
 for i in `find $srcdir -printf %P\\\\n`; do
 	if [ -d $srcdir/$i ]; then

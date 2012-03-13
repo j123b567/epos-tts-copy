@@ -42,15 +42,6 @@
 
 #include "config.h"
 
-static void call_abort(void)
-{
-#ifdef HAVE_ABORT
-	abort();
-#else
-	while (1) ;
-#endif
-}
-
 #ifdef BROKEN_LOCALE
 	int isupper(int c) { return 0; }
 	int isdigit(int c) { return c <= '9' && c >= '0'; }
@@ -115,6 +106,15 @@ char *malloc ();
 char *realloc ();
 void free(void *ptr);
 #endif
+
+static void call_abort(void)
+{
+#ifdef HAVE_ABORT
+	abort();
+#else
+	while (1) ;
+#endif
+}
 
 /* When used in Emacs's lib-src, we need to get bzero and bcopy somehow.
    If nothing else has been done, use the method below.  */

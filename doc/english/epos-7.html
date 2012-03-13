@@ -351,10 +351,15 @@ this easily if you really need this and provide us with a QNX machine.
 Be aware of the following three differences of Epos's behavior
 on these operating systems:  the <CODE>mmsystem</CODE> (Microsoft Multimedia System)
 library is used instead of <CODE>/dev/dsp</CODE> for speech output;
-Epos compiles and runs as an NT service, instead of a UNIX-style
+Epos compiles and runs as an NT service named <CODE>ttscp</CODE>, instead of a UNIX-style
 daemon; you can use registry to locate the configuration files.
-In order to make the last two features available, it is necessary
-to build and run the <CODE>instserv</CODE> utility before running Epos.
+<P>
+<P>
+<P>In order to make service installation and registry access available,
+it is necessary to build and run the <CODE>instserv</CODE> utility before
+running Epos.  That utility, if run with the letter <CODE>u</CODE> on its
+command line, can also uninstall the <CODE>ttscp</CODE> service, but it doesn't
+remove any registry values.
 <P>
 <P>
 <P>You should use the Visual C++ compiler for compiling Epos,  but you
@@ -363,12 +368,26 @@ used to work a long time ago, too.  Ask us for help with these compilers
 if necessary.  Please refer to the <CODE>WELCOME</CODE> file on
 how to proceed step by step with Visual C++.
 <P>
+<H3>Advanced notes for Windows NT</H3>
+
+<P>
+<P>File input and output modules are not going to work
+with Windows sockets (whose incompatible implementation
+of the <CODE>select</CODE> call doesn't allow file decriptors at all).
+If you enable the <CODE>writefs</CODE> option, be aware of serious
+trouble after the first writing error such as disk full.
+Don't enable the <CODE>readfs</CODE> option.
+<P>
 <H3>Windows CE</H3>
 
 <P>
 <P>The port is planned soon, but not available at the moment.  Ask us if you
 need it.  Files specific for this port can be currently found at
 <CODE>arch/win-ce</CODE>.
+<P>
+<P>
+<P>An experienced Windows user can get a good estimate of this port's
+behavior from reading the sections on other versions of Windows.
 <P>
 <H3>Windows 95, 98 etc.</H3>
 

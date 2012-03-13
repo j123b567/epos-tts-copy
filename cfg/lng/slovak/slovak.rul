@@ -4,7 +4,7 @@
 #	Pravidla vytvoøená Martinem Petriskou se nacházejí v adresáøi slovak.prev
 #
 	
-if    a_colons	colon
+if    a_colons	sent
 {
 	# pøidat èárku pøed "a":
 	with  "a"  word
@@ -34,5 +34,5 @@ if    phr_break
 if   kadlec_dph
 	segments  ../czech/kadlec.dph   colon
 if  !kadlec_dph
-	segments  ../slovak.prev/traditnl.dph colon
+	segments  traditnl.dph 		colon
 

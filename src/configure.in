@@ -59,8 +59,7 @@ AC_HAVE_HEADERS(linux/kd.h)
 AC_HAVE_HEADERS(sys/kernel.h)
 AC_HAVE_HEADERS(sys/name.h)
 AC_HAVE_HEADERS(fcntl.h)
-AC_HAVE_HEADERS(errno.h)
-AC_HAVE_FUNCS(strerror strdup fork getegid strcasecmp stricmp gethostname qnx_name_attach abort)
+AC_HAVE_FUNCS(strerror strdup fork getegid strcasecmp stricmp gethostname gettimeofday qnx_name_attach abort)
 
 dnl   AC_CONST is unusable, rejects correct C++ implms (error if uninit'd const
 dnl   and breaks __attribute__((const)) in g++

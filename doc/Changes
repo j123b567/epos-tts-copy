@@ -1126,5 +1126,14 @@ for an exciting story, just skip it.
 
 
 2.4.65 from 2.4.64	27.8.01
-	- fixed a minor select() bug
+	- fixed a select() bug
 
+2.4.66 from 2.4.65	30.8.01
+	- fixed gettimeofday() autodetection (makes the built-in profiler work)
+	- (Sk) fixed soft option a_colons in slovak.rul
+	- fixed intr semantics (if nothing to do, return 423 instead of 200)
+	- made say more efficient wrt the TTSCP command flow
+	- fixed (rather, documented) some Windows socket issues, esp. readfs
+	- moved call_abort down rx.c
+	- avoided a spurious template instantiation warning in Visual C
+	- moved traditnl.dph from lng/slovak.prev to lng/slovak

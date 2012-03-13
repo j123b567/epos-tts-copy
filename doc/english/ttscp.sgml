@@ -309,6 +309,11 @@ The server will reply a 401 completion code to the interrupted
 connection, whereas a 200 completion code will acknowledge
 a successful <tt/intr/ command.
 
+If there is no stream associated with the connection to be interrupted
+or there is no apply command in progress on it, a 423 reply will be
+issued to the interrupting connection and the interrupting connection
+will not be affected.
+
 <sect2> <tt> data </tt>
 <p>
 
@@ -498,7 +503,9 @@ space distinct from that of the underlying operating system.  In Epos, the
 name space is a single directory defined by the <ref id="pseudorootdir-option"
 name="<tt/pseudo_root_dir/">
 option.  It must be impossible to escape from such name space by inserting
-parent directory references in a file name or otherwise.
+parent directory references in a file name or otherwise.  A TTSCP
+implementation can decide to reject some or all file input and output modules
+with a 454 reply.
 
 If the module name begins with a <tt/&num;/, the rest of the name is a special
 input/output module identifier.  The only identifier generally supported is
@@ -746,7 +753,7 @@ code      | error type      | suggested action@
 <hline>
 0         | none            | relax; assume user-initiated interruption@
 1         | syntax          | notify user@
-2         | busy            | wait and retry@
+2         | busy or timimg  | wait and retry@
 3         | bad data        | notify user@
 4         | not found       | notify user@
 5         | access denied   | notify user@
@@ -795,6 +802,7 @@ code      | error type      | suggested action@
 417	| parameter missing@
 421	| output voice busy@
 422	| out of memory@
+423	| nothing to interrupt@
 431	| unknown character in text@
 432	| received bad segments@
 435	| received bad waveform (unused)@
@@ -813,6 +821,7 @@ code      | error type      | suggested action@
 451	| not authorized to do this@
 452	| no such user or bad password@
 453	| not allowed to use localsound@
+454	| not allowed to use filesystem input/output modules@
 456	| input too long@
 461	| input triggered server bug@
 462	| unimplemented feature@

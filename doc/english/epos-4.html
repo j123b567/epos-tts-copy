@@ -300,6 +300,10 @@ only the one in progress will be interrupted.
 <P>The server will reply a 401 completion code to the interrupted
 connection, whereas a 200 completion code will acknowledge
 a successful <CODE>intr</CODE> command.
+<P>If there is no stream associated with the connection to be interrupted
+or there is no apply command in progress on it, a 423 reply will be
+issued to the interrupting connection and the interrupting connection
+will not be affected.
 <P>
 <H3><CODE> data </CODE></H3>
 
@@ -474,7 +478,9 @@ space distinct from that of the underlying operating system.  In Epos, the
 name space is a single directory defined by the 
 <A HREF="epos-3.html#pseudorootdir-option">&lt;tt/pseudo_root_dir/</A>
 option.  It must be impossible to escape from such name space by inserting
-parent directory references in a file name or otherwise.
+parent directory references in a file name or otherwise.  A TTSCP
+implementation can decide to reject some or all file input and output modules
+with a 454 reply.
 <P>If the module name begins with a <CODE>#</CODE>, the rest of the name is a special
 input/output module identifier.  The only identifier generally supported is
 <CODE>localsound</CODE>, which can only be used as an output module with the <CODE>waveform</CODE>
@@ -695,7 +701,7 @@ attached (there are only a few such responses).
 code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 0 </TD><TD> none </TD><TD> relax; assume user-initiated interruption</TD></TR><TR><TD>
 1 </TD><TD> syntax </TD><TD> notify user</TD></TR><TR><TD>
-2 </TD><TD> busy </TD><TD> wait and retry</TD></TR><TR><TD>
+2 </TD><TD> busy or timimg </TD><TD> wait and retry</TD></TR><TR><TD>
 3 </TD><TD> bad data </TD><TD> notify user</TD></TR><TR><TD>
 4 </TD><TD> not found </TD><TD> notify user</TD></TR><TR><TD>
 5 </TD><TD> access denied </TD><TD> notify user</TD></TR><TR><TD>
@@ -736,6 +742,7 @@ code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 417     </TD><TD> parameter missing</TD></TR><TR><TD>
 421     </TD><TD> output voice busy</TD></TR><TR><TD>
 422     </TD><TD> out of memory</TD></TR><TR><TD>
+423     </TD><TD> nothing to interrupt</TD></TR><TR><TD>
 431     </TD><TD> unknown character in text</TD></TR><TR><TD>
 432     </TD><TD> received bad segments</TD></TR><TR><TD>
 435     </TD><TD> received bad waveform (unused)</TD></TR><TR><TD>
@@ -754,6 +761,7 @@ code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 451     </TD><TD> not authorized to do this</TD></TR><TR><TD>
 452     </TD><TD> no such user or bad password</TD></TR><TR><TD>
 453     </TD><TD> not allowed to use localsound</TD></TR><TR><TD>
+454     </TD><TD> not allowed to use filesystem input/output modules</TD></TR><TR><TD>
 456     </TD><TD> input too long</TD></TR><TR><TD>
 461     </TD><TD> input triggered server bug</TD></TR><TR><TD>
 462     </TD><TD> unimplemented feature</TD></TR><TR><TD>

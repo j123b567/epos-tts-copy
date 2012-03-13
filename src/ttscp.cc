@@ -128,11 +128,12 @@ int cmd_intr(char *param, a_ttscp *a)
 
 	a->c->leave();
 	ctrl->c->enter();
-	ctrl->brk();
+	bool result = ctrl->brk();
 	ctrl->c->leave();
 	a->c->enter();
 
-	reply("200 OK");
+	if (result) reply("200 OK");
+	else reply("423 nothing to interrupt");
 	return PA_NEXT;
 }
 

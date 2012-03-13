@@ -649,7 +649,9 @@ current rule is displayed.  That's all.
 <DT><B>--readfs</B><DD><P>Enables the use of file system based TTSCP input modules.  See
 the 
 <A HREF="#pseudorootdir-option">pseudo_root_dir option</A>
-for more details.
+for more details.  Note that this option can not be turned on
+unless the underlying operating system has a fully functional
+implementation of the <CODE>select</CODE> call.
 <DT><B>--writefs</B><DD><P>Enables the use of file system based TTSCP output modules. See
 the 
 <A HREF="#pseudorootdir-option">pseudo_root_dir option</A>

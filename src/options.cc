@@ -391,6 +391,13 @@ const char *invoke_set_action(option *o, const char *value)
 			return NULL;
 		}
 	}
+#ifdef HAVE_WINSOCK
+	if (!strcmp(on, "readfs")) {
+		if (!value) return NULL;
+		if (str2enum(value, BOOLstr, 0) & 1) return NULL;
+		else return value;
+	}
+#endif
 	o->action = false;
 	return value;
 }

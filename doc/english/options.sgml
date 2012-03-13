@@ -684,7 +684,9 @@ engineering dilemmata.
 <tag>--readfs</tag>
 	Enables the use of file system based TTSCP input modules.  See
 	the <ref id="pseudorootdir-option" name="pseudo_root_dir option">
-	for more details.
+	for more details.  Note that this option can not be turned on
+	unless the underlying operating system has a fully functional
+	implementation of the <tt/select/ call.
 <tag>--writefs</tag>
 	Enables the use of file system based TTSCP output modules. See
 	the <ref id="pseudorootdir-option" name="pseudo_root_dir option">

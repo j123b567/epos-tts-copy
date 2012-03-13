@@ -69,7 +69,7 @@ inline void agent_profile(const char *s)
 	if (!cfg->profile || !*cfg->profile) return;
 	
 	static FILE *log = NULL;
-	if (!log) log = fopen(cfg->profile, "w");
+	if (!log) log = fopen(cfg->profile, "w", "profile");
 	static struct timeval start, stop;
 	if (!s) {
 		if (gettimeofday(&start, NULL)) shriek(861, "profiler fails");
@@ -215,10 +215,11 @@ agent::finis(bool err)
  *	relax() would call sync_soundcard() instead.
  */
 
-void agent::brk()
+bool agent::brk()
 {
 	relax();
 	DEBUG(1,11,fprintf(STDDBG, "interrupting an agent, intype %i, outtype %i\n", in, out);)
+	return true;
 }
 
 void
@@ -521,9 +522,9 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 			  else socket = (in == T_INPUT ? dc->c->config->sd_in : dc->c->config->sd_out);
 			  break;
 		case '/': if (in == T_INPUT && !cfg->readfs)
-				shriek(451, "No filesystem inputs allowed");
+				shriek(454, "No filesystem inputs allowed");
 			  if (out == T_NONE && !cfg->writefs)
-			  	shriek(451, "No filesystem outputs allowed");
+			  	shriek(454, "No filesystem outputs allowed");
 			  filename = limit_pathname(par, cfg->pseudo_root_dir);
 			  socket = open(filename, in == T_INPUT ? O_RDONLY | O_NONBLOCK | O_BINARY
 						: O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK | O_BINARY, MODE_MASK);
@@ -714,7 +715,7 @@ class oa_wavefm : public a_output
 		shriek(462, "abstract oa_wavefm::insize"); return 0;
 	}
 	virtual void run();
-	virtual void brk();
+	virtual bool brk();
 	bool attached;
    public:
 	oa_wavefm(const char *s): a_output(s, T_WAVEFM) {attached = false;};
@@ -748,7 +749,7 @@ oa_wavefm::run()
 	}
 }
 
-void
+bool
 oa_wavefm::brk()
 {
 	if (inb) {
@@ -763,6 +764,7 @@ oa_wavefm::brk()
 		relax();
 	}
 	finis(true);
+	return true;
 }
 
 
@@ -873,13 +875,14 @@ stream::apply(agent *ref, int bytes)
 	head->mktask(bytes);
 }
 
-void
+bool
 stream::brk()
 {
-	if (!callbk) return;	/* break only if running */
+	if (!callbk) return false;	/* break only if running */
 	reply("401 interrupted");
 	for (agent *a = head; a && a != this; a = a->next)
 		a->brk();
+	return true;
 }
 
 void
@@ -1063,11 +1066,12 @@ a_ttscp::~a_ttscp()
 	// close the descriptor? no, the ~context does that
 }
 
-void
+bool
 a_ttscp::brk()
 {
 	if (c->config->current_stream)
-		c->config->current_stream->brk();
+		return c->config->current_stream->brk();
+	return false;
 }
 
 int

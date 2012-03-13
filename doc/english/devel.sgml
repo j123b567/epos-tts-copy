@@ -345,10 +345,16 @@ See the <tt>arch/win</tt> directory for architectural differences from UNIX.
 Be aware of the following three differences of Epos's behavior
 on these operating systems:  the <tt/mmsystem/ (Microsoft Multimedia System)
 library is used instead of <tt>/dev/dsp</tt> for speech output;
-Epos compiles and runs as an NT service, instead of a UNIX-style
+Epos compiles and runs as an NT service named <tt/ttscp/, instead of a UNIX-style
 daemon; you can use registry to locate the configuration files.
-In order to make the last two features available, it is necessary
-to build and run the <tt>instserv</tt> utility before running Epos.
+
+<p>
+
+In order to make service installation and registry access available,
+it is necessary to build and run the <tt>instserv</tt> utility before
+running Epos.  That utility, if run with the letter <tt/u/ on its
+command line, can also uninstall the <tt/ttscp/ service, but it doesn't
+remove any registry values.
 
 <p>
 
@@ -358,12 +364,27 @@ used to work a long time ago, too.  Ask us for help with these compilers
 if necessary.  Please refer to the <tt>WELCOME</tt> file on
 how to proceed step by step with Visual C++.
 
+<sect3> Advanced notes for Windows NT
+<p>
+
+File input and output modules are not going to work
+with Windows sockets (whose incompatible implementation
+of the <tt/select/ call doesn't allow file decriptors at all).
+If you enable the <tt/writefs/ option, be aware of serious
+trouble after the first writing error such as disk full.
+Don't enable the <tt/readfs/ option.
+
 <sect2> Windows CE
 <p>
 
 The port is planned soon, but not available at the moment.  Ask us if you
 need it.  Files specific for this port can be currently found at
 <tt>arch/win-ce</tt>.
+
+<p>
+
+An experienced Windows user can get a good estimate of this port's
+behavior from reading the sections on other versions of Windows.
 
 <sect2> Windows 95, 98 etc.
 <p>
