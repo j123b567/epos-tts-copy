@@ -1,6 +1,6 @@
 /*
  *	epos/src/rule.cc
- *	(c) 1996-99 geo@ff.cuni.cz
+ *	(c) 1996-99 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -787,7 +787,7 @@ r_regex::r_regex(char *param) : rule(param)
 			rshr("badly escaped");
 		case REG_BADRPT:
 		case REG_BADPAT:
-#ifndef __QNX__
+#ifdef HAVE_REG_EEND
 		case REG_EEND:
 		case REG_ESIZE:
 #endif

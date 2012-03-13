@@ -1,6 +1,6 @@
 /*
  *	epos/src/tcpsyn.cc
- *	(c) 1998-99 Jirka Hanika, geo@ff.cuni.cz
+ *	(c) 1998-99 Jirka Hanika, geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ void *tcpsyn_appl(int bytes, int ctrld, int datad, int *size)
 
 static int tcpsyn_connect_socket(unsigned int ipaddr, int port)
 {
-	int sd = just_connect_socket(ipaddr, port);
+	socky int sd = just_connect_socket(ipaddr, port);
 	if (sd == -1) {
 		shriek(473, "Server unreachable\n");
 	}
@@ -194,6 +194,7 @@ tcpsyn::tcpsyn(voice *v)
 	if (voicename)
 		tcpsyn_send_cmd(cd, "setl voice", voicename);
 	free(remote_server);
+	DEBUG(1,9,fprintf(STDDBG, "tcpsyn initialised\n");)
 }
 
 tcpsyn::~tcpsyn()

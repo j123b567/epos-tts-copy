@@ -197,12 +197,28 @@ intensity (volume) and time factor (speed). The initial diphone is dummy
 (to be skipped); its diphone number contains the total number of diphones
 in this sequence. The corresponding prosodic parameters are undefined.
 They should preferably be zero.
-<P>FIXME: endianness, int size considerations
+<P>This format is going to be replaced by a human readable format with
+the ability to specify multiple pitch points per diphone.  For the time
+being, the integer values should be encoded as 32-bit little endian integers.
 <P>
 <H3>Waveform</H3>
 
-<P>The traditional MS Windows <CODE>.wav</CODE> file header and data. 
-FIXME: more
+<P>The traditional MS Windows RIFF <CODE>.wav</CODE> file header and data.
+Two liberties may be taken when waveform data in this format is sent
+via a data connection.
+<P>First, the total length of the RIFF form field
+may contain a negative number.  In this case, the length
+of the form shall be determined from the data length as indicated
+in the corresponding TTSCP control connection.  Also, if this
+field contains a positive number, which conflicts with the data
+length indicated in the corresponding TTSCP control connection,
+the recipient may choose any one of them or return a <CODE>435</CODE> error.
+<P>Second, if only <CODE>fmt</CODE> and <CODE>data</CODE> chunks are present in the
+RIFF form being sent, and the length of the data chunk is negative,
+the length of the <CODE>data</CODE> chunk shall be determined from the
+total length of the RIFF form. (Epos never actually takes advantage
+of this rule.)
+<P>FIXME: labels
 <P>
 <P>
 <H2><A NAME="ss4.3">4.3 TTSCP Commands</A>
@@ -713,6 +729,7 @@ code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 422     </TD><TD> out of memory</TD></TR><TR><TD>
 431     </TD><TD> unknown character in text</TD></TR><TR><TD>
 432     </TD><TD> received bad diphones</TD></TR><TR><TD>
+435     </TD><TD> received bad waveform (unused)</TD></TR><TR><TD>
 436     </TD><TD> data connection disconnected</TD></TR><TR><TD>
 437     </TD><TD> permanent read error</TD></TR><TR><TD>
 438     </TD><TD> end of file</TD></TR><TR><TD>
@@ -728,11 +745,13 @@ code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 451     </TD><TD> not authorized to do this</TD></TR><TR><TD>
 452     </TD><TD> no such user or bad password</TD></TR><TR><TD>
 453     </TD><TD> not allowed to use localsound</TD></TR><TR><TD>
+456     </TD><TD> input too long</TD></TR><TR><TD>
 461     </TD><TD> input triggered server bug</TD></TR><TR><TD>
 462     </TD><TD> unimplemented feature</TD></TR><TR><TD>
 463     </TD><TD> input triggered configuration bug</TD></TR><TR><TD>
 464     </TD><TD> input triggered OS incompatibility</TD></TR><TR><TD>
 465     </TD><TD> i/o problem : error on close()</TD></TR><TR><TD>
+466     </TD><TD> command stuck</TD></TR><TR><TD>
 471     </TD><TD> tcpsyn received invalid waveform</TD></TR><TR><TD>
 472     </TD><TD> unresolved remote tcpsyn server</TD></TR><TR><TD>
 473     </TD><TD> unreachable remote tcpsyn server</TD></TR><TR><TD>
@@ -771,7 +790,6 @@ of errors (internal errors).
 
 <CAPTION>       TTSCP session termination codes as issued by Epos</CAPTION>
 </TD></TR></TABLE></CENTER>
-<P>
 <P>
 <HR>
 <A HREF="epos-5.html">Next</A>

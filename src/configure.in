@@ -14,7 +14,7 @@ AC_PROG_CXX
 if test $GXX = yes; then 
 	if $CXX -v 2>&1 | grep -q egcs
 		then CFLAGS="-Wall -Wunused -pipe -gstabs+ -fdefer-pop"
-		else CFLAGS="-Wall -Wunused -pipe -fhandle-exceptions"
+		else CFLAGS="-Wall -Wunused -fhandle-exceptions"
 	fi
 	else CFLAGS=-O
 fi
@@ -52,9 +52,33 @@ AC_HAVE_HEADERS(netinet/in.h)
 AC_HAVE_HEADERS(linux/kd.h)
 AC_HAVE_HEADERS(sys/kernel.h)
 AC_HAVE_HEADERS(sys/name.h)
-AC_HAVE_FUNCS(strerror strdup fork strcasecmp stricmp qnx_name_attach)
+AC_HAVE_FUNCS(strerror strdup fork getegid strcasecmp stricmp qnx_name_attach)
 AC_INLINE
 AC_CONST
+
+AC_CACHE_CHECK("for glibc regex error codes",
+   epos_cv_symb_regeend,
+   AC_TRY_COMPILE(
+	#include <sys/types.h>
+	#ifdef HAVE_RX_H
+	#include <rx.h>
+	#else
+	#ifdef HAVE_REGEX_H
+	#include <regex.h>
+	#else
+	#include "rx.h"
+	#endif
+	#endif
+	,
+	int result = REG_EEND;
+	return 0;,
+	epos_cv_symb_regeend=yes,
+	epos_cv_symb_regeend=no)
+)
+if test "$epos_cv_symb_regeend" = yes; then
+   AC_DEFINE(HAVE_REG_EEND)
+fi
+	
 
 AC_CACHE_CHECK("for terminate",
    epos_cv_fn_terminate,

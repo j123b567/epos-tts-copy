@@ -1,5 +1,5 @@
 
-CONTENTS = intro.sgml rules.sgml options.sgml ttscp.sgml devel.sgml 
+CONTENTS = intro.sgml rules.sgml options.sgml ttscp.sgml security.sgml devel.sgml 
 
 .PHONY: clean realclean dist
 

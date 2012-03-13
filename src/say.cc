@@ -1,5 +1,5 @@
 /*
- *	(c) 1998-99 Jirka Hanika <geo@ff.cuni.cz>
+ *	(c) 1998-99 Jirka Hanika <geo@cuni.cz>
  *
  *	This single source file src/say.cc, but NOT THE REST OF THIS PACKAGE,
  *	is considered to be in Public Domain. Parts of this single source file may be
@@ -97,7 +97,7 @@ void say_data()
 	sputs(output_file, ctrld);
 	sputs("\r\n", ctrld);
 	sputs("appl ", ctrld);
-	sprintf(scratch, "%d", strlen(data));
+	sprintf(scratch, "%d", (int)strlen(data));
 	sputs(scratch, ctrld);
 	sputs("\r\n", ctrld);
 	sputs(data, datad);
@@ -114,7 +114,7 @@ void trans_data()
 	sputs(dh, ctrld);
 	sputs("\r\n", ctrld);
 	sputs("appl ", ctrld);
-	sprintf(scratch, "%d", strlen(data));
+	sprintf(scratch, "%d", (int)strlen(data));
 	sputs(scratch, ctrld);
 	sputs("\r\n", ctrld);
 	sputs(data, datad);
@@ -266,7 +266,9 @@ int main(int argc, char **argv)
 //	sputs("intr\r\n", ctrld);
 
 // #ifdef HAVE_GETENV
-	FILE *f = fopen(getenv("TTSCP_USER"), "rt");
+	FILE *f;
+	char *ttscp_user_config = getenv("TTSCP_USER");
+	if (ttscp_user_config) f = fopen(ttscp_user_config, "rt");
 	if (f) {
 		while (!feof(f)) {
 			*scratch = 0;

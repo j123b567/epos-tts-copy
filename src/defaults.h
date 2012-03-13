@@ -1,6 +1,6 @@
 /*
  *	epos/src/defaults.h
- *	(c) geo@ff.cuni.cz
+ *	(c) geo@cuni.cz
  *
  *	This file is the sole thing that hash.* need to include. 
  *	I'm trying to keep it small to make hash.* as independent

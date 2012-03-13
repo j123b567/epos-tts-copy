@@ -1,6 +1,6 @@
 /*
  *	epos/src/options.lst
- *	(c) 1997-98 geo@ff.cuni.cz
+ *	(c) 1997-98 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -340,8 +340,8 @@ OPTION (limit_dbg,  "limit_debug", INT, 0)      // Never debug under this level,
 OPTION (loaded, "",               BOOL, false)  // Do we have already compiled the .ini files?
 OPTION (fixedfile,"fixed_ini_file",STR, "fixed.ini")
 OPTION (inifile, "cfg_file",       STR, "epos.ini")	// What is our favourite .ini file?
-OPTION (token_esc, "",             STR, "nt[eE\\ #;@~.-mXYZ")	// Escape sequences usable in the .ini files
-OPTION (value_esc, "",             STR, "\n\t\033\033\033\\\377#;@\1\2\3\4\037\036\035")
+OPTION (token_esc, "",             STR, "nt[eE\\ #;@~.-mXYZWVU")  // Escape sequences usable in the .ini files
+OPTION (value_esc, "",             STR, "\n\t\033\033\033\\\377#;@\1\2\3\4\037\036\035\034\032\031")
 OPTION (slash_esc, "",            CHAR, '/')	// Path separator ('/' or '\') .ini escape seq
 
 OPTION (hash_full, "hashes_full",  INT, 100)    // How full should a hash table become?
@@ -372,6 +372,7 @@ OPTION (mrw, "max_rule_weight",    INT, 900000)	// Maximum rule weight in a choi
 OPTION (max_line, "max_line_len",  INT, 512)	// How long may an input line be?
 OPTION (scratch, "scratch_size",   INT, 512)	// How long may some temporary strings be?
 OPTION (dev_txtlen,"dev_text_len", INT, 50000)  // How much data can we expect from a device?
+OPTION (maxtext, "max_text_size",  INT, 17000000)  // Maximum gather buffer size
 
 OPTION (eof_char, "end_of_file",  CHAR, '\033') // Which key should terminate user input?
 
@@ -380,7 +381,7 @@ LNG_OPTION (rules_dir, rules_dir, "rules_dir", STR, ".")  // path to the rules a
 LNG_OPTION (hash_dir, hash_dir, "hash_dir",    STR, ".")  //  to the dictionaries
 LNG_OPTION (input_dir, input_dir, "input_dir", STR, ".")  //  to the input file
 // VOICE_OPTION (invent_dir, inv_dir, "invent_dir", STR, ".")  //  to the diphone inventories
-LNG_OPTION (pros_dir, pros_dir, "prosody_dir", STR, ".")  //  to the prosody files
+// LNG_OPTION (pros_dir, pros_dir, "prosody_dir", STR, ".")  //  to the prosody files
 OPTION (pseudo_root_dir, "pseudo_root_dir",STR, "root")	  //  to the virtual file tree
 OPTION (help_dir, "ttscp_help_dir",    STR, "ttscp/help") //  to the ttscp help topics
 OPTION (lang_base_dir, "lang_base_dir",    STR, "lng")    //  to the language descriptions
@@ -397,7 +398,7 @@ OPTION (stddbg_file, "stddbg_file",     STR, NULL)   // file to write debug info
 // OPTION (stdwarn_file, "stdwarn_file",   STR, NULL)   // file to write warnings to (NULL...stderr)
 OPTION (stdshriek_file,"stdshriek_file",STR, NULL)   // file to write fatal errors to (NULL...std~err)
 
-OPTION (trans, "show_transcript", BOOL, true)	// Should we display transcription on exit?
+// OPTION (trans, "show_transcript", BOOL, true)	// Should we display transcription on exit?
 OPTION (show_phones,"show_phones",BOOL, false)	// Should we display the sounds on exit?
 OPTION (use_diph,"",		  BOOL, true)	// (enabled if one of the following is on)
 OPTION (show_diph,"show_diphones",BOOL, false)  // Should we display the diphones on exit?
@@ -430,8 +431,8 @@ OPTION (wav_hdr, "wave_header",	  BOOL, false)  // Should .wav output contain .w
 OPTION (daemon_log, "daemon_log",  STR, NULL)	// Log file of daemon.cc activities (TTSCP server)
 OPTION (pwdfile, "server_pwd_file",STR, NULL)	// File to store the server passwd for TTSCP auth
 OPTION (dbg_pwd, "debug_password", STR, "")	// Additional server password (insecure)
-OPTION (allow_file, "allow_options_file", STR, "allowed.ini") // options anonymous may change
-OPTION (db_size, "diph_buff_size", INT, 511)	// max n of diphones to be synthesized at once
+OPTION (restr_file, "restr_file",  STR, "restr.ini") // restricted options
+OPTION (db_size, "diph_buff_size", INT, 0)	// max n of diphones to be synthesized at once
 OPTION (buffer_size, "buffer_size",INT, 8192)	// buffer size for wave files
 OPTION (max_net_cmd, "max_net_cmd",INT, 16384)  // Max TCP command length
 OPTION (listen_port, "listen_port",INT, TTSCP_PORT) // TCP port where the daemon should listen

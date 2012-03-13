@@ -1,6 +1,6 @@
 /*
  *	epos/src/daemon.cc
- *	(c) 1998-99 geo@ff.cuni.cz
+ *	(c) 1998-99 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -325,10 +325,37 @@ static inline void make_server_passwd()
 	}
 }
 
+bool server_shutting_down = false;
+
+void server_shutdown()
+{
+	while (ctrl_conns->items) {
+		a_ttscp *tmp = ctrl_conns->translate(ctrl_conns->get_random());
+		sputs("800 shutdown requested\r\n", tmp->c->config->sd_out);
+		delete ctrl_conns->remove(tmp->handle);
+	}
+	if (cfg->pwdfile) remove(cfg->pwdfile);
+	delete accept_conn;
+	delete ctrl_conns;
+	delete data_conns;
+	delete master_context;
+	free(sleep_table);
+	epos_done();
+	exit(0);
+}
+
+
+static void unix_sigterm(int)
+{
+	if (server_shutting_down) shriek(466, "forcing shutdown");
+	server_shutting_down = true;
+}
+
 static void daemonize()
 {
 	UNIX(signal(SIGPIPE, SIG_IGN);)		// possibly dangerous
 	UNIX(signal(SIGCHLD, SIG_IGN);)		// automatic child reaping
+	UNIX(signal(SIGTERM, unix_sigterm);)
 
 //	dispatcher_pid = getpid();
 
@@ -348,7 +375,7 @@ static void daemonize()
 
 fd_set data_conn_set;
 
-void update_data_conn_set(char *, int *fd)
+void update_data_conn_set(char *, socky int *fd)
 {
 	FD_SET(*fd, &data_conn_set);
 }
@@ -377,6 +404,8 @@ static bool select_socket(bool sleep)
 	if (n < 0) shriek(871, "select() failed");
 
    restart:
+	if (server_shutting_down) return false;
+
 	idle();
 
 	rd_set = block_set;
@@ -393,11 +422,10 @@ static bool select_socket(bool sleep)
 #define SCHED_SATIATED	64
 #define SCHED_WARN	30
 
-bool server_shutting_down = false;
 
 void server()
 {
-	int fd;
+	socky int fd;
 	daemonize();
 	while (!server_shutting_down) {
 		while (runnable_agents > SCHED_SATIATED
@@ -422,6 +450,7 @@ void server()
 			}
 		}
 	}
+	server_shutdown();
 }
 
 void server_crashed(char *, a_ttscp *a, int why_we_crashed)

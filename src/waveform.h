@@ -1,6 +1,6 @@
 /*
  *	epos/src/waveform.h
- *	(c) 1998-99 Jirka Hanika, geo@ff.cuni.cz
+ *	(c) 1998-99 Jirka Hanika, geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,26 +17,45 @@ void async_close(int fd);
 int ywrite(int, const void *, int size);
 int yread(int, void *, int size);
 
+#define	RIFF_HEADER_SIZE	8
 
 struct wave_header
 {
 	char string1[4];
-	long total_length;
+	int  total_length;
 	char string2[8];
-	long xnone;
+	int  xnone;
 	short int  datform, numchan, sf1, sf2, avr1, avr2, wlenB, wlenb;
 	char string3[4];
-	long written_bytes;
+	int  buffer_idx;
 };			// .wav file header
 
 struct cue_point;
 
+struct cue_header
+{
+	char string1[4];
+	int len;
+};
+
+struct adtl_header
+{
+	char string1[4];
+	int len;
+	char string2[4];
+};
+
+struct w_ophase;
+
 class wavefm
 {
+   public:	/* FIXME - a global initializer in waveform.cc needs this */
 	wave_header hdr;
+	cue_header cuehdr;
+	adtl_header adtlhdr;
 
 	char *buffer;
-	int buffer_idx;
+//	int written_bytes;
 	int buff_size;
 	int samp_size_bytes;
 	int samp_rate;
@@ -47,17 +66,31 @@ class wavefm
 	int last_offset;
 	cue_point *cp_buff;
 	char *adtl_buff;
-	int adtl_offs;
+//	int adtl_offs;
 	int adtl_max;
+
+//	char *bbf;		/* buffer being flushed */
+//	int  bbf_len;		/* buffer being flushed len */
+//	void update_bbf();
+
+	int ophase;
+	int ooffset;
+
+	bool update_ophase();	/* returns whether more work to do */
+	char *get_ophase_buff(w_ophase *);
+	int get_ophase_len(w_ophase *);
+
+	bool flush_deferred();
+
    public:
 	wavefm(voice *);
 	~wavefm();
 
 	int written;		// bytes written by the last flush() only
-	inline int offset()
-	{
-		return written + buffer_idx;
-	}
+//	inline int offset()
+//	{
+//		return written + buffer_idx;
+//	}
 
 	bool flush();		// write out at least something
 				// see waveform.cc for more documentation
@@ -67,19 +100,19 @@ class wavefm
 	void detach(int fd);	// does not close fd
 	void detach();		// also closes fd
 	void brk();		// forgets pending data; does not detach()
-	void skip_header();	// see waveform.cc for comments
+//	void skip_header();	// see waveform.cc for comments
 	void write_header();
 
 	inline void put_sample(unsigned int sample)
 	{
-		if (buff_size <= buffer_idx + samp_size_bytes)
+		if (buff_size <= hdr.buffer_idx + samp_size_bytes)
 			flush();
 		switch (samp_size_bytes)
 		{
-			case 1:	*(unsigned char *) (buffer + buffer_idx) = sample; break;
-			case 2:	*(unsigned short *)(buffer + buffer_idx) = sample; break;
+			case 1:	*(unsigned char *) (buffer + hdr.buffer_idx) = sample; break;
+			case 2:	*(unsigned short *)(buffer + hdr.buffer_idx) = sample; break;
 		}
-		buffer_idx += samp_size_bytes;
+		hdr.buffer_idx += samp_size_bytes;
 	}
 
 	inline void sample(unsigned int sample)
@@ -97,5 +130,5 @@ class wavefm
 
 	void become(void *buffer, int size);
 
-	inline int written_bytes() { return hdr.written_bytes + buffer_idx; }
+	inline int written_bytes() { return hdr.total_length + RIFF_HEADER_SIZE; }
 };

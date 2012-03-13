@@ -9,6 +9,9 @@
  *   Then this file was placed under the GNU General Public License using
  *   Section 3 of the GNU Library Public License and incorporated into Epos.
  *
+ *   This code will be used by Epos only if the operating system offers
+ *   no regular expressions as a standard library.
+ *
  *   rx.c is (C) 1993, 1994, 1995, 1996, 1997 Free Software Foundation, Inc.
  *
  *   This file is free software; you can redistribute it and/or
@@ -34,6 +37,10 @@
 #define _GNU_SOURCE
 
 #include "config.h"
+
+#ifndef const
+#define const		/* Visual C++ for example dislikes free()ing const data */
+#endif
 
 #ifndef  __STDC__
 #define  __STDC__  1

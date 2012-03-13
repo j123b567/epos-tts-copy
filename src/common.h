@@ -1,6 +1,6 @@
 /*
  *	epos/src/common.h
- *	(c) Jirka Hanika, geo@ff.cuni.cz
+ *	(c) Jirka Hanika, geo@cuni.cz
  *	(c) Petr Horak, horak@ure.cas.cz
 
     This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,8 @@
 #define EPOS_COMMON_H
 
 #define MAINTAINER  "Jirka Hanika"
-#define MAIL        "geo@ff.cuni.cz"
-#define VERSION     "2.4.24"
+#define MAIL        "geo@cuni.cz"
+#define VERSION     "2.4.31"
 
 #include "config.h"
 
@@ -42,7 +42,9 @@
    #else
 	#error String library misconfigured. No.
    #endif
-#endif	
+#endif
+
+char *strdup(const char *);
 
 #ifndef HAVE_STRCASECMP
 #ifdef  HAVE_STRICMP
@@ -131,6 +133,12 @@ class stream;
 	#define SLASH              '\\'
 	#define NULL_FILE	   "NUL"
 	#define MODE_MASK	   (S_IREAD | S_IWRITE)
+#endif
+
+#ifdef HAVE_WINSOCK2_H
+	#define socky unsigned
+#else
+	#define socky signed
 #endif
 
 

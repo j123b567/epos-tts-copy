@@ -1,6 +1,6 @@
 /*
  *	epos/src/synth.cc
- *	(c) 1998 geo@ff.cuni.cz
+ *	(c) 1998 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -67,16 +67,17 @@ void play_diphones(unit *root, voice *v)
 
 	if (!v->syn) v->syn = setup_synth(v);
 	if (!cfg->play_diph && !cfg->show_diph) return;
+	wavefm w(v);
 	for (int k=0; i==BUFF_SIZE; k+=BUFF_SIZE) {
 		i=root->write_diphs(d+1,k,BUFF_SIZE);
 		d[0].code = i;
 //		frob_diphones(d/*+1*/, i, v);		(moved to synth::syndiphs)
-		wavefm w(v);
-		w.attach();
+//		w.attach();
 		DEBUG(3,9,fprintf(STDDBG,"Using %s synthesis\n", enum2str(this_voice->type, STstr));)
 		v->syn->syndiphs(v, d+1, i, &w);
-		w.detach();
+//		w.detach();
 	}
+	w.attach(); w.detach();
 }
 
 void show_diphones(unit *root)

@@ -1,6 +1,6 @@
 /*
  *	epos/src/waveform.cc
- *	(c) 1998-99 geo@ff.cuni.cz
+ *	(c) 1998-99 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -55,12 +55,18 @@
 	#include <io.h>		/* open, (ioctl,) ... */
 #endif
 
+#ifndef SNDCTL_DSP_SYNC
+#ifndef SOUND_PCM_SYNC
+#define FORGET_SOUND_IOCTLS
+#endif
+#endif
+
 
 #define FOURCC_INIT(x) {(x[0]), (x[1]), (x[2]), (x[3])}
 
 //#pragma hdrstop
 
-#ifdef KDGETLED		// Feel free to disable or delete the following stuff
+#ifdef KDGETLED_NEVER_DEFINED	// Feel free to disable or delete the following stuff
 inline void mark_voice(int a)
 {
 	static int voices_attached = 0;
@@ -72,12 +78,12 @@ inline void mark_voice(int a)
 	ioctl(1, KDSETLED, kbd_flags);
 }
 #else
-inline void mark_voice(int) {};
+// inline void mark_voice(int) {};
 #endif
 
 
-#define HEADER_HEADER_SIZE  8
-#define WAVE_HEADER_SIZE  ((long)(sizeof(wave_header) - HEADER_HEADER_SIZE))
+// #define RIFF_HEADER_SIZE  8
+#define WAVE_HEADER_SIZE  ((long)(sizeof(wave_header) - RIFF_HEADER_SIZE))
 
 
 struct cue_point
@@ -131,8 +137,10 @@ wavefm::wavefm(voice *v)
 	hdr.avr1 = 2 * samp_rate; hdr.avr2 = stereo ? hdr.avr1 : 0;
 	hdr.wlenB = samp_size_bytes; hdr.wlenb = v->samp_size;
 	hdr.xnone = 0x010;
-	hdr.written_bytes = 0;
-	hdr.total_length = hdr.written_bytes - HEADER_HEADER_SIZE;
+//	written_bytes = 0;
+	hdr.total_length = - RIFF_HEADER_SIZE;
+//	hdr.total_length = hdr.written_bytes - RIFF_HEADER_SIZE;
+
 //	write(fd, wavh, sizeof(wave_header));         //zapsani prazdne wav hlavicky na zacatek souboru
 
 	fd = -1;
@@ -141,12 +149,20 @@ wavefm::wavefm(voice *v)
 //	buffer = (char *)xmalloc(buff_size);
 	buff_size = 0;
 	buffer = NULL;
-	buffer_idx = 0;
+	hdr.buffer_idx = 0;
 
-	current_cp = adtl_offs = 0;
+	cuehdr.len = adtlhdr.len = 0;
+	memcpy(cuehdr.string1, "cue ", 4);
+	memcpy(adtlhdr.string1, "LIST", 4);
+	memcpy(adtlhdr.string2, "adtl", 4);
+
+	current_cp = 0;
 	cp_buff = NULL;
 	adtl_buff = NULL;
 	last_offset = 0;
+
+	ophase = 0;
+	ooffset = 0;
 }
 
 wavefm::~wavefm()
@@ -189,9 +205,6 @@ wavefm::~wavefm()
 
 #ifndef SNDCTL_DSP_SYNC
 #define SNDCTL_DSP_SYNC		SOUND_PCM_SYNC
-#ifndef SOUND_PCM_SYNC
-#error The sound card ioctls seem to be broken or absent, remove this #error
-#endif
 #endif
 
 #ifndef SNDCTL_DSP_RESET
@@ -317,11 +330,11 @@ wavefm::ioctl_attach()
 void
 wavefm::detach(int)
 {
-	while (buffer_idx) flush();		// FIXME: think slow network write
+	while (flush()) ;		// FIXME: think slow network write
 	DEBUG(2,9,fprintf(STDDBG,"Detaching waveform %s\n", ""););
 	sync_soundcard(fd);
 	if (cfg->wav_hdr && !ioctlable(fd)) write_header();
-	mark_voice(-1);
+//	mark_voice(-1);
 	fd = -1;
 //	free(buffer);
 //	buffer = NULL;
@@ -330,7 +343,7 @@ wavefm::detach(int)
 void
 wavefm::brk()
 {
-	buffer_idx = 0;		// forget wavefm hanging in userland
+	hdr.buffer_idx = 0;		// forget wavefm hanging in userland
 	reset_soundcard(fd);	// forget wavefm hanging in kernel
 }
 
@@ -339,13 +352,15 @@ void
 wavefm::attach(int d)
 {
 	DEBUG(2,9,fprintf(STDDBG,"Attaching waveform %s\n", ""););
-	mark_voice(1);
+//	mark_voice(1);
 	fd = d;
-	hdr.written_bytes = 0;
-	if (ioctlable(fd)) ioctl_attach();			// FIXME
+//	written_bytes = 0;
+	if (ioctlable(fd)) {
+		ioctl_attach();
+	}
 	if (buff_size) buffer = buffer ? (char *)xrealloc(buffer, buff_size) : (char *)xmalloc(buff_size);
 	DEBUG(0,9,fprintf(STDDBG,"(attached, now flushing predata)\n");)
-	if (buffer_idx) flush();
+	if (hdr.buffer_idx) flush();
 	DEBUG(0,9,fprintf(STDDBG,"(predata flushed)\n");)
 }
 
@@ -396,6 +411,113 @@ wavefm::detach()
  *	invocation of flush()
  */
 
+struct w_ophase
+{
+	bool inlined;
+	char **buff;
+	int  *len;
+};
+
+#define INLINED_WOPH(begin, type)  { true, (char **)&((wavefm *)NULL)->begin, (int *)sizeof(type) },
+#define VAR_WOPH(ptr, len)        { false, (char **)&((wavefm *)NULL)->ptr, &((wavefm *)NULL)->len },
+
+#define WOPHASE_NO_MORE_BUFFS  ((char **)-1)
+
+w_ophase w_ophases[] = {
+	INLINED_WOPH(hdr, wave_header)
+	VAR_WOPH(buffer, hdr.buffer_idx)
+	INLINED_WOPH(cuehdr, cue_header)
+	VAR_WOPH(cp_buff, cuehdr.len)
+	INLINED_WOPH(adtlhdr, adtl_header)
+	VAR_WOPH(adtl_buff, adtlhdr.len)
+	{true, WOPHASE_NO_MORE_BUFFS, (int *)0}
+};
+
+#define WAVEFM_ALL_FLUSHED  (w_ophases[ophase].buff == WOPHASE_NO_MORE_BUFFS)
+
+inline char *
+wavefm::get_ophase_buff(w_ophase *p)
+{
+	char *tmp = (char *)this + (int)p->buff;
+	return p->inlined ? tmp : *(char **)tmp;
+}
+
+inline int
+wavefm::get_ophase_len(w_ophase *p)
+{
+	return p->inlined ? (int)p->len : *(int *)((char *)this + (int)p->len);
+}
+
+inline bool
+wavefm::update_ophase()
+{
+	if (fd != -1 && ioctlable(fd)) {		// sound card treated specially
+		if (ophase == 0) {
+			ophase++, ooffset = 0;
+		}
+		if (ophase > 1) return false;
+		return get_ophase_len(&w_ophases[ophase]) > ooffset;
+	}
+	while (1) {
+		if (get_ophase_len(&w_ophases[ophase]) > ooffset)
+			return true;
+		if (WAVEFM_ALL_FLUSHED)
+			return false;
+		ooffset = 0, ophase++;
+		if (w_ophases[ophase].inlined && !WAVEFM_ALL_FLUSHED && !get_ophase_len(&w_ophases[ophase + 1]))
+			ophase++;	/* inlined buffers followed by empty buffers are */
+					/* assumed to be superfluous headers and skipped */
+	}
+}
+
+
+bool
+wavefm::flush()
+{
+//	printf("A ophase %d  ooffset %d\n", ophase, ooffset);
+	written = 0;
+
+	if (buff_size == 0) {
+		buff_size = cfg->buffer_size;
+		buffer = (char *)xmalloc(buff_size);
+		return false;
+	}
+//	if (hdr.buffer_idx == 0) {
+//		DEBUG(2,9,fprintf(STDDBG, "Flushing the signal (nothing to do)\n");)
+//		return false;
+//	}
+	if (!update_ophase())
+		return false;
+//	printf("B ophase %d  ooffset %d\n", ophase, ooffset);
+	if (fd == -1)
+		return flush_deferred();
+	written = ywrite(fd, get_ophase_buff(&w_ophases[ophase]) + ooffset,
+			get_ophase_len(&w_ophases[ophase]) - ooffset);
+	if (1 > written) return flush_deferred();
+	
+	ooffset += written;
+
+	DEBUG(2,9,fprintf(STDDBG, "Flushing the signal to device\n");)
+//	written_bytes += written;				// FIXME !!! cannot work
+	hdr.total_length += written;
+	return true;
+}
+
+bool
+wavefm::flush_deferred()
+{
+	DEBUG(2,9,fprintf(STDDBG, "Flushing the signal (deferred)\n");)
+	DEBUG(1,9,fprintf(STDDBG, fmt("adtlhdr.len is %d\n", adtlhdr.len));)
+	written = 0;
+	if (hdr.buffer_idx + 4 <= buff_size)
+		return true;
+	buff_size <<= 1;
+	buffer = (char *)xrealloc(buffer, buff_size);
+	return true;
+}
+
+#ifdef ___
+
 bool
 wavefm::flush()
 {
@@ -403,6 +525,7 @@ wavefm::flush()
 
 	if (fd != -1 && hdr.total_length < WAVE_HEADER_SIZE) {
 		if (cfg->wav_hdr && !ioctlable(fd)) skip_header();
+		if hdr.total_length < WAVE_HEADER_SIZE) return true;
 	}
 
 	if (buff_size == 0) {
@@ -414,15 +537,12 @@ wavefm::flush()
 		DEBUG(2,9,fprintf(STDDBG, "Flushing the signal (nothing!)\n");)
 		return false;
 	}
-	if (fd == -1 || 1 > (written = ywrite(fd, buffer, buffer_idx))) {
-		DEBUG(2,9,fprintf(STDDBG, "Flushing the signal (deferred)\n");)
-		written = 0;
-		if (buffer_idx + 4 <= buff_size)
-			return true;
-		buff_size <<= 1;
-		buffer = (char *)xrealloc(buffer, buff_size);
-		return true;
-	}
+	if (fd == -1) return flush_deferred();
+
+	update_bbf();
+	written = ywrite(fd, bbf, bbf_len);
+	if (1 > written) return flush_deferred();
+
 	DEBUG(2,9,fprintf(STDDBG, "Flushing the signal to device\n");)
 	hdr.written_bytes += written;
 	buffer_idx -= written;
@@ -431,6 +551,40 @@ wavefm::flush()
 		return true;
 	}
 	return false;
+}
+
+int wavefm::flush_deferred()
+{
+	DEBUG(2,9,fprintf(STDDBG, "Flushing the signal (deferred)\n");)
+	written = 0;
+	if (buffer_idx + 4 <= buff_size)
+		return true;
+	buff_size <<= 1;
+	buffer = (char *)xrealloc(buffer, buff_size);
+	return true;
+}
+
+struct wbdes
+{
+	char **buffer;
+	int  *len;
+};
+
+void update_bbf()
+{
+	int tmp = WAVE_HEADER_SIZE + buff_size;
+	if (hdr.total_length < tmp) {
+		bbf = buffer;
+		bbf_len = buffer_idx;
+		return;
+	}
+	tmp += current_cp * sizeof(cue_point);
+	if (hdr.total_length < tmp) {
+		bbf = (char *)cp_buff + current_cp * sizeof(cue_point)
+	}
+	tmp += ...
+	if () {
+	}
 }
 
 /*
@@ -461,10 +615,12 @@ wavefm::skip_header()
 	}
 }
 
+#endif // ___
+
 void
 wavefm::write_header()
 {
-	hdr.total_length = hdr.written_bytes + WAVE_HEADER_SIZE;
+//	hdr.total_length = hdr.written_bytes + WAVE_HEADER_SIZE;
 	if (lseek(fd, 0, SEEK_SET) == -1)
 		return;		/* devices incapable of lseek() don't need
 				 *	the length field filled in correctly
@@ -482,13 +638,14 @@ wavefm::label(char *lbl)
 
 	cp_buff[current_cp] = cue_point_template;
 	cp_buff[current_cp].name = current_cp + 1;	/* numbered starting from 1 */
-	int offs = cp_buff[current_cp].pos = cp_buff[current_cp].sample_offset = offset();
+	int offs = cp_buff[current_cp].pos = cp_buff[current_cp].sample_offset = hdr.buffer_idx;
 	current_cp++;
+	cuehdr.len += sizeof(cue_point);
 
 	if (!lbl) return;
 
 	if (adtl_buff) {
-		if (adtl_offs + strlen(lbl) + 2 + sizeof(ltxt) >= (unsigned int)adtl_max) {
+		if (adtlhdr.len + strlen(lbl) + 2 + sizeof(ltxt) >= (unsigned int)adtl_max) {
 			adtl_max <<= 1;
 			adtl_buff = (char *)xrealloc(adtl_buff, adtl_max);
 		}
@@ -497,16 +654,18 @@ wavefm::label(char *lbl)
 		adtl_buff = (char *)xmalloc(adtl_max);
 	}
 
-	ltxt *l = (ltxt *)(adtl_buff + adtl_offs);
+	ltxt *l = (ltxt *)(adtl_buff + adtlhdr.len);
 	*l = ltxt_template;
 	l->cp_name = current_cp - 1;
 	l->sample_count = offs - last_offset;
-	l->len = sizeof(ltxt) - HEADER_HEADER_SIZE + strlen(lbl) + 1;
+	l->len = sizeof(ltxt) - RIFF_HEADER_SIZE + strlen(lbl) + 1;
 	strcpy((char *)(l+1), lbl);
-	adtl_offs += sizeof(ltxt) + strlen(lbl) + 1;
+	adtlhdr.len += sizeof(ltxt) + strlen(lbl) + 1;
 
 	last_offset = offs;
 }
+
+#ifdef SIMPLE_WFM
 
 void
 wavefm::become(void *b, int size)
@@ -517,10 +676,42 @@ wavefm::become(void *b, int size)
 	buffer = (char *)xmalloc(size);
 	memcpy(buffer, (char *)b + sizeof(wave_header), size);
 	buff_size = size;
-	buffer_idx = size;
-	hdr.written_bytes = 0;
-	hdr.total_length = hdr.written_bytes - HEADER_HEADER_SIZE;
+	hdr.buffer_idx = size;
+//	written_bytes = 0;
+	hdr.total_length = 0 - HEADER_HEADER_SIZE;
 	channel = hdr.sf2 ? CT_BOTH : CT_MONO;
 	samp_rate = hdr.sf1;
 	samp_size_bytes = hdr.wlenB;
 }
+
+#else
+
+#define FOURCC_ID(x)  ((((x)[0])<<24) + (((x)[1])<<16) + (((x)[2])<<8) + (((x)[3])))
+
+#define CHUNK_HEADER_SIZE 8
+
+void pchu(char *p, int size)
+{
+	int l = *((int *)p+1);
+	printf("pchu %p+%d, %.4s len %d\n", p, size, p, *((int *)p+1));
+	if (FOURCC_ID(p) == FOURCC_ID("RIFF")) {
+		printf("RIFF here\n");
+		if (FOURCC_ID(p + RIFF_HEADER_SIZE) != FOURCC_ID("WAVE")) shriek(471, "Other RIFF than WAVE received");
+		for (char *q = p+12; l>0; ) {
+			int chunksize = ((int *)q)[1];
+			pchu(q, chunksize);
+			l -= chunksize + CHUNK_HEADER_SIZE;
+			q += chunksize + CHUNK_HEADER_SIZE;
+		}
+	}
+}
+
+void wavefm::become(void *b, int size)
+{
+	((wave_header *)b)->total_length = size - RIFF_HEADER_SIZE;
+	((wave_header *)b)->buffer_idx = size - sizeof(wave_header);
+	pchu((char *)b, size);
+}
+
+#endif
+

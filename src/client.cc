@@ -1,5 +1,5 @@
 /*
- *	(c) 1998-99 Jirka Hanika <geo@ff.cuni.cz>
+ *	(c) 1998-99 Jirka Hanika <geo@cuni.cz>
  *
  *	This single source file src/client.cc, but NOT THE REST OF THIS PACKAGE,
  *	is considered to be in Public Domain. Parts of this single source file may be
@@ -77,10 +77,12 @@ char scratch[SCRATCH_SPACE + 2];
 	#include <winsock2.h>
 #endif
 
-//#ifdef HAVE_ERRNO_H
-//	#include <errno.h>
-//#endif
+#ifdef HAVE_ERRNO_H
+	#include <errno.h>
+#endif
 
+#include <sys/types.h>
+#include <signal.h>
 
 /*
  *	blocking sgets() 
@@ -126,7 +128,8 @@ int just_connect_socket(unsigned int ipaddr, int port)
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
 	if (!ipaddr) {
-		gethostname(scratch, cfg->scratch);
+//		gethostname(scratch, cfg->scratch);	// can be used instead of localhost
+		strcpy(scratch, "localhost");
 		ipaddr = getaddrbyname(scratch);
 	}
 	addr.sin_addr.s_addr = ipaddr;
@@ -140,7 +143,7 @@ int connect_socket(unsigned int ipaddr, int port)
 	if (sd == -1) {
 		shriek(473, "Server unreachable\n");
 	}
-	sgets(scratch, cfg->scratch, sd);
+	if (!sgets(scratch, cfg->scratch, sd)) shriek(474, "Remote server listens but discards\n");
 	if (strncmp(scratch, "TTSCP spoken here", 18)) {
 		scratch[15] = 0;
 		shriek(474, "Protocol not recognized");

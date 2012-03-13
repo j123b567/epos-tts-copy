@@ -1,6 +1,6 @@
 /*
  *	epos/src/agent.cc
- *	(c) 1998-99 geo@ff.cuni.cz
+ *	(c) 1998-99 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -103,7 +103,15 @@ agent::timeslice()
 			if (pendcount) shriek(862, "pending count incorrect");
 		}
 	}
-	run();
+	try {
+		run();
+	} catch (command_failed *e) {
+		if (!next) throw e;
+		DEBUG(2,11,fprintf(STDDBG, "Processing failed, %d, %.60s\n", e->code, e->msg);)
+		reply(e->code, e->msg);
+		delete e;
+		finis(true);
+	}
 	if (pendcount && !inb) schedule();
 	c->leave();
 }
@@ -147,6 +155,7 @@ agent::relax()
 void
 agent::finis(bool err)
 {
+	if (!next) shriek(861, "Non-module finished");
 	agent *a = next;
 	while (a->next) a = a->next;
 	a->finis(err);
@@ -154,7 +163,7 @@ agent::finis(bool err)
 
 void agent::brk()
 {
-	if (inb) reply("401 user break");
+//	if (inb) reply("401 user break");
 	relax();
 	DEBUG(1,11,fprintf(STDDBG, "interrupting an agent, intype %i, outtype %i\n", in, out);)
 }
@@ -233,24 +242,17 @@ class a_print : public agent
 	a_print() : agent(T_UNITS, T_TEXT) {};
 };
 
-#define INITIAL_PRINT_BUFFER_SIZE	8192		// FIXME
-
 void
 a_print::run()
 {
 	char *b;
-	char *endb;
-	int bsize = INITIAL_PRINT_BUFFER_SIZE;
-	do {
-		b = (char *)xmalloc(bsize);
-		endb = ((unit *)inb)->gather(b, b + bsize, true /* (incl. ssegs) */ );
-	} while ((endb == b + bsize) && (free(b), bsize <<= 1, b = (char *)xmalloc(bsize)));
-	*endb = 0;
+	int l;
 
-	void *r = b;
+	b = ((unit *)inb)->gather(&l, false /* no ^$ */, true /* incl. ssegs */ );
+
 	delete (unit *) inb;
 	inb = NULL;
-	pass(r);
+	pass(strdup(b));
 }
 
 
@@ -263,21 +265,33 @@ class a_diphs : public agent
 	a_diphs() : agent(T_UNITS, T_DIPHS) {position = 0;};
 };
 
+#define INIT_DIPHS_BS	2048
+
 void
 a_diphs::run()
 {
-	diphone *d = (diphone *)xmalloc((cfg->db_size + 1) * sizeof(diphone));
+	int dbs = cfg->db_size ? cfg->db_size : INIT_DIPHS_BS;
+	diphone *d = (diphone *)xmalloc((dbs + 1) * sizeof(diphone));
+	diphone *c = d + 1;
 	int n;
+	int items = 0;
 
 	unit *root = *(unit **)&inb;
-	n = root->write_diphs(d + 1, position, cfg->db_size);
+again:
+	n = root->write_diphs(c, position, dbs);
 	position += n;
-	if (n < cfg->db_size) {
+	items += n;
+	if (cfg->db_size && n >= dbs) {
+		d = (diphone *)xrealloc(d, (dbs + 1 + position) * sizeof(diphone));
+		c = d + 1 + position;
+		goto again;
+	}
+	if (!cfg->db_size || n < dbs) {
 		delete root;
 		inb = NULL;
 		position = 0;
 	} else schedule();
-	d->code = n;
+	d->code = items;
 	DEBUG(1,11,fprintf(STDDBG, "agent diphs generated %d diphones\n", n);)
 	pass(d);
 }
@@ -382,35 +396,6 @@ a_synth::run()
 	inb = NULL;
 	pass(wfm);
 }
-
-/******** not finished, misconcepted
-
-class a_label : public agent
-{
-	virtual void run();
-   public:
-	a_label() : agent(T_DIPHS, T_TEXT) {};
-};
-
-// #define UGLY_TMP_CONSTANT	65534		// FIXME
-
-void
-a_label::run()
-{
-	char * s = (char *)xmalloc(UGLY_TMP_CONSTANT + 1);
-	diphone *d = ((diphone *)inb);
-	int offs = 0;
-	for (int i = 1; i < d->code; i++) {
-		offs += sprintf(s + offs, "%d %d %s\n",,,);
-		if (offs > UGLY_TMP_CONSTANT - 32) shriek(461, "Out of buffer space");
-	}
-
-	delete (unit *) inb;
-	inb = NULL;
-	pass(s);
-}
-
-******/
 
 template <DATA_TYPE TYPE> class a_type : public agent
 {
@@ -596,7 +581,7 @@ a_output::run()
 	}
 	if (written == size) {
 		written = 0;
-		relax();
+		relax();		// FIXME CHECKME
 		finis(false);
 	} else push(socket);
 }
@@ -657,16 +642,20 @@ oa_wavefm::run()
 {
 	wavefm *w = (wavefm *)inb;
 	if (!attached && !sleep_table[socket]) {
-		report(true, w->written_bytes() + sizeof(wave_header));
+//		report(true, w->written_bytes() /* + sizeof(wave_header) */);
 		w->attach(socket);
-		report(false, w->written + sizeof(wave_header));
+		report(false, w->written /* + sizeof(wave_header)*/);
 		attached = true;
 	}
-	if (w->flush()) {
+	bool to_do;
+	while ((to_do = w->flush()) && w->written) {
+		report(false, w->written);
+	}
+
+	if (to_do) push(socket);
+	else {
 		if (w->written) report(false, w->written);
-		push(socket);
-	} else {
-		if (w->written) report(false, w->written);
+		report(true, w->written_bytes());
 		w->detach(socket);
 		DEBUG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n", w->written_bytes());)
 		attached = false;
@@ -692,7 +681,7 @@ oa_wavefm::brk()
 		delete w;
 		inb = NULL;
 //		w = NULL; relax();
-		reply("402 user break");
+//		reply("402 user break");
 	}
 	finis(true);
 }
@@ -809,6 +798,7 @@ void
 stream::brk()
 {
 	if (!callbk) return;	/* break only if running */
+	reply("401 interrupted");
 	for (agent *a = head; a && a != this; a = a->next)
 		a->brk();
 }
@@ -820,13 +810,20 @@ stream::run()
 }
 
 void
-stream::finis(bool err)
+stream::finis(bool err)		// FIXME: simplify
 {
 	DEBUG(2,11,fprintf(STDDBG, "submitted a subtask\n");)
 	for (agent *a = head; a != this; a = a->next) {
 		if (a->inb || a->pendin) {
 			DEBUG(2,11,fprintf(STDDBG, "more subtasks are pending\n");)
-			if (err) shriek(869, "Bowm!");
+			if (err) {
+				relax();
+				DEBUG(2,11,fprintf(STDDBG, "subtasks discarded\n");)
+				if  (callbk) callbk->schedule();
+				else shriek(862, "double fault - no callback");
+				callbk = NULL;
+				return;
+			}
 			return;
 		}
 	}
@@ -874,7 +871,6 @@ void a_disconnector::disconnect(a_protocol *moriturus)
 {
 	if (last == max && ! (max & max - 1)) {
 		max <<= 1;
-// 		if (max > 8) shriek(861, "Too many concurrent disconnections"); // FIXME
 		to_delete = (a_protocol **)xrealloc(to_delete, max * sizeof(void *));
 	}
 	to_delete[last++] = moriturus;
@@ -1037,7 +1033,7 @@ a_ttscp::run_command(char *cmd)
 		return PA_NEXT;
 	} catch (connection_lost *e) {
 		DEBUG(2,11,fprintf(STDDBG, "Releasing a TTSCP control connection, %d, %.60s\n", e->code, e->msg);)
-		reply(e->code, e->msg);		/* FIXME: doesn't make any sense, does it? */
+		reply(e->code, e->msg);		/* just in case */
 		reply(201, fmt("debug %d", cfg->sd_in));
 		delete e;
 		return PA_DONE;
@@ -1160,14 +1156,14 @@ agent *sched_sel()
 agent **sleep_table = (agent **)xmalloc(1);
 fd_set block_set;
 fd_set push_set;
-int select_fd_max = 0;
+socky int select_fd_max = 0;
 
 /*
  *	agent::run() should return after calling block() or push()
  */
 
 void
-agent::block(int fd)
+agent::block(socky int fd)
 {
 	DEBUG(1,11,fprintf(STDDBG, "Sleeping on %d\n", fd);)
 	if (select_fd_max <= fd) {
@@ -1192,7 +1188,7 @@ agent::block(int fd)
 }
 
 void
-agent::push(int fd)
+agent::push(socky int fd)
 {
 	DEBUG(1,11,fprintf(STDDBG, "Pushing on %d\n", fd);)
 	if (select_fd_max <= fd) {
@@ -1216,7 +1212,7 @@ agent::push(int fd)
 	return;
 }
 
-void free_sleep_table()
-{
-	free(sleep_table);
-}
+//void free_sleep_table()
+//{
+//	free(sleep_table);
+//}

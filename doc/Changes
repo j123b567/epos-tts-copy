@@ -852,3 +852,61 @@ for an exciting story, just skip it.
 	- other Borland C++ Builder related fixes
 	- --debug_password option (turned off by default)
 	- updated cfg/ttscp/help/*
+
+2.4.25 from 2.4.24	12.9.99
+	- redesigned struct wavefm, esp. flush() to accomodate the first
+		attempt at labels (--show_labels).  Made all members of wavefm
+		public and worse ugliness.
+
+2.4.26 from 2.4.25	17.9.99
+	- short options properly documented; -d, -e disappeared (use long opts instead)
+	- fixed a *""=0 bug in parse_cfg_str() with implicit option values
+	- fixed a --language option bug (server command line)
+	- made Epos gracefully shutdown at SIGTERM
+	- temporary symbols available in rules extended to \X,\Y,\Z,\W,\V,\U.
+	- fixed disconnection bug at the end of appl with Windows Sokec
+	- fixed some unit deletion stuff &c in unit.cc and elsewhere
+
+2.4.27 from 2.4.26	19.9.99
+	- fixed a typo in unit.cc (2.4.26 wouldn't compile)
+	- made say connect to "localhost", not to gethostname()
+		(so that it can find the server even with local_only).
+	- minor tweax inspired by Visual C++ warnings
+		socky #defined to (un)signed) to correspond to the socket type
+	- fixed the unlabeled waveform format (total_bytes was negative)
+
+2.4.28 from 2.4.27	22.9.99
+	- moved naive prosody stuff to lng/czech
+	- agent::timeslice now catches command_failed, so that errors during
+		stream processing are correctly reported and survived
+	- a minor VC fix (missing "socky" qualifier)
+	- fixed the lpcfloat voices (incorrectly interpreted models)
+	- monolith fixed
+	- intr command fixed (could send multiple 40x replies)
+	- next attempt at labelled waveforms
+	- added some missing stuff to the documentation, chapter Options
+
+2.4.29 from 2.4.28	28.9.99
+	- replaced gather and subst buffers with growable buffers
+		(subst and regex rules may get broken under some circumstances)
+	- added a max_text_size sanity check (as an option)
+	- fixed a set_option bug (setl could fail, but set the option to 0)
+	- a small fix in lng/czech/prosody.rul - penults always off-falling
+	- a few minor fixes
+
+2.4.30 from 2.4.29	3.10.99
+	- new autoconf test - HAVE_REG_EEND
+	- arch/unix/Makefile.dummy made even more dummy
+	- Makefile made urmake compatible
+	- code pedantified (except for kill(), strcasecmp(), gethostname(), strdup())
+	- fix for infinite "grow sb" loop in unit::subst()
+	- allowed.ini renamed to restr.ini, together with the respective option
+		and its location can be changed with --base_dir
+	- added a security section to the documentation
+	- commented out the mark_voice() debugging thing in waveform.cc
+
+2.4.31 from 2.4.30	6.10.99
+	- waveform stuff survives no sound ioctls found without FORGET_SOUND_IOCTLS
+	- minor fix to say.cc to avoid fopen(NULL)
+	- oa_wavefm::run() modified to run until EAGAIN (not just end of ophase)
+

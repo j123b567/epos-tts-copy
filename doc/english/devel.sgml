@@ -304,7 +304,9 @@ Reading the ones related to a specific piece of code may often clarify things.
 Lots of global data declarations live in <tt/common.h/; others (especially
 small, library-like functions) can be found in <tt/interf.h/.
 
-If you have any code or development related question about Epos, send
+If you have any code or development related comment or question about Epos, send
 it to the Epos development mailing list <htmlurl url="mailto:epos@braille.mff.cuni.cz"
-name="epos@braille.mff.cuni.cz">. Please spend a few seconds by trying to look up
-the answer in the documentation first.
+name="epos@braille.mff.cuni.cz">.  You are also encouraged to subscribe to the
+list first by sending a mail containing only the text <tt/subscribe epos/ to
+<htmlurl url="mailto:listserv@braille.mff.cuni.cz" name = "epos.braille.mff.cuni.cz"/.
+Please spend a few seconds by trying to look up the answer in the documentation first.

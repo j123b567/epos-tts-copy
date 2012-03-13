@@ -1,0 +1,3 @@
+This directory only contains naive prosody rules, which are normally
+not used for Czech.  Much better prosody is described in the self-contained
+file palkova.rul.

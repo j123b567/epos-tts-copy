@@ -11,9 +11,9 @@
 #
 
 
-$base_dir	external
-$prosody_dir	= external
-$prosody = ${base_dir}/${prosody_dir}
+#$base_dir	external
+#$prosody_dir	= external
+#$prosody = ${base_dir}/${prosody_dir}
 
 
 # pøidat èárku pøed "a":

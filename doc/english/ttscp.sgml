@@ -198,12 +198,31 @@ intensity (volume) and time factor (speed). The initial diphone is dummy
 in this sequence. The corresponding prosodic parameters are undefined.
 They should preferably be zero.
 
-FIXME: endianness, int size considerations
+This format is going to be replaced by a human readable format with
+the ability to specify multiple pitch points per diphone.  For the time
+being, the integer values should be encoded as 32-bit little endian integers.
 
 <sect2> Waveform
 <p>
-The traditional MS Windows <tt/.wav/ file header and data. 
-FIXME: more
+The traditional MS Windows RIFF <tt/.wav/ file header and data.
+Two liberties may be taken when waveform data in this format is sent
+via a data connection.
+
+First, the total length of the RIFF form field
+may contain a negative number.  In this case, the length
+of the form shall be determined from the data length as indicated
+in the corresponding TTSCP control connection.  Also, if this
+field contains a positive number, which conflicts with the data
+length indicated in the corresponding TTSCP control connection,
+the recipient may choose any one of them or return a <tt/435/ error.
+
+Second, if only <tt/fmt/ and <tt/data/ chunks are present in the
+RIFF form being sent, and the length of the data chunk is negative,
+the length of the <tt/data/ chunk shall be determined from the
+total length of the RIFF form. (Epos never actually takes advantage
+of this rule.)
+
+FIXME: labels
 
 
 <sect1> TTSCP Commands
@@ -770,6 +789,7 @@ code      | error type      | suggested action@
 422	| out of memory@
 431	| unknown character in text@
 432	| received bad diphones@
+435	| received bad waveform (unused)@
 436	| data connection disconnected@
 437	| permanent read error@
 438	| end of file@
@@ -785,11 +805,13 @@ code      | error type      | suggested action@
 451	| not authorized to do this@
 452	| no such user or bad password@
 453	| not allowed to use localsound@
+456	| input too long@
 461	| input triggered server bug@
 462	| unimplemented feature@
 463	| input triggered configuration bug@
 464	| input triggered OS incompatibility@
 465	| i/o problem : error on close()@
+466	| command stuck@
 471	| tcpsyn received invalid waveform@
 472	| unresolved remote tcpsyn server@
 473	| unreachable remote tcpsyn server@

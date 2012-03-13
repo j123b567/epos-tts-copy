@@ -1,6 +1,6 @@
 /*
  *	epos/src/interf.cc
- *	(c) 1996-99 geo@ff.cuni.cz
+ *	(c) 1996-99 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -70,8 +70,10 @@ void shriek(int code, const char *s)
 	color(cfg->stdshriek, cfg->normal_col);
 
 	FILE *hackfile = fopen("hackfile","w");
-	fprintf(hackfile, s);
-	fclose(hackfile);
+	if (hackfile) {
+		fprintf(hackfile, s);
+		fclose(hackfile);
+	}
 
 	command_failed *xcf;
 
@@ -306,6 +308,8 @@ unit *str2units(const char *text)
 {
 	unit *root;
 	parser *parsie;
+
+	if (text && (signed)strlen(text) > cfg->maxtext) shriek(456, "input too long");
 
 	if (text && *text) parsie = new parser(text, 1);
 	else parsie = new parser(this_lang->input_file, 0);
@@ -612,16 +616,16 @@ void epos_init()	 //Some global sanity checks made here
 	if (cfg->stdshriek_file && *cfg->stdshriek_file)
 		cfg->stdshriek = fopen(cfg->stdshriek_file, "w", "error messages");
 		
-	if (!_subst_buff) _subst_buff = (char *)xmalloc(MAX_GATHER+2);
-	if (!_gather_buff) _gather_buff = (char *)xmalloc(MAX_GATHER+2);
+//	if (!_subst_buff) _subst_buff = (char *)xmalloc(MAX_GATHER+2);
+//	if (!_gather_buff) _gather_buff = (char *)xmalloc(MAX_GATHER+2);
 	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)xmalloc(cfg->max_line+1); 
 	if (!scratch) scratch = (char *)xmalloc(cfg->scratch+1);
 	
 	compile_rules();
 
-	DEBUG(1,10,fprintf(STDDBG,"struct configuration is %d bytes\n", sizeof(configuration));)
-	DEBUG(1,10,fprintf(STDDBG,"struct lang is %d bytes\n", sizeof(lang));)
-	DEBUG(1,10,fprintf(STDDBG,"struct voice is %d bytes\n", sizeof(voice));)
+	DEBUG(1,10,fprintf(STDDBG,"struct configuration is %d bytes\n", (int)sizeof(configuration));)
+	DEBUG(1,10,fprintf(STDDBG,"struct lang is %d bytes\n", (int)sizeof(lang));)
+	DEBUG(1,10,fprintf(STDDBG,"struct voice is %d bytes\n", (int)sizeof(voice));)
 }
 
 void end_of_eternity();
@@ -648,13 +652,13 @@ void epos_done()
 {
 	epos_catharsis();
 	config_release();
+	unit::done();
 	shutdown_hashing();
-	shutdown_units();
 	shutdown_langs();
 	shutdown_cfgs();
 
-	release(&_subst_buff);
-	release(&_gather_buff);
+//	release(&_subst_buff);
+//	release(&_gather_buff);
 	release(&_resolve_vars_buff);
 	release(&scratch);
 	
@@ -667,6 +671,19 @@ void epos_reinit()
 	load_config("default.ini");
 	epos_init();
 }
+
+/*
+
+bool privileged_exec()
+{
+#ifdef HAVE_GETEGID
+	if (getuid() != geteuid() || getgid() != getegid())
+		return true;
+#endif
+	return false;
+}
+
+*/
 
 #ifdef DEBUGGING
 
@@ -750,14 +767,14 @@ operator delete(void * cp)
 #endif   // ifdef WANT_DMALLOC
 
 
-#ifndef HAVE_STRDUP
+//#ifndef HAVE_STRDUP
 
 char *strdup(const char*src)
 {
 	return strcpy((char *)xmalloc(strlen(src)+1), src);
 }
 
-#endif   // ifdef HAVE_STRDUP
+//#endif   // ifdef HAVE_STRDUP
 
 #ifndef HAVE_TERMINATE
 

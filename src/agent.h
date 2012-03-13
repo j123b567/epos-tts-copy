@@ -1,6 +1,6 @@
 /*
  *	epos/src/agent.h
- *	(c) 1998-99 geo@ff.cuni.cz
+ *	(c) 1998-99 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -99,8 +99,8 @@ class agent
 	virtual bool mktask(int size);	/* process <size> data from input to output	*/
 	virtual void finis(bool err);	/* tell the stream apply() has finished	*/
 	void schedule();	/* add this agent to the run queue	*/
-	void block(int fd);	/* schedule other agents until fd has more data */
-	void push(int fd);	/* schedule other agents until fd can absorb more data */
+	void block(socky int fd);/* schedule other agents until fd has more data */
+	void push(socky int fd);/* schedule other agents until fd can absorb more data */
 	void unquench();	/* no more queue overfull */
 	void relax();		/* free inb and outb properly		*/
 	void pass(void *);	/* called with data to be passed along	*/
@@ -144,7 +144,7 @@ class stream : public agent
 class a_protocol : public agent
 {
 	char *sgets_buff;
-	char *buffer;		// FIXME: one buffer should suffice
+	char *buffer;
 	virtual void run();
 	virtual int run_command(char *) = 0;	// returns: reschedule, terminate or ignore
    public:
@@ -193,7 +193,7 @@ agent *sched_sel();
 extern agent **sleep_table;
 extern fd_set block_set;
 extern fd_set push_set;
-extern int select_fd_max;
+extern socky int select_fd_max;
 
 inline int my_fork()
 {
@@ -216,6 +216,7 @@ extern char server_passwd[];
 
 void make_rnd_passwd(char *buffer, int size);
 
+void server_shutdown();
 
 #define PA_NEXT		0
 #define PA_DONE		1

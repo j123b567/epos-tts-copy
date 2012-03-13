@@ -1,6 +1,6 @@
 /*
  *	epos/src/navel.h
- *	(c) 1998 Jirka Hanika, geo@ff.cuni.cz
+ *	(c) 1998 Jirka Hanika, geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

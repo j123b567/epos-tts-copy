@@ -1,6 +1,6 @@
 /*
  *	epos/src/interf.h
- *	(c) geo@ff.cuni.cz
+ *	(c) geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -72,7 +72,8 @@ FILE *fopen(const char *filename, const char *flags, const char *reason);
 extern void *xmall_ptr_holder;
 #define OOM_HANDLER	(shriek(422, "Out of memory"), (void *)NULL)
 #define xmalloc(x)	(((xmall_ptr_holder = malloc((x)))) ? xmall_ptr_holder : OOM_HANDLER)
-#define xrealloc(x,y)	(((xmall_ptr_holder = realloc((x),(y)))) ? xmall_ptr_holder : OOM_HANDLER)
+//#define xrealloc(x,y)	(((xmall_ptr_holder = realloc((x),(y)))) ? xmall_ptr_holder : OOM_HANDLER)
+#define xrealloc(x,y)	((((xmall_ptr_holder = realloc((x),(y))))) && (x) ? xmall_ptr_holder : OOM_HANDLER)
 #define xcalloc(x,y)	(((xmall_ptr_holder = calloc((x),(y)))) ? xmall_ptr_holder : OOM_HANDLER)
 
 // inline void memhack(int size)
@@ -151,6 +152,7 @@ extern char *esctab;
 	int fork();
 #endif
 
+// bool privileged_exec();		// true if suid or sgid
 
 #define DEBUGGING     
 

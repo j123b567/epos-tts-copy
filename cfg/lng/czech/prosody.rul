@@ -104,8 +104,6 @@ regress  I>_(!_!)	sent   word
 #  Právì jsme pøestali "I" pou¾ívat k oznaèení isolovaných
 #  taktù a zaèneme ho pou¾ívat k oznaèení taktù iniciálních.
 #
-#  P bude oznaèovat takt pøedcházející poslednímu.
-#
 
 regress	 _\ F>M(!_!)	colon	word
 regress	 M>I(0_!)	colon	word
@@ -113,15 +111,16 @@ regress	 M>I(0_!)	colon	word
 #
 #  Rozdìlíme M na A a B podle toho, zda budeme chtít
 #  kadenci klesavou nebo stoupavou. Oznaèování se dìje
-#  zleva:  IMMMMPF -> IBMMMPF -> IBAMMPF -> IBACMPF ->
-#  -> IBACBPF a pak dal¹ím pravidlem -> IBABBPF
+#  zleva:  IMMMMMF -> IBMMMMF -> IBAMMMF -> IBACMMF ->
+#  -> IBACBMF -> IBACBAF  a pak dal¹ími pravidly -> IBABBBF
 #
 
 subst   "IM,IB  BM,BA  AM,AC  CM,CB"	colon  word
 regress  C>B(!_!)			colon  word
 
 regress  IAB>F(!_0)	colon	word	; a,b: F (kA, kB)
-regress  IAB>aab(!_ab)	colon	word	; O,P: F-1 (kA, kB)
+regress  A>B(!_F)			colon  word
+# regress  IAB>aab(!_ab)	colon	word	; O,P: F-1 (kA, kB)	; ??
 regress  F>T(!_0)	sent	word
 
 # Toto pravidlo je nejspí¹ reliktem minulosti
@@ -189,7 +188,7 @@ inside	IaA	word
 }
 
 
-inside	F	word		; F A - never used
+inside	Y	word		; F A - never used
 {
 	<	word  syll	; tzn. zaøiï se dle poètu slabik v taktu
 		{					; monosylaba se ignorují

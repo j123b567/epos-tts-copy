@@ -675,7 +675,7 @@ fi
 if test $GXX = yes; then 
 	if $CXX -v 2>&1 | grep -q egcs
 		then CFLAGS="-Wall -Wunused -pipe -gstabs+ -fdefer-pop"
-		else CFLAGS="-Wall -Wunused -pipe -fhandle-exceptions"
+		else CFLAGS="-Wall -Wunused -fhandle-exceptions"
 	fi
 	else CFLAGS=-O
 fi
@@ -2065,7 +2065,7 @@ else
 fi
 done
 
-for ac_func in strerror strdup fork strcasecmp stricmp qnx_name_attach
+for ac_func in strerror strdup fork getegid strcasecmp stricmp qnx_name_attach
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
 echo "configure:2072: checking for $ac_func" >&5
@@ -2239,20 +2239,66 @@ EOF
 fi
 
 
-echo $ac_n "checking "for terminate"""... $ac_c" 1>&6
-echo "configure:2244: checking "for terminate"" >&5
-if eval "test \"`echo '$''{'epos_cv_fn_terminate'+set}'`\" = set"; then
+echo $ac_n "checking "for glibc regex error codes"""... $ac_c" 1>&6
+echo "configure:2244: checking "for glibc regex error codes"" >&5
+if eval "test \"`echo '$''{'epos_cv_symb_regeend'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
 #line 2249 "configure"
+#include "confdefs.h"
+#include <sys/types.h>
+	#ifdef HAVE_RX_H
+	#include <rx.h>
+	#else
+	#ifdef HAVE_REGEX_H
+	#include <regex.h>
+	#else
+	#include "rx.h"
+	#endif
+	#endif
+	
+int main() {
+int result = REG_EEND;
+	return 0;
+; return 0; }
+EOF
+if { (eval echo configure:2267: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+  rm -rf conftest*
+  epos_cv_symb_regeend=yes
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  epos_cv_symb_regeend=no
+fi
+rm -f conftest*
+
+fi
+
+echo "$ac_t""$epos_cv_symb_regeend" 1>&6
+if test "$epos_cv_symb_regeend" = yes; then
+   cat >> confdefs.h <<\EOF
+#define HAVE_REG_EEND 1
+EOF
+
+fi
+	
+
+echo $ac_n "checking "for terminate"""... $ac_c" 1>&6
+echo "configure:2290: checking "for terminate"" >&5
+if eval "test \"`echo '$''{'epos_cv_fn_terminate'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  cat > conftest.$ac_ext <<EOF
+#line 2295 "configure"
 #include "confdefs.h"
 
 int main() {
 throw new int; exit(1); terminate()
 ; return 0; }
 EOF
-if { (eval echo configure:2256: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:2302: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   epos_cv_fn_terminate=yes
 else
@@ -2274,19 +2320,19 @@ EOF
 fi
 
 echo $ac_n "checking "for built-in bool"""... $ac_c" 1>&6
-echo "configure:2278: checking "for built-in bool"" >&5
+echo "configure:2324: checking "for built-in bool"" >&5
 if eval "test \"`echo '$''{'epos_cv_type_bool'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2283 "configure"
+#line 2329 "configure"
 #include "confdefs.h"
 
 int main() {
 bool b
 ; return 0; }
 EOF
-if { (eval echo configure:2290: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:2336: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   epos_cv_type_bool=yes
 else
@@ -2308,19 +2354,19 @@ EOF
 fi
 
 echo $ac_n "checking "for explicit template instatiations"""... $ac_c" 1>&6
-echo "configure:2312: checking "for explicit template instatiations"" >&5
+echo "configure:2358: checking "for explicit template instatiations"" >&5
 if eval "test \"`echo '$''{'epos_cv_c_templ_inst'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2317 "configure"
+#line 2363 "configure"
 #include "confdefs.h"
 template <class any_type> class some_type{}; template class some_type<int>;
 int main() {
 
 ; return 0; }
 EOF
-if { (eval echo configure:2324: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:2370: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   epos_cv_c_templ_inst=yes
 else
@@ -2342,12 +2388,12 @@ EOF
 fi
 
 echo $ac_n "checking "for socklen_t"""... $ac_c" 1>&6
-echo "configure:2346: checking "for socklen_t"" >&5
+echo "configure:2392: checking "for socklen_t"" >&5
 if eval "test \"`echo '$''{'epos_cv_type_socklen'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2351 "configure"
+#line 2397 "configure"
 #include "confdefs.h"
 #ifdef HAVE_SYS_SOCKET_H
 	#include <sys/socket.h>
@@ -2358,7 +2404,7 @@ int main() {
 
 ; return 0; }
 EOF
-if { (eval echo configure:2362: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:2408: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   epos_cv_type_socklen=yes
 else
@@ -2395,7 +2441,7 @@ broken_enum_bitfields_test='\
 	'
 
 echo $ac_n "checking "for broken enum bitfields"""... $ac_c" 1>&6
-echo "configure:2399: checking "for broken enum bitfields"" >&5
+echo "configure:2445: checking "for broken enum bitfields"" >&5
 if eval "test \"`echo '$''{'epos_cv_c_broken_enum_bitfields'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -2403,14 +2449,14 @@ else
   epos_cv_c_broken_enum_bitfields=yes
 else
   cat > conftest.$ac_ext <<EOF
-#line 2407 "configure"
+#line 2453 "configure"
 #include "confdefs.h"
 #ifdef __cplusplus
 extern "C" void exit(int);
 #endif
 $broken_enum_bitfields_test
 EOF
-if { (eval echo configure:2414: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest && (./conftest; exit) 2>/dev/null
+if { (eval echo configure:2460: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest && (./conftest; exit) 2>/dev/null
 then
   epos_cv_c_broken_enum_bitfields=no
 else

@@ -4,15 +4,17 @@
 # Pravidla pro zpracování slovenèiny
 
 $invent_dir	external
-$prosody_dir	external
-$base_dir	external
+#$prosody_dir	external
+#$base_dir	external
 #$dph_file	external
 
 
 #$inv_dph =	$dph_file
 
-$prosody   = ${base_dir}/${prosody_dir}
+#$prosody   = ${base_dir}/${prosody_dir}
 #$dph_file  = ${base_dir}/${invent_dir}/${inv_dph}
+
+$prosody = ../czech/prosody
 
 #include "trans.rul"
 

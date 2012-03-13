@@ -1,6 +1,6 @@
 /*
  *	epos/src/block.cc
- *	(c) 1996-99 geo@ff.cuni.cz
+ *	(c) 1996-99 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -50,8 +50,8 @@ class block_rule : public rule
 	void apply_current(unit *root);
 	void load_rules(rule * terminator, text *file, hash *inherited_vars);
    public:
-	block_rule::block_rule();
-	block_rule::~block_rule();
+	block_rule();
+	~block_rule();
 
 	virtual void set_level(UNIT scp, UNIT trg);
 	virtual void check_children();

@@ -43,6 +43,9 @@
 /* Define if you have the built-in terminate function.  */
 #undef HAVE_TERMINATE
 
+/* Define if your regex library defines the REG_EEND and REG_ESIZE error codes */
+#undef HAVE_REG_EEND
+
 /* Define if you have <unistd.h>.  */
 #undef HAVE_UNISTD_H
 

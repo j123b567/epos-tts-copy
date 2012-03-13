@@ -1,6 +1,6 @@
 /*
  *	epos/src/vrfy.cc
- *	(c) 1998-99 Jirka Hanika <geo@ff.cuni.cz>
+ *	(c) 1998-99 Jirka Hanika <geo@cuni.cz>
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -125,7 +125,7 @@ void spk_strm(int c, int d)
 void spk_appl(int c, int d, char *data)
 {
 	sputs("appl ", ctrld[c]);
-	sprintf(scratch, "%d", strlen(data));
+	sprintf(scratch, "%d", (int)strlen(data));
 	sputs(scratch, ctrld[c]);
 	sputs("\r\n", ctrld[c]);
 	sputs(data, datad[d]);
@@ -153,59 +153,41 @@ void intr_test()
 {
 	testname="intr test";
 	spk_strm(0,0);
-	spk_appl(0,0, "Jenom jednu sekundu mohu breptat. Touto dobou jest nastati tichu. Jen omyl by mohl stanovit jinak. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
-Brejk je asi rozbitej. 
+	spk_appl(0,0, "Jenom jednu sekundu mohu breptat. Touto dobou jest nastati tichu. Jen omyl by mohl stanovit jinak. Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
+Brejk je asi rozbitej. \
 Nechce brejkovat tento text.");
 	if (get_result(0) > 2) shriek("Could not set up a stream");
 	sleep(1);

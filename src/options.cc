@@ -1,6 +1,6 @@
 /*
  *	epos/src/options.cc
- *	(c) 1996-99 geo@ff.cuni.cz
+ *	(c) 1996-99 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -215,11 +215,16 @@ void make_option_set()
 
 	option_set->remove("languages");	// FIXME
 	option_set->remove("voices");
+}
 
-	text *t = new text(cfg->allow_file, cfg->ini_dir, "", NULL, true);
+void restrict_options()
+{
+	option *o;
+
+	text *t = new text(cfg->restr_file, cfg->ini_dir, "", NULL, true);
 	if (!t->exists()) {
 		delete t;
-		return;		/* if no allow file, ignore it */
+		return;		/* if no restictions file, ignore it */
 	}
 	char *line = (char *)xmalloc(cfg->max_line);
 	while (t->getline(line)) {
@@ -373,7 +378,7 @@ option *option_struct(const char *name, hash_table<char, option> *softopts)
 {
 	option *o;
 
-	if (!option_set) make_option_set();
+	if (!option_set) shriek(862, "no config_init()");
 	if (!name || !*name) return NULL;
 	o = option_set->translate(name);
 	if (!o && softopts) o = softopts->translate(name);
@@ -400,6 +405,14 @@ void parse_cfg_str(char *val)
 	*netto=0;
 }
 
+template<class T> inline void set_enum_option(option *o, char *val, char *list, char *locus)
+{
+	T tmp = (T)str2enum(val, list, U_ILL);
+	if (tmp == (T)U_ILL)
+		shriek(447, fmt("Can't set %s to %s", o->optname, val));
+	*(T *)locus = tmp;
+}
+
 bool set_option(option *o, char *val, void *base)
 {
 	if (!o) return false;
@@ -409,9 +422,9 @@ bool set_option(option *o, char *val, void *base)
 		case O_BOOL:
 			int tmp;
 			tmp = str2enum(val, BOOLstr, false);
-			*(bool *)locus = tmp & 1;
 			if (cfg->paranoid && (!val || tmp == U_ILL)) 
 				shriek(447, fmt("%s is used as a boolean value for %s", val, o->optname));
+			*(bool *)locus = tmp & 1;
 			DEBUG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to %s\n",
 				o->optname,enum2str(*(bool*)locus, BOOLstr));)
 			break;
@@ -420,36 +433,46 @@ bool set_option(option *o, char *val, void *base)
 			DEBUG(1,10,fprintf(STDDBG,"Debug focus set to %i\n",*(int*)locus);)
 			break;
 		case O_MARKUP:
-			if((*(OUT_ML *)locus=(OUT_ML)str2enum(val, OUT_MLstr, U_ILL))==(int)U_ILL)
+/*			OUT_ML tmpml = (OUT_ML)str2enum(val, OUT_MLstr, U_ILL);
+			if (tmpml == (int)U_ILL)
 				shriek(447, fmt("Can't set %s to %s", o->optname, val));
+			*(OUT_ML *)locus = tmpml;
+*/			
+			set_enum_option<OUT_ML>(o, val, OUT_MLstr, locus);
 			DEBUG(1,10,fprintf(STDDBG,"Markup language option set to %i\n",*(int*)locus);)
 			break;
 		case O_SYNTH:
-			if((*(SYNTH_TYPE *)locus=(SYNTH_TYPE)str2enum(val, STstr, U_ILL))==(int)U_ILL)
-				shriek(447, fmt("Can't set %s to %s", o->optname, val));
+//			if((*(SYNTH_TYPE *)locus=(SYNTH_TYPE)str2enum(val, STstr, U_ILL))==(int)U_ILL)
+//				shriek(447, fmt("Can't set %s to %s", o->optname, val));
+			set_enum_option<SYNTH_TYPE>(o, val, STstr, locus);
 			DEBUG(1,10,fprintf(STDDBG,"Synthesis type option set to %i\n",*(int*)locus);)
 			break;
 		case O_CHANNEL:
-			if((*(CHANNEL_TYPE *)locus=(CHANNEL_TYPE)str2enum(val, CHANNEL_TYPEstr, U_ILL))==(int)U_ILL)
-				shriek(447, fmt("Can't set %s to %s", o->optname, val));
+//			if((*(CHANNEL_TYPE *)locus=(CHANNEL_TYPE)str2enum(val, CHANNEL_TYPEstr, U_ILL))==(int)U_ILL)
+//				shriek(447, fmt("Can't set %s to %s", o->optname, val));
+			set_enum_option<SYNTH_TYPE>(o, val, STstr, locus);
 			DEBUG(1,10,fprintf(STDDBG,"Channel type option set to %i\n",*(int*)locus);)
 			break;
 		case O_UNIT:
-			if((*(UNIT *)locus=str2enum(val, cfg->unit_levels, U_ILL))==U_ILL) 
-				shriek(447, fmt("Can't set %s to %s", o->optname, val));
+//			if((*(UNIT *)locus=str2enum(val, cfg->unit_levels, U_ILL))==U_ILL) 
+//				shriek(447, fmt("Can't set %s to %s", o->optname, val));
+			set_enum_option<SYNTH_TYPE>(o, val, STstr, locus);
 			DEBUG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to %d\n",o->optname,*(int *)locus);)
 			break;
 		case O_INT:
-			*(int *)locus=0;
-			if (!sscanf(val,"%d",(int*)locus)) shriek(447, "Unrecognized numeric parameter");
+//			*(int *)locus=0;
+			int v;
+			if (!sscanf(val,"%d",&v)) shriek(447, "Unrecognized numeric parameter");
+			*(int *)locus = v;
 			DEBUG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to %d\n",o->optname,*(int *)locus);)
 			break;
 		case O_STRING: 
-			parse_cfg_str(val);
+			if (val[0]) parse_cfg_str(val);
 			DEBUG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to \"%s\"\n",o->optname,val);)
 			*(char**)locus = strdup(val);	// FIXME: should be forever if monolith etc. (maybe)
 			break;
 		case O_CHAR:
+			if (!val[0]) shriek(447, fmt("Empty string given for a CHAR option %s", o->optname));
 			parse_cfg_str(val);
 			if (val[1]) shriek(447, fmt("Multiple chars given for a CHAR option %s", o->optname));
 			else *(char *)locus=*val;
@@ -515,7 +538,8 @@ static inline void set_option_or_die(char *name, char *value)
 {
 	option *o = option_struct(name, NULL);
 	if (!o) shriek(814, fmt("Unknown option %s", name));
-	if (!cfg->langs && o->structype != OS_CFG) return;
+	if (!cfg->langs && (o->structype != OS_CFG || o->opttype == O_LANG))
+		return;
 
 	if (set_option(o, value)) return;
 	shriek(814, fmt("Bad value %s for option %s", value, name));
@@ -534,7 +558,7 @@ bool lang_switch(const char *value)
 {
 	for (int i=0; i < cfg->n_langs; i++)
 		if (!strcmp(cfg->langs[i]->name, value)) {
-			if (!cfg->langs[i]->n_voices)		// FIXME
+			if (!cfg->langs[i]->n_voices)
 				shriek(462, "Switch to a mute language unimplemented");
 			cfg->default_lang = i;
 			return true;
@@ -601,7 +625,7 @@ char *format_option(const char *name)
 {
 	option *o = option_struct(name, this_lang->soft_options);
 	if (!o) {
-		shriek(442, fmt("Not returning empty string for nonexistant option %s", name));	//FIXME?
+		shriek(442, fmt("Nonexistent option %s", name));
 		return NULL; /* unreachable */
 	}
 	return format_option(o);
@@ -636,13 +660,13 @@ void parse_cmd_line()
 		case 1:
 			for (j = ar+1; *j; j++) switch (*j) {
 				case 'b': cfg->out_verbose=false; break;
-				case 'd': cfg->show_diph=true; break;
-				case 'e': cfg->show_phones=true; break;
+//				case 'd': cfg->show_diph=true; break;
+//				case 'e': cfg->show_phones=true; break;
 				case 'f': cfg->forking=false; break;
 				case 'H': cfg->long_help=true;	/* fall through */
 				case 'h': cfg->help=true; break;
 				case 'n': cfg->rules_file="nnet.rul";
-					  if (this_lang)
+					  if (cfg->langs && this_lang)
 						this_lang->rules_file = cfg->rules_file;
 					  cfg->neuronet=true; break;
 				case 'p': cfg->pausing=true; break;
@@ -653,7 +677,7 @@ void parse_cmd_line()
 					else if (cfg->warnings)
 						cfg->always_dbg--;
 					break;
-				default : shriek(442, fmt("Unknown option -%c, ignored", *j));
+				default : shriek(442, fmt("Unknown option -%c, no action taken", *j));
 			}
 			if (!ar[1]) {
 				cfg->input_file = "";   	//dash only
@@ -755,8 +779,8 @@ static inline void dump_help()
 
 	printf("usage: %s [options] ['Text to be processed']\n", argv[0]);
 	printf(" -b  bare format (no frills)\n");
-	printf(" -d  show diphones\n");
-	printf(" -e  show phones\n");
+//	printf(" -d  show diphones\n");
+//	printf(" -e  show phones\n");
 	printf(" -f  disable forking (detaching) the daemon\n");
 	printf(" -n  same as --neuronet --rules_file nnet.rul\n");
 	printf(" -p  pausing - show every intermediate state\n");
@@ -798,8 +822,13 @@ void config_init()
 {
 	const char *mlinis[] = {"","ansi.ini","rtf.ini", NULL};
 
+	if (option_set) shriek(862, "config_init() too late");
 	make_option_set();
-	parse_cmd_line();	/* this ordering forbids --base_dir for allowed.ini on the cmd line */
+//	restrict_options();
+//	if (privileged_exec())	/* parse restr.ini before command line */
+//		restrict_options(); 
+	parse_cmd_line();
+	restrict_options();
 	DEBUG(3,10,fprintf(STDDBG,"Base directory is %s\n", cfg->base_dir);)
 	DEBUG(2,10,fprintf(STDDBG,"Using configuration file %s\n", cfg->inifile);)
 

@@ -1,6 +1,6 @@
 /*
  *	epos/src/unit.h
- *	(c) geo@ff.cuni.cz
+ *	(c) geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,7 +28,9 @@
 
 #define RATIO_TOTAL	   100	  // 100 % (unit::smooth percent sum)
 
-#define MAX_GATHER       16384          // Maximum word size (for buffer allocation)
+// #define MAX_GATHER       16384          // Maximum word size (for buffer allocation)
+// #define MAX_GATHER       16          // Maximum word size (for buffer allocation)
+
 #define SMOOTH_CQ_SIZE    16		// max smooth request length, see unit::smooth()
 
 
@@ -50,7 +52,7 @@ class unit
 	void nnet_dump(FILE *outf);
 	float nnet_type();
     
-	inline bool subst(hash *table, unsigned int safe_grow,
+	inline bool subst(hash *table, int total_length,
 		char*s1b,char*s1e,char*s2b,char*s3b,char*s3e); //inner, see implem.
 	void syll_break(char *sonority, unit *before);    //Implements the side-syllable hack
 	void syllabify(char *sonority);  //May split "father" just before "this", if sonority minimum
@@ -76,10 +78,11 @@ class unit
 	void fout(char *filename);        //stdout if NULL
 	void fprintln(FILE *outf);        //does not recurse, prints cont,f,i,t
 	char *gather(char *buffer_start, char *buffer_end, bool suprasegm);
+	char *gather(int *l, bool delimited, bool suprasegm);	// returns length in *l
              // gather() returns the END of the string (which is unterminated!)
         void insert(UNIT target, bool backwards, char what, bool *left, bool *right);
 //	void subst(UNIT target, hash *table, SUBST_METHOD method);
-	inline void subst(char *subst_buff);  //replace this one by _subst_buff
+	inline void subst();          //replace this unit by sb
 	bool subst(hash *table, SUBST_METHOD method);
 	bool relabel(hash *table, SUBST_METHOD method, UNIT target);				      
 #ifdef WANT_REGEX
@@ -122,10 +125,16 @@ class unit
 
 	void *operator new(size_t size);
 	void operator delete(void *ptr);
+
+	static char *gb;		// gather buffer
+	static int gbsize;
+	static char *sb;		// subst buffer
+	static int sbsize;
+	static void done();		// free buffers
 };
 
-extern char * _subst_buff;
-extern char * _gather_buff;
+// extern char * _subst_buff;
+// extern char * _gather_buff;
 extern unit * _unit_just_unlinked;
 
 void shutdown_units();

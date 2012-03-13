@@ -23,7 +23,7 @@ character, and a few enumerated types.
 <P>Almost all individual options are documented in 
 <A HREF="#indivopts">this document</A>. 
 The reliable list of all built-in long options can be found in <CODE>src/options.lst</CODE>.
-(See approximately line 275 and below. Every line represents at most one
+(See approximately line 320 and below. Every line represents at most one
 option for every option class as explained below. The option name is
 quoted; its semantics is usually explained following the option.)
 You can also list their names and types using <CODE>epos -H</CODE>.
@@ -173,17 +173,52 @@ are available for diagnostic purposes.
 </H2>
 
 <P>
-<P>There are three kinds of command line: the <EM>daemon</EM> one, the <EM>client</EM> one,
-and the <EM>monolithic</EM> Epos binary. The following description is a little
-bit chaotic in this respect; please do experiment if unsure.
-<P>FIXME: see preceding paragraph
-<P>In both the daemon and monolithic shape it is possible to override
-configuration file supplied values at the command line. All options
-may be overridden using <EM>long options</EM>, i.e. the option name
-preceded by two dashes and followed by a value (unless the option
-is a truth value (boolean) and the value desired is <CODE>true</CODE>
-or, for a string option, the empty string).
-The ordering of the options on the command line is not significant.
+<P>Command line option values can be passed to Epos
+at server startup, or to the <CODE>say</CODE> utility.
+The behavior of these two command lines is very similar, though not identical.
+The monolithic Epos executable should not deviate from the server executable,
+unless specified otherwise.
+<P>The options can be specified anywhere on the command line, and are processed
+from left to right before any other text (which is treated as the text to be
+synthesized) on the command line.  Long options, which correspond directly
+to the options specified in configuration files, are preceded with a double dash
+and they take a value, which can be separated
+using the equality sign (<CODE>=</CODE>), or spacing; the value (<CODE>true</CODE> or the empty string)
+can be understood implicitly, if applicable to the option type, and the option
+is followed by another option or comes last at the command line. 
+Short options are denoted by single letters, preceded with a single dash, and
+they never take a value.
+<P>
+<H3>Input text</H3>
+
+<P>
+<P>Technically speaking, this section doesn't cover options, but it is nevertheless
+included.
+<P>The main purpose of the <CODE>say</CODE> utility is to convert a specified
+text to speech.  Therefore, any command line text which is not part of an option
+name or option value is concatenated together with spaces, and
+sent to the server for the usual processing (TTS and phonetic
+transcription), after all preceding, intervening or following
+options have been sent to the server.
+<P>The same is true for the monolithic Epos executable, but in this
+case, only a single argument of this sort is accepted.  (Just
+enclose the text with quotes to have it treated as a single
+argument.  The sole reason why this is so is the less-than-maintained
+status of the monolithic executable.)
+<P>In both cases, quite random defaults are supplied if no input text
+is specified.
+<P>It is not possible nor desirable to specify the input text for
+the TTSCP server executable.  It is accepted and silently ignored.
+<P>
+<P>
+<H3>Long options</H3>
+
+<P>
+<P>The long options are also available through the <CODE>say</CODE> utility;
+in such case, the long option is passed to the TTSCP server
+without any effect on the <CODE>say</CODE> client.
+<P>The ordering of the options on the command line is usually not significant,
+unless the current language or voice is switched during the processing.
 An example:
 <P>
 <BLOCKQUOTE><CODE>
@@ -201,26 +236,7 @@ to be transcribed and synthesized is given on the command line as well
 can be obtained with <CODE>epos -H</CODE> of the main program (not the client
 stub, sorry).  The semantics of nearly all individual long options is described
 <A HREF="#indivopts">below</A>.
-<P>The most frequently used options and occasionally even common sets
-of options are given a shortcut, called a <EM>short option</EM>.
-A short option is a single letter preceded by a single dash.
-Usual conventions for merging short options are available, therefore
-the example above may be abbreviated as
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-say --language german -p "Wie geht es?" -d
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>or even 
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-say --language german -pd "Wie geht es?"
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>(There  is no short option for <CODE>--language</CODE>.)
-For turning long boolean options off, it is possible to give their name
+<P>For turning long boolean options off, it is possible to give their name
 with three dashes. Therefore,
 <P>
 <BLOCKQUOTE><CODE>
@@ -235,11 +251,95 @@ say ---show_transcript "Say this, do not show the transcription"
 say --show_transcript off "Say this, do not show the transcription"
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>A list of (the most of) the short options can be obtained with
-<CODE>epos --help</CODE>, or <CODE>epos -h</CODE>.
-<P>The options on the command line are processed left to right.
-They take precedence over the configuration files (unless
-common sense rules otherwise).
+<P>Refer to the 
+<A HREF="#indivopts">individual options</A> subsection
+for documentation on available long options.
+<P>
+<H3>Language and voice switching</H3>
+
+<P>
+<P>Two pseudo-options <CODE>--language</CODE> and <CODE>--voice</CODE> can be used to switch
+the current language or voice, or to specify options for other than the
+default language or voice.  There may be multiple options of this kind
+given to the <CODE>say</CODE> utility or the monolithic Epos executable, and
+their ordering is important.  For example,
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+say Something. --init_f 80 --voice vichova
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>doesn't do the expected thing, i.e. use the voice named "vichova"
+as modified by setting the neutral pitch for this command to 80.
+Instead, the neutral pitch is set for the default voice, and 
+then the voice is switched to the specified one.  To get the
+intended behavior, reorder the command line:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+say Something. --voice vichova --init_f 80
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<H3>Short options</H3>
+
+<P>
+<P>The most frequently used options and occasionally even collections
+of options and/or other stuff are given a shortcut, called a <EM>short option</EM>.
+A short option is a single letter preceded by a single dash.
+Usual conventions for merging short options into a single string
+are available, and the example above may thus be abbreviated as
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+say --language german -p "Wie geht es?" -d
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>or even 
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+say --language german -pd "Wie geht es?"
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>(There is no short option for <CODE>--language</CODE>.)
+<P>The short options are interpreted directly by the <CODE>say</CODE> utility;
+that's why the list of short options available with this utility
+is different from the list of short options available with the server
+or the monolithic Epos executable.
+A list of (the most of) the server short options can be obtained with
+<CODE>epos --help</CODE>, or <CODE>epos -h</CODE>/.  A list of (the most of)
+short options understood by the <CODE>say</CODE> utility can be obtained with
+<CODE>say -h</CODE>.  Such list however includes undocumented options
+which may disappear in the next releases.
+<P>
+<H3>Server short options</H3>
+
+<P>
+<P>
+<DL>
+<DT><B>-f</B><DD><P>Do not fork at startup.  Same as <CODE>---forking</CODE>.
+<DT><B>-h</B><DD><P>Show a summary of available short options
+<DT><B>-p</B><DD><P>Same as <CODE>--pausing</CODE>.
+<DT><B>-v</B><DD><P>Show Epos version.
+<DT><B>-D</B><DD><P>Turn on debugging output.  Multiple <CODE>-D</CODE> options cause the output to be more
+verbose.  
+<DT><B>-H</B><DD><P>In addition to a summary of short options, show also a list of all available
+long options.
+</DL>
+<P>
+<H3>Client short options</H3>
+
+<P>
+<P>
+<DL>
+<DT><B>-k</B><DD><P>Shut down the server.
+<DT><B>-l</B><DD><P>List all available languages and available voices for the current language.
+<DT><B>-u</B><DD><P>Turn on utterance chunking.  This option has unintuitive consequences
+when combined with <CODE>-w</CODE>.
+<DT><B>-w</B><DD><P>Write the output to a file (usually /usr/lib/epos/root/said.wav) instead
+of writing it to the local sound card.
+</DL>
 <P>
 <P>
 <H2><A NAME="ss3.4">3.4 Setting options in TTSCP</A>
@@ -250,18 +350,18 @@ common sense rules otherwise).
 <A HREF="epos-4.html#ttscp">TTSCP specification</A> for general
 overview of TTSCP and the <CODE>set</CODE> command.
 <P>
-<H3><A NAME="allowed-options"></A> <CODE>allowed.ini</CODE> file </H3>
+<H3><A NAME="restricted-options"></A> <CODE>restr.ini</CODE> file </H3>
 
 <P>
 <P>Setting options in TTSCP can be a security problem, as some options
 can cause the server to access unrelated files. It is therefore
 strongly recommended not to run the Epos daemon with superuser privileges,
-but sometimes more fine-grained access control mechanism is needed.
+but sometimes a more fine-grained access control mechanism is needed.
 It is authentication and limiting access to specified options
 for some or all users.
 <P>By default, all settable parameters can be changed by any outside connection
 (this doesn't affect any other connections in any way). 
-You can control this privilege by restricting it in <CODE>cfg/allowed.ini</CODE>.
+You can control this privilege by restricting it in <CODE>cfg/restr.ini</CODE>.
 <P>Every line of that file is in the form
 <P>
 <BLOCKQUOTE><CODE>
@@ -296,7 +396,9 @@ anonymous connections.</LI>
 </TD></TR></TABLE></CENTER>
 <P>Unknown parameters are considered just not to have been implemented in this
 particular version of Epos and are not reported. Parameters not mentioned
-in <CODE>allowed.ini</CODE> are allowed unlimited access by any connection.
+in <CODE>restr.ini</CODE> are allowed unlimited access by any connection.
+<P>Note that the location of this file can be changed at the command line
+(with <CODE>base_dir</CODE>).
 <P>
 <H2><A NAME="ss3.5">3.5 Semipermanent personal preferences</A>
 </H2>
@@ -385,7 +487,7 @@ For other options, such as <CODE>default_scope</CODE>, the value is a layer name
 and is thus meaningful only after the layers are defined; all such options
 can only be set after the <CODE>unit_levels</CODE> option has been set correctly.
 <P>As level description dependent options (the former type) do not yet exist
-upon program startup, the access control in <CODE>allowed.ini</CODE> only works
+upon program startup, the access control in <CODE>restr.ini</CODE> only works
 for the arrays of options, not individual options:
 <P>
 <BLOCKQUOTE><CODE>
@@ -529,27 +631,37 @@ option.  The first language listed will become the default language.
 <P>
 <H3>Types of output</H3>
 
-<P>FIXME: the following options often reasonably work only for the monolithic
-version of Epos.  Should be checked out, unified and documented.
+<P>When Epos is compiled as a TTSCP server, the variability of data formats
+is controlled by TTSCP rather than by option settings.  However, there
+are some options related to the output formats produced by the monolithic
+binary (executable).  There are also some conventional informative outputs
+that can be produced by the monolithic and server binaries equally.
 <P>
 <DL>
-<DT><B>--show_transcript</B><DD><P>Print the transcription of the text processed.
 <DT><B>--show_phones</B><DD><P>Print the sequence of sounds generated from the text processed.
+Monolithic binary only.
 <DT><B>--show_diphones</B><DD><P>Print the sequence of diphones generated from the text processed.
+Monolithic binary only.
 <DT><B>--show_raw_diphs</B><DD><P>When used in conjunction with the <CODE>show_diphones</CODE> option, the diphones
 will be not only listed by name, but they will also include the actual
-numbers generated.
+numbers generated.  Monolithic binary only.
 <DT><B>--play_diphones</B><DD><P>Synthesize the waveform and say it through the sound card or write it to
 a file, as pointed to by the <CODE>wave_file option</CODE> option.
-<DT><B>--wave_header</B><DD><P>When dumping the waveform into a file, put the traditional wav file
-header at its beginning.  Regardless of this value, the header
-is never added when writing the waveform to a device (a file descriptor
-which understands the usual ioctls).
+Monolithic binary only.
+<DT><B>--wave_header</B><DD><P>When dumping the waveform into a file or a TTSCP data connection,
+put the RIFF wave file header at its beginning.  Regardless of
+this value, the header is never added when writing the waveform
+to a sound output device (a file descriptor which understands
+the usual ioctls).  TTSCP requires this option be always set
+to <CODE>on</CODE>; consequently, the option is only reasonably useful with the
+monolithic binary.
 <DT><B>--immed_diphones</B><DD><P>Print the sequence of diphones generated from the text processed
 just after the <CODE>diphones</CODE> rule.  This is useful especially
 in conjunction with the <CODE>neuronet</CODE> option where the diphone layer
 is created, but later to be discarded by the rules.
+Monolithic binary only.
 <DT><B>--neuronet</B><DD><P>Very experimental. See <CODE>doc/czech/nnet.doc</CODE> for more info.
+Monolithic binary only.
 <DT><B>--help</B><DD><P>Print a brief synopsis of short options upon startup.  No data processing
 is performed.
 <DT><B>--long_help</B><DD><P>Print a list of long options upon startup.  No data processing is performed.
@@ -616,7 +728,7 @@ unit, for example before the word-initial syllable in case of
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is a string which will be printed after the last unit within this
 unit, for example before the word-final syllable in case of
-<CODE>close_word</CODE>).
+<CODE>close@word</CODE>).
 <DT><B>--color* <I>string</I></B><DD><P>The asterisk stands for a @-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is the string to switch the color for this level of description.
@@ -624,7 +736,7 @@ is the string to switch the color for this level of description.
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is a string which will be printed between adjacent units of this
 level of description, for example between words in case of      
-<CODE>begin_word</CODE>).
+<CODE>separ@word</CODE>).
 <DT><B>--structured</B><DD><P>Whether the verbose model of displaying the TSR as described above
 is used. When off, only the text itself is printed and simple
 spacing is used to delimit units which do not correspond to
@@ -660,15 +772,16 @@ configurable and soft, but some hard limits have also been imposed. This subsect
 also covers some time vs. space trade-off configuration parameters, though
 these are no limits at all. Also some <EM>sanity check limits</EM> are imposed; these
 act as hard limits, but can be effectively disabled by setting them to absurdly
-high values (and even then they may correctly enforce a certain type of a sanity
-check).
+high values, with no direct impact on efficiency in the typical case.
 <P>In fact, you can ignore this section completely, as the few hard limits tend to
-employ absurdly high values. 
+employ reasonably high values.
 <P>
 <DL>
 <DT><B>--diph_buff_size <I>diphones</I></B><DD><P>Soft limit.  Maximum number of diphones generated by the diphoniser
 and synthesized at once. It more diphones have to be generated,
-they are synthesized in chunks of <CODE>diph_buff_size</CODE>. 
+they are synthesized in chunks of <CODE>diph_buff_size</CODE>.  If this
+option is set to zero, a growable buffer is used instead, and
+there is no limit on memory consumed.
 This option has no effect in the monolithic Epos.
 <DT><B>--buffer_size <I>bytes</I></B><DD><P>Soft limit. The initial buffer size for a wave file. This value is not
 used, if we already know that we will eventually write this waveform
@@ -683,7 +796,7 @@ advance and it is always finite.
 The hash tables used in Epos
 are actually quite robust performance-wise, so that even values
 like 1000, that is, ten data items per a hash table slot, result
-in reasonable speed. Values somewhere below 100 are the best bet.
+in near-optimal speed. Values somewhere below 100 are the best bet.
 <DT><B>--max_line_len <I>characters</I></B><DD><P>Hard limit. Maximum line length in a text-oriented input file.
 Longer lines are truncated.
 <DT><B>--max_net_cmd <I>characters</I></B><DD><P>Hard limit. Maximum TTSCP command length. TTSCP lines longer
@@ -692,6 +805,9 @@ to be at least 80, but a few kilobytes is recommended.
 <DT><B>--max_rule_weight <I>weight</I></B><DD><P>Sanity check limit. Maximum rule weight in a choice, as well as the maximum
 rule repeat count. Using very large weights can result in memory
 exhaustion.  Values on the order of 10000 are still perfectly safe.
+<DT><B>--max_text_size <I>bytes</I></B><DD><P>Sanity check limit.  Maximum amount of space allowed for growable
+processing buffers, or for the input text (checked just before parsing).
+This option is generally used to avoid memory exhaustion.
 <DT><B>--multi_subst <I>count</I></B><DD><P>Sanity check limit.  How may substitutions will be applied to a unit
 during processing of a <CODE>subst</CODE> rule.  The rule is applied until
 the unit settles down or until this limit is reached.  In the latter
@@ -1037,16 +1153,17 @@ At the moment that is of little practical use except for debugging.
 to store its internal password to a file.  This password can then
 be used for TTSCP authentication in order to issue restricted commands
 such as <CODE>down</CODE>.  If the file can not be created, no error is reported.
-<DT><B>--allow_options_file <I>filename</I></B><DD><P>The file named by this parameter provides access control in TTSCP to individual
+<DT><B>--restr_file <I>filename</I></B><DD><P>The file named by this parameter provides access control in TTSCP to individual
 options.  Its syntax is described 
-<A HREF="#allowed-options">above</A>.
+<A HREF="#restricted-options">above</A>.
 <DT><B>--listen_port <I>port</I></B><DD><P>The TCP port number where the daemon should be listening for incoming
 TTSCP connections. The daemon will check if no other service is already
 running on that port and refuses to run if the port is already occupied.
 <DT><B>--local_only </B><DD><P>When this option is set, the daemon accepts no new connections on
 network interfaces except the localhost one.  This way, only clients
-running on the same machine can connect to the server.  Normally,
-the daemon listens on all available interfaces.
+running on the same machine can connect to the server.  If this option
+is not set, the server accepts new connections on all available
+interfaces.
 </DL>
 <P>
 <P>

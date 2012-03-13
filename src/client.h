@@ -1,5 +1,5 @@
 /*
- *	(c) 1998-99 Jirka Hanika <geo@ff.cuni.cz>
+ *	(c) 1998-99 Jirka Hanika <geo@cuni.cz>
  *
  *	This single source file src/client.h, but NOT THE REST OF THIS PACKAGE,
  *	is considered to be in Public Domain. Parts of this single source file may be
@@ -136,9 +136,12 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 		#include <io.h>
 	#endif
 
+	#ifdef HAVE_ERRNO_H
+		#include <errno.h>
+	#endif
+
 	inline void async_close(int fd)
 	{
-		if (fd == -1 && !cfg->paranoid) return;		// FIXME
 		if(close(fd) && closesocket(fd)) shriek(465,"Error on close()");
 		return;
 	}
@@ -146,14 +149,26 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 	inline int ywrite(int fd, const void *buffer, int size)
 	{
 		int result = send(fd, (const char *)buffer, size, 0);
-		if (result == -1) result = write(fd, (const char *)buffer, size);
+		if (result == -1) {
+			if (WSAGetLastError() == WSAEWOULDBLOCK) {
+				errno = EAGAIN;
+				return -1;
+			}
+			return write(fd, (const char *)buffer, size);
+		}
 		return result;
 	}
 
 	inline int yread(int fd, void *buffer, int size)
 	{
 		int result = recv(fd, (char *)buffer, size, 0);
-		if (result == -1) result = read(fd, (char *)buffer, size);
+		if (result == -1) {
+			if (WSAGetLastError() == WSAEWOULDBLOCK) {
+				errno = EAGAIN;
+				return -1;
+			}
+			return read(fd, (char *)buffer, size);
+		}
 		return result;
 	}
 

@@ -1,6 +1,6 @@
 /*
  *	epos/src/monolith.cc
- *	(c) 1996-99 geo@ff.cuni.cz
+ *	(c) 1996-99 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 		return 0;
 	} catch (any_exception *e) {	// this one is preferred, however.
 //	} catch (old_style_exc *e) {	// this one is required by the g++ bugware
-		printf("*****************\n");
+//		printf("*****************\n");
 		return 4;
 	}
 }

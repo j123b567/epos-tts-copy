@@ -1,6 +1,6 @@
 /*
  *	epos/src/voice.h
- *	(c) geo@ff.cuni.cz
+ *	(c) geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ enum SYNTH_TYPE {
 	S_LPC_INT = 5,
 	S_LPC_VQ = 6,
 	S_KTD = 8,
-	S_PTD = 10,
+	S_PTD = 10
 };
 
 #define STstr "none:internet:::lpc-float:lpc-int:lpc-vq::ktd::ptd:"
@@ -48,7 +48,6 @@ struct lang : public cowabilium
    #define CONFIG_LANG_DECLARE
    #include "options.lst"
 
-//	char *lang_name;
 	rules *ruleset;
 	hash_table<char, option> *soft_options;
 	void *soft_defaults;
@@ -57,8 +56,8 @@ struct lang : public cowabilium
 	int   default_voice;
 
    public:
-	lang::lang(const char *filename, const char *dirname);
-	lang::~lang();
+	lang(const char *filename, const char *dirname);
+	~lang();
 	void add_soft_option(const char  *option_name);
 	void add_soft_opts(const char *option_names);
 	void add_voice(const char  *voice_name);
@@ -86,11 +85,9 @@ struct voice : public cowabilium
 	void claim_diphone_names();
 
 	void *operator new(size_t, lang *parent_lang);
+//	void  operator delete(void *p, lang *) { delete p; };
 	void  operator delete(void *);
 };
-
-// extern lang  *this_lang;
-// extern voice *this_voice;
 
 #define this_lang  (cfg->langs[cfg->default_lang])
 #define this_voice (this_lang->voices[this_lang->default_voice])
