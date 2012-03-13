@@ -28,6 +28,8 @@ move waveform.cc waveform.cpp
 del config.h
 copy ..\arch\win\config.in .\config.h
 copy ..\arch\win\epos.dsp .
+copy ..\arch\win\eposm.dsp .
+copy ..\arch\win\say.dsp .
 copy ..\arch\win\epos.dsw .
 
 rem if not exist lpcsyn.cc echo /**/ > lpcsyn.cc

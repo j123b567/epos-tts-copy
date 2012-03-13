@@ -57,7 +57,7 @@ struct fcmodel
 {
 	float rc[8];
 	float ener;
-	float incrl;
+	int   incrl;
 };              // model for float synthesis
 
 struct vqmodel
@@ -235,8 +235,7 @@ void lpcfloat::frobmod(int imodel, diphone d, model *m, int &incrl, int &znely)
 	int i;
 	fcmodel *fcm = (fcmodel *)models->data + diph_offs[d.code] + imodel;
 
-	incrl = (int)(32768.0 * fcm->incrl);
-	if (fcm->incrl < -1e-30) incrl = 999;
+	incrl = fcm->incrl;
 	m->esyn = (int)(32768.0 * fcm->ener);
 	m->esyn = m->esyn * d.e / 100;
 	for (i=0; i<rad; i++)

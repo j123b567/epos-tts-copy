@@ -939,3 +939,8 @@ for an exciting story, just skip it.
 	- put lpcsyn.cc lpcsyn.h under GPL
 	- repacked inventories (relative to /usr/lib/epos/inv, added READMEs)
 
+2.4.38 from 2.4.37	 13.3.00
+	- mmsystem and Visual C++ scripting fixes (Petr)
+	- a few voices changed prosodic defaults
+
+

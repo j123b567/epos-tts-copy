@@ -73,7 +73,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib winmm.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -86,11 +86,15 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\agent.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\unit.cpp
+SOURCE=.\daemon.cpp
 # End Source File
 # Begin Source File
 
@@ -102,31 +106,23 @@ SOURCE=.\interf.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\options.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\ktdsyn.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ptdsyn.cpp
+SOURCE=.\lpcsyn.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\agent.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\daemon.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ttscp.cpp
+SOURCE=.\options.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\parser.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ptdsyn.cpp
 # End Source File
 # Begin Source File
 
@@ -147,6 +143,14 @@ SOURCE=.\tcpsyn.cpp
 # Begin Source File
 
 SOURCE=.\text.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ttscp.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\unit.cpp
 # End Source File
 # Begin Source File
 
@@ -182,10 +186,6 @@ SOURCE=.\defaults.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\unit.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\exc.h
 # End Source File
 # Begin Source File
@@ -198,15 +198,11 @@ SOURCE=.\interf.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\options.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\ktdsyn.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\ptdsyn.h
+SOURCE=.\lpcsyn.h
 # End Source File
 # Begin Source File
 
@@ -214,7 +210,15 @@ SOURCE=.\navel.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\options.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\parser.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ptdsyn.h
 # End Source File
 # Begin Source File
 
@@ -242,15 +246,15 @@ SOURCE=.\text.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\unit.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\voice.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\waveform.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\agent.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
