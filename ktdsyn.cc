@@ -38,7 +38,7 @@
 extern double buf[6];
 
 //ktdsyn::ktdsyn (int v, int t)
-ktdsyn::ktdsyn (voice *)
+ktdsyn::ktdsyn (voice *v)
 {
 	pocet_vzorku=0;
 	
@@ -46,9 +46,12 @@ ktdsyn::ktdsyn (voice *)
 	fr_vz = 8000;
 	po_u = 0;
 	FILE *f;
-	if ((f = fopen ("/usr/lib/ss/inv/czech/useky.dat", "rt")) == NULL)
-		shriek("Nemozem otvorit subor 'useky.dat'");
-	while (!feof (f)) {
+	char * pathname = compose_pathname("useky.dat", v->inv_dir); 
+	f = fopen (pathname, "rt");
+	free(pathname);
+	if (!f) shriek("Nemozem otvorit subor 'useky.dat'");
+
+	while (!feof (f)) {		/* FIXME: consider turning into a freadin() call */
 		int imp_int;		/* to make scanf() happy */
 		fscanf (f, "%s%i%i", U[po_u].jm, &imp_int, &U[po_u].delk);
 		U[po_u].imp = imp_int;

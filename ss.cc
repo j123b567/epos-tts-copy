@@ -166,6 +166,22 @@ int main(int argc, char **argv)
 	sd = connect_socket(SSD_TCP_PORT);
 	send_cmd_line(argc, argv);
 	sputs("break\n", sd);
+
+// #ifdef HAVE_GETENV
+	FILE *f = fopen(getenv("TTSCP_USER"), "rt");
+	if (f) {
+		while (!feof(f)) {
+			*scratch = 0;
+			fgets(scratch, SCRATCH_SPACE, f);
+			if (scratch) {
+				sputs(scratch, sd);
+				get_result();
+			}
+		}
+		fclose(f);
+	}
+/// #endif
+
 	say_data();
 	trans_data();
 	sputs("done\n", sd);

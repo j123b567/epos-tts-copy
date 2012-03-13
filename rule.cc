@@ -32,7 +32,11 @@
 #define ASSIM_DELIM4    ')'
 #define RAISE_DELIM	':'
 
-#define LESS_THAN       '<'    //to delimit the sonority groups in parse_syll() 
+#define LESS_THAN       '<'	// to delimit the sonority groups in parse_syll() 
+
+#define COMMA		','	// item,value
+#define SPACE		' '	// to delimit lists in literal hash tables
+#define TILDE		'~'
 
 #define UNDIPHONE "~"			//OP_DIPH only, means "delete diphones if any"
 
@@ -157,7 +161,8 @@ rule::apply(unit *root)
 
 hashing_rule::hashing_rule(char *param) : rule(NULL)
 {
-	raw = compose_pathname(param, this_lang->hash_dir);
+	if (*param == DQUOT) raw = strdup(param);
+	else raw = compose_pathname(param, this_lang->hash_dir);
 	dict = NULL;
 	allow_id = false;
 }
@@ -171,8 +176,47 @@ hashing_rule::~hashing_rule()
 inline void
 hashing_rule::load_hash()
 {
-	if (!dict) dict = new hash(raw, cfg->hash_full,
-		0, 200, 3, (char *) allow_id, false, "dictionary %s not found");
+	char *p;
+	char *last;
+	char *comma = NULL;
+
+	if (dict) shriek("unwanted load_hash");
+
+	if (*raw != DQUOT) {
+		dict = new hash(raw, cfg->hash_full, 0, 200, 3,
+			(char *) allow_id, false, "dictionary %s not found");
+		return;
+	}
+	dict = new hash((strlen(raw) >> 4) + 4);
+	p = raw;
+	last = raw+1;
+	while (1) {
+		printf("::::::::%s::::%s::::%s::::%s::::\n", raw, p, comma, last);
+		switch(*++p) {
+		case COMMA:
+			if (comma) shriek("too many commae");
+			comma = p;
+			*comma = 0;
+			break;
+		case SPACE:
+		case TILDE:
+			*p = 0;
+			dict->add(last, comma ? comma+1 : "(default)");	//FIXME (string const)
+			if (comma) *comma = COMMA;
+			*p = SPACE;
+			last = NULL;
+			comma = NULL;
+			last = p+1;
+			break;
+		case DQUOT:
+			*p = 0;
+			if (last) dict->add(last, comma ? comma+1 : "(default)"); // FIXME as above
+			if (comma) *comma = COMMA;
+			*p = DQUOT;
+			return;
+		case 0: shriek("Unterminated argument%s", debug_tag());
+		}
+	}
 }
 
 void 
@@ -249,7 +293,7 @@ r_subst::set_level(UNIT scp, UNIT trg)
 void
 r_subst::apply(unit *root)
 {
-	load_hash();
+	if (!dict) load_hash();
 	root->subst(dict, method);
 	if (cfg->lowmemory) {
 		DEBUG(2,2,fprintf(stddbg,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
@@ -289,7 +333,7 @@ void
 r_diph::apply(unit *root)
 {
 	if (!cfg->use_diph) return;
-	load_hash();
+	if (!dict) load_hash();
 	root->diphs(target, dict);
 	if (cfg->lowmemory) {
 		DEBUG(2,2,fprintf(stddbg,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
@@ -337,7 +381,7 @@ r_prosody::r_prosody(char *param) : hashing_rule(param)
 void
 r_prosody::apply(unit *root)
 {
-	load_hash();
+	if (!dict) load_hash();
 	DEBUG(1,1,fprintf(stddbg,"entering rules::sseg()\n");)
 	root->sseg(target, dict);
 	if (cfg->lowmemory) {
@@ -666,9 +710,11 @@ r_regex::r_regex(char *param) : rule(param)
 			rshr("badly escaped");
 		case REG_BADRPT:
 		case REG_BADPAT:
+#ifndef __QNX__
 		case REG_EEND:
-			rshr("too ugly");
 		case REG_ESIZE:
+#endif
+			rshr("too ugly");
 		case REG_ESPACE:
 			rshr("too huge");
 		default: shriek("Bad regex%s, regcomp returns %d", debug_tag(), result);

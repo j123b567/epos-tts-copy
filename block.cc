@@ -297,7 +297,8 @@ get_words(char *line, char**words, int max)
 		while (*line && strchr(WHITESPACE, *line)) *line++=0;
 		if (!*line || n==max) break;
 		words[n++] = line;
-		line += strcspn(line, WHITESPACE);
+		if (*line == DQUOT) line = strchr(line+1, DQUOT) + 1;
+		else line += strcspn(line, WHITESPACE);
 	}
 	return n;
 }

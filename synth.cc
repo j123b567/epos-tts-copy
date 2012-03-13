@@ -40,13 +40,13 @@ synth *setup_synth(voice *v)		//FIXME
 #else
 		case S_LPC_FLOAT:
 		case S_LPC_INT:
-		case S_LPC_VQ:	return NULL;	// potential sea of troubles	FIXME!!
+		case S_LPC_VQ:	return new voidsyn;
 #endif
 //		case S_KTD:	return new ktdsyn(cfg->ktd_pitch, cfg->ktd_speed);
 		case S_KTD:	return new ktdsyn(v);
 		default:	shriek("Impossible synth type");
 	}
-
+	return NULL;
 }
 
 #define BUFF_SIZE 1024	//every item is a quadruple of ints
@@ -110,6 +110,16 @@ synth::syndiphs(voice *v, diphone *d, int n)
 {
 	for (int i=0; i<n; i++) syndiph(v, d[i]);
 }
+
+
+void
+voidsyn::syndiph(voice *, diphone)
+{
+	shriek("Synthesis type absent");
+}
+
+
+
 
 //--------------------------------------
 

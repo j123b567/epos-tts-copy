@@ -1,13 +1,23 @@
 #
 #	prosodická pravidla Fonetického ústavu FF UK pro èeštinu
 #
-# pøidat èárku pøed "a":
 
+
+# (testing) subst "jo,kale  os,tap  xe,sus"	   word phone
+
+
+$base_dir	external
+$prosody_dir	external
+$prosody = ${base_dir}/${prosody_dir}
+
+# pøidat èárku pøed "a":
 with	a.dic		word
 {
-	regress !>A(!_!)
+	regress a>A(!_!)
 }
-syll	!A		colon	word
+raise	A:!		word	phone
+syll	A<\ _		colon   word
+regress A>\ (!_!)	colon	word
 
 #include "trans.rul"
 
@@ -36,3 +46,16 @@ with	postp2.dic	colon   word
 }
 
 # a jsme na zaèátku str. 4
+
+regress  _>I(0_0)	sent   word	; isolated words
+inside   I
+{
+	prosody  $prosody/shortiso.dic  word  syll
+}
+inside   !I
+{
+	prosody  $prosody/shorten.dic  word  syll
+}
+regress  I>_(!_!)	sent   word
+
+diphones  traditnl.dph

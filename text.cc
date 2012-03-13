@@ -66,7 +66,7 @@ struct textlink {
 
 text::text(const char *filename, const char *dirname, bool warnings)
 {
-	if (!cfg->loaded) ss_init(0, NULL);
+//	if (!cfg->loaded) ss_init(0, NULL);
 	if (!_directive_prefices) 
 		_directive_prefices = str2hash(DIRECTIVEstr, MAX_DIRECTIVE_LEN);
 	dir = dirname;

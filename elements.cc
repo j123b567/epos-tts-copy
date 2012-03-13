@@ -420,6 +420,11 @@ unit::subst(hash *table, SUBST_METHOD method)
 
 #ifdef WANT_REGEX
 
+#ifdef __QNX__			// FIXME! Hacked to death.
+#define rm_so  rm_sp - gatbuff
+#define rm_eo  rm_ep - gatbuff
+#endif
+
 /****************************************************************************
  unit::regex
  ****************************************************************************/
@@ -564,7 +569,7 @@ unit::syllablify(char *sonor)
 	else if (syll_pending && sonor[inside()]<sonor[Prev(depth)->inside()]) {
 		syll_break(sonor,next);
 		syll_pending=0;
-	};
+	}
 }
 
 void
@@ -582,7 +587,7 @@ unit::syllablify(UNIT target, char *sonor)
  unit::sseg    suprasegmentalia are found here
  ****************************************************************************/
 
-#define SSEG_QUESTIONS 3 
+#define SSEG_QUESTIONS 5
 static char _sseg_question[SSEG_QUESTIONS][SSEG_QUESTION_LEN];
 
 void
@@ -615,6 +620,8 @@ unit::sseg(UNIT target, hash *templts)
 		sprintf(_sseg_question[0], " /%d:%d", j, n);
 		sprintf(_sseg_question[1], " /%d:*", j);
 		sprintf(_sseg_question[2], " /%dlast:*", n-j+1);
+		sprintf(_sseg_question[3], " /*:%d", n);
+		sprintf(_sseg_question[4], " /*:*");
 		sseg(templts, 'f', &tmpu->f);
 		sseg(templts, 'i', &tmpu->i);
 		sseg(templts, 't', &tmpu->t);

@@ -490,4 +490,27 @@ for an exciting story.
 	- a little ktdsyn code cleanup
 
 
+2.1.2 from 2.1.1	11.6.98
+	- the TTSCP_USER environment variable may point to a file with
+	  some initial TTSCP commands (used by the client)
+	- cfg/allowed.ini now works differently (and at all)
+	- rewrote cmd_set and associated stuff
+	- updated TTSCP response code stuff
+	- generalised r_prosody (two more questions in unit::sseg())
+	- long word shortening (ipcz)
+	- bool is now checked for by autoconf and handled in defaults.h
+	- makefile rules for configure and its dependencies
+	- minor QNX fixes
+
+
+2.1.3 from 2.1.2	14.6.98
+	- more QNX and src/configure fixes
+	- inline dictionary support (doc/czech/dict.doc, doc/english/rules.doc)
+
+
+2.1.4 from 2.1.3	16.6.98
+	- voidsyn and lpcsyn fixes
+	- lpcsyn no more uses just "int" instead of occassional "long int"
+	- dispatcher_pid (used to distinguish between the server processes)
+
 

@@ -138,6 +138,16 @@ void user_pause()
 	getchar();
 }
 
+char *split_string(char *param)
+{
+	char *value;
+	param += strspn(param, WHITESPACE);
+	value = param + strcspn(param, WHITESPACE);
+	if (*value) *value++ = 0;
+	value += strspn(value, WHITESPACE);
+	return value;
+}
+
 FILE *
 fopen(const char *filename, const char *flags, const char *reason)
 {
@@ -403,6 +413,8 @@ option optlist[]={
 	{NULL}
 };
 
+hash_table<char, option> *option_set = NULL;
+
 void configuration::shutdown()
 {
 	int i;
@@ -441,6 +453,12 @@ char *get_named_cfg(const char *name)
 	return "";
 }
 
+option *option_struct(const char *name)
+{
+	if (!option_set) shriek("My option_set!");
+	return option_set->translate(name);
+}
+
 void unknown_option(char *name, char *data)
 {
 	unuse(data);
@@ -468,7 +486,7 @@ void parse_cfg_str(char *val, const char *optname)
 #endif
 }
 
-void set_option(option *o, char *val, void *base)
+bool set_option(option *o, char *val, void *base)
 {
 	char *locus = (char *)base + o->offset;
 	switch(o->opttype) {
@@ -525,24 +543,41 @@ void set_option(option *o, char *val, void *base)
 			break;
 		default: shriek("Bad option type %d", (int)o->opttype);
 	}
+	return true;
 }
 
+bool set_option(option *o, char *value)
+{
+	switch(o->structype) {
+		case OS_CFG:	cow(&cfg, sizeof(configuration));
+				return set_option(o, value, cfg);
+		case OS_LANG:	cow(&this_lang, sizeof(lang));
+				return set_option(o, value, this_lang);
+		case OS_VOICE:	cow(&cfg, sizeof(configuration));
+				return set_option(o, value, this_voice);
+	}
+	return false;
+}
+
+#if (0)
 bool set_option(char *name, char *value)	/* disgusting sloowwness */
 {
 	int i;
-	for (option *o = voiceoptlist; o->optname; o++)
+	option *o;
+
+	for (o = voiceoptlist; o->optname; o++)
 		if (!strcmp(o->optname, name)) {
 			cow(&this_voice, sizeof(voice));
 			set_option(o, value, this_voice);
 			return true;
 		}
-	for (option *o = langoptlist; o->optname; o++)
+	for (o = langoptlist; o->optname; o++)
 		if (!strcmp(o->optname, name)) {
 			cow(&this_lang, sizeof(lang));
 			set_option(o, value, this_lang);
 			return true;
 		}
-	for (option *o = optlist; o->optname; o++)
+	for (o = optlist; o->optname; o++)
 		if (!strcmp(o->optname, name)) {
 			cow(&cfg, sizeof(configuration));
 			set_option(o, value, cfg);
@@ -570,6 +605,74 @@ bool set_option(char *name, char *value)	/* disgusting sloowwness */
 		return false;
 	}
 	return false;
+}
+#endif
+
+bool lang_switch(const char *value)
+{
+	for (int i=0; i < cfg->n_langs; i++)
+		if (!strcmp(cfg->langs[i]->name, value)) {
+			if (!cfg->langs[i]->n_voices)
+				shriek("Switch to a mute language");
+			else this_voice = *cfg->langs[i]->voices;
+			this_lang = cfg->langs[i];
+			return true;
+		}
+//	shriek("Switch to an unknown language");
+	return false;
+}
+
+bool voice_switch(const char *value)
+{
+	for (int i=0; i < this_lang->n_voices; i++)
+		if (!strcmp(this_lang->voices[i]->name, value)) {
+			this_voice = this_lang->voices[i];
+			return true;
+		}
+//	shriek("Switch to an unknown voice");
+	return false;
+}
+
+void make_option_set()
+{
+	option *o;
+
+	if (option_set) shriek("option_set reset");
+	option_set = new hash_table<char, option>(200);
+	option_set->dupkey = option_set->dupdata = 0;
+	for (o = voiceoptlist; o->optname; o++) option_set->add(o->optname, o);
+	for (o = langoptlist; o->optname; o++) option_set->add(o->optname, o);
+	for (o = optlist; o->optname; o++) option_set->add(o->optname, o);
+
+	option_set->remove("languages");	// FIXME
+	option_set->remove("language");
+	option_set->remove("voices");
+	option_set->remove("voices");
+
+	char *line = (char *)malloc(cfg->max_line);
+	text *t = new text(cfg->allow_file, cfg->ini_dir, true);
+	while (t->getline(line)) {
+		char *status = split_string(line);
+		o = option_set->translate(line);
+		if (!o) {
+		  /*	shriek("Typo in %s:%d\n", t->current_file, t->current_line); */
+			continue;
+		}
+		o->readable = o->writable = A_NOACCESS;
+		ACCESS level = A_PUBLIC;
+		for (char *p = status; *p; p++) {
+			switch(*p) {
+				case 'r': o->readable = level; break;
+				case 'w': o->writable = level; break;
+				case '#': level = A_ROOT; break;
+				case '$': level = A_AUTH; break;
+				default : shriek("Invalid access rights in %s line %d",
+						t->current_file, t->current_line);
+			}
+		}
+	}
+	free(line);
+	delete t;
 }
 
 char *format_option(option *o, void *base)
@@ -600,8 +703,20 @@ char *format_option(option *o, void *base)
 			return strdup(scratch);
 		default: shriek("Bad option type %d", (int)o->opttype);
 	}
+	return "(impossible value)";
 }
 
+char *format_option(option *o)
+{
+	switch(o->structype) {
+		case OS_CFG:   return format_option(o, cfg);
+		case OS_LANG:  return format_option(o, this_lang);
+		case OS_VOICE: return format_option(o, this_voice);
+	}
+	return "?!";
+}
+
+/*****************
 char *format_option(const char *name)
 {
 	int i;
@@ -649,6 +764,7 @@ char *format_option(const char *name)
 		}
 	return NULL;
 }
+***********************/
 
 void process_options(hash *tab, option *list, void *base)
 {
@@ -882,7 +998,9 @@ void ss_init()	 //Some global sanity checks made here
 
 	esctab = FOREVER(fntab(cfg->token_esc, cfg->value_esc));
 
-	parse_cmd_line();
+
+	parse_cmd_line();	/* cmd line first to allow --base_dir */
+	make_option_set();
 	DEBUG(2,10,fprintf(stddbg,"Using configuration file %s\n", cfg->inifile);)
 
 	load_config(cfg->ssfixed, "Cannot open base config file %s");
@@ -917,11 +1035,12 @@ void ss_init()	 //Some global sanity checks made here
 	if (cfg->stdwarn) stdwarn = fopen(cfg->stdwarn, "w", "warning messages");
 		
 	_subst_buff = FOREVER((char *)malloc(MAX_GATHER+2));
-	_next_rule_line = FOREVER((char *)malloc(cfg->max_line+1));
 	_resolve_vars_buff = FOREVER((char *)malloc(cfg->max_line+1)); 
 	scratch = FOREVER((char *)malloc(cfg->scratch+1));
 	
+	_next_rule_line = (char *)malloc(cfg->max_line+1);
 	for (i=0; i<cfg->n_langs; i++) cfg->langs[i]->compile_rules();
+	free(_next_rule_line); _next_rule_line = NULL;
 
 	DEBUG(1,10,fprintf(stddbg,"struct configuration is %d bytes\n", sizeof(configuration));)
 	DEBUG(1,10,fprintf(stddbg,"struct lang is %d bytes\n", sizeof(lang));)
@@ -946,6 +1065,7 @@ void ss_done()
 
 	cfg->shutdown();
 	freadin(NULL, NULL, NULL, NULL);
+	delete option_set;
 	shutdown_hashing();
 	_directive_prefices=(hash *)FOREVER(NULL);	//the right side counts
 }

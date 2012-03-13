@@ -149,6 +149,8 @@ class hash: public hash_table<char, char>
 #undef key_t		// a stupid name collision with linux kernel 2.1.?? include/types.h
 #undef data_t		//   requires this creeping attitude
 
+#ifdef WANT_DEFAULT_HASH_FN
+
 inline unsigned int
 contiguous_hash_fn(void *ptr, int size)		// a hash function for contiguous keys
 {
@@ -160,6 +162,8 @@ contiguous_hash_fn(void *ptr, int size)		// a hash function for contiguous keys
 		j = 233*j + *(unsigned int *)p;
 	return j;
 }
+
+#endif
 
 void shutdown_hashing();
 

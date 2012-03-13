@@ -33,11 +33,11 @@ class text
 	
 	void subfile(const char *filename);
 	void superfile();
+	void done();		//shriek if some input left
   public:
   	text(const char *filename, const char *dirname, bool warnings);
 	~text();
 	bool getline(char *line);    // return true on success, false on EOF
-	void done();		//shriek if some input left
 	void rewind();		//let's start again
 	void rewind(bool warnings);
 	

@@ -1,4 +1,18 @@
 
+Jméno substituèního slovníku
+----------------------------
+
+Jménem slovníku se obvykle rozumí název souboru (obvykle bez cesty),
+který v níže uvedeném formátu popisuje, co se má èím nahradit.
+Tento soubor, není-li k nìmu uvedena absolutní cesta (nebo relativní
+vùèi poèáteèní "." nebo ".."), se bude hledat v adresáøi daném
+parametrem "hash_dir".
+
+Krátké slovníky je možno zabudovat pøímo do pravidel. V takovém pøípadì
+je jméno slovníku v uvozovkách, slovník nemùže obsahovat komentáøe,
+slovníkové položky jsou oddìleny mezerami, a vyhledávací klíè (viz níže)
+je od nahrazujícího výrazu oddìlen èárkou.
+
 Formát substituèního slovníku
 -----------------------------
 

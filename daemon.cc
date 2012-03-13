@@ -35,6 +35,10 @@ inline int my_fork()
 	#include <sys/socket.h>
 #endif
 
+#ifdef HAVE_SYS_SELECT_H
+	#include <sys/select.h>
+#endif
+
 #ifdef HAVE_SYS_IOCTL_H
 	#include <sys/ioctl.h>
 #endif
@@ -54,12 +58,13 @@ inline int my_fork()
 #include <time.h>
 
 int session_uid = UID_SERVER;
+int dispatcher_pid;
 
 #define   SERVER_PASSWD_LEN   14
 char server_passwd[SERVER_PASSWD_LEN + 2];
 
 hash * ttscp_keywords = NULL;
-hash * settable_options = NULL;
+// hash * settable_options = NULL;
 
 class context
 {
@@ -105,6 +110,7 @@ void setup_master_context()
 
 void create_context(int index)
 {
+	LOG("create_context(%d), pid=%d\n", index, getpid());
 	context *c;
 
 	if (cfg != &master_cfg) shriek("nesting contexts");
@@ -129,6 +135,7 @@ void create_context(int index)
 
 void forget_context(int index)
 {
+	LOG("forget_context(%d), pid %d\n", index, getpid());
 	context *c = context_table[index];
 
 	close(c->cfg->sd);
@@ -146,10 +153,14 @@ void forget_context(int index)
 
 void enter_context(int index)
 {
-	LOG("enter_context(%d)\n", index);
+	LOG("enter_context(%d), pid %d\n", index, getpid());
 	if (cfg != &master_cfg) shriek("nesting contexts");
 
 	context *c = context_table[index];
+
+	if (!c) {
+		LOG("Nothing to enter!");
+	}
 
 	this_voice = c->this_voice;
 	this_lang = c->this_lang;
@@ -169,16 +180,16 @@ void enter_context(int index)
 
 void leave_context(int index)
 {
-	LOG("leave_context(%d)\n", index);
+	LOG("leave_context(%d), pid=%d\n", index, getpid());
 	context *c = context_table[index];
+	if (!c) {
+		LOG("(nothing to leave!)\n");
+		return;
+	}
 
 	c->this_voice = this_voice;
 	c->this_lang = this_lang;
 	c->cfg = cfg;
-
-//	if (!this_voice->cow) free(this_voice);
-//	if (!this_lang->cow) free(this_lang);
-//	if (!cfg->cow) free(cfg);
 
 	c->uid = session_uid;
 
@@ -195,8 +206,15 @@ void leave_context(int index)
 	stdshriek = master_context->stdshriek;
 }
 
+inline ACCESS access_level(int uid)
+{
+	if (uid == UID_ROOT) return A_ROOT;
+	if (uid < 0) return A_PUBLIC;
+	return A_AUTH;
+}
 
-void reply(char *text)
+
+void reply(const char *text)
 {
 	fflush(NULL);
 	sputs(text, cfg->sd);
@@ -244,6 +262,8 @@ inline void register_child(int pid)
 
 void done_child()
 {
+//	if (!cfg->forking) return; 	// deadlock might result. (requires further thought)
+
 	LOG("child] All done.\n");
 	int sd = connect_socket(SSD_TCP_PORT);
 //	sputs("hello ", sd);
@@ -259,6 +279,7 @@ void done_child()
 	exit(0);
 }
 
+/*
 bool may_change_opt(char *param)
 {
 
@@ -271,6 +292,7 @@ bool may_change_opt(char *param)
 	if (settable_options->items == -1) return false;
 	return settable_options->translate(param) ? true : false;
 }
+*/
 
 void cmd_bad(char *param)
 {
@@ -349,15 +371,32 @@ void cmd_transcribe(char *param)
 
 void cmd_set(char *param)
 {
-	char *value;
+	char *value = split_string(param);
 
-	param += strspn(param, WHITESPACE);
-	value = param + strcspn(param, WHITESPACE);
-	if (*value) *value++ = 0;
-	value += strspn(param, WHITESPACE);
-	if (may_change_opt(param) && set_option(param, value)) reply("200 OK");
-	else reply("441 No such option");
+	option *o = option_struct(param);
+
+	if (o) {
+		if (access_level(session_uid) >= o->writable) {
+			if (set_option(o, value)) reply("200 OK");
+			else reply("412 illegal value");
+		} else reply("451 Access denied");
+	} else {
+		if (!strcmp("language", param)) {
+			if (lang_switch(value)) reply ("200 OK");
+			else reply ("443 unknown language");
+			return;
+		}
+		if (!strcmp("voice", param)) {
+			if (voice_switch(value)) reply ("200 OK");
+			else reply ("443 unknown voice");
+			return;
+		}
+		reply("442 No such option");
+	}
 }
+
+//	if (may_change_opt(param) && set_option(param, value)) reply("200 OK");
+
 
 void cmd_help(char *param)
 {
@@ -385,7 +424,6 @@ void cmd_shutdown(char *param)
 		if (context_table[i]) forget_context(i);
 	free(context_table);
 	delete ttscp_keywords;
-	delete settable_options;
 	ss_done();
 	exit(0);
 }
@@ -414,52 +452,72 @@ void cmd_reap(char *param)
 
 void cmd_show(char *param)
 {
-	char *value;
+	int i;
+
+	option *o = option_struct(param);
+
+	if (o) {
+		if (access_level(session_uid) >= o->readable) {
+			char *tmp = format_option(o);
+			reply(tmp);
+			free(tmp);
+			reply("200 OK");
+		} else reply("451 Access denied");
+	} else {
+		if (!strcmp("language", param)) {
+			reply(this_lang->name);
+			reply ("200 OK");
+			return;
+		}
+		if (!strcmp("voice", param)) {
+			reply(this_voice->name);
+			reply ("200 OK");
+			return;
+		}
+		if (!strcmp("languages", param)) {
+			int bufflen = 0;
+			for (i=0; i < cfg->n_langs; i++) bufflen += strlen(cfg->langs[i]->name) + strlen(cfg->comma);
+			char *result = (char *)malloc(bufflen + 1);
+			strcpy(result, cfg->n_langs ? cfg->langs[0]->name : "(empty list)");
+			for (i=1; i < cfg->n_langs; i++) {
+				strcat(result, cfg->comma);
+				strcat(result, cfg->langs[i]->name);
+			}
+			reply(result);
+			free(result);
+			return;
+		}
+		if (!strcmp("voices", param)) {
+			int bufflen = 0;
+			for (i=0; i < this_lang->n_voices; i++)
+				bufflen += strlen(this_lang->voices[i]->name) + strlen(cfg->comma);
+			char *result = (char *)malloc(bufflen + 1);
+			strcpy(result, this_lang->n_voices ? this_lang->voices[0]->name : "(empty list)");
+			for (i=1; i < this_lang->n_voices; i++) {
+				strcat(result, cfg->comma);
+				strcat(result, this_lang->voices[i]->name);
+			}
+			reply(result);
+			free(result);
+			return;
+		}
+		reply("442 No such option");
+	}
+}
+
+
+/******
 	if (param && (value = format_option(param))) {
 		reply("141 here you are");
 		reply(value);
 		reply("200 OK");
 		free(value);
-	} else reply("441 No such option");
-}
+	} else reply("442 No such option");
+********/
 
 #define keyword_list "hello:pass:done:help:say:set:trans:break:shutdown:reap:show:"
 void (*dispatch[])(char *param) = {cmd_hello, cmd_pass, cmd_done, cmd_help, cmd_say, cmd_set,
 		cmd_transcribe, cmd_break, cmd_shutdown, cmd_reap, cmd_show};
-
-
-//#define IPPROTO_TCP 6
-
-#if (0)
-
-int accept_socket(int port)	/* the first time we only init ourselves */
-{
-	static int s = -1;
-	static int sia = sizeof(sockaddr);
-	static sockaddr_in sa;
-	static sockaddr_in ia;
-	
-	int f;
-
-	if (s == -1) {
-		s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-		memset(&sa, 0, sizeof(sa));
-		sa.sin_family = AF_INET;
-		sa.sin_addr.s_addr = htonl(0x7f000001);
-		sa.sin_port = htons(port);
-		if (bind(s, (sockaddr *)&sa, sizeof (sa))) shriek("Could not bind: %s", sys_errlist[errno]);
-		if (listen(s, 5)) shriek("Could not listen");
-		ia.sin_family = AF_INET;
-		ia.sin_addr.s_addr = INADDR_ANY;
-		ia.sin_port = 0;
-
-		return s;
-	}
-	f = accept(s, (sockaddr *)&ia, &sia);
-	return f;
-}
-
-#endif
 
 
 void run_command(char *cmd)
@@ -488,7 +546,7 @@ void run_command(char *cmd)
 void server()
 {
 	static int sk;
-	static unsigned int sia = sizeof(sockaddr);
+	static unsigned int sia = sizeof(sockaddr);	// __QNX__ wants signed :-(
 	static sockaddr_in sa;
 	static sockaddr_in ia;
 	
@@ -502,7 +560,7 @@ void server()
 	LOG("[core] Trying to bind...\n");
 	while (bind(sk, (sockaddr *)&sa, sizeof (sa)) && --cfg->persistence) 
 		sleep(1);
-	if (!cfg->persistence) shriek("Could not bind: %s", sys_errlist[errno]);
+	if (!cfg->persistence) shriek("Could not bind: %s", strerror(errno));
 	if (listen(sk, 5)) shriek("Could not listen");
 	ia.sin_family = AF_INET;
 	ia.sin_addr.s_addr = INADDR_ANY;
@@ -552,6 +610,7 @@ void server()
 			} catch (old_style_exc *e) {
 				free(e);
 				reply("690 session terminated");
+				if (dispatcher_pid != getpid()) done_child();
 				LOG("[core] session terminated\n");
 				leave_context(i);
 				FD_CLR(i, &thefds);
@@ -562,22 +621,25 @@ void server()
 	}
 }
 
-void daemonize(char *logfile)
+void daemonize(const char *logfile)
 {
 	int i;
 
         ioctl(0, TIOCNOTTY);          //Release the control terminal
 	for (i=0; i<3; i++) close(i);
-	open(logfile, O_RDWR|O_CREAT|O_APPEND|O_NOCTTY);
-	for (i=1; i<3; i++) dup(0);
-	LOG("\n\n\n\nssd restarted at ");
-	fflush(stdout);
-	system("/bin/date");
+	if (logfile && open(logfile, O_RDWR|O_CREAT|O_APPEND|O_NOCTTY) != -1) {
+		for (i=1; i<3; i++) dup(0);
+		LOG("\n\n\n\nssd restarted at ");
+		fflush(stdout);
+		system("/bin/date");
+	}
 	signal(SIGPIPE, SIG_IGN);	// possibly dangerous
+
+	dispatcher_pid = getpid();
 
 	for (i = 0; i < SERVER_PASSWD_LEN; i++) server_passwd[i] =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
-			[random() & 63];
+			[rand() & 63];
 	server_passwd[i] = 0;
 //	LOG("[core] server internal password is %s\n", server_passwd);
 }
@@ -594,7 +656,7 @@ int main(int argc, char **argv)
 		switch (my_fork()) {
 			case -1: server();
 				 return 0;	/* foreground process */
-			case 0:  daemonize("/dev/tty10");
+			case 0:  daemonize(cfg->daemon_log);
 				 server();
 				 return 0;	/* child  */
 			default: return 0;	/* parent */

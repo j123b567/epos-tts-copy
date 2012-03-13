@@ -26,10 +26,11 @@ celé èíslo.
 
 Obecný formát pravidla je "v/i:n a", kde _v_ je znak malé t,i nebo f,
 _i_ je poøadí zasažené jednotky v rámci rozsahu, pøípadnì s pøíponou
-"last" (poøadí od konce), _n_ je poèet jednotek zasažené úrovnì
-v rozsahu nebo hvìzdièka (libovolný poèet) a _a_ je vlastní úprava,
-která se užije, jsou-li splnìny podmínky dané _i_,_n_. Je-li užito
-_i_ s pøíponou "last", musí být n hvìzdièka.
+"last" (poøadí od konce), anebo hvìzdièka (kterákoli slabika); _n_
+je poèet jednotek zasažené úrovnì v rozsahu nebo hvìzdièka (libovolný
+poèet jednotek) a _a_ je vlastní úprava, která se užije, jsou-li
+splnìny podmínky dané _i_,_n_. Je-li užito _i_ s pøíponou "last",
+musí být n hvìzdièka.
 
 V následujících pøíkladech pøedpokládám, že rozsah je vìta a zasažená
 jednotka je slabika:
@@ -37,6 +38,8 @@ t/2last:*   100    ; pøièti 100 k èasovému faktoru pøedposlední
 		   ; slabiky v každé vìtì
 f/1:*      -130    ; sniž frekvenci v prvních slabikách všech vìt...
 f/1:1         0    ; ...frekvenci jednoslabièných vìt ale nemìò
+i/*:4       -10    ; ètyøslabièná slova vyslovuj celá tišeji...
+i/1:4        +3    ; ...až na první slabiku, kterou trochu zesil
 
 Lze-li na tutéž jednotku uplatnit více úprav v témže pravidle,
 má pøednost pravidlo, které uvádí konkrétní _n_ (zbylá se neprovedou);

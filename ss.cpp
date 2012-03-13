@@ -22,3 +22,4 @@
 #include "synth.cc"
 #include "ktdsyn.cc"
 #include "voice.cc"
+#include "rx.c"

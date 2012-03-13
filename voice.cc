@@ -226,6 +226,7 @@ voice::attach()
 	ioctl (fd, SNDCTL_DSP_GETBLKSIZE, &buff_size);
    #else
 	DEBUG(3,9,fprintf(stddbg, "Sound ioctl's absent\n");)
+	unuse(stereo);
    #endif
 #endif
 	written_bytes = 0;
@@ -240,7 +241,7 @@ voice::detach()
 	DEBUG(2,9,fprintf(stddbg,"Detaching voice %s\n", name););
 	if (!buffer) shriek("Nested voice::detach()");
 #ifdef SOUND_SYNCH
-	if (ioctlable) ioctl (wavout, SOUND_SYNCH, 0);
+	if (ioctlable) ioctl (fd, SOUND_SYNCH, 0);
 #endif
 	if (wav_hdr) write_header();
 	close(fd);

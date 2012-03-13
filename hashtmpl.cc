@@ -55,7 +55,7 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
 
 #define DOWNSIZE_HESITATE 8 // Downsizing should be less frequent for very small tables
 
-#define unconst(x) (const_cast<key_t *>(x))
+#define unconst(x) ((key_t *)(x))
 
 #define key_t_is_string (sizeof(key_t)==1)
 #define data_t_is_string (sizeof(data_t)==1)
@@ -64,8 +64,8 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
 #define keydodup(x)   (key_t_is_string  ? (key_t*)strdup((char *)(x))   : new key_t(*x))
 #define datadodup(x)  (data_t_is_string ? (data_t *)strdup((char *)(x)) : new data_t(*x))
 
-#define keydup(x)	(dupkey  ? keydodup(x)  : const_cast<key_t *>(x))
-#define datadup(x)	(dupdata ? datadodup(x) : const_cast<data_t *>(x))
+#define keydup(x)	(dupkey  ? keydodup(x)  : unconst(x))
+#define datadup(x)	(dupdata ? datadodup(x) : (data_t *)(x))
 #define keydel(x)	(dupkey  ? delete(x)	: (void)(x))
 #define datadel(x)	(dupdata ? delete(x)	: (void)(x))
 
@@ -85,7 +85,6 @@ struct hsearchtree {
 #include "slab.h"
 
 #define hsearchtree_size sizeof(hsearchtree<char, char>)
-template class slab <hsearchtree_size>;
 
 slab <hsearchtree_size> *hash_tree_slab;
 

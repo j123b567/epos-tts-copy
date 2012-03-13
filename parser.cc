@@ -149,6 +149,7 @@ void
 simpleparser::initables(SYMTABLE table)
 {
 	int c;
+	UNIT u = U_PHONE;
 //	if (cfg->relax_input) for (c=1; c<256; c++) TRANSL_INPUT[c] = cfg->dflt_char;
 	for(c=0; c<256; c++) TRANSL_INPUT[c] = (Char)c;
 	for(c=1; c<256; c++) CHRLEV[c] = U_ILL;*CHRLEV = U_TEXT;
@@ -156,7 +157,7 @@ simpleparser::initables(SYMTABLE table)
 	case ST_ROOT:
 		alias("   ","\n\r\t");
 	case ST_RAW:
-		for (UNIT u = U_PHONE; u < U_TEXT; u = (UNIT)(u+1))
+		for (u = U_PHONE; u < U_TEXT; u = (UNIT)(u+1))
 			regist(u, this_lang->perm[u]);
 		regist(U_WORD, " ");
 		break;

@@ -22,6 +22,7 @@
 #define CFG_FILE_ENVIR_VAR	"SSCFGFILE"
 
 enum OPT_STRUCT { OS_CFG, OS_LANG, OS_VOICE };
+enum ACCESS { A_PUBLIC, A_AUTH, A_ROOT, A_NOACCESS };
 enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SYNTH, O_CHANNEL, O_DBG_AREA, O_INT, O_CHAR, O_STRING, O_FILE };
 								//various types of options
 enum OUT_ML { ML_NONE, ML_ANSI, ML_RTF};
@@ -44,17 +45,27 @@ struct configuration		//Some description & defaults can be found in options.cc
 	void shutdown();	// destructor of some sort
 };
 
-struct option {
+struct option
+{
 	const char *optname;
-	OPT_TYPE opttype;
-	OPT_STRUCT structype;
+  	OPT_TYPE opttype	: 5;
+//	int reserved		: 3;
+	OPT_STRUCT structype	: 2;
+	ACCESS 	readable	: 2;
+	ACCESS 	writable	: 2;
 	short int offset;
 };
 
 void process_options(hash *tab, option *list, void *base);
 char *get_named_cfg(const char *option_name);
+option *option_struct(const char *name);
+bool set_option(option *o, char *value);
 bool set_option(char *name, char *value);
+char *format_option(option *name);	// will malloc some space
 char *format_option(const char *name);	// will malloc some space
+
+bool lang_switch(const char *name);
+bool voice_switch(const char *name);
 
 extern configuration master_cfg;
 extern configuration *cfg;
@@ -90,6 +101,7 @@ void shriek(const char *s, const char *t, const char *u, const char *v);
 void warn(const char *s);
 void warn(const char *s, const char *t);
 void user_pause();
+char *split_string(char *string);	// 0-terminate the first word, return the rest
 FILE *fopen(const char *filename, const char *flags, const char *reason);
 
 #ifndef HAVE_STRDUP

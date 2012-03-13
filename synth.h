@@ -27,6 +27,14 @@ class synth
 	virtual void syndiphs(voice *v, diphone *d, int count);
 };
 
+class voidsyn: public synth
+{
+   public:
+	voidsyn() : synth() {};
+	virtual ~voidsyn() {};
+	virtual void syndiph(voice *v, diphone d);
+};
+
 void play_diphones(unit *root, voice *v);
 void show_diphones(unit *root);
 

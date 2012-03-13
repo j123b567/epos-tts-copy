@@ -29,3 +29,8 @@
 - autentikace
 - tokenizace
 - stml
+- zaèlenit "set language" jako normální "set"
+- root rights '#' --> comment
+- chybová sémantika (nejen varování/utnutí session/havárie serveru)
+
+

@@ -96,7 +96,7 @@
 #define CHANNEL    O_CHANNEL
 #define DEBUG_AREA O_DBG_AREA
 
-#define OPTION(member,name,type,default) {name, type, OS_CFG, (int)&((configuration *)NULL)->member},
+#define OPTION(member,name,type,default) {name, type, OS_CFG, A_PUBLIC, A_PUBLIC, (int)&((configuration *)NULL)->member},
 
 #define OPTIONAGGR(x) 
 #define OPTIONITEM(w,x,y,z) OPTION (w,x,y,z)
@@ -176,12 +176,12 @@
 #define OPTIONAGGRENDS
 
 #define LNG_OPTIONAGGR(x) 
-#define LNG_OPTIONITEM(member,name,type,default) {name, type, OS_LANG, (int)&((lang *)NULL)->member}, 
+#define LNG_OPTIONITEM(member,name,type,default) {name, type, OS_LANG, A_PUBLIC, A_PUBLIC, (int)&((lang *)NULL)->member}, 
 #define LNG_OPTIONAGGRENDS 
 
 #define OPTION(w,x,y,z)
-#define INV_OPTION(member,member_inv,name,type,default)   {name, type, OS_LANG, (int)&((lang *)NULL)->member_inv},
-#define LNG_OPTION(member,member_lang,name,type,default)  {name, type, OS_LANG, (int)&((lang *)NULL)->member_lang},
+#define INV_OPTION(member,member_inv,name,type,default)   {name, type, OS_LANG, A_PUBLIC, A_PUBLIC, (int)&((lang *)NULL)->member_inv},
+#define LNG_OPTION(member,member_lang,name,type,default)  {name, type, OS_LANG, A_PUBLIC, A_PUBLIC, (int)&((lang *)NULL)->member_lang},
 
 #undef CONFIG_LANG_DESCRIBE
 
@@ -256,7 +256,7 @@
 #define LNG_OPTIONAGGRENDS OPTIONAGGRENDS
 
 #define OPTION(w,x,y,z)
-#define INV_OPTION(member,member_inv,name,type,default)  {name, type, OS_VOICE, (int)&((voice *)NULL)->member_inv},
+#define INV_OPTION(member,member_inv,name,type,default)  {name, type, OS_VOICE, A_PUBLIC, A_PUBLIC, (int)&((voice *)NULL)->member_inv},
 #define LNG_OPTION(member,member_lang,name,type,default)
 
 #undef CONFIG_INV_DESCRIBE
@@ -341,7 +341,7 @@ LNG_OPTION (hash_dir, hash_dir, "hash_dir",     STR, ".") //  to the dictionarie
 LNG_OPTION (input_dir, input_dir, "input_dir", STR, ".")  //  to the input file
 INV_OPTION (invent_dir, inv_dir, "invent_dir", STR, ".")  //  to the diphone inventories
 LNG_OPTION (lang_dir, lang_dir, "lang_dir",    STR, ".")  //  to the language descriptions
-INV_OPTION (pros_dir, pros_dir, "prosody_dir", STR, ".")  //  to the prosody files
+LNG_OPTION (pros_dir, pros_dir, "prosody_dir", STR, ".")  //  to the prosody files
 OPTION (ini_dir, "ini_dir",	   STR, "cfg")  //      to ssfixed.ini
 OPTION (matlab_dir, "matlab_dir",  STR, ".")	//      where to store nnet output
 OPTION (wav_dir, "wav_dir",        STR, ".")	//      where to store .wav files
@@ -381,13 +381,14 @@ INV_OPTION (inv_samp_size, samp_size, "sample_size",INT, 16)	// (not supported)
 INV_OPTION (wav_hdr, wav_hdr, "wave_header",	BOOL, false)  // Should .wav output contain .wav file header?
 INV_OPTION (ioctlable, ioctlable, "ioctlable",	BOOL, false)  // Is the voice a real device not file?
 
+OPTION (daemon_log, "daemon_log",  STR, NULL)	// Log file of daemon.cc activities (TTSCP server)
 OPTION (allow_file, "allow_options_file", STR, "allowed.ini") // options anonymous may change
 INV_OPTION (buffer_size, buff_size, "buffer_size",	INT, 4096)
 OPTION (max_children, "",	   INT, 32)	// maximum number of simult. talking children
 OPTION (max_net_cmd, "max_net_cmd",INT, 16384)  // Max TCP command length
 OPTION (listen_port, "",	   INT, 8778)	// TCP port where the daemon should listen
 OPTION (sd, "",			   INT, 0)	// network socket of the current session
-						// (can also be used to detect the daemon mode
+						// (can also be used to detect the daemon mode)
 OPTION (persistence,"persistence", INT, 60)	// Seconds to try to bind the socket (0 forever)
 
 LNG_OPTION (std_voices, voice_names, "voices", STR, "")	// voices supported for this languages

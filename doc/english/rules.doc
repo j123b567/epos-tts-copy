@@ -171,6 +171,11 @@ order is not significant; it may contain comments according to hash.doc.
 Every line consists of two words separated by whitespace and the words
 will hence be called "replacee" and "replacer", respectively.
 
+Instead of a file name reference, it is possible to quote the contents
+of the dictionary directly; this is done by encapsulating the contents
+in double quotes. Dictionary items are whitespace-separated, the replacer
+and replacee are separated with a comma. Useful for very small dictionaries.
+
 SUBST	- substring substitution. The replacers replace every occurence
   of their respective replacees; longer matches are matched first; the
   process is iterated until no replacee occurs in the string. The target
