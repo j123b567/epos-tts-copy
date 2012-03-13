@@ -2,6 +2,16 @@
  *	ss/src/elements.h
  *	(c) geo@ff.cuni.cz
  *
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License in doc/COPYING for more details.
+ *
  *	This file defines the "main" structure we use as the internal structure
  *	for representing the text we're going to process. One instance of this 
  *	class can be a diphone, phone, syllable, ... , whole text (see UNIT
@@ -70,7 +80,7 @@ class unit
         void insert(UNIT target, bool backwards, char what, bool *left, bool *right);
 //	void subst(UNIT target, hash *table, SUBST_METHOD method);
 	inline void subst(char *subst_buff);  //replace this one by _subst_buff
-	void subst(hash *table, SUBST_METHOD method);				      
+	bool subst(hash *table, SUBST_METHOD method);				      
 #ifdef WANT_REGEX
 	void regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl);
 #endif

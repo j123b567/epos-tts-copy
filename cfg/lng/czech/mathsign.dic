@@ -5,6 +5,23 @@
 =	~rovná~se~
 /	~lomeno~
 @	~zavináè~
+;	~støedník~
+$$	~dolar~
+(	~závorka~
+)	~závorku~uzavøít~
+[	~hranatá~závorka~
+]	~hranatou~uzavøít~
+{	~složená~závorka~
+}	~složenou~uzavøít~
+&	~et~
+*	~hvìzdièka~
+^^	~støíška~
+%	~procent~
+_	~podtržítko~
+'	~apostrof~
+"	~uvozovky~
+`	~zpìtný~apostrof~
+\\	~zvrácené~lomítko~
 
 
-#  pozor:  -	mínus zatím slouží jen jako interpunkce
+#  pozor:  -	mínus zatím slouží jen jako interpunkce, atp.

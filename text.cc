@@ -2,13 +2,23 @@
  *	ss/src/text.cc
  *	(c) 1997 geo@ff.cuni.cz
  *
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License in doc/COPYING for more details.
+ *
  */
 
 #include "common.h"
 
-enum DIRECTIVE {DI_ILL, DI_INCL, DI_WARN, DI_ERROR};
+enum DIRECTIVE {DI_INCL, DI_WARN, DI_ERROR};
 
-#define DIRECTIVEstr "#_zero:#include:#warn:#error:"
+#define DIRECTIVEstr "#include:#warn:#error:"
 #define MAX_DIRECTIVE_LEN 16		//Keep in sync with text::getline's format string
 #define MAX_INCL_EMBED	32
 
@@ -16,23 +26,9 @@ enum DIRECTIVE {DI_ILL, DI_INCL, DI_WARN, DI_ERROR};
 
 hash *_directive_prefices=NULL;
 
-void initprefices(const char *list)
-{
-	const char *item;
-	int i,d;
-
-	for (i=0,d=0; list[i]; i++) if (list[i]==LIST_DELIM) d++;
-	_directive_prefices=new hash(i*2);
-	for (d--;d;d--) {
-		item=enum2str(d, list);
-		_directive_prefices->add_int(item,d);
-		if (strlen(item)>MAX_DIRECTIVE_LEN) shriek("Directive %s too long", item);
-	};
-}
-
 void doneprefices()
 {
-	if (!cfg.lowmemory) return;	//will result in a small memory leak
+	if (!cfg->lowmemory) return;	//will result in a small memory leak
 	delete _directive_prefices;
 	_directive_prefices=NULL;
 };
@@ -52,7 +48,7 @@ void strip(char *s)
 				return;
 			case '\\':
 				if (!*t) shriek("text.cc still cannot split lines");
-				if (strchr(cfg.token_esc, t[1]))
+				if (strchr(cfg->token_esc, t[1]))
 				*r = esctab[*++t];
 				break;
 			default:;
@@ -70,7 +66,9 @@ struct textlink {
 
 text::text(const char *filename, const char *dirname, bool warnings)
 {
-	if (!cfg.loaded) ss_init(0, NULL);
+	if (!cfg->loaded) ss_init(0, NULL);
+	if (!_directive_prefices) 
+		_directive_prefices = str2hash(DIRECTIVEstr, MAX_DIRECTIVE_LEN);
 	dir = dirname;
 	base = strdup(filename);
 	warn = warnings;
@@ -86,7 +84,6 @@ text::subfile(const char *filename)
 {
 	textlink *parent;
 
-	if (!_directive_prefices) initprefices(DIRECTIVEstr);
 
 	parent=current;
 	current=new textlink;
@@ -132,7 +129,7 @@ text::getline(char *buffer)
 	if (!current) return false;	// EOF, again
 	
 	while (true) {
-		while(!fgets(buffer,cfg.max_line,current->f)) {
+		while(!fgets(buffer,cfg->max_line,current->f)) {
 			superfile();
 			if (!current) return false;
 		};
@@ -145,8 +142,6 @@ text::getline(char *buffer)
 		strip(buffer);
 //		buffer[strcspn(buffer, COMMENT_LINES)]=0;
 		switch(_directive_prefices->translate_int(wordbuff)) {
-			case DI_ILL:
-				shriek("Zero! Zero!");
 			case DI_INCL:
 				tmp1=strchr(buffer+1, DQUOT);
 				if (!tmp1) shriek ("Forgotten quotes in file %s line %d", current_file, current_line);
@@ -176,7 +171,7 @@ text::getline(char *buffer)
 void
 text::rewind()
 {
-	if (cfg.paranoid) done();
+	if (cfg->paranoid) done();
 	subfile(base);
 }
 

@@ -8,6 +8,8 @@
 #pragma warn -ccc
 #pragma warn -rch
 
+#define bool int
+
 #define inline /* Borland can't handle inline */
 
 #include "ss.cc"

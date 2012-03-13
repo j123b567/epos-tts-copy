@@ -2,8 +2,19 @@
  *	ss/src/common.h
  *	(c) Jirka Hanika, geo@ff.cuni.cz
  *	(c) Petr Horak, horak@ure.cas.cz
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
  *
- *	For copyright info see doc/COPYING.
+ *	The GNU General Public License can be found in file doc/COPYING.
  *
  *	This is the main header file. You should only include this one
  *	no matter what do you want to do with this code.
@@ -16,7 +27,7 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@ff.cuni.cz"
-#define VERSION     "1.5.1"
+#define VERSION     "2.1.0"
 
 #include "config.h"
 
@@ -34,32 +45,56 @@
 	#include <dmalloc.h>  // Unimportant debugging hack. Throw it out.
 #endif			      // new and delete are replaced in interf.cc !
 
-#define WANT_REGEX
+#define WANT_REGEX	      // About always, we want to use the regex code
 
-#ifdef HAVE_LIBRX
+/**************
+#ifdef HAVE_LIBRX	      // Personally, I distrust the following stuff.
    extern "C" {
-	#include <rx.h>       // You need to have rx already installed
+	#ifdef HAVE_RX_H
+	    #include <rx.h>
+	#else
+	    #include "rx.h"
+	#endif
    }
 #else
    #ifdef HAVE_LIBREGEX
    extern "C" {
-	#include <regex.h>    // You need to have regex already installed
+	#ifdef HAVE_REGEX_H
+	   #include <regex.h>    // You need to have regex already installed
+	#else
+	   #include "regex.h"
+	#endif
    }
    #else
       #ifdef WANT_REGEX
-      #undef WANT_REGEX
+	#error regex code misconfigured		// see this? Blame geo@ff.cuni.cz
       #endif
    #endif
 #endif
+***************/
+
+#ifdef WANT_REGEX
+   extern "C" {
+	#ifdef HAVE_RX_H
+		#include <rx.h>
+	#else
+	    #ifdef HAVE_REGEX_H
+		#include <regex.h>
+	    #else
+		#include "rx.h"
+	    #endif
+	#endif
+   }
+#endif
+
+#define SSD_TCP_PORT	8778
 
 
 enum SYMTABLE {ST_ROOT, ST_RAW, ST_EMPTY};
-enum SUBST_METHOD {M_EXACT=0, M_END=1, M_BEGIN=2, M_BEGIN_OR_END=3, M_SUBSTR=4, M_PROPER=7, M_LEFT=8, M_RIGHT=16};
+enum SUBST_METHOD {M_EXACT=0, M_END=1, M_BEGIN=2, M_BEGIN_OR_END=3, M_SUBSTR=4, M_PROPER=7, M_LEFT=8, M_RIGHT=16, M_ONCE=32};
 enum REPARENT {M_DELETE, M_RIGHTWARDS, M_LEFTWARDS};
 enum FIT_IDX {Q_FREQ, Q_INTENS, Q_TIME};
 enum UNIT {U_DIPH, U_PHONE, U_SYLL, U_WORD, U_COLON, U_SENT, U_TEXT, U_INHERIT, U_DEFAULT, U_ILL=255, U_VOID=127};
-enum SYNTH_TYPE {S_FLOAT, S_INT, S_VQ};
-#define STstr "float:int:vq:"
 #define UNITstr "diphone:phone:syll:word:colon:sent:text:inherit:default:"
 #define BOOLstr "false:true:off:on:no:yes:disabled:enabled:-:+:n:y:0:1:non::"
 #define FITstr	"f:i:t:"
@@ -68,10 +103,16 @@ enum SYNTH_TYPE {S_FLOAT, S_INT, S_VQ};
 #define Char unsigned char
 #define unuse(x) if (((1&(int)(x))*(1&(int)(x)))<0) shriek("I'm drunk");
 
+struct unit;
+
 #include "defaults.h"
+#include "exc.h"
+// #include "slab.h"
 #include "hash.h"
 #include "text.h"
+#include "voice.h"
 #include "interf.h"             //See interf.h and even interf.cc for other headerities
+#include "client.h"
 #include "parser.h"
 #define PARSER simpleparser
 #include "elements.h"

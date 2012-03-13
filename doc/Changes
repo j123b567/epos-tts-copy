@@ -387,3 +387,94 @@
 	- Czech voiced affricates now respect traditnl.dph
 
 
+2.-2.0 from 1.5.1	22.4.98
+	- ss now requires ssd and talks to it via TCP; ss is a mere stub now.
+	- "make monolith" makes the old non-networking ss
+	- new conditional rule type WITH
+	- preliminary support for multiple concurrent voices (inventories),
+		languages, syntheses, configurations.
+	- class lang, class voice; options.cc accordingly messified
+	- ss.cc, monolith.cc start to reflect language dependencies
+	- started to prefer egcs to gcc
+	- synth.cc, ktdsyn.cc reshaped as well as the respective headers
+	- halfway support for flexible stereo output
+	- moved upper/lowercase issues from parser.cc to the rules
+	- everything may have got broken this time, sorry
+	- this is not meant to be a functional version
+
+
+2.-2.1 from 2.-2.0	27.4.98
+	- debugging, debugging, debugging, still not working
+	- using the compiler instead of the linker in Makefile
+
+
+2.-2.2 from 2.-2.1	29.4.98
+	- nasals may become sonorous
+	- no accents when no intonation
+
+
+2.-2.3 from 2.-2.2	30.4.98
+	- more debugging, as always
+
+
+2.-1.0 from 2.-2.3	2.5.98
+	- by default, ss is static wrt libss, "make shared" to make it shared.
+	- implemented both sides of the Text-To-Speech Control Protocol
+		(see doc/english/protocol.doc)
+	- lpcsyn.{cc,h} is back, but doesn't get packed into the distribution
+
+
+2.-1.1 from 2.-1.0	4.5.98
+	- class lpcsyn splits into lpcint, lpcfloat and lpcvq
+	- distribution fixes
+
+
+2.-1.2 from 2.-1.1	5.5.98
+	- fixes
+
+
+2.0.0 from 2.-1.2	10.5.98
+	- lpcsyn again integrated, lpcsyn.h lost and rewritten
+	- more TTSCP commands: shutdown, set language, set voice, show
+	- some minimum exception handling is performed, still using shriek()
+	- fixed member pointers in options.cc (removed them)
+	- wave file header might start to work (untested)
+	- some traditional voices come back
+	- added GPL banners to all relevant files
+	- somehow integrated rx.c, rx.h
+	- abbreviations spelled out (cz)
+
+
+2.0.1 from 2.0.0	13.5.98
+	- regex is configured better
+	- rewrote freadin() to make it faster and not to duplicate files in memory
+	- the relax_input option turns unknown chars on input to deflt_char (broken)
+	- changed TTSCP handshake string
+
+
+2.0.2 from 2.0.1	17.5.98
+	- hash tables now do hash about any combination of types
+	- hash tables are slabbing (faster and possibly less memory consuming
+	- tcpsyn.h
+
+
+2.1.-1 from 2.0.2	 2.6.98
+	- channel type option implemented
+	- WITH rule debugged
+	- scroll lock LED tracks attached voices (for monolith)
+	- ssd offspring exits
+	- open syllables detection improved (cz)
+	- made daemon.cc rather unixy
+	- on linux, daemon debugging info goes to /dev/tty10
+	- select() multitasks concurrent connexion's options (contexts)
+	- moved diphone names physically out of struct voice
+	- copying-on-write configuration for individual connections (incomplete)
+	- basic authentication (TTSCP pass command)
+	- cfg/allowed.ini holds a list of TTSCP user changeable parameters
+
+
+2.1.0 from 2.1.-1	3.6.98
+	- egcs portability fix in hash.cc
+	- numerous harmless memory leaks and related cleanup
+
+

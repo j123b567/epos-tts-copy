@@ -8,13 +8,24 @@
 - snížit pamìové nároky hashovacích tabulek
 - unknown diphone - asi jen è. 19 (souhláska---r)
 - gramatický marking
-- slouèit struct diphone difon
 - skni unused???
 - v traditnl.dph chybí difony typu i/ (?i0), kde i je samohláska
-- umožnit vkládání paus
+- umožnit hierarchii paus
 - úplnì zrušit difony kvùli snížení pamìových nárokù
 - vhodnì oøezat listy AVL stromù v hash.cc
 - make install je velmi neodolný (cfg not there, no binaries...)
 - inserting rules (not phones) may go madly looping
   (eating up all memory); why? What should they do anyway?
 - difon 254 et c. se nepoužívá, rázy jsou ošetøeny divnì, slab. r taky.
+- prof. Palková si právem stìžuje na rázy
+- otevøené slabiky se vyznaèují chybnì (slabikotvorné souhlásky)
+- zrychlit sputs()
+- plýtvání pamìtí napøíklad na inventáøe
+- shriek() -> exc handling, i monolith
+- skonsistentnit options v monolith a v clientovi. Monolith napø. nepodporuje
+  --input_file a client snad jo; pokud jde o -n, je to zase naopak. Soubory
+  se parsují stejnì, klávesnice však nikoli.
+- sgets() mùže zablokovat všechny konexe, pøijde-li jen èást øetìzce
+- autentikace
+- tokenizace
+- stml
