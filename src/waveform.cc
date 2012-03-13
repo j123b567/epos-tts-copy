@@ -55,9 +55,8 @@
 	#include <io.h>		/* open, (ioctl,) ... */
 #endif
 
-#ifndef O_BINARY	/* open */
-	#define O_BINARY  0
-#endif
+
+#define FOURCC_INIT(x) {(x[0]), (x[1]), (x[2]), (x[3])}
 
 //#pragma hdrstop
 
@@ -91,7 +90,7 @@ struct cue_point
 	long sample_offset;
 };
 
-cue_point cue_point_template = { 0, 0, "data", 0, 0, 0 };
+cue_point cue_point_template = { 0, 0, FOURCC_INIT("data"), 0, 0, 0 };
 
 #define ADTL_MAX_ITEM		64
 #define ADTL_INITIAL_BUFF	256	/* must be at least ADTL_MAX_ITEM */
@@ -114,7 +113,7 @@ struct ltxt
 #define American 1
 #define Boring_CodePage	437
 
-ltxt ltxt_template = { "ltxt", 0, 0, 0, "dphl", USA, English, American, Boring_CodePage };
+ltxt ltxt_template = { FOURCC_INIT("ltxt"), 0, 0, 0, FOURCC_INIT("dphl"), USA, English, American, Boring_CodePage };
 
 wavefm::wavefm(voice *v)
 {
@@ -361,7 +360,7 @@ wavefm::attach()
 	output = compose_pathname(cfg->wav_file, cfg->wav_dir);
 
 #ifdef S_IRGRP
-	d = open(output, O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK, MODE_MASK);
+	d = open(output, O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK | O_BINARY, MODE_MASK);
 #else
 	d = open(output, O_RDWR | O_CREAT | O_TRUNC | O_BINARY);
 #endif

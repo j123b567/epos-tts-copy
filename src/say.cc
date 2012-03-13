@@ -32,6 +32,8 @@ const char *WHITESPACE = " \t";
 
 const char *output_file = "#localsound";
 
+bool chunking = false;
+
 #define STDIN_BUFF_SIZE  550000
 
 int ctrld, datad;		/* file descriptors for the control and data connections */
@@ -90,7 +92,8 @@ void say_data()
 	if (!data) data = "No.";
 	sputs("strm $", ctrld);
 	sputs(dh, ctrld);
-	sputs(":chunk:raw:rules:diphs:synth:", ctrld);
+	if (chunking) sputs(":chunk", ctrld);
+	sputs(":raw:rules:diphs:synth:", ctrld);
 	sputs(output_file, ctrld);
 	sputs("\r\n", ctrld);
 	sputs("appl ", ctrld);
@@ -151,13 +154,14 @@ void dump_help()
 	printf(" -i  ironic pronunciation\n");
 	printf(" -k  shutdown Epos\n");
 	printf(" -l  list available languages and voices\n");
+	printf(" -u  use utterance chunking\n");
 	printf(" -w  write output to said.wav (in the \"pseudo root\" directory)\n");
 }
 
 void send_cmd_line(int argc, char **argv)
 {
 	char *ar;
-	char *j;
+	char *j = NULL;
 	register char *par;
 
 	for(int i=1; i<argc; i++) {
@@ -210,6 +214,7 @@ void send_cmd_line(int argc, char **argv)
 			//		  cfg->neuronet=true; break;
 				case 'p': send_option("pausing", "true"); break;
 				case 's': send_option("play_diph", "true"); break;
+				case 'u': chunking = true; break;
 				case 'v': send_option("version", "true"); break;
 				case 'w': send_option("wave_header", "true");
 					  output_file = "/said.wav"; break;

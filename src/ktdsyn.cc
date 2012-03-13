@@ -30,11 +30,6 @@
 //#include <io.h>		/* open, write, (ioctl,) ... */
 //#endif
 
-#ifndef O_BINARY	/* open */
-#define O_BINARY  0
-#endif
-
-
 //#pragma hdrstop
 //#pragma warn -pia
 
@@ -45,9 +40,9 @@ ktdsyn::ktdsyn (voice *v)
 {
 	FILE *f;
 	char * pathname = compose_pathname("useky.dat", v->loc, cfg->inv_base_dir);
-	f = fopen (pathname, "rt");
+	f = fopen (pathname, "rt", "ktd useky");	// FIXME
 	free(pathname);
-	if (!f) shriek(841, "Cannot open file useky.dat");
+//	if (!f) shriek(841, "Cannot open file useky.dat");
 	po_u = 0;
  	while (!feof (f)) {		/* FIXME: consider turning into a claim() call */
 		int imp_int;		/* to make scanf() happy */
@@ -136,7 +131,7 @@ int ktdsyn::op_psl (char *msub, sample2_t * psl)
 	FILE *f_psl;
 
 	if ((f_psl = fopen (msub, "rb")) == NULL) {
-		fprintf (stderr, "Nemozem otvorit subor %s\n", msub);
+		fprintf (stderr, "Nemozem otvorit subor %s\n", msub);	// FIXME
 		return -1;
 	}
 	fread (psl, sizeof (sample2_t), 8000, f_psl);

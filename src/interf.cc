@@ -181,15 +181,18 @@ fopen(const char *filename, const char *flags, const char *reason)
 	char *message;
 
 	if (!filename || !*filename)
-		return *flags == 'r' ? stdin : stdout;
+//		return *flags == 'r' ? stdin : stdout;		// has to be dupped
+		return NULL;
 	switch (*flags) {
 		case 'r': message = "Failed to read %s from %s: %s"; break;
 		case 'w': message = "Failed to write %s to %s: %s"; break;
 		default : shriek(861, fmt("Bad flags for %s", reason)); message = NULL;
 	}
 	f = fopen(filename, flags);
+	if (!f && errno == ENOMEM)
+		OOM_HANDLER;
 	if (!f && reason) shriek(445, fmt(message, reason, filename, strerror(errno)));
-	if (cfg->paranoid && f) {
+	if (cfg->paranoid && f && *flags == 'r') {
 		if (!fread(&message, 1, 1, f))
 			shriek(445, fmt(message, reason, filename, "maybe a directory"));
 		rewind(f);

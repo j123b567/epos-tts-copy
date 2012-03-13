@@ -45,10 +45,6 @@
 #include <io.h>		/* open, write, (ioctl,) ... */
 #endif
 
-#ifndef O_BINARY	/* open */
-#define O_BINARY  0
-#endif
-
 //#pragma hdrstop
 
 #ifdef KDGETLED		// Feel free to disable or delete the following stuff
@@ -183,7 +179,7 @@ lang::add_voices(const char *voice_names)
 void
 lang::add_soft_option(const char *optname)
 {
-	char *dflt = strchr(optname, EQUALSIGN);
+	char *dflt = (char *)strchr(optname, EQUALSIGN);
 	if (dflt) *dflt++ = 0;
 	else dflt = "";
 	char *closing = (char *)strchr(optname, CLOSING);

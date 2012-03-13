@@ -299,7 +299,7 @@ static void detach()
         UNIX (ioctl(0, TIOCNOTTY);)          //Release the control terminal
 	for (i=0; i<3; i++) close(i);
 	if (cfg->daemon_log && open(cfg->daemon_log, O_RDWR|O_CREAT|O_APPEND
-					UNIX( |O_NOCTTY)) != -1) {
+					UNIX( |O_NOCTTY), MODE_MASK) != -1) {
 		for (i=1; i<3; i++) dup(0);
 		DEBUG(3,11,fprintf(STDDBG, "\n\n\n\nEpos restarted at ");)
 		fflush(stdout);
@@ -315,7 +315,7 @@ static inline void make_server_passwd()
 
 	FILE *f;
 	char *filename = compose_pathname(cfg->pwdfile, "");
-	if (filename && *filename && (f = fopen(filename, "w"))) {
+	if (filename && *filename && (f = fopen(filename, "w", NULL))) {
 		UNIX(chmod(filename, S_IRUSR));
 		fwrite(server_passwd, SERVER_PASSWD_LEN, 1, f);
 		fwrite("\n", 1, 1, f);
@@ -348,7 +348,7 @@ static void daemonize()
 
 fd_set data_conn_set;
 
-void update_data_conn_set(char *id, int *fd)
+void update_data_conn_set(char *, int *fd)
 {
 	FD_SET(*fd, &data_conn_set);
 }
@@ -411,7 +411,7 @@ void server()
 			DEBUG(2,11,fprintf(STDDBG, a ? "Scheduling select(%d)ed agent\n"
 					: "sche sche scheduler\n", fd);)
 			sleep_table[fd] = NULL;
-			bool pushing = FD_ISSET(fd, &push_set);
+			int pushing = FD_ISSET(fd, &push_set);
 			FD_CLR(fd, &block_set);
 			FD_CLR(fd, &push_set);
 			a->timeslice();

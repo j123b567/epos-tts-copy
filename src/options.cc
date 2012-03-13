@@ -323,7 +323,7 @@ char *pre_set_unit_levels(char *value)
 	return value;
 }
 
-void post_set_unit_levels(char *value)
+void post_set_unit_levels(char *)
 {
 	cfg->segm_level = str2enum(LEVNAME_SEGMENT, cfg->unit_levels, U_DEFAULT);
 	cfg->phone_level = str2enum(LEVNAME_PHONE, cfg->unit_levels, U_DEFAULT);

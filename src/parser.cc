@@ -172,6 +172,7 @@ parser::chrlev(unsigned char c)
 	if (current > text+txtlen+1) /*(!current[-1] && c))*/ return(U_VOID);
 	if (CHRLEV[c] == U_ILL)
 	{
+		if (cfg->relax_input) return CHRLEV[cfg->dflt_char];
 DEBUG(4,7,{	if (c>127) fprintf(cfg->stdshriek,"Seems you're mixing two Czech character encodings?\n");
 		fprintf(cfg->stdshriek,"Fatal: parser dumps core.\n%s\n",(char *)current-2);
 })
@@ -216,7 +217,7 @@ parser::initables(SYMTABLE table)
 	for(c=1; c<256; c++) CHRLEV[c] = U_ILL; *CHRLEV = cfg->text_level;
 	switch (table) {
 	case ST_ROOT:
-		alias("   ","\n\r\t");
+		alias("  ","\r\t");
 	case ST_RAW:
 		for (u = cfg->phone_level; u < cfg->text_level; u = (UNIT)(u+1))
 			regist(u, this_lang->perm[u]);

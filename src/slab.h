@@ -107,7 +107,7 @@ inline void slab<size>::release(void *ptr)
 					\
 slab<sizeof(type)> slab_name(slice_sz);	\
 					\
-void * type::operator new(size_t size)	\
+void * type::operator new(size_t)	\
 {					\
 	return slab_name.alloc();	\
 }					\

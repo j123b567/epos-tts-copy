@@ -7,7 +7,7 @@
  *	to config.h, possibly removing a UNIXy config.h first.
  */
 
-#define __STDC__ 0
+// #define __STDC__ 0	/* Borland does not like this #define */
 
 /* Define to empty if the keyword does not work.  */
 /* #undef const */

@@ -70,10 +70,15 @@ char *split_string(char *string);	// 0-terminate the first word, return the rest
 FILE *fopen(const char *filename, const char *flags, const char *reason);
 
 extern void *xmall_ptr_holder;
-#define OOM_HANDLER	(shriek(422, "Out of memory"), NULL)
+#define OOM_HANDLER	(shriek(422, "Out of memory"), (void *)NULL)
 #define xmalloc(x)	(((xmall_ptr_holder = malloc((x)))) ? xmall_ptr_holder : OOM_HANDLER)
 #define xrealloc(x,y)	(((xmall_ptr_holder = realloc((x),(y)))) ? xmall_ptr_holder : OOM_HANDLER)
 #define xcalloc(x,y)	(((xmall_ptr_holder = calloc((x),(y)))) ? xmall_ptr_holder : OOM_HANDLER)
+
+// inline void memhack(int size)
+// {
+// 	if (size > 8192) printf("memhack %d\n", size);
+// }
 
 // void *xmalloc(size_t);
 // void *xcalloc(size_t, size_t);

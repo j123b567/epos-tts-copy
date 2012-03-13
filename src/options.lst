@@ -340,8 +340,8 @@ OPTION (limit_dbg,  "limit_debug", INT, 0)      // Never debug under this level,
 OPTION (loaded, "",               BOOL, false)  // Do we have already compiled the .ini files?
 OPTION (fixedfile,"fixed_ini_file",STR, "fixed.ini")
 OPTION (inifile, "cfg_file",       STR, "epos.ini")	// What is our favourite .ini file?
-OPTION (token_esc, "",             STR, "nt[eE\\ #;@~.-mX")	// Escape sequences usable in the .ini files
-OPTION (value_esc, "",             STR, "\n\t\033\033\033\\\377#;@\1\2\3\4\037")
+OPTION (token_esc, "",             STR, "nt[eE\\ #;@~.-mXYZ")	// Escape sequences usable in the .ini files
+OPTION (value_esc, "",             STR, "\n\t\033\033\033\\\377#;@\1\2\3\4\037\036\035")
 OPTION (slash_esc, "",            CHAR, '/')	// Path separator ('/' or '\') .ini escape seq
 
 OPTION (hash_full, "hashes_full",  INT, 100)    // How full should a hash table become?
@@ -429,12 +429,14 @@ OPTION (wav_hdr, "wave_header",	  BOOL, false)  // Should .wav output contain .w
 
 OPTION (daemon_log, "daemon_log",  STR, NULL)	// Log file of daemon.cc activities (TTSCP server)
 OPTION (pwdfile, "server_pwd_file",STR, NULL)	// File to store the server passwd for TTSCP auth
+OPTION (dbg_pwd, "debug_password", STR, "")	// Additional server password (insecure)
 OPTION (allow_file, "allow_options_file", STR, "allowed.ini") // options anonymous may change
 OPTION (db_size, "diph_buff_size", INT, 511)	// max n of diphones to be synthesized at once
 OPTION (buffer_size, "buffer_size",INT, 8192)	// buffer size for wave files
 OPTION (max_net_cmd, "max_net_cmd",INT, 16384)  // Max TCP command length
 OPTION (listen_port, "listen_port",INT, TTSCP_PORT) // TCP port where the daemon should listen
-OPTION (local_only, "local_only",  BOOL, false) // visible only to local clients ?
+OPTION (handle_size, "handle_size",INT, 15)	// TTSCP handle size
+OPTION (local_only, "local_only",  BOOL, true) // visible only to local clients ?
 OPTION (deadlk_timeout, "deadlock_timeout", INT, 5)	// remote voice timeout
 VOICE_OPTION (inv_loc, loc, "location", STR, "")
 // OPTION (sd, "",		   INT, 0)	// network socket of the current session
@@ -457,7 +459,7 @@ LNG_OPTION (fallback_voice, fallback_voice, "fallback_voice", STR, "")
 // OPTION (lowercase,"lower_case",    STR, NULL)   // Which characters are accepted as 
 // OPTION (uppercase,"upper_case",    STR, NULL)   // denoting phones
 
-OPTION (relax_input,"relax_input",BOOL, false)  // Survive unknown characters on input
+OPTION (relax_input,"relax_input",BOOL, true)   // Survive unknown characters on input
 OPTION (dflt_char, "default_char",CHAR, ' ')	// Replace them with this char
 
 // OPTION (header_xscr, "header", FILE, "")     // Header and footer printed
@@ -467,7 +469,7 @@ OPTION (footer_xscr, "footer",     STR, "")     //   in unit::fout()
 
 LNG_OPTION (syll_hack, syll_hack, "suppress_side_syll",  BOOL,  false)   
 						// Try to avoid initial pseudo-syllables,
-						// e.g. "j-sem", "rm-en"
+						// e.g. "j-sem", "r-men" in Czech
 LNG_OPTION (limit_syll_hack, syll_thr, "limit_side_syll", CHAR, 'a') 
 						// What sonority the initial phone must have
 						// in order to become syllable peak? (Example)

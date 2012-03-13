@@ -158,7 +158,10 @@ tcpsyn::tcpsyn(voice *v)
 		langname = strchr(remote_server, LANGNAMESEP);
 		if (langname) *langname++ = 0;
 		else langname = (char *)this_lang->name;	// const cast
-	} else serv_id = remote_server;
+	} else {
+		serv_id = remote_server;
+		langname = (char *)this_lang->name;		// const cast
+	}
 	char *port_id = strchr(serv_id, TCPPORTSEP);
 	if (port_id) {
 		*port_id++ = 0;
@@ -210,13 +213,13 @@ tcpsyn::~tcpsyn()
 }
 
 void
-tcpsyn::syndiph(voice *v, diphone d, wavefm *w)
+tcpsyn::syndiph(voice *, diphone, wavefm *)
 {
 	shriek(861, "abstract tcpsyn::syndiph");
 }
 
 void
-tcpsyn::syndiphs(voice *v, diphone *d, int count, wavefm *w)
+tcpsyn::syndiphs(voice *, diphone *d, int count, wavefm *w)
 {
 	int size;
 	void *b;

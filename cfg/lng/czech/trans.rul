@@ -23,6 +23,20 @@ $sonority  = 0'<$fric$afric${stop}øØ<$nasal<l<rjJ<$vowel   ;l<r viz "umrlec" etc
 $lower_case = aábcèdïeéìfghiíjklmnòoópqrøs¹t»uúùvwxyýz¾
 $upper_case = AÁBCÈDÏEÉÌFGHIÍJKLMNÒOÓPQRØS©T«UÚÙVWXYÝZ®
 
+#  \Z oznaèuje teèku oznaèující øadovou èíslovku.  Tu je nutno rozli¹it
+#  od teèky obyèejné, vìtu vydìlující, dokud se neztratí rozdíl mezi velkými
+#  a malými písmeny.  Následuje-li toti¾ za teèkou velké písmeno, posuzuje
+#  se v¾dy jako konec vìty.
+#  Nìkteré významy teèky, jako napø. desetinná teèka, u¾ vyøe¹il parser,
+#  a to nezávisle na jazyce.  Ty tedy není nutno brát v potaz.
+
+inside .  sent
+{
+	regex /([0123456789])\$/\1\Z/	word
+}
+regex  /\Z(.[${upper_case}])/\1/	text
+
+
 # Pravidla pro ètení zkratek apod.: velké písmeno na jiném,
 #   ne¾ prvním místì ve slovì indikuje zkratku a hláskuje se.
 #   Stejnì tak jednotlivé písmeno pøed cifrou nebo speciálním znakem.
@@ -30,6 +44,12 @@ $upper_case = AÁBCÈDÏEÉÌFGHIÍJKLMNÒOÓPQRØS©T«UÚÙVWXYÝZ®
 regress	 ${lower_case}>${upper_case}(0_!${lower_case})			colon
 regress  ${upper_case}>${lower_case}(0_${lower_case})			word
 regress  ${upper_case}>${lower_case}(0_${lower_case})			colon
+if	spellout
+{
+	regex	/^([^\Y\ ~]*)(.\?)\$/\1\Y\1\2/	word
+	progress ${lower_case}>${upper_case}(\Y${upper_case}_!)
+	regex	/\Y/./		text
+}
 subst	 abbrevs.dic							colon
 regress  ${upper_case}>${lower_case}($everywhere)			colon
 

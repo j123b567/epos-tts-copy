@@ -8,14 +8,17 @@ Compiling on a UNIX machine:
  2. ./configure
  3. make
  4. make install   (as root - will install cfg files under /usr/lib/epos)
+ 5. install speech segment inventories (downloadable separately) if required
+	(untar them starting from the root)
 
 Compiling with Visual C++ on a Windows NT machine:
- 0. having inadequate luck throughout is essential
  1. cd arch\win
  2. .\configure.bat
  3. cd ..\..\src
  4. run VC and open the workspace file epos.dsw
  5. build the project (press F7)
+ 5. install speech segment inventories (downloadable separately) if required
+	(untar them starting from the root of the current drive)
 
 Running:
  epos   starts a speech daemon
@@ -33,7 +36,7 @@ using a poor quality built-in voice.
 
 System requirements:
 
- Any decent C++ compiler (gcc is not decent, egcs 1.1 is decent)
+ Any decent C++ compiler (gcc 2.7 is not decent, egcs 1.1 is decent)
  If using the GNU assembler, gas version 2.9 or newer is recommended
 	otherwise Epos will compile incorrectly and may segfault
 	at the moment the first exception is thrown
@@ -53,8 +56,8 @@ Getting help:
  0. The order of the following steps is important.
  1. Download a recent version.
  2. Get more info as outlined above.
- 3. mail to epos@braille.mff.cuni.cz. This is a developer list.
+ 3. subscribe and mail to epos@braille.mff.cuni.cz. This is a developer list.
     Be sure to mention the version you're running or trying to run
     (to be found in common.h or by "epos -v") and describe your
-    problems. If your mail bounces, try geo@ff.cuni.cz instead.
+    problems. If your mail bounces, try geo@cuni.cz instead.
 

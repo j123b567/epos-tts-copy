@@ -156,7 +156,7 @@ The semicolon (or hash mark) must be located at the beginning of line
 or just after some whitespace. Semicolons in the middle of a word don't
 start a comment.
 
-If a line begins with <tt>&commat;include</tt> starting in the first column,
+If a line begins with <tt>&commat;include</tt> (possibly preceded by whitespace),
 it is treated as the <em>include directive</em>.
 The format of the line should be <tt>&commat;include "filename"</tt> and it will
 cause the contents of the <tt>filename</tt> file to be inserted at this place of the 
@@ -1037,7 +1037,7 @@ cd src
 </verb>
 </tscreen>
 
-<tag>--pseudo_root_dir sl/dirname/</tag>
+<tag>--pseudo_root_dir <sl/dirname/</tag>
 	The value is a directory name.  Sets the path prepended
 	to any file name referenced in the TTSCP <ref id="strm-cmd"
 	name="stream command">. This subtree cannot be escaped with
@@ -1146,7 +1146,7 @@ change them in the configuration files instead.
 	The value is a file name. This option can be used to force the server
 	to store its internal password to a file.  This password can then
 	be used for TTSCP authentication in order to issue restricted commands
-	such as <tt/down/.
+	such as <tt/down/.  If the file can not be created, no error is reported.
 <tag>--allow&lowbar;options&lowbar;file <sl/filename/</tag>
 	The file named by this parameter provides access control in TTSCP to individual
 	options.  Its syntax is described <ref id="allowed-options" name="above">.

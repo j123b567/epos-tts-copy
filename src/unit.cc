@@ -40,7 +40,7 @@ unit::unit(UNIT layer, parser *parser)
 	cont = NO_CONT;
 	f = i = t = 0;
 	scope=false;
-	if((signed int) layer <0) shriek(861, fmt("Can't use this point of view: %d", layer));
+//	if((signed int) layer <0) shriek(861, fmt("Can't use this point of view: %d", layer));	FIXME
 	DEBUG(1,2,fprintf(STDDBG,"New unit %u, parser %u\n", layer, parser->level);)
 
 	while (parser->level < layer) insert_end(new unit((UNIT) (layer-1), parser),NULL);
@@ -141,7 +141,7 @@ unit::fout(char *filename)      //NULL means stdout
 {
 	FILE *outf;
 	file *tmp;
-	outf = filename ? fopen(filename,"wt") : cfg->stddbg;
+	outf = filename ? fopen(filename, "wt", "unit dump file") : cfg->stddbg;
 
 	tmp = claim(cfg->header_xscr, cfg->ini_dir, "", "rt", "transcription header");
 	fputs(tmp->data, outf);

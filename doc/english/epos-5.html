@@ -28,7 +28,7 @@ become outdated due to lack of interest.
 <P>Overall coding priorities, approximately in order of decreasing precedence:
 <UL>
 <LI> language independence and generality</LI>
-<LI> no undocumented or implicit "features"</LI>
+<LI> no undocumented or implicit "features" (except for error handling)</LI>
 <LI> portability</LI>
 <LI> maintainability, clean decomposition</LI>
 <LI> clean (intuitive) protocols and programming interfaces</LI>
@@ -102,7 +102,7 @@ of description above the current unit.
 <P>
 <P>This class represents a logical line-oriented text file. It handles things
 like the 
-<A HREF="epos-3.html#include-directive">&commat;include directive</A>,
+<A HREF="epos-3.html#include-directive">@include directive</A>,
 <A HREF="epos-3.html#escaping">backslash-escaped special characters</A>,
 initial whitespace and comment stripping. It is used for the 
 <A HREF="epos-2.html#rules">rule files</A> and 
@@ -223,8 +223,11 @@ control), exactly one agent is active (Epos doesn't support SMP to avoid
 the unnecessary overhead and complexity in the typical case).  If an agent has to wait
 for some event before its job is finished, for example, when the sound card reaches
 full buffers or not enough data has arrived through a network connection, the agent
-calls the <CODE>block</CODE> method with the offending file descriptor.  It is impossible
-to wait for anything except a file descriptor status change.  If an agents wants
+calls the <CODE>block</CODE> method (reading) or <CODE>push</CODE> method (writing) with the offending
+file descriptor.
+It is also possible for an agent to wait until some other agent
+executes; see the <CODE>block</CODE> and <CODE>push</CODE> methods' implementation for an example.
+If an agents wants
 to have another agent running, it can call the <CODE>schedule</CODE> method to add it
 to the queue of runnable processes. The scheduled agents always acquire control
 through the <CODE>run</CODE> method; when this method returns, another agent is chosen.
@@ -289,7 +292,7 @@ flow control. FIXME: more
 <P>The Epos package contains three TTSCP clients.  One of them is the standalone
 <CODE>say</CODE> utility, which is provided as a good and simple example of a TTSCP
 client.  We suggest to use it as a starting point for developing specialized
-TTSCP clients.
+TTSCP clients, even though it is already somewhat crufty.
 <P>The <CODE>tcpsyn</CODE> virtual synthesizer also embeds a TTSCP client; it is
 wise to check its proper functioning after making changes to the TTSCP
 server implementation.

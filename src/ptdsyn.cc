@@ -114,7 +114,7 @@ int ptdsyn::analyza(DIFON *dfn, sample_type *waveout, int *tas, voice *v)
  FILE *fil;
 
  fil=fopen(filename,"rb");
- if(!fil) ;//shriek(499, "ptdsyn cannot find diphones");
+ if (!fil) shriek(445, fmt("ptdsyn cannot find diphones in %s", filename));
  else {
 
  unsigned char *buf;

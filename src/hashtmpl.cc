@@ -397,6 +397,7 @@ int
 hash::write(char *filename, bool keep_backup)
 {
 	FILE *old = fopen(filename, "rt");
+	if (!old && errno != ENOENT) return 1;
 	FILE *outfile;
 	char *buff = (char *)xmalloc(hash_max_line);
 	char *backup;
@@ -410,6 +411,10 @@ hash::write(char *filename, bool keep_backup)
 		backup = strdup(buff);
 		rename (filename, backup);
 		outfile = fopen(filename, "w");
+		if (!outfile && errno == ENOMEM) {
+			rename(backup, filename);
+			return 1;
+		}
 		fgets(buff, hash_max_line, old);
 		while (!feof(old) && strchr(COMMENT_LINES, buff[strspn(buff, WHITESPACE)])) {
 			fputs(buff, outfile);
@@ -424,6 +429,7 @@ hash::write(char *filename, bool keep_backup)
 		free(backup);
 	} else {
 		outfile = fopen(filename, "w");
+		if (!outfile && errno == ENOMEM) return 1;
 		forall(_writetree, outfile);
 		result = !fprintf(outfile,"\n");
 		fclose (outfile);
@@ -462,6 +468,7 @@ hash::update(char *filename, bool keep_backup, bool remove_removed)
 	rename (filename, backup);
 
 	outfile = fopen(filename, "w");
+	if (!outfile && errno == ENOMEM) hash_shriek("Out of memory for update of %s", filename, 0);
 	while (fgets(buff, hash_max_line, old)) {
 		tmp = buff + strspn(buff, WHITESPACE); key = tmp;
 		tmp += strcspn(tmp, WHITESPACE); zero = tmp;

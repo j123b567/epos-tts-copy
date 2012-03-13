@@ -1,5 +1,7 @@
 # Run this script before opening the Visual C++ project file
 
+call convert.bat
+
 cd ..\..\src
 
 move agent.cc agent.cpp
@@ -15,7 +17,7 @@ move lpcsyn.cc lpcsyn.cpp
 move monolith.cc monolith.cpp
 move parser.cc parser.cpp
 move rule.cc rule.cpp
-rem move say.cc say.cpp
+move say.cc say.cpp
 move synth.cc synth.cpp
 move tcpsyn.cc tcpsyn.cpp
 move text.cc text.cpp

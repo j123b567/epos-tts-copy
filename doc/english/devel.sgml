@@ -15,7 +15,7 @@ become outdated due to lack of interest.
 Overall coding priorities, approximately in order of decreasing precedence:
 <itemize>
 	<item> language independence and generality
-	<item> no undocumented or implicit "features"
+	<item> no undocumented or implicit "features" (except for error handling)
 	<item> portability
 	<item> maintainability, clean decomposition
 	<item> clean (intuitive) protocols and programming interfaces
@@ -206,8 +206,11 @@ control), exactly one agent is active (Epos doesn't support SMP to avoid
 the unnecessary overhead and complexity in the typical case).  If an agent has to wait
 for some event before its job is finished, for example, when the sound card reaches
 full buffers or not enough data has arrived through a network connection, the agent
-calls the <tt/block/ method with the offending file descriptor.  It is impossible
-to wait for anything except a file descriptor status change.  If an agents wants
+calls the <tt/block/ method (reading) or <tt/push/ method (writing) with the offending
+file descriptor.
+It is also possible for an agent to wait until some other agent
+executes; see the <tt/block/ and <tt/push/ methods' implementation for an example.
+If an agents wants
 to have another agent running, it can call the <tt/schedule/ method to add it
 to the queue of runnable processes. The scheduled agents always acquire control
 through the <tt/run/ method; when this method returns, another agent is chosen.
@@ -273,7 +276,7 @@ agent
 The Epos package contains three TTSCP clients.  One of them is the standalone
 <tt/say/ utility, which is provided as a good and simple example of a TTSCP
 client.  We suggest to use it as a starting point for developing specialized
-TTSCP clients.
+TTSCP clients, even though it is already somewhat crufty.
 
 The <tt/tcpsyn/ virtual synthesizer also embeds a TTSCP client; it is
 wise to check its proper functioning after making changes to the TTSCP

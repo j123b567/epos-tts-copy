@@ -2,6 +2,6 @@ Authenticate as a specified user. The authentication stays
 incomplete until a valid "pass" command is issued.
 The control connection is initially in an "incomplete superuser"
 authentication state. A successful authentication may have
-effect on access restrictions, particularly the "setl" command.
+effect on access restrictions, especially the "setl" command.
 Successful superuser authentication may enable administrative
 commands, such as "setg" or "down".

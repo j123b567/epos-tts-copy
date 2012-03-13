@@ -770,7 +770,7 @@ if   !colloquial
   library already installed and have <tt>WANT&lowbar;REGEX</tt> enabled in <tt>common.h</tt>.
   This is because we don't actually implement the regex parsing stuff; we leave it
   to your OS libraries.  In case you don't have such libraries installed, we use
-  the glibc implementation (<tt>rx.c</tt> in the distribution).
+  the glibc implementation (<tt>rx.c</tt> in the Epos distribution).
 
 <sect2> Type <tt>debug</tt> <label id="debug-rule">
 <p>

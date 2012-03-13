@@ -1,1 +1,1 @@
-Shutdown the daemon. Restricted access.
+Shutdown the daemon.  You must authenticate as the server first.

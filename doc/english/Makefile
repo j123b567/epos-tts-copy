@@ -23,6 +23,7 @@ epos.txt: epostwk.sgml
 	@mv epostwk.txt epos.txt
 
 epos.html: epos.sgml
+	@echo Converting to HTML
 	@sgml2html $^
 
 epos.dvi: epos.sgml

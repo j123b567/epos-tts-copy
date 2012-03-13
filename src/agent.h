@@ -96,7 +96,7 @@ class agent
 	agent *next;
 	agent *prev;
 	agent *dep;
-	virtual bool apply(int size);	/* process <size> data from input to output	*/
+	virtual bool mktask(int size);	/* process <size> data from input to output	*/
 	virtual void finis(bool err);	/* tell the stream apply() has finished	*/
 	void schedule();	/* add this agent to the run queue	*/
 	void block(int fd);	/* schedule other agents until fd has more data */
@@ -136,7 +136,7 @@ class stream : public agent
 	stream(char *, context *);
 	virtual ~stream();
 	virtual void brk();
-	virtual void apply(agent *ref, int bytes);
+	void apply(agent *ref, int bytes);
 	void release_agents();
 	bool foreground() {return callbk ? true : false; };
 };
@@ -153,8 +153,6 @@ class a_protocol : public agent
 	virtual void disconnect() = NULL;	// destructor, executes delayed. Also cleanup.
 };
 
-#define HANDLE_SIZE	3
-
 class a_ttscp : public a_protocol
 {
 	virtual int run_command(char *);
@@ -162,7 +160,7 @@ class a_ttscp : public a_protocol
    public:
 	a_ttscp *ctrl;
 	hash_table<char, a_ttscp> *deps;
-	char handle[HANDLE_SIZE];
+	char *handle;
 	a_ttscp(int sd_in, int sd_out);
 	virtual ~a_ttscp();
 	virtual void brk();

@@ -5,3 +5,5 @@ show language
 show voice
 show languages
 show voices
+Some parameters can be shown only under a specific
+authentication status.

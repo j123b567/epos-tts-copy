@@ -27,7 +27,7 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@ff.cuni.cz"
-#define VERSION     "2.4.17"
+#define VERSION     "2.4.24"
 
 #include "config.h"
 
@@ -123,17 +123,14 @@ class stream;
 #define MAX_PATHNAME       256	  // only load_language uses this
 
 #ifdef HAVE_UNISTD_H
-
-#define SLASH              '/'
-#define NULL_FILE	   "/dev/null"
-#define MODE_MASK	   (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
-
+	#define SLASH              '/'
+	#define NULL_FILE	   "/dev/null"
+	#define MODE_MASK	   (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+	#define O_BINARY	   0
 #else
-
-#define SLASH              '\\'
-#define NULL_FILE	   "NUL"
-//#define MODE_MASK	   (S_IREAD | S_IWRITE)	// should investigate
-
+	#define SLASH              '\\'
+	#define NULL_FILE	   "NUL"
+	#define MODE_MASK	   (S_IREAD | S_IWRITE)
 #endif
 
 

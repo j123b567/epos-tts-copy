@@ -78,18 +78,20 @@ int cmd_user(char *param, a_ttscp *)
 
 int cmd_pass(char *param, a_ttscp *)
 {
-	if (this_context->uid == UID_ANON && !strcmp(param, server_passwd)) {
-		DEBUG(2,11,fprintf(STDDBG, "[core] It's me\n");)
-		this_context->uid = UID_SERVER;
-		reply("200 OK");
-		return PA_NEXT;
+	if (this_context->uid == UID_ANON) {
+		if (!strcmp(param, server_passwd) || *cfg->dbg_pwd && !strcmp(param, cfg->dbg_pwd)) {
+			DEBUG(2,11,fprintf(STDDBG, "[core] It's me\n");)
+			this_context->uid = UID_SERVER;
+			reply("200 OK");
+			return PA_NEXT;
+		}
 	}
 	reply("452 bad password");
 //	reply("211 go ahead");			// 211 anonymous access
 	return PA_NEXT;
 }
 
-int cmd_done(char *param, a_ttscp *a)
+int cmd_done(char *, a_ttscp *)
 {
 	reply("600 OK");
 	return PA_DONE;
@@ -157,7 +159,7 @@ static inline int do_set(char *param, context *real)
 }
 
 
-int cmd_setl(char *param, a_ttscp *a)
+int cmd_setl(char *param, a_ttscp *)
 {
 	stream *cs = cfg->current_stream;
 	if (cs) {
@@ -170,8 +172,8 @@ int cmd_setl(char *param, a_ttscp *a)
 int cmd_setg(char *param, a_ttscp *a)
 {
 	int failed = 0;
-	const char *msg;
-	int result;
+	const char *msg = NULL;
+	int result = PA_NEXT;
 
 	if (this_context->uid != UID_SERVER) shriek(451,  "Access denied.");
 	a->c->leave();
@@ -181,7 +183,7 @@ int cmd_setg(char *param, a_ttscp *a)
 		failed = e->code;
 		msg = e->msg;
 		delete e;
-		printf("first\n");
+//		printf("first\n");
 	}
 //	printf("second\n");
 	a->c->enter();
@@ -227,7 +229,7 @@ int cmd_help(char *param, a_ttscp *)
 
 void free_sleep_table();
 
-int cmd_shutdown(char *param, a_ttscp *a)
+int cmd_shutdown(char *, a_ttscp *a)
 {
 	if (this_context->uid != UID_SERVER) shriek(451,  "Access denied.");
 	reply("800 shutdown OK");
@@ -264,12 +266,14 @@ void cmd_restart(char *param)
 }
 **************/
 
+/*****
+
 void cmd_reap(char *param, a_ttscp *)
 {
 
 	shriek(462, "reap broken");
 
-/*	if (this_context->uid != UID_SERVER) {
+ *	if (this_context->uid != UID_SERVER) {
  *		DEBUG(3,11,fprintf(STDDBG, "Unauthorised reap attempt, uid=%d\n", this_context->uid);)
  *		reply("411 no such command");
 		return;
@@ -288,8 +292,8 @@ void cmd_reap(char *param, a_ttscp *)
 //		register_child(-cpid);
  *	} else DEBUG(2,11,fprintf(STDDBG, "[core] reap with no param?\n"));
  *
- */
-}
+ *
+}*/
 
 #define SHOW_SPACE " "
 

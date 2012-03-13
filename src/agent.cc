@@ -40,6 +40,10 @@
 	#include <winsock2.h>
 #endif
 
+#ifdef HAVE_SYS_STAT_H
+	#include <sys/stat.h>
+#endif
+
 #include <fcntl.h>
 #include <errno.h>
 
@@ -105,7 +109,7 @@ agent::timeslice()
 }
 
 bool
-agent::apply(int)
+agent::mktask(int)
 {
 	return false;	// except for the input agent, agents can't start a task
 }
@@ -229,21 +233,26 @@ class a_print : public agent
 	a_print() : agent(T_UNITS, T_TEXT) {};
 };
 
-#define UGLY_TMP_CONSTANT	6553400		// FIXME
+#define INITIAL_PRINT_BUFFER_SIZE	8192		// FIXME
 
 void
 a_print::run()
 {
-	char * s = (char *)xmalloc(UGLY_TMP_CONSTANT + 1);
-	*((unit *)inb)->gather(s, s + UGLY_TMP_CONSTANT, true /* (incl. ssegs) */ ) = 0;
+	char *b;
+	char *endb;
+	int bsize = INITIAL_PRINT_BUFFER_SIZE;
+	do {
+		b = (char *)xmalloc(bsize);
+		endb = ((unit *)inb)->gather(b, b + bsize, true /* (incl. ssegs) */ );
+	} while ((endb == b + bsize) && (free(b), bsize <<= 1, b = (char *)xmalloc(bsize)));
+	*endb = 0;
 
-	void *r = s;
+	void *r = b;
 	delete (unit *) inb;
 	inb = NULL;
 	pass(r);
 }
 
-#undef UGLY_TMP_CONSTANT
 
 class a_diphs : public agent
 {
@@ -383,7 +392,7 @@ class a_label : public agent
 	a_label() : agent(T_DIPHS, T_TEXT) {};
 };
 
-#define UGLY_TMP_CONSTANT	65534		// FIXME
+// #define UGLY_TMP_CONSTANT	65534		// FIXME
 
 void
 a_label::run()
@@ -447,8 +456,8 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 			  else socket = (in == T_INPUT ? dc->c->config->sd_in : dc->c->config->sd_out);
 			  break;
 		case '/': filename = limit_pathname(par, cfg->pseudo_root_dir);
-			  socket = open(filename, in == T_INPUT ? O_RDONLY | O_NONBLOCK
-						: O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK);
+			  socket = open(filename, in == T_INPUT ? O_RDONLY | O_NONBLOCK | O_BINARY
+						: O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK | O_BINARY, MODE_MASK);
 			  free(filename);
 			  if (socket == -1) shriek(445, fmt("Cannot open file %s", par));
 			  else close_upon_exit = true;
@@ -476,7 +485,7 @@ class a_input : public a_io
 	virtual void run();
 	virtual const char *name() { return "input"; };
    protected:
-	virtual bool apply(int size);
+	virtual bool mktask(int size);
    public:
 	a_input(const char *);
 };
@@ -539,7 +548,7 @@ void a_input::run()
 }
 
 bool
-a_input::apply(int size)
+a_input::mktask(int size)
 {
 	DEBUG(2,11,fprintf(STDDBG, "%d bytes to be read\n", size);)
 	if (inb) return false;	// busy
@@ -793,7 +802,7 @@ stream::apply(agent *ref, int bytes)
 {
 	DEBUG(2,11,fprintf(STDDBG, "In stream::apply %p %p %d\n", head, ref, bytes);)
 	callbk = ref;
-	head->apply(bytes);
+	head->mktask(bytes);
 }
 
 void
@@ -927,7 +936,8 @@ a_ttscp::a_ttscp(int sd_in, int sd_out) : a_protocol()
 	c->enter();
 //	cow_claim();	//FIXME: rethink 
 	
-	do make_rnd_passwd(handle, HANDLE_SIZE);
+	handle = (char *)malloc(cfg->handle_size + 1);
+	do make_rnd_passwd(handle, cfg->handle_size);
 		while (data_conns->translate(handle));
 	ctrl_conns->add(handle, this);
 
@@ -972,6 +982,8 @@ a_ttscp::~a_ttscp()
 		async_close(cfg->sd_out);
 	if (data_conns->translate(handle) || ctrl_conns->translate(handle))
 		shriek(862, "Forgot to forget a_ttscp");
+
+	free(handle);
 	c->leave();
 	delete c;
 	// close the descriptor? no, the ~context does that
@@ -994,7 +1006,7 @@ a_ttscp::run_command(char *cmd)
 
 	keyword = cmd + strspn (cmd, WHITESPACE);
 	param = keyword + strcspn(keyword, WHITESPACE);
-	if (param - keyword > 4) goto bad;	/* all cmds are 3 or 4 chars */
+	if (param - keyword != 4) goto bad;	/* all cmds are 4 chars */
 
 	if (!*param) param = NULL;
 	else *param++ = 0;
@@ -1099,7 +1111,7 @@ a_accept::run()
 	if (f == -1) {
 //		shriek(871, fmt("Cannot accept() - network problem (errno %d)", errno));
 		DEBUG(3,11,fprintf(STDDBG, "Cannot accept() - errno %d! Madly looping.\n", errno);)
-		if (errno != EWOULDBLOCK) schedule();
+		if (errno != EAGAIN) schedule();
 		return;
 	}
 	make_nonblocking(f);
