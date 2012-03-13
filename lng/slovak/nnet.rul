@@ -4,7 +4,7 @@
 ; metod implementovaných v nnet.cc
 
 
-#include "czech.rul"
+#include "slovak.rul"
 
 ;#warn Now applying extra nnet rules
 

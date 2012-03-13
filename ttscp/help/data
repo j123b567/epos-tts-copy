@@ -1,0 +1,3 @@
+Turn this control connection to a data connection.
+The server will reply with a data connection handle
+to be referred to in subsequent commands.

@@ -1,109 +1,95 @@
 #
-#	(c) Jirka Hanika <geo@ff.cuni.cz>
+#	prosodická pravidla Fonetického ústavu FF UK pro èe¹tinu, 1998
 #
-# Pravidla pro zpracování èe¹tiny
+#	(c) 1998  Zdena Palková
+#	(c) 1998  Jirka Hanika
+#
+#	Tento soubor a zejména soubor lng/czech/prosody.rul vyu¾ívá výzkumu
+#	modelování prosodie èe¹tiny uskuteènìného s pøispìním grantu
+#	GAÈR 405/96/0301.
+#
+#	(See doc/COPYING for info on copying and modifying this file.)
+#
+#
 
-$invent_dir	external
-$prosody_dir	external
+
 $base_dir	external
-#$dph_file	external
+$prosody_dir	external
+$prosody = ${base_dir}/${prosody_dir}
 
 
-#$inv_dph =	$dph_file
+# pøidat èárku pøed "a":
+with  "a"  word
+{
+	regress a>\X(!_!)
+}
+raise	\X:!		word	phone
+syll	\X<\ _		colon   word
+regress \X>\ (!_!)	colon	word
+regress \X>a(!_!)
 
-$prosody   = ${base_dir}/${prosody_dir}
-#$dph_file  = ${base_dir}/${invent_dir}/${inv_dph}
+#
+#  Následující odstavec je¹tì pøed transkripcí oznaèuje
+#  koncová monosylaba, která podléhají pozdìj¹ímu
+#  slévání do taktù. Po transkripci u¾ nelze rozli¹it
+#  "mì" vs. "mnì".
+#
 
-#include "trans.rul"
+with "mi mì se si ho mu ti tì"
+{
+	regress  _\ >~(!_!)   word  word
+}
 
- inside  .?:!	sent		; Pochybné - nemá zasáhnout vìty bez interpunkce
- {
-	 prosody	$prosody/accent.dic      word	syll
- }
+#
+#  Zde se provádìjí transkripèní pravidla ze souboru
+#  trans.rul
+#
 
- inside  ,    colon
- {
-	prosody	  $prosody/nonterm.dic	colon	phone
-#	smooth	f/5/40\35\15\5			colon   syll
- }
+@include "trans.rul"
 
- if      irony		sent
- {
-	inside  ,- colon		; tohle nefunguje rozumnì
-	{
-		prosody  $prosody/ir_unter.dic colon phone
-#		debug pause
-		smooth f/10/20/40\20\10		word	phone
-	}
-	regress   _>L(!_0)			sent    word
-	inside	  L				word	        ; poslední slovo
-	{
-		prosody	  $prosody/irony.dic	word	syll
-	}
-	regress   L>_($everywhere) 		sent	word
- }
+#
+#  Následující pravidla o¹etøují tøi teèky a pomlèku.
+#
 
- inside  .:\~   sent    ; Následující jen pro oznamovací vìty a doplòovací otázky
- {
-	inside   :   sent
-	{
-		prosody   $prosody/wh.dic		sent	syll
-	}
-#	prosody   ${prosody}/fadeoutp.dic	sent	phone
-	prosody   ${prosody}/fadeouts.dic	sent	syll
+inside	\~	sent
+{
+   6x	regress  0>\#(!_0)	sent	; vlo¾ení pausy po tøech teèkách
+}
+regress  \~>.(!_!)	sent	sent
+regress  ->,(!_!)	sent	colon
 
-	inside    .   sent
-	{
-		prosody   $prosody/fadeoutw.dic	sent	word
-	}
-
-	smooth	f/30/40\30			word	phone
- }
-
- inside   ?	sent	; Následující jen pro otázky zji¹»ovací
- {
-	prosody   $prosody/fadeoutp.dic	sent	phone
-	prosody	  $prosody/fadeoutw.dic	sent	word
-
-
-	regress   _>L(!_0)			sent    word
-	inside	  L				word	        ; poslední slovo
-		{
-		regress   _>L(0_0)		word	syll	; monosylabon
-		inside    L			syll
-		{
-			prosody   $prosody/questend.dic	syll	phone
-		}
-		regress   L>_($everywhere)	word	syll
-		smooth	  f/20/30\30\20		word	phone
-
-		prosody	  $prosody/questup.dic	word	syll
-		smooth	f/5/5/15/25/40\10	word	phone
-	}
-	regress   L>_($everywhere) 		sent	word
-
- }
-
- inside   \!	sent	; Vìtný dùraz pro vìty s vykøièníkem
- {
-	prosody   $prosody/exclaim.dic	sent	word
-	prosody   $prosody/exclafad.dic	sent	syll
- }
+if   naive_prosody
+{
+	@include "naive.rul"
+}
+if   !naive_prosody
+{
+	@include "prosody.rul"
+}
 
 regress   0>\#(!_0)	colon	; vlo¾ení pausy
+inside	\#	phone
+{
+	contour   t/-65   phone
+}
 
-# diphones  ${dph_file}	colon	    ; mìlo by být zhruba posledním pravidlem
+5x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
 
 if   kadlec_dph
-	diphones  kadlec.dph   colon
-if  !kadlec_dph
-	diphones  traditnl.dph colon
+	diphones  kadlec.dph    colon
+if   !kadlec_dph
+	diphones  traditnl.dph  colon
 
-# diphones  traditnl.dph
- 
-# smooth    f/10/80\10	text diphone
+#
+#  mírné vyhlazování se zejména sna¾í, aby hranièní difony
+#  mezi slabikami získávaly prosodické hodnoty èásteènì
+#  od obou slabik.  Pøedpokládá se, ¾e difon pøechodu mezi
+#  hláskami je pøipojen k hlásce prvé, proto se pøihlí¾í
+#  pouze k pravému sousedu (váha 30%, vlastní hodnota
+#  má tedy váhu 70%). Ideologicky èistá øe¹ení jsou buïto
+#  nevyhlazovat vùbec (pøiøadit difon doleva), nebo
+#  vyhlazovat f/50\50, tj. kvalifikovat difon jako spojovací.
+#
 
-
-;--------------------  debug     elem,pause text
-
+smooth   f/70\30     word diphone
 

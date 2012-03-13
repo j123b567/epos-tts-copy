@@ -34,7 +34,7 @@ subst	 abbrevs.dic							colon
 regress  ${upper_case}>${lower_case}($everywhere)			colon
 
 
-#include "numerals.rul"
+@include "numerals.rul"
 
  subst	   main.dic		   ;Rùzné výjimky
 
