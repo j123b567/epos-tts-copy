@@ -1,16 +1,20 @@
 #
-#	prosodická pravidla Fonetického ústavu FF UK pro èeštinu, 1998
+#	prosodická pravidla Fonetického ústavu FF UK pro èe¹tinu, 1998
+#
+#	(c) 1998  Zdena Palková
+#	(c) 1998  Jiøí Hanika
+#
+#	(See doc/COPYING for info on copying and modifying this file.)
+#
 #
 #	pokud tu tento øádek není jen zapomenut, jde o versi 2.2.?
 #
 
 
 $base_dir	external
-$prosody_dir	external
+$prosody_dir	= external
 $prosody = ${base_dir}/${prosody_dir}
 
-
-# Nasl. kazi zkratky jako "LAS"
 
 # pøidat èárku pøed "a":
 with  "a"  word
@@ -23,9 +27,9 @@ regress \X>\ (!_!)	colon	word
 regress \X>a(!_!)
 
 #
-#  Následující odstavec ještì pøed transkripcí oznaèuje
-#  koncová monosylaba, která podléhají pozdìjšímu
-#  slévání do taktù. Po transkripci už nelze rozlišit
+#  Následující odstavec je¹tì pøed transkripcí oznaèuje
+#  koncová monosylaba, která podléhají pozdìj¹ímu
+#  slévání do taktù. Po transkripci u¾ nelze rozli¹it
 #  "mì" vs. "mnì".
 #
 
@@ -42,12 +46,12 @@ with "mi mì se si ho mu ti tì"
 #include "trans.rul"
 
 #
-#  Následující pravidla ošetøují tøi teèky a pomlèku.
+#  Následující pravidla o¹etøují tøi teèky a pomlèku.
 #
 
 inside	\~	sent
 {
-   6x	regress  0>\#(!_0)	sent	; vložení pausy po tøech teèkách
+   6x	regress  0>\#(!_0)	sent	; vlo¾ení pausy po tøech teèkách
 }
 regress  \~>.(!_!)	sent	sent
 regress  ->,(!_!)	sent	colon
@@ -56,8 +60,8 @@ regress  ->,(!_!)	sent	colon
 #
 #  Následující odstavec peèuje o to, aby døíve oznaèené
 #  krátké tvary zájmenné byly zapojeny do øetìzù monosylab
-#  pøi pozdìjším skládání taktù, ale jiná koncová
-#  monosylaba nikoli. Dìje se tak ještì pøed transkripcí
+#  pøi pozdìj¹ím skládání taktù, ale jiná koncová
+#  monosylaba nikoli. Dìje se tak je¹tì pøed transkripcí
 #  zejména proto, abychom poznali  "mì" vs. "mnì".
 #
 
@@ -74,10 +78,10 @@ regress  ~>\ (!_!)	colon  word
 #  Nyní si oznaèíme mono-, di-, tri-, tetra-, polysyllaba.
 #  Dìje se tak jen v taktech ukonèených mezerou (ta je
 #  zvýraznìna pøedcházejícím zvráceným lomítkem),
-#  tedy nikoli v koncových taktech. Viz též minulý komentáø.
+#  tedy nikoli v koncových taktech. Viz té¾ minulý komentáø.
 #
 
-<   word   syll			; oznaèit monosylaba
+<   word   syll
 	regress   \ >m(!_!)   word  word
 	regress   \ >d(!_!)   word  word
 	regress   \ >t(!_!)   word  word
@@ -87,21 +91,21 @@ regress  ~>\ (!_!)	colon  word
 
 #
 #  Monosylaba se v urèitých pozicích oznaèí jako pøízvuèná ("x")
-#  a vzápìtí jsou ve všech ostatních pozicích, kde zùstala oznaèena
-#  jako "m", pøilepena ke svému levému sousedu. Poèáteèní støíška
+#  a vzápìtí jsou ve v¹ech ostatních pozicích, kde zùstala oznaèena
+#  jako "m", pøilepena ke svému levému sousedu. Poèáteèní støí¹ka
 #  znamená zaèátek úseku.
 #
 #  (V pravidlech 4.6 sub f nesouhlasí pøíklad s formulacemi pravidel.
 #   Doporuèuji zkontrolovat.)...
 #
-#  Je dùležité, že u pravidel, která pracují se seznamem øetìzcù,
-#  jako je napøíklad následující, nezáleží na poøadí položek v seznamu.
+#  Je dùle¾ité, ¾e u pravidel, která pracují se seznamem øetìzcù,
+#  jako je napøíklad následující, nezále¾í na poøadí polo¾ek v seznamu.
 #  Jde-li o pravidlo substituèní, provádìjí se substituce (pøednostnì
-#  v pravé èásti zpracovávaného textu a delší, je-li pochybnost)
+#  v pravé èásti zpracovávaného textu a del¹í, je-li pochybnost)
 #  opakovanì tak dlouho, dokud se text neustálí, nebo dokud program
 #  neztratí trpìlivost (s vìènì zacykleným pravidlem).
 #
-#  Nakonec se zamete (všechny doèasné znaèky se smažou).
+#  Nakonec se zamete (v¹echny doèasné znaèky se sma¾ou).
 #
 
 subst	"^mmmmm,mmmxm  ^mmmmmm,mmmxmm  ^mmmmmmm,mmmmxmm"	colon  word
@@ -113,7 +117,7 @@ postp	"m"		  word  word
 regress  mdtqpxf>\ (!_!)   word  word
 
 #
-# zkracování isolovaných taktù podle poètu slabik - ipcz
+# zkracování isolovaných a ostatních taktù podle poètu slabik - ipcz
 #
 
 regress  _\ >I(0_0)	sent   word	; isolated words
@@ -141,8 +145,8 @@ inside   !I
 regress  I>_(!_!)	sent   word
 
 #
-#  Právì jsme pøestali "I" používat k oznaèení isolovaných
-#  taktù a zaèneme ho používat k oznaèení taktù iniciálních.
+#  Právì jsme pøestali "I" pou¾ívat k oznaèení isolovaných
+#  taktù a zaèneme ho pou¾ívat k oznaèení taktù iniciálních.
 #
 #  P bude oznaèovat takt pøedcházející poslednímu.
 #
@@ -154,7 +158,7 @@ regress	 M>I(0_!)	colon	word
 #  Rozdìlíme M na A a B podle toho, zda budeme chtít
 #  kadenci klesavou nebo stoupavou. Oznaèování se dìje
 #  zleva:  IMMMMPF -> IBMMMPF -> IBAMMPF -> IBACMPF ->
-#  -> IBACBPF a pak dalším pravidlem -> IBABBPF
+#  -> IBACBPF a pak dal¹ím pravidlem -> IBABBPF
 #
 
 subst   "IM,IB  BM,BA  AM,AC  CM,CB"	colon  word
@@ -164,7 +168,7 @@ regress  IAB>F(!_0)	colon	word	; a,b: F (kA, kB)
 regress  IAB>aab(!_ab)	colon	word	; O,P: F-1 (kA, kB)
 regress  F>T(!_0)	sent	word
 
-# Toto pravidlo je nejspíš reliktem minulosti
+# Toto pravidlo je nejspí¹ reliktem minulosti
 #with	postp2.dic	colon   word
 #{
 #	regress   FT>M(!_!)	colon	word
@@ -176,7 +180,7 @@ regress  F>T(!_0)	sent	word
 
 #
 #  pøi pøiøazování kadencí se hodnota pøiøazená slabice
-#  vztahuje na všechny její hlásky v použitém slabièném
+#  vztahuje na v¹echny její hlásky v pou¾itém slabièném
 #  èlenìní
 #
 
@@ -212,7 +216,7 @@ inside	IaA	word
 			contour	 f/-3:+0:+0:+0:-3	word   syll
 			contour	 f/-2:+0:+0:+0:-2	word   syll
 		]
-		nothing		; hexasyllaba a delší se neøeší
+		nothing		; hexasyllaba a del¹í se neøe¹í
 	>
 }
 
@@ -239,7 +243,7 @@ inside	F	word		; F A - never used
 		[					; pentasyllaba
 			contour	 f/-2:+0:+0:+0:-2	word   syll
 		]
-		nothing		; hexasyllaba a delší se neøeší
+		nothing		; hexasyllaba a del¹í se neøe¹í
 	>
 }
 
@@ -305,7 +309,7 @@ inside	F	word
 			contour  f/-2:-2:+0:+2:+2	word   syll
 			contour	 f/-2:+0:+0:+0:-2	word   syll
 		]
-		nothing		; hexasyllaba a delší se neøeší
+		nothing		; hexasyllaba a del¹í se neøe¹í
 	>
 }
 
@@ -376,7 +380,7 @@ inside	Q	word	; soubor D
 #
 
 <  colon  word	; tzn. zaøiï se dle poètu taktù v promluvovém úseku
-    3x	nothing			; jeden až tøi takty se neupravují
+    3x	nothing			; jeden a¾ tøi takty se neupravují
 	contour		f/0:-1:-2:-3				colon  word
 	contour		f/0:-1:-2:-3:-4				colon  word
 	contour		f/0:-1:-2:-3:-4:-5			colon  word
@@ -394,7 +398,7 @@ inside	Q	word	; soubor D
 #
 
 <  sent  colon	; tzn. zaøiï se dle poètu promluvových úsekù ve vìtì
-    2x	nothing			; jeden až dva takty se neupravují
+    2x	nothing			; jeden a¾ dva takty se neupravují
 	contour		f/0:-2:-4:			sent  colon
 	contour		f/0:-2:-4:-6			sent  colon
 	contour		f/0:-2:-4:-6:-8			sent  colon
@@ -405,23 +409,26 @@ inside	Q	word	; soubor D
 	nothing
 >
 
-regress   0>\#(!_0)	colon	; vložení pausy
+regress   0>\#(!_0)	colon	; vlo¾ení pausy
 inside	\#	phone
 {
 	contour   t/-65   phone
 }
 
-5x  regress   0>\#(!_0)	sent	; vložení pausy
+5x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
 
-diphones  traditnl.dph  colon
+if   kadlec_dph
+	diphones  kadlec.dph    colon
+if   !kadlec_dph
+	diphones  traditnl.dph  colon
 
 #
-#  mírné vyhlazování se zejména snaží, aby hranièní difony
+#  mírné vyhlazování se zejména sna¾í, aby hranièní difony
 #  mezi slabikami získávaly prosodické hodnoty èásteènì
-#  od obou slabik.  Pøedpokládá se, že difon pøechodu mezi
-#  hláskami je pøipojen k hlásce prvé, proto se pøihlíží
+#  od obou slabik.  Pøedpokládá se, ¾e difon pøechodu mezi
+#  hláskami je pøipojen k hlásce prvé, proto se pøihlí¾í
 #  pouze k pravému sousedu (váha 30%, vlastní hodnota
-#  má tedy váhu 70%). Ideologicky èistá øešení jsou buïto
+#  má tedy váhu 70%). Ideologicky èistá øe¹ení jsou buïto
 #  nevyhlazovat vùbec (pøiøadit difon doleva), nebo
 #  vyhlazovat f/50\50, tj. kvalifikovat difon jako spojovací.
 #

@@ -3,20 +3,18 @@
 #
 # Prozatímní pravidla pro pøepis slovenèiny
 
-$colloquial	external
-$irony		external
 $prosody_dir	external
 $base_dir	external
 
 $prosody   = ${base_dir}/${prosody_dir}
 
-$voiced    = bdïgZzhv
+$voiced    = bdïgZ®z¾hv
 
-$voiceless = ptkcèsšxf
-$fric      = szšfvhx
-$afric     = cZè
-$stop      = ptkbdïg
-$nasal     = mnò¾åN
+$voiceless = pt»kcès¹xf
+$fric      = sz¹¾fvhx
+$afric     = cZè®
+$stop      = pt»kbdïg
+$nasal     = mnòµåN
 $sonant    = jlr$nasal
 $short     = aeiouyä
 $long      = áéíóúıä
@@ -31,45 +29,39 @@ $sonority  = 0'%<$fric$afric${stop}øØ$nasal<l<rjJ<$vowel   ;l<r because of "umrl
  progress  ä>e($everywhere)
 
  progress  0>s(x_!)
- progress  u0>0v(q_!)              ; Rozloení x,q na ks, kv
+ progress  u0>0v(q_!)              ; Rozlo¾ení x,q na ks, kv
  regress   xq>k($everywhere)
- regress   h>x(c_!)                ; Spøeka ch > x
- regress   z>Z(d_!)              ; Spøeky dz,d > Z,
- progress  cd>0(!_xZ)
+ regress   h>x(c_!)                ; Spøe¾ka ch > x
+ regress   z¾>Z®(d_!)              ; Spøe¾ky dz,d¾ > Z,®
+ progress  cd>0(!_xZ®)
  regress   0>o(ô_!)
- regress   ô>u($everywhere) ; Rozloenie ô na uo 
+ regress   ô>u($everywhere) ; Rozlo¾enie ô na uo 
 
 # Následující pravidla jednak zmìní vìty vydìlené dvojteèkou
-#   na vìty vydìlené teèkou (to je spíše špatnì ne dobøe),
+#   na vìty vydìlené teèkou (to je spí¹e ¹patnì ne¾ dobøe),
 #   dále pak oznaèí dvojteèkou (místo otazníku) ty vìty, které
 #   obsahovaly ve své první klausi nìkteré ze slov uvedenıch
-#   ve slovníku wh.dic, nemìly tuto klauzi zvláš vydìlenou
-#   ádnou interpunkcí, a byly samy vydìleny otazníkem.
+#   ve slovníku wh.dic, nemìly tuto klauzi zvlá¹» vydìlenou
+#   ¾ádnou interpunkcí, a byly samy vydìleny otazníkem.
 #
-# Fonetik vidí, e jsem právì "definoval" doplòovací otázky.
+# Fonetik vidí, ¾e jsem právì "definoval" doplòovací otázky.
 
  progress  :>.($everywhere)	text	sent
  subst     wh.dic		; Doplòovací otázky
  raise     q:_			colon	phone
  progress  q>_(!0_!)		sent	colon	;  jen v první klausi
  raise     q:?			sent	colon
- progress  q>0($everywhere)			;  úklid všech úrovní
+ progress  q>0($everywhere)			;  úklid v¹ech úrovní
  progress  q>_($everywhere)	sent	colon
  progress  q>:($everywhere)	text	sent
 
- if        $colloquial
- {
-	regress j>J(0_ds)	; fixme: random environment
- }
-
-
  subst     syll.dic		; Rozsadit vokály
  regress   0>'(0_$vowel)	; Rázy
- progress  0>q(!q_szš)	 colon  
- progress  q>0(!_!0)     word   ; "q" jen pøed hranicí slov, za ní je sykavka
+ progress  0>q(!q_sz¹¾)	 colon  
+ progress  q>0(!_!0)     word   ; "q" jen pøed hranicí slov, za ní¾ je sykavka
  prep	   seq.dic
  progress  q>0($everywhere)
- prep      preps.dic 	     ; Fúze pøedloek, postpozic
+ prep      preps.dic 	     ; Fúze pøedlo¾ek, postpozic
  prep      nonsyl.dic    syll
  postp     postps.dic
 
@@ -84,18 +76,11 @@ $sonority  = 0'%<$fric$afric${stop}øØ$nasal<l<rjJ<$vowel   ;l<r because of "umrl
  regress   $voiced>${voiceless}(!_$voiceless&0')       	; Asimilace znìlosti
  regress   $voiceless>$voiced(!_$voiced!v)       colon
 
- if	   $colloquial
- {
-	subst	casual.dic
-	regress J>0(!_!)
-	regress '>v(!_o)	; "okno" [vokno]
- }
-
- regress   dtnl>ïò¾(!_iíe)
+ regress   dtnl>ï»òµ(!_iíe)
  
  progress  yı>ií($everywhere)
  progress  i>j($vowel_!) syll   ; slabièné èlenìní? Leda vıjimeènì 
- progress  w>v($everywhere)     ; vìtšinou ale "w" odstraní vıjimky
+ progress  w>v($everywhere)     ; vìt¹inou ale "w" odstraní vıjimky
  progress  n>N(!_kg)
 
  regress   b>0(!_b)		; pochybnı heuristickı odstaveèek
@@ -109,8 +94,8 @@ $sonority  = 0'%<$fric$afric${stop}øØ$nasal<l<rjJ<$vowel   ;l<r because of "umrl
 
  progress  oae>OAE(!_u)		; Dvojhlásky
  regress   u>0(OAE_!)
- regress   0>d(!_Z)	syll	; Afrikáty zase zrušit, smùla
- regress   Z>z($everywhere)
+ regress   0>d(!_Z®)	syll	; Afrikáty zase zru¹it, smùla
+ regress   Z®>z¾($everywhere)
 
 
  progress  0>~($vowel_0) syll	; Oznaèení otevøenıch vokalickıch slabik
@@ -127,14 +112,14 @@ $sonority  = 0'%<$fric$afric${stop}øØ$nasal<l<rjJ<$vowel   ;l<r because of "umrl
 	smooth	f/25/50\25	colon	phone
  }
 
- if      $irony		colon
- {
-	inside  , colon
-	{
-		prosody  ${prosody}/irony.dic colon phone
-		smooth f/10/20/40\20\10		word	phone
-	}
- }
+# if      irony		colon
+# {
+#	inside  , colon
+#	{
+#		prosody  ${prosody}/irony.dic colon phone
+#		smooth f/10/20/40\20\10		word	phone
+#	}
+# }
 
  inside  .:   sent    ; Následující jen pro oznamovací vìty a doplòovací otázky
  {
@@ -145,7 +130,7 @@ $sonority  = 0'%<$fric$afric${stop}øØ$nasal<l<rjJ<$vowel   ;l<r because of "umrl
 	smooth	f/30/40\30			word	phone
  }
 
- inside   ?	sent	; Následující jen pro otázky zjišovací
+ inside   ?	sent	; Následující jen pro otázky zji¹»ovací
  {
 #	prosody   ${prosody}/fadeoutp.dic	sent	phone
 	regress   _>L(!_0)			sent    word
@@ -153,7 +138,7 @@ $sonority  = 0'%<$fric$afric${stop}øØ$nasal<l<rjJ<$vowel   ;l<r because of "umrl
 	{
 		prosody	  ${prosody}/fadeoutq.dic	word	syll
 	}
-	inside    !L				; jiné ne poslední slovo
+	inside    !L				; jiné ne¾ poslední slovo
 	{
 	}
 	regress   L>_($everywhere) 		sent	word

@@ -1,0 +1,293 @@
+execve("/usr/bin/play", ["play", "rec.wav"], [/* 26 vars */]) = 0
+brk(0)                                  = 0x80930dc
+open("/etc/ld.so.preload", O_RDONLY)    = -1 ENOENT (No such file or directory)
+open("/mnt/lib/libtermcap.so.2", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY)      = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+mmap(0, 10266, PROT_READ, MAP_PRIVATE, 3, 0) = 0x4000b000
+close(3)                                = 0
+open("/lib/libtermcap.so.2", O_RDONLY)  = 3
+mmap(0, 4096, PROT_READ, MAP_PRIVATE, 3, 0) = 0x4000e000
+munmap(0x4000e000, 4096)                = 0
+mmap(0, 12000, PROT_READ|PROT_EXEC, MAP_PRIVATE, 3, 0) = 0x4000e000
+mprotect(0x40010000, 3808, PROT_NONE)   = 0
+mmap(0x40010000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED, 3, 0x1000) = 0x40010000
+close(3)                                = 0
+open("/mnt/lib/libc.so.6", O_RDONLY)    = -1 ENOENT (No such file or directory)
+open("/lib/libc.so.6", O_RDONLY)        = 3
+mmap(0, 4096, PROT_READ, MAP_PRIVATE, 3, 0) = 0x40011000
+munmap(0x40011000, 4096)                = 0
+mmap(0, 648136, PROT_READ|PROT_EXEC, MAP_PRIVATE, 3, 0) = 0x40011000
+mprotect(0x4009f000, 66504, PROT_NONE)  = 0
+mmap(0x4009f000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED, 3, 0x8d000) = 0x4009f000
+mmap(0x400a4000, 46024, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x400a4000
+close(3)                                = 0
+mprotect(0x40011000, 581632, PROT_READ|PROT_WRITE) = 0
+mprotect(0x40011000, 581632, PROT_READ|PROT_EXEC) = 0
+personality(0 /* PER_??? */)            = 0
+getpid()                                = 1649
+getuid()                                = 0
+getgid()                                = 6
+geteuid()                               = 0
+getegid()                               = 6
+brk(0)                                  = 0x80930dc
+brk(0x80930fc)                          = 0x80930fc
+brk(0x8094000)                          = 0x8094000
+time(NULL)                              = 911257749
+sigaction(SIGCHLD, {SIG_DFL}, {SIG_DFL}) = 0
+sigaction(SIGCHLD, {SIG_DFL}, {SIG_DFL}) = 0
+sigaction(SIGINT, {SIG_DFL}, {SIG_DFL}) = 0
+sigaction(SIGINT, {SIG_DFL}, {SIG_DFL}) = 0
+sigaction(SIGQUIT, {SIG_DFL}, {SIG_DFL}) = 0
+sigaction(SIGQUIT, {SIG_DFL}, {SIG_DFL}) = 0
+sigaction(SIGHUP, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGINT, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGILL, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGTRAP, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGABRT, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGFPE, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGBUS, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGSEGV, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGPIPE, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGALRM, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGTERM, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGXCPU, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGXFSZ, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGVTALRM, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGPROF, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGUSR1, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigaction(SIGUSR2, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}, {SIG_DFL}) = 0
+sigprocmask(SIG_BLOCK, NULL, [])        = 0
+sigaction(SIGQUIT, {SIG_IGN}, {SIG_DFL}) = 0
+open("/etc/nsswitch.conf", O_RDONLY)    = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+mmap(0, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x400b0000
+read(3, "#\n# /etc/nsswitch.conf\n#\n# An"..., 4096) = 1208
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+munmap(0x400b0000, 4096)                = 0
+open("/mnt/lib/libnss_files.so.1", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/lib/libnss_files.so.1", O_RDONLY) = 3
+mmap(0, 4096, PROT_READ, MAP_PRIVATE, 3, 0) = 0x400b0000
+brk(0x8095000)                          = 0x8095000
+munmap(0x400b0000, 4096)                = 0
+mmap(0, 31492, PROT_READ|PROT_EXEC, MAP_PRIVATE, 3, 0) = 0x400b0000
+mprotect(0x400b7000, 2820, PROT_NONE)   = 0
+mmap(0x400b7000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED, 3, 0x6000) = 0x400b7000
+close(3)                                = 0
+mprotect(0x400b0000, 28672, PROT_READ|PROT_WRITE) = 0
+mprotect(0x400b0000, 28672, PROT_READ|PROT_EXEC) = 0
+open("/etc/passwd", O_RDONLY)           = 3
+fcntl(3, F_GETFD)                       = 0
+fcntl(3, F_SETFD, FD_CLOEXEC)           = 0
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+mmap(0, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x400b8000
+read(3, "root:x:0:0::/:/bin/sh\nhole::102"..., 4096) = 645
+close(3)                                = 0
+munmap(0x400b8000, 4096)                = 0
+uname({sys="Linux", node="gargamel", ...}) = 0
+open("/mnt/lib/libnss_nisplus.so.1", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/lib/libnss_nisplus.so.1", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/usr/lib/libnss_nisplus.so.1", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/mnt/lib/libnss_nis.so.1", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/lib/libnss_nis.so.1", O_RDONLY)  = 3
+mmap(0, 4096, PROT_READ, MAP_PRIVATE, 3, 0) = 0x400b8000
+munmap(0x400b8000, 4096)                = 0
+mmap(0, 32736, PROT_READ|PROT_EXEC, MAP_PRIVATE, 3, 0) = 0x400b8000
+mprotect(0x400bf000, 4064, PROT_NONE)   = 0
+mmap(0x400bf000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED, 3, 0x6000) = 0x400bf000
+close(3)                                = 0
+open("/mnt/lib/libnsl.so.1", O_RDONLY)  = -1 ENOENT (No such file or directory)
+open("/lib/libnsl.so.1", O_RDONLY)      = 3
+mmap(0, 4096, PROT_READ, MAP_PRIVATE, 3, 0) = 0x400c0000
+munmap(0x400c0000, 4096)                = 0
+mmap(0, 20640, PROT_READ|PROT_EXEC, MAP_PRIVATE, 3, 0) = 0x400c0000
+mprotect(0x400c4000, 4256, PROT_NONE)   = 0
+mmap(0x400c4000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED, 3, 0x3000) = 0x400c4000
+mmap(0x400c5000, 160, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x400c5000
+close(3)                                = 0
+mprotect(0x400c0000, 16384, PROT_READ|PROT_WRITE) = 0
+mprotect(0x400c0000, 16384, PROT_READ|PROT_EXEC) = 0
+mprotect(0x400b8000, 28672, PROT_READ|PROT_WRITE) = 0
+mprotect(0x400b8000, 28672, PROT_READ|PROT_EXEC) = 0
+brk(0x8096000)                          = 0x8096000
+lstat(".", {st_mode=0, st_size=0, ...}) = 0
+lstat("/", {st_mode=0, st_size=0, ...}) = 0
+lstat("..", {st_mode=0, st_size=0, ...}) = 0
+open("..", O_RDONLY)                    = 3
+fcntl(3, F_SETFD, FD_CLOEXEC)           = 0
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+brk(0x8098000)                          = 0x8098000
+lseek(3, 0, SEEK_CUR)                   = 0
+getdents(3, /* 9 entries */, 3933)      = 152
+lstat("../root", {st_mode=0, st_size=0, ...}) = 0
+close(3)                                = 0
+lstat("../..", {st_mode=0, st_size=0, ...}) = 0
+open("../..", O_RDONLY)                 = 3
+fcntl(3, F_SETFD, FD_CLOEXEC)           = 0
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+lseek(3, 0, SEEK_CUR)                   = 0
+getdents(3, /* 50 entries */, 3933)     = 1148
+lseek(3, 0, SEEK_CUR)                   = 1024
+getdents(3, /* 52 entries */, 3933)     = 1188
+lseek(3, 0, SEEK_CUR)                   = 2048
+getdents(3, /* 50 entries */, 3933)     = 1172
+lseek(3, 0, SEEK_CUR)                   = 3072
+getdents(3, /* 50 entries */, 3933)     = 1156
+lseek(3, 0, SEEK_CUR)                   = 4096
+getdents(3, /* 49 entries */, 3933)     = 1156
+lseek(3, 0, SEEK_CUR)                   = 5120
+getdents(3, /* 30 entries */, 3933)     = 664
+lstat("../../epos", {st_mode=0, st_size=0, ...}) = 0
+close(3)                                = 0
+lstat("../../..", {st_mode=0, st_size=0, ...}) = 0
+open("../../..", O_RDONLY)              = 3
+fcntl(3, F_SETFD, FD_CLOEXEC)           = 0
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+lseek(3, 0, SEEK_CUR)                   = 0
+getdents(3, /* 26 entries */, 3933)     = 468
+lstat("../../../lib", {st_mode=0, st_size=0, ...}) = 0
+close(3)                                = 0
+lstat("../../../..", {st_mode=0, st_size=0, ...}) = 0
+open("../../../..", O_RDONLY)           = 3
+fcntl(3, F_SETFD, FD_CLOEXEC)           = 0
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+lseek(3, 0, SEEK_CUR)                   = 0
+getdents(3, /* 23 entries */, 3933)     = 388
+lstat("../../../../usr", {st_mode=0, st_size=0, ...}) = 0
+close(3)                                = 0
+getpid()                                = 1649
+getppid()                               = 1648
+stat(".", {st_mode=0, st_size=0, ...})  = 0
+stat("/usr/local/ssl/bin/sh", 0xbffff8cc) = -1 ENOENT (No such file or directory)
+stat("/sbin/sh", 0xbffff8cc)            = -1 ENOENT (No such file or directory)
+stat("/bin/sh", {st_mode=0, st_size=0, ...}) = 0
+getpgrp()                               = 1648
+fcntl(-1, F_SETFD, FD_CLOEXEC)          = -1 EBADF (Bad file descriptor)
+sigaction(SIGCHLD, {0x805c090, [], 0}, {SIG_DFL}) = 0
+open("/usr/bin/play", O_RDONLY)         = 3
+lseek(3, 0, SEEK_CUR)                   = 0
+read(3, "#!/bin/sh\n\n/usr/bin/sox $1 -t "..., 80) = 49
+lseek(3, 0, SEEK_SET)                   = 0
+fcntl(3, F_SETFD, FD_CLOEXEC)           = 0
+fcntl(3, F_GETFL)                       = 0 (flags O_RDONLY)
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+lseek(3, 0, SEEK_CUR)                   = 0
+read(3, "#!/bin/sh\n\n/usr/bin/sox $1 -t "..., 49) = 49
+sigprocmask(SIG_BLOCK, [INT CHLD], [])  = 0
+fork()                                  = 1650
+[pid  1649] sigprocmask(SIG_SETMASK, [],  <unfinished ...>
+[pid  1650] getpid( <unfinished ...>
+[pid  1649] <... sigprocmask resumed> NULL) = 0
+[pid  1650] <... getpid resumed> )      = 1650
+[pid  1649] sigprocmask(SIG_BLOCK, [CHLD],  <unfinished ...>
+[pid  1650] close(3 <unfinished ...>
+[pid  1649] <... sigprocmask resumed> []) = 0
+[pid  1650] <... close resumed> )       = 0
+[pid  1649] sigprocmask(SIG_SETMASK, [],  <unfinished ...>
+[pid  1650] sigprocmask(SIG_SETMASK, [],  <unfinished ...>
+[pid  1649] <... sigprocmask resumed> NULL) = 0
+[pid  1650] <... sigprocmask resumed> NULL) = 0
+[pid  1649] sigprocmask(SIG_BLOCK, [CHLD],  <unfinished ...>
+[pid  1650] sigaction(SIGTSTP, {SIG_DFL},  <unfinished ...>
+[pid  1649] <... sigprocmask resumed> []) = 0
+[pid  1650] <... sigaction resumed> {SIG_DFL}) = 0
+[pid  1649] sigaction(SIGINT, {0x805b580, [], 0},  <unfinished ...>
+[pid  1650] sigaction(SIGTTOU, {SIG_DFL},  <unfinished ...>
+[pid  1649] <... sigaction resumed> {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}) = 0
+[pid  1650] <... sigaction resumed> {SIG_DFL}) = 0
+[pid  1649] wait4(-1,  <unfinished ...>
+[pid  1650] sigaction(SIGTTIN, {SIG_DFL}, {SIG_DFL}) = 0
+[pid  1650] sigaction(SIGHUP, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGILL, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGTRAP, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGABRT, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGFPE, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGBUS, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGSEGV, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGPIPE, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGALRM, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGTERM, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGXCPU, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGXFSZ, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGVTALRM, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGPROF, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGUSR1, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGUSR2, {SIG_DFL}, NULL) = 0
+[pid  1650] sigaction(SIGINT, {SIG_DFL}, {0x804b600, [HUP INT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM XCPU XFSZ VTALRM PROF], 0}) = 0
+[pid  1650] sigaction(SIGQUIT, {SIG_DFL}, {SIG_IGN}) = 0
+[pid  1650] sigaction(SIGCHLD, {SIG_DFL}, {0x805c090, [], 0}) = 0
+[pid  1650] open("/dev/audio", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3
+[pid  1650] dup2(3, 1)                  = 1
+[pid  1650] close(3)                    = 0
+[pid  1650] execve("/usr/bin/sox", ["/usr/bin/sox", "rec.wav", "-t", ".au", "-"], [/* 24 vars */]) = 0
+[pid  1650] brk(0)                      = 0x8070249
+[pid  1650] open("/etc/ld.so.preload", O_RDONLY) = -1 ENOENT (No such file or directory)
+[pid  1650] open("/mnt/lib/libm.so.6", O_RDONLY) = -1 ENOENT (No such file or directory)
+[pid  1650] open("/etc/ld.so.cache", O_RDONLY) = 3
+[pid  1650] fstat(3, {st_mode=0, st_size=0, ...}) = 0
+[pid  1650] mmap(0, 10266, PROT_READ, MAP_PRIVATE, 3, 0) = 0x4000b000
+[pid  1650] close(3)                    = 0
+[pid  1650] open("/lib/libm.so.6", O_RDONLY) = 3
+[pid  1650] mmap(0, 4096, PROT_READ, MAP_PRIVATE, 3, 0) = 0x4000e000
+[pid  1650] munmap(0x4000e000, 4096)    = 0
+[pid  1650] mmap(0, 99888, PROT_READ|PROT_EXEC, MAP_PRIVATE, 3, 0) = 0x4000e000
+[pid  1650] mprotect(0x40026000, 1584, PROT_NONE) = 0
+[pid  1650] mmap(0x40026000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED, 3, 0x17000) = 0x40026000
+[pid  1650] close(3)                    = 0
+[pid  1650] open("/mnt/lib/libc.so.6", O_RDONLY) = -1 ENOENT (No such file or directory)
+[pid  1650] open("/lib/libc.so.6", O_RDONLY) = 3
+[pid  1650] mmap(0, 4096, PROT_READ, MAP_PRIVATE, 3, 0) = 0x40027000
+[pid  1650] munmap(0x40027000, 4096)    = 0
+[pid  1650] mmap(0, 648136, PROT_READ|PROT_EXEC, MAP_PRIVATE, 3, 0) = 0x40027000
+[pid  1650] mprotect(0x400b5000, 66504, PROT_NONE) = 0
+[pid  1650] mmap(0x400b5000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED, 3, 0x8d000) = 0x400b5000
+[pid  1650] mmap(0x400ba000, 46024, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x400ba000
+[pid  1650] close(3)                    = 0
+[pid  1650] mprotect(0x40027000, 581632, PROT_READ|PROT_WRITE) = 0
+[pid  1650] mprotect(0x40027000, 581632, PROT_READ|PROT_EXEC) = 0
+[pid  1650] mprotect(0x4000e000, 98304, PROT_READ|PROT_WRITE) = 0
+[pid  1650] mprotect(0x4000e000, 98304, PROT_READ|PROT_EXEC) = 0
+[pid  1650] personality(0 /* PER_??? */) = 0
+[pid  1650] getpid()                    = 1650
+[pid  1650] brk(0)                      = 0x8070249
+[pid  1650] brk(0x80702c9)              = 0x80702c9
+[pid  1650] brk(0x8071000)              = 0x8071000
+[pid  1650] open(ptrace: umoven: Input/output error
+0xbffffd26, O_RDONLY)  = 3
+[pid  1650] fstat(3, {st_mode=0, st_size=0, ...}) = 0
+[pid  1650] fstat(1, {st_mode=S_ISUID|S_ISGID|S_ISVTX|04, st_size=0, ...}) = 0
+[pid  1650] fstat(3, {st_mode=0, st_size=0, ...}) = 0
+[pid  1650] mmap(0, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x400c6000
+[pid  1650] read(3, "RIFF\2648\0\0WAVEfmt \20\0\0\0\1"..., 4096) = 4096
+[pid  1650] fstat(1, {st_mode=S_ISUID|S_ISGID|S_ISVTX|04, st_size=0, ...}) = 0
+[pid  1650] mmap(0, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x400c7000
+[pid  1650] ioctl(1, TCGETS, 0xbffffa34) = -1 EINVAL (Invalid argument)
+[pid  1650] brk(0x8074000)              = 0x8074000
+[pid  1650] brk(0x8077000)              = 0x8077000
+[pid  1650] brk(0x807a000)              = 0x807a000
+[pid  1650] brk(0x8085000)              = 0x8085000
+[pid  1650] brk(0x808e000)              = 0x808e000
+[pid  1650] read(3, "~}}|}}}}}~\177\200\200\200\177\177"..., 4096) = 4096
+[pid  1650] read(3, "nWR\\w\221\252\263\250\222w\\RVj"..., 4096) = 4096
+[pid  1650] write(1, ".snd\0\0\0\37\377\377\377\377\0\0"..., 4096) = 4096
+[pid  1650] read(3, "\230\236\234\217{nddp\201\216\236"..., 4096) = 2236
+[pid  1650] write(1, "5<V\325\277\300\321M834>V\324\302"..., 4096) = 4096
+[pid  1650] close(3)                    = 0
+[pid  1650] munmap(0x400c6000, 4096)    = 0
+[pid  1650] write(1, "\226\227\263#\27\34;\234\226\234"..., 2356) = 2356
+[pid  1650] close(1)                    = 0
+[pid  1650] munmap(0x400c7000, 4096)    = 0
+[pid  1650] _exit(0)                    = ?
+<... wait4 resumed> [WIFEXITED(s) && WEXITSTATUS(s) == 0], 0, NULL) = 1650
+sigprocmask(SIG_BLOCK, [CHLD], [CHLD])  = 0
+sigprocmask(SIG_SETMASK, [CHLD], NULL)  = 0
+sigprocmask(SIG_SETMASK, [], NULL)      = 0
+--- SIGCHLD (Child exited) ---
+wait4(-1, 0xbffff7a0, WNOHANG, NULL)    = -1 ECHILD (No child processes)
+sigreturn()                             = ? (mask now [])
+sigaction(SIGINT, {0x804b600, [], 0}, {0x805b580, [], 0}) = 0
+sigprocmask(SIG_BLOCK, [CHLD], [])      = 0
+sigprocmask(SIG_SETMASK, [], NULL)      = 0
+read(3, "", 49)                         = 0
+_exit(0)                                = ?

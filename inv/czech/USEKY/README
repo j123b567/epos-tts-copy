@@ -1,0 +1,28 @@
+Program slozi soubor .sam podle souboru .txt, ve kterem jsou radky
+pro jednotlive useky ve tvaru:
+
+<usek> <procento zmeny vysky> <procento zmeny delky>
+
+<usek> je zapsany dvouznakove, nektere vysvetlivky:
+
+/X - nabeh fonemu
+X\ - dobeh fonemu
+XY - difon
+
+male pismeno - hacek
+' - raz
+e - neutralni samohlaska
+m - zadopatrove N
+X - ch
+
+(useky nejsou vsechny)
+
+Soubor useky.dat obsahuje pocet impulzu PSOLA a prumernou delku useku
+ve vzorcich.
+
+Soubor .sam je soubor bytu (.VOC bez hlavicky, prehravat jako 8bitu,
+8 kHz vzorkovaci frekvence, bez znamenka).
+
+Soubory .psl jsou stejneho typu, jeden impulz PSOLA ma vzdy 100 vzorku.
+
+Jirka Hanika - pøidal jsem pausový difon 0.PSL
