@@ -74,7 +74,12 @@ inside	\#	phone
 if   kadlec_dph
 	diphones  kadlec.dph    colon
 if   !kadlec_dph
+{
+   if ptacek97_dph
+	diphones  ptacek97.dph  colon
+   if !ptacek97_dph
 	diphones  traditnl.dph  colon
+}
 
 #
 #  mírné vyhlazování se zejména sna¾í, aby hranièní difony
