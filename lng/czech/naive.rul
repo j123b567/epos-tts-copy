@@ -3,6 +3,8 @@
 #
 # Naivní pravidla pro prosodické zpracování èe¹tiny
 
+$prosody = prosody
+
  inside  .?:!	sent		; Pochybné - nemá zasáhnout vìty bez interpunkce
  {
 	 prosody	$prosody/accent.dic      word	syll
