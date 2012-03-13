@@ -1,6 +1,7 @@
 
-Recent changes can be tracked at the bottom end. The rest doesn't qualify
-for an exciting story.
+RECENT CHANGES can be tracked at the BOTTOM END.  The rest doesn't qualify
+for an exciting story, just skip it.
+
 
 1.1.1 from earlier releases (incomplete):
 	- this file
@@ -687,4 +688,107 @@ for an exciting story.
 	- stream::callbk is now scheduled inconditionally (not block()ed)
 	- async_close() forks off children to do fd closes on background
 	- memory leak in failing stream::stream() patched
+
+
+2.4.-2 from 2.3.12	28.12.98
+	- monosyll, polysyll contour (monosyll incomplete)
+	- lang and voice options on the cmd line successfully rejected
+	- control connections also use connection handles
+	- ctrl_conns and data_conns hash tables looked into and rewritten
+	- data command now limits the lifetime of that data connection
+	- intr command (good old brk) now breaks only one task
+	- TTSCP session headers
+	- setl command now sets a value for the current stream (only)
+	- setg command sets a value globally
+	- down command requires a completed server authentication state
+	- fixed a fence-post bug in sgets (when read() returns -1)
+	- fixed a bug in voice::operator new (used this_lang; was not parent)
+	- wavefm now doesn't unnecessarily explode the buffer when flush() busy
+	- verify.cc - a small test suite
+	- hash_table<...>::forall() added a user parameter for (*userfn)()
+	- hash_table<...>::get_random() allows user-controlled destruction
+	- server password stored to /var/run/epospwd
+	- czech.ini and palkova.ini merged to czech.ini with
+		naive.rul and prosody.rul conditionally included
+	- eposmh renamed to eposm, separate hash.o and hashm.o
+
+
+2.4.-1 from 2.4.-2	1.1.99
+	- tcpsyn fixed
+	- the --fallback_voice option (egcs 1.0.2 bugs may break it)
+	- #include &c changed to @include (rule file, ini files)
+
+
+2.4.0 from 2.4.-1	17.1.99
+	- handled missing params to TTSCP commands
+	- partly integrated ptdsyn by Martin Petriska + his support for Slovak
+	- fixed set to setl in xmit_option()
+	- reorganised /usr/lib/epos (lng, voice, inv)
+	- split the inventory packages off the main dist
+
+
+2.4.1 from 2.4.0	20.1.99
+	- preliminary qnx ipc proxy added
+
+
+2.4.2 from 2.4.1	25.1.99
+	- a trivial qnx ipc proxy client
+	- eliminated the 6xx TTSCP responses except for 600
+	- eliminated some unnecessary pragmas
+	- network unreachable condition detected
+	- doc/Files updated
+
+
+2.4.3 from 2.4.2	30.1.99
+	- split arch/dos off arch/win and related cleanup
+	- options.cc renamed to options.lst, comments added
+	- an unrelated options.cc split off the interf.cc file
+	- analogically, split interf.h to interf.h and options.h
+	- elements.{cc,h} renamed to unit.{cc,h}
+	- configuration cow scheme rewritten (was ill-conceived)
+	- streams no more have their own contexts, use a_ttscp->c
+
+
+2.4.4 from 2.4.3	10.2.99
+	- fixed wavefm::put_sample() (off-by-one error)
+	- fixed string values related memory leaks in the cowing code
+	- fixed hard data connection abort
+	- robust nonatomic appl bytes counts (untested, no client support)
+
+
+2.4.5 from 2.4.4	14.2.99
+	- fixed an unwanted dependency on epos-lpc (traditnl.dpt)
+	- prevented pwdfile hijacking in the "already running" situation
+	- send_appl reshaped to client_appl, now using the 123 TTSCP replies 
+	- fixed the replies sent by oa_waveform
+	- input agent type changed from T_NONE to T_INPUT, T_ANY removed
+	- unit::gather returns NULL if buffer overflow and not paranoid
+
+
+2.4.6 from 2.4.5	17.2.99
+	- portability, QNX and NT adjustments, code rearrangements
+	- fixed a few client error handling related functions 
+	- a queer scheme to supply cfg to client.cc without options.cc
+	- newline character in TTSCP changed from LF to CR LF
+		(no known compatibility issue)
+
+
+2.4.7 from 2.4.6	26.2.99
+	- QNX adjustments and other minor fixes
+	- waveform rewritten to handle the ioctl mess more transparently
+	- moved TTSCP command help strings out of the source
+	- banned async_close(-1)
+	- concentrated the TTSCP command syntax checking to PAR_SYNTAX
+	- introduced this_context to fix context switching upon shriek()
+		(very incomplete)
+	- /var/run/epos.pwd created only if listen_port == 8778
+	- new option "show_labels"
+
+
+2.4.8 from 2.4.7	2.3.99
+	- fixed cow (failing to cow configuration->langs & lang->voices lists
+		and a pointer aliasing bug, cf. the next item)
+	- this_lang and this_voice variables changed to macros; referencing
+		them is now slower, while the context switch is faster
+	- NT adjustments, arch/dos/config.h.in
 

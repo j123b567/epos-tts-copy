@@ -16,7 +16,7 @@
  *	This template takes care of constructed objects that should be
  *	deleted if the object which references them fails to be constructed
  *	itself in a later stage.  The navelcord object should be directly
- *	placed on the stack.  Its should be declared just after the
+ *	placed on the stack.  It should be declared just after the
  *	operator new returns the object to be watched.  The release()
  *	method should be called when the navelcord is no more needed.
  *

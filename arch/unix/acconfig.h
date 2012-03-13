@@ -21,6 +21,9 @@
 #undef _ALL_SOURCE
 #endif
 
+/* Define if your compiler incorrectly treats enum bit fields as signed */
+#undef BROKEN_ENUM_BITFIELDS
+
 /* Define to empty if the keyword does not work.  */
 #undef const
 

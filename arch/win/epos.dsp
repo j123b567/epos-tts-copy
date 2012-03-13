@@ -90,7 +90,7 @@ SOURCE=.\client.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\elements.cpp
+SOURCE=.\unit.cpp
 # End Source File
 # Begin Source File
 
@@ -102,11 +102,27 @@ SOURCE=.\interf.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\options.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ktdsyn.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\monolith.cpp
+SOURCE=.\ptdsyn.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\agent.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\daemon.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ttscp.cpp
 # End Source File
 # Begin Source File
 
@@ -166,7 +182,7 @@ SOURCE=.\defaults.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\elements.h
+SOURCE=.\unit.h
 # End Source File
 # Begin Source File
 
@@ -182,7 +198,15 @@ SOURCE=.\interf.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\options.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ktdsyn.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ptdsyn.h
 # End Source File
 # Begin Source File
 
@@ -223,6 +247,10 @@ SOURCE=.\voice.h
 # Begin Source File
 
 SOURCE=.\waveform.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\agent.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

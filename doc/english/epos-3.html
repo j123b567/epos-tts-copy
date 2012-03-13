@@ -22,7 +22,7 @@ pair. There are a few possible option types: number, string, yes/no,
 character, and a few enumerated types.
 <P>Almost all individual options are documented in 
 <A HREF="#indivopts">this document</A>. 
-The reliable list of all built-in long options can be found in <CODE>src/options.cc</CODE>.
+The reliable list of all built-in long options can be found in <CODE>src/options.lst</CODE>.
 (See approximately line 275 and below. Every line represents at most one
 option for every option class as explained below. The option name is
 quoted; its semantics is usually explained following the option.)
@@ -125,6 +125,7 @@ The available escape sequences are listed in
 \ </TD><TD> hard space </TD><TD> 255 </TD><TD></TD></TR><TR><TD>
 \# </TD><TD> hash </TD><TD> 35 </TD><TD></TD></TR><TR><TD>
 \; </TD><TD> semicolon </TD><TD> 59 </TD><TD></TD></TR><TR><TD>
+\&commat; </TD><TD> at sign </TD><TD> 34 </TD><TD></TD></TR><TR><TD>
 \~ </TD><TD> dots </TD><TD> (1) </TD><TD> No...</TD></TR><TR><TD>
 \. </TD><TD> decimal point </TD><TD> (2) </TD><TD> 1.2 kg</TD></TR><TR><TD>
 \- </TD><TD> range </TD><TD> (3) </TD><TD> 2-3 people</TD></TR><TR><TD>
@@ -139,7 +140,7 @@ and <CODE>value_esc</CODE> constants in <CODE>option.cc</CODE>, or the table in
 purposes by Epos.
 <P>
 <P>
-<H3><A NAME="include-directive"></A> Comments and the #include directive </H3>
+<H3><A NAME="include-directive"></A> Comments and the &commat;include directive </H3>
 
 <P>
 <P>A configuration file usually contains various comments. A comment can start
@@ -147,14 +148,14 @@ on any line with a semicolon or hash mark and lasts to the end of line.
 The semicolon (or hash mark) must be located at the beginning of line
 or just after some whitespace. Semicolons in the middle of a word don't
 start a comment.
-<P>As an exception, if a line begins with <CODE>#include</CODE> starting in the first column,
+<P>If a line begins with <CODE>&commat;include</CODE> starting in the first column,
 it is treated as the <EM>include directive</EM>.
-The format of the line should be <CODE>#include "filename"</CODE> and it will
+The format of the line should be <CODE>&commat;include "filename"</CODE> and it will
 cause the contents of the <CODE>filename</CODE> file to be inserted at this place of the 
 main <CODE>.ini</CODE> file. These includes can be nested to any finite depth; if no or
 relative path is specified, the directory which holds the topmost file is used for
 the lookup.
-<P>Two more directives, <CODE>#warn</CODE> and <CODE>#error</CODE> with obvious semantics
+<P>Two more directives, <CODE>&commat;warn</CODE> and <CODE>&commat;error</CODE> with obvious semantics
 are available for diagnostic purposes.
 <P>
 <H2><A NAME="ss3.3">3.3 Command line</A>
@@ -358,7 +359,7 @@ as soft option names.
 to grow at a moderate pace just now.
 <P>A few individual options will be described in this section.  The rest are either
 straightforward or rarely useful. A complete list of options can be obtained
-through <CODE>epos -H</CODE> or in <CODE>src/options.cc</CODE>.
+through <CODE>epos -H</CODE> or in <CODE>src/options.lst</CODE>.
 <P>The type and the semantic class of the argument is indicated for all individual
 options except for truth value (<CODE>on</CODE>/<CODE>off</CODE>) options.  This is because
 these options, when found without an argument, are automatically interpreted
@@ -393,6 +394,13 @@ reason.  The character specified by this option terminates
 the input text, but not the input stream.  It is also necessary
 to press <CODE>Enter</CODE> after the character. Applies only to the
 monolithic Epos.
+<DT><B>--asyncing</B><DD><P>Turn on to enable asynchronous close() processing. Usable only
+on unices; uses fork to delegate the synchronous close()
+to a child. This option can be useful for eliminating communication
+delays when closing a sound card file descriptor, but it can cause
+subsequent references to the same device fail, because the child
+still hasn't released the device.  The option has no meaning
+on non-UNIX systems, where the close() is always synchronous.
 <DT><B>--forking</B><DD><P>Turn on to allow forking and fully detaching the Epos daemon.
 Usable only on unices.  If off, some debugging information will
 be written to <CODE>stdout</CODE> in some configurations.
@@ -647,9 +655,15 @@ file; the name of the file is obtained by suffixing <CODE>.ini</CODE> to the voi
 while the directory name matches the voice name and is located under
 the directory as determined by the per language (default) <CODE>inv_dir</CODE>
 option.  The first voice listed will become the default voice for its
-language.
+language until switched.
 <DT><B>--soft_options <I>list</I></B><DD><P>Lists available soft options as described in subsection
 <A HREF="#soft-options">soft options</A>.
+<DT><B>--fallback_voice <I>voicename</I></B><DD><P>Not used under normal circumstances.  Epos initialises its
+synthesis type depended specific structures the first time
+it uses a voice.  Should such an initialization fail because
+of a network error, the current voice will be switched to
+the voice specified by this option and the initialisation will be
+retried.
 <DT><B>--suppress_side_syll</B><DD><P>This option should be off for most languages.  It makes the
 <CODE>syll</CODE> rule avoid splitting off an insufficiently sonorous
 word-initial pseudo-syllable. It is an ugly hack originally
@@ -690,7 +704,8 @@ The name is then used to refer to the voice in TTSCP.
 <CODE>lpc-int</CODE>    </TD><TD> voice uses a LPC synthesis (integer diphone inventory)</TD></TR><TR><TD>
 <CODE>lpc-float</CODE>  </TD><TD> voice uses a LPC synthesis (float diphone inventory)</TD></TR><TR><TD>
 <CODE>lpc-vq</CODE> </TD><TD> voice uses a LPC synthesis (vector quantified diphone inventory)</TD></TR><TR><TD>
-<CODE>ktd</CODE> </TD><TD> voice uses a time domain synthesis</TD></TR><TR><TD>
+<CODE>ktd</CODE> </TD><TD> voice uses a time domain synthesis (Zdenek Kadlec)</TD></TR><TR><TD>
+<CODE>ptd</CODE> </TD><TD> voice uses a time domain synthesis (Martin Petriska)</TD></TR><TR><TD>
 
 </TD></TR></TABLE></CENTER>
 
@@ -898,6 +913,10 @@ change them in the configuration files instead.
 <A NAME="daemon-log-option"></A> <DT><B>--daemon_log <I>filename</I></B><DD><P>The value is a file name. This option can be used to set the file
 where various information about the Epos process is recorded.
 At the moment that is of little practical use except for debugging.
+<DT><B>--server_pwd_file <I>filename</I></B><DD><P>The value is a file name. This option can be used to force the server
+to store its internal password to a file.  This password can then
+be used for TTSCP authentication in order to issue restricted commands
+such as <CODE>down</CODE>.
 <DT><B>--allow_options_file <I>filename</I></B><DD><P>The file named by this parameter provides access control in TTSCP to individual
 options.  Its syntax is described 
 <A HREF="#allowed-options">above</A>.
@@ -950,13 +969,13 @@ daemon activity logging controlled by
 <A HREF="#daemon-log-option">the daemon_log option</A>.
 <DT><B>--assim_debug <I>level</I></B><DD><P>Severity level threshold for the code area of <CODE>regress</CODE> and
 related types of rules, as well as their implementation in the
-<CODE>src/elements.cc</CODE> file.
+<CODE>src/unit.cc</CODE> file.
 <DT><B>--cfg_debug <I>level</I></B><DD><P>Severity level threshold for the code area of parsing
 the Epos configuration <CODE>.ini</CODE> files.
 A few instances in this area may not be handled properly, because
 they are called before this option is set itself. In this case,
 the default severity level threshold as found in the
-<CODE>src/options.cc</CODE> file.
+<CODE>src/options.lst</CODE> file.
 <DT><B>--daemon_debug <I>level</I></B><DD><P>Severity level threshold for the code areas of scheduling and TTSCP
 interpretation. This code is absent from the monolithic Epos.
 <DT><B>--elem_debug <I>level</I></B><DD><P>Severity level threshold for the code area of the
@@ -975,12 +994,12 @@ parsing and application of the rules. This usually does
 not include any code which is rule type specific.
 <DT><B>--split_debug <I>level</I></B><DD><P>Severity level threshold for the code area of most
 types of rules, as well as their implementation in the
-<CODE>src/elements.cc</CODE> file.  This covers especially
+<CODE>src/unit.cc</CODE> file.  This covers especially
 syllabification, diphonization and other structure
 manipulations.
 <DT><B>--subst_debug <I>level</I></B><DD><P>Severity level threshold for the code area of <CODE>subst</CODE> and
 related types of rules, as well as their implementation in the
-<CODE>src/elements.cc</CODE> file
+<CODE>src/unit.cc</CODE> file
 <DT><B>--synth_debug <I>level</I></B><DD><P>Severity level threshold for the code area of low level
 speech syntheses (diphone to speech). It covers both
 individual algorithms and the common code.

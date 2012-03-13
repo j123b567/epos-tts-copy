@@ -27,7 +27,7 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@ff.cuni.cz"
-#define VERSION     "2.3.12"
+#define VERSION     "2.4.8"
 
 #include "config.h"
 
@@ -47,6 +47,7 @@
 #ifndef HAVE_STRCASECMP
 #ifdef  HAVE_STRICMP
 	#define strcasecmp stricmp	// if only stricmp is defined
+	#define strncasecmp strnicmp
 #endif
 #endif
 
@@ -73,7 +74,7 @@
    }
 #endif
 
-#define EPOS_TCP_PORT	8778
+#define TTSCP_PORT	8778
 
 
 enum SYMTABLE {ST_ROOT, ST_RAW, ST_EMPTY};
@@ -103,20 +104,15 @@ class stream;
 #include "text.h"
 #include "voice.h"
 #include "interf.h"             //See interf.h and even interf.cc for other headerities
+#include "options.h"
 //#include "client.h"
 #include "parser.h"
-#include "elements.h"
+#include "unit.h"
 #include "rule.h"              //See rules.h for additional #defines and enums
 #include "waveform.h"
 #include "synth.h"
 
 #define MAX_PATHNAME       256	  // only load_language uses this
-
-#define NO_CONT            '_'    // null contents of a unit
-#define JUNCTURE           '0'    // scope boundary in assim environment
-#define DELETE_ME     JUNCTURE    // changing cont to this one is fatal
-#define QUESTION_MARK      '?'    // ignored context character (in diphone names)
-#define RATIO_TOTAL	   100	  // 100 % (unit::smooth percent sum)
 
 #ifdef HAVE_UNISTD_H
 

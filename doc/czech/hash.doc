@@ -213,6 +213,22 @@ malloc() a free(). Funkce translate() nikdy nemìní obsah tabulky, tak¾e
 ta nebude zdr¾ovaná vùbec a nejvíc èasu nejspí¹ stráví ve fn() (privátní
 inline metoda poèítající hashovací funkci).
 
+Funkce forall() vykoná stanovenou operaci se v¹emi prvky v tabulce.
+Operace je popsána u¾ivatelskou funkcí se tøemi parametry; do jednoho
+se bude dosazovat klíè, do druhého asociovaná data, do tøetího se mù¾e
+dosadit cokoli (pointer nebo integer) zadaného pøi volání forall().
+Pokud je tabulka pou¾ívána jako vyhledávací AVL strom, to jest její
+kapacita je 1, budou její prvky procházeny vzestupnì.  U¾ivatelská
+funkce v¹ak v ¾ádném pøípadì nesmí tuté¾ tabulku mìnit; smí do ní
+pouze nahlí¾et. forall() tedy nejde pou¾ít napøíklad pro situaci, kdy
+je potøeba vyprázdnit hashovací tabulku a o¹etøit pøitom speciálnì
+nìkterá obsa¾ená data.  V takovém pøípadì lze je¹tì pou¾ít funkci
+get_random(), která vrací (v prùmìru v podobá se konstantním èase,
+není-li volána støídavì na více tabulek) náhodnì zvolený prvek tabulky.
+Je tedy mo¾no volat tuto funkci v cyklu a prvky odebírat.  get_random()
+v¹ak nikdy nevybere prvek, který kolidoval a je tedy v hlub¹í vrstvì
+AVL stromu.
+
 Funkce debug() vypí¹e obsah tabulky, pokud se hashují øetìzce na øetìzce.
 
 Tento soubor zhruba dokumentuje stav v létì 1998.

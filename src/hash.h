@@ -15,7 +15,7 @@
  *	Hash tables are quite independent of any other file. 
  *	You'll need just defaults.h - or not even that
  *
- *      This is hash.* v2.3
+ *      This is hash.* v2.4
  *
  *	In case you want to debug or profile the hash table code,
  *	go to the beginning of hash.cc and enable the appropriate
@@ -85,8 +85,12 @@ class hash_table
 	    ~hash_table();
 	void 	add(const key_t *key, const data_t *value); //Will strcpy the arguments
 	data_t*	remove(const key_t *key);       //Its "data" will be returned (just free() it)
-	void 	forall(void usefn(key_t *key, data_t *value));
+	void 	forall(void usefn(key_t *key, data_t *value, void *parm), void *parm);
+	inline void forall(void usefn(key_t *key, data_t *value, int parm), int parm) {
+		forall((void(*)(key_t*, data_t*, void *))usefn, (void *)parm);
+	}
 	data_t*	translate(const key_t *key);    //Will NOT strdup the result
+	key_t*	get_random();
 	void 	rehash(int new_capacity);     //Adjust the capacity. Boring.
 	void 	rehash();		     //Adjust the capacity as needed
 	void 	cfg_rehash(int min_perc, int max_perc, int max_tree);
@@ -94,7 +98,7 @@ class hash_table
  private:
 	void 	rehash_tree(hsearchtree<key_t, data_t> *t);    //internal, called by rehash()
 	void 	fortree(hsearchtree<key_t, data_t> *tree,
-				void usefn(key_t *key, data_t *value));
+				void usefn(key_t *key, data_t *value, void *parm), void *parm);
 	void 	dissolvetree(hsearchtree<key_t, data_t> *tree);
 };
 

@@ -1,11 +1,11 @@
 /*
- *	(c) 1998 Jirka Hanika <geo@ff.cuni.cz>
+ *	(c) 1998-99 Jirka Hanika <geo@ff.cuni.cz>
  *
  *	This single source file src/client.h, but NOT THE REST OF THIS PACKAGE,
  *	is considered to be in Public Domain. Parts of this single source file may be
  *	freely incorporated into any commercial or other software.
  *
- *	Most files in this package are strictly covered by the General Public
+ *	Most files in this package are covered strictly by the General Public
  *	License version 2, to be found in doc/COPYING. Should GPL and the paragraph
  *	above come into any sort of legal conflict, GPL takes precendence.
  *
@@ -30,7 +30,7 @@ int sputs(const char *buffer, int sd);
 /*
  *	The just_connect_socket() routine returns -1 if it cannot return a connected
  *	socket. The connect_socket() routine additionally checks if the remote side
- *	announces the TTSCP protocol of an acceptable version and calls shriek(674)
+ *	announces the TTSCP protocol of an acceptable version and calls shriek(4xx)
  *	if it doesn't.
  *
  *	Byte order: host byte order for the port number, network byte order for the addr.
@@ -55,32 +55,116 @@ int getaddrbyname(const char *inet_name);
 void xmit_option(char *name, char *value, int sd);
 
 /*
- *	send_appl() sends an apply command and blocks until it is processed.
- *	It returns the number of bytes to be then read from the data connection.
- *	send_appl() doesn't ever touch the data connection.
+ *	get_handle() should be called before any TTSCP command is issued.
+ *	It returns strdup(connection handle) after having skipped protocol
+ *	configuration sent by the server.
  */
 
-int send_appl(int bytes, int ctrld);
-
-/*
- *	data_conn() turns sd into a data connection.
- *	It returns strdup(data connection handle).
- */
-
-char *data_conn(int sd);
+char *get_handle(int sd);
 
 /*
  *	sync_finish_command() can be used to wait for the completion code
  *	for a command. It will block until it is received.
- *	FIXME: it doesn't treat errors and such very well.
+ *	Returns zero if a successful reply has been received;
+ *	otherwise the error code received is returned.
+ *	The 649 error code (never issued in TTSCP) implies
+ *	a broken connection due to end of file or error condition,
+ *	such as a network disconnection.
+ *
+ *	If you are looking for a more complex client-side apply command
+ *	handling example, one where the data produced by the server
+ *	is also correctly received via a data connection, see
+ *	tcpsyn_appl() in tcpsyn.cc
  */
 
-void sync_finish_command(int ctrld);	// wait for the completion code
+int sync_finish_command(int ctrld);	// wait for the completion code
 
 /*
- *	make_rnd_passwd() generates a random password or handle consisting
- *	of lowercase and uppercase characters, digits, dash and underscore.
+ *	async_close() function is equivalent to close(), except that
+ *	it returns immediately (and without a return value, which may
+ *	be still unknown at the moment). Doing the close is left to
+ *	a child process; as soon, as the child holds the only file
+ *	descriptor copy in question, it is killed, which implies
+ *	closing its file descriptors.
+ *	
+ *	yread() and write() are wrappers for read() and write(),
+ *	respectively.  On non-UNIX systems (as guessed by the absence
+ *	of the unistd.h file) these functions try calling recv or send
+ *	before the read or write.  This behavior is necessary with
+ *	the poor clumsy windows sockets, but unistd.h doesn't
+ *	necessarily imply UNIX, Windows may not necessarily imply
+ *	broken sockets, and the absence of unistd.h doesn't imply
+ *	anything.  It would be nice to know whether one can
+ *	read/write sockets under OS/2 or Hurd.
  */
 
-void make_rnd_passwd(char *buffer, int size);
+#ifdef HAVE_UNISTD_H
+
+	#include <unistd.h>
+
+	#ifdef HAVE_SIGNAL_H
+		#include <signal.h>
+	#endif
+
+	inline void async_close(int fd)
+	{
+		int pid = cfg->asyncing ? fork() : -1;
+		switch(pid)
+		{
+			case -1:
+				if(close(fd)) shriek(465,"Error on close()");
+				return;
+			case 0:
+				sleep(1800);	/* will be killed by the parent soon */
+				abort();	/* hopefully impossible */
+			default:
+				if(close(fd)) shriek(465, "Error on close()");
+				kill(pid, SIGKILL);
+		}
+	}
+
+	inline int ywrite(int fd, const void *buffer, int size)
+	{
+		return write(fd, (const char *)buffer, size);
+	}
+
+	inline int yread(int fd, void *buffer, int size)
+	{
+		return read(fd, (char *)buffer, size);
+	}
+
+	#ifdef HAVE_WINSOCK2_H
+		#error Funny - UNIX does not rhyme with winsock
+	#endif
+
+#else
+	#ifdef HAVE_WINSOCK2_H
+		#include <winsock2.h>
+	#endif
+
+	#ifdef HAVE_IO_H
+		#include <io.h>
+	#endif
+
+	inline void async_close(int fd)
+	{
+		if(close(fd)) shriek(465,"Error on close()");
+		return;
+	}
+
+	inline int ywrite(int fd, const void *buffer, int size)
+	{
+		int result = send(fd, (const char *)buffer, size, 0);
+		if (result == -1) result = write(fd, (const char *)buffer, size);
+		return result;
+	}
+
+	inline int yread(int fd, void *buffer, int size)
+	{
+		int result = recv(fd, (char *)buffer, size, 0);
+		if (result == -1) result = read(fd, (char *)buffer, size);
+		return result;
+	}
+
+#endif	// HAVE_UNISTD_H
 

@@ -15,7 +15,7 @@
  *	The most boring file around.
  */
 
-inline exception::exception(int n, const char *message)
+inline any_exception::any_exception(int n, const char *message)
 {
 	code = n;
 	msg = message;

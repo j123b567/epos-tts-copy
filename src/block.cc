@@ -1,6 +1,6 @@
 /*
  *	epos/src/block.cc
- *	(c) 1996-98 geo@ff.cuni.cz
+ *	(c) 1996-99 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -125,8 +125,9 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 	}
 	if (again > 1) diatax("Badly placed count");
 	if (rulist[n_rules] != terminator) switch ((int)rulist[n_rules]) {
-		case (int)END_OF_BLOCK:  diatax("No block to terminate");	// FIXME
-		case (int)END_OF_CHOICE: diatax("No choice to terminate");	// FIXME
+		case (int)END_OF_BLOCK:  diatax("No block to terminate");
+		case (int)END_OF_CHOICE: diatax("No choice to terminate");
+		case (int)END_OF_SWITCH: diatax("No length-based switch to terminate");
 		case (int)END_OF_RULES: 
 			if (!began_at) break;
 			else shriek(811, fmt("Unterminated block in file %s line %d", began_in, began_at));
@@ -281,8 +282,6 @@ r_switch::apply(unit *root)
  This constructor reads and precompiles the rules 
  from a text file. 
  ************************************************************/
-
-#pragma argsused
 
 rules::rules(const char *filename, const char *dirname)
 {
@@ -529,6 +528,7 @@ next_rule(text *file, hash *vars, int *count)
 void
 rules::apply(unit *root)
 {
+	if (this_lang->ruleset != this) shriek(862, "Cannot compile rules for other languages");
 	body->apply(root);
 }
 

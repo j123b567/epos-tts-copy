@@ -1,89 +1,75 @@
 
 		Files in this package (UNIX)
 
-	[outdated, FIXME]
-
 	Note that the DOS version doesn't contain the "arch", "src" and "dos" 
-directories, while src/*.cc, src/*.h, aux/epos.cpp and aux/README.dos are
+directories, while src/*.cc, src/*.h, arch/dos/epos.cpp and arch/dos/README.dos are
 copied to the base directory. The files may use a different encoding of the
-Czech characters (UNIX always uses ISO 8859-2) and have been LF->CRLF converted.
+national characters (UNIX always uses ISO 8859-2) and have been LF->CRLF converted.
 
 	This file tends to be outdated.
 
 	The files usually located in the "cfg" directory may be moved
 elsewhere using epos.ini.
 
-/usr/lib/epos/cfg		various configuration files read by Epos
+/usr/lib/epos/cfg		various global configuration files read by Epos
 /usr/lib/epos/lng/*		various language specific cfg files
-/usr/lib/epos/lng/*/text.txt	random input text to be processed (change in epos.ini)
-/usr/lib/epos/lng/czech/nnet.rul   invokes czech.rul, adds some special neural net rules
-/usr/lib/epos/cfg/*hdr.txt	printed just before the transcription
-/usr/lib/epos/cfg/*ftr.txt	printed following the transcription
-/usr/lib/epos/lng/*/*.dic	various corpora of exceptions, used by the current rules
-/usr/lib/epos/lng/*/*.dph	descriptions of diphone inventories, used by the rules
+/usr/lib/epos/voice/*		various voice specific cfg files
+/usr/lib/epos/inv/*		various diphone inventory stuff, to be installed separately
+/usr/lib/epos/lng/*/*.dic	various word lists &c, used by the current rules
+/usr/lib/epos/lng/*/*.dp[ht]	descriptions of diphone inventories, used by the rules
 /usr/lib/epos/cfg/fixed.ini	presumably never-changing (but changeable) parameters
 /usr/lib/epos/cfg/epos.ini	presumably often changing tunable parameters
-/usr/lib/epos/cfg/default.ini	default values (used only in epos_reinit())
+/usr/lib/epos/cfg/default.ini	default values (used only in epos_reinit() - do not change)
 /usr/lib/epos/cfg/ansi.ini	if selected in fixed.ini, defines ANSI color output
 /usr/lib/epos/cfg/rtf.ini	if chosen in fixed.ini, defines Rich Text Fmt output
-/usr/lib/epos/inv/*/*.ini	diphone inventories, voice configuration
-/usr/lib/epos/prosody/*.dic	language independent (rather, default) prosody rules
+/usr/lib/epos/prosody/*		default prosody rules
 
 /var/log/epos		system wide log of TTSCP transactions of the daemon
 			(still useful mostly for debugging)
 
+/var/run/epos.pwd	system wide epos supervisor password
+
 doc			various documentation, mostly both in Czech and English
-doc/czech/*.doc		the filenames are self-explanatory, plain ASCII text, incomplete
-doc/english/*.sgml	Epos documentation source text in SGML
+doc/czech/*.doc		incomplete documentation in Czech, plain ASCII text
+doc/english/*.sgml	Epos documentation source text in SGML (linuxdoc dtd)
+			Type "make epos.dvi", "make epos.html" or "make epos.txt"
+			to generate the other documentation formats
 doc/english/epos.dvi	complete Epos documentation, nicely typeset
 doc/english/epos.txt	complete Epos documentation in plain text (read with "more")
 doc/english/epos*.html	complete Epos documentation in HTML
 doc/Intro		what to read first
 doc/Changes		what is new, improved or newly broken in this version
-doc/Todo		things I'd add if I knew how and had the time
+			how old are the individual features of Epos
+doc/Todo		things I'd add/change if I knew how and had the time
 doc/Files		(this file)
-doc/COPYING		the GNU license - legalese and copyleft. Worth reading.
+doc/COPYING		the GNU license - distribution conditions
 
 dos			if you do a "make dos" ("make dos1250" etc.), a DOS
-dos/ep?-?-?.zip	        	package will show up here
+dos/ep?-?-?.zip	        	package will show up here (obsolete mechanism?)
 
-src			C++ source files
-src/configure		compilation support (converts Makefile.in to Makefile)
-src/Makefile.in		describes the compilation dependencies. Ignore it.
-src/Makefile		compilation support (processed by GNU make)
-src/*.h			header files, class declarations, enums, #defines etc.
-src/*.cc                implementation - each one can compile separately
+src/*.cc		C++ source files for Epos and simple clients
+src/Makefile.in		describes file dependencies; ignore it
 src/common.h		the main header file, #includes the others
 src/defaults.h		some additions to common.h, but used by hash.* as well
-src/elements.h (.cc)	unit class (the main structure)
-src/nnet.cc		some methods declared in elements.h (neural nets)
-src/hash.h     (.cc)	hash tables (fast access dictionaries) (no common.h)
-src/parser.h   (.cc)    simpleparser (can parse a typical ASCII input text)
-src/rule.h     (.cc)    rules (parses the rules file and calls "unit" methods)
-src/block.cc   (.cc)    works together with rule.cc, class block, class rules.
-src/interf.h   (.cc)	interface routines	
-src/text.h     (.cc)	text file preprocessor (handles #include etc.)
-src/synth.h    (.cc)    diphones-to-speech synthesis
-...
-src/options.cc		list of various runtime options. Gets #included nine times.
+src/options.lst		list of various runtime options. Gets #included nine times.
 
 arch			things that don't fit elsewhere, scripts et alia
-aux/epos.cpp		Borland C++ source file. Compile just this one.
-aux/cstodos		script to make a DOS package. Uses cstocs, awk...
-aux/tag			script to find a tag in the sources (invoke in "src")
-aux/README.dos		how to compile the DOS package
-aux/maketgz		script to make a ep?-?-? package on both disk & floppy
-aux/makedate		print last modification time of the sources
-aux/makever		print the Epos version (as #defined in common.h)
-aux/makeinst		installs cfg/... to /usr/lib/epos... and more
-...
+arch/dos		DOS related configuration files
+arch/dos/README.dos	how to compile the DOS package
+arch/unix		mostly shell scripts; should approx. work on any UNIX OS
+arch/unix/makedate	print last modification time of the sources
+arch/unix/makever	print the Epos version (as #defined in common.h)
+arch/win		MS Windows configuration files
+arch/win/configure.bat	run before touching files with the Visual C++ compiler
 
 
-How does the autoconfiguration work: 
+How does the (UNIX) autoconfiguration stuff work: 
 
-	I. The maintainer creates configure.in and Makefile.in
+	I. The maintainer updates configure.in and Makefile.in
 	   and runs two programs on it before making a package:
 
+acconfig.h ------>---.
+                     |
 configure.in ----(running autoheader)----> config.h.in
         |
         `--------(running autoconf)----> configure

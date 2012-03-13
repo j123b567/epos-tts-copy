@@ -15,23 +15,35 @@
 <H2><A NAME="ttscp"></A> <A NAME="s4">4. Text-To-Speech Control Protocol  (TTSCP)  (version 1) </A></H2>
 
 <P>
-<P>TTSCP is a connection-oriented, both human- and machine-readable
-communication protocol, remotely similar to the File Transfer
-Protocol in spirit. It is designed to work atop TCP, but
-any reliable connection-oriented underlying protocol
-should theoretically work as well.
-<P>The server is awaiting new connections on a single TCP port.
+<P>TTSCP is a client-server connection-oriented,
+both human- and machine-readable communication protocol,
+remotely similar to the File Transfer Protocol in spirit.
+It is designed to work atop TCP, but any reliable
+connection-oriented underlying protocol should theoretically
+work as well.
+<P>The server awaits new connections on a single TCP port.
 There are two types of connections: <EM>control connections</EM>
 used to issue commands by the client and to return status
 information, such as completion messages by the server,
 and <EM>data connections</EM> used to transfer the actual data.
-A new connection is treated as a control connection, until
+Immediately after the underlying connection is opened,
+the server transmits a <EM>session header</EM> (see below)
+and treats the connection as a control connection, until
 the <CODE>data</CODE> command is issued by the client, causing
-it to become a data connection. A <EM>TTSCP session</EM> is a sequence
+it to become a data connection.  
+<P>Every TTSCP connection (both a control one and a data one) obtains
+a connection handle from the server inside the session header.
+This handle is a string of alphanumeric characters which
+uniquely identifies the connection and which also serves
+as an access token for it. Other connections can use such
+a handle to interrupt a control connection's task in progress,
+to disconnect any connection, to process data received from
+a data connection etc.
+<P>A <EM>TTSCP session</EM> is a sequence
 of commands, their results and referenced data lasting
 from setting up the control connection until its disconnection
 or the <CODE>data</CODE> command.
-<P>Any party may quit the session at any time, but must advise
+Any party may quit the session at any time, but must advise
 the other one either by the <CODE>done</CODE> command (the client)
 or by a <CODE>600</CODE> response code or higher (the server).
 If a <CODE>done</CODE> command is sent before a preceding command
@@ -39,22 +51,49 @@ has completed, the server will proceed with the
 preceding commands. If a <CODE>600</CODE> or higher error code
 is received as a response to a command and subsequent commands
 have already been sent by the client, they will not be executed.
+<P>A data connection may be silently disconnected by the client
+at any time.  To allow reliable disconnection detection by the
+server, every data connection is attached to an already
+existing control connection (as specified with the <CODE>data</CODE>
+command) and it will be automatically disconnected when
+the control connection is disconnected.  This attachment relation
+doesn't prevent other control connections from referencing this
+data connection using its handle, it only limits its lifetime.
+<P>The session header (as sent before a TTSCP session starts)
+is a sequence of lines terminated with an empty line (two consecutive
+linefeed characters with no whitespace intervening).  The first line
+shall exactly match the string <CODE>TTSCP spoken here</CODE>; the clients
+are strongly encouraged to use this string to identify the protocol.
+The following lines, except the terminating (empty) one each contain
+a TTSCP header keyword terminated by a colon and a single space
+and the value associated with the keyword. The client may choose
+not to use these values at all, or to scan only for some header
+keywords.  The last keyword in the header shall be the <CODE>handle</CODE>
+keyword.
 <P>A typical TTSCP session looks like this, with client commands
-left-indented and server responses right-indented.
+unindented and server responses indented.
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-        TTSCP rev 1 spoken here
+        TTSCP spoken here
+        protocol: 0
+        extensions:
+        server: Epos
+        release: 2.4.6
+        handle: O29-m2UZ
+        
 user user@host.domain.net
-        4xx user not found
-set option on
+        452 user not found
+set some_option on
         200 OK
 strm $zC-4EEl0:raw:rules:diphs:synth:/dev/dsp
         200 OK
 appl 34
         112 started
-        122 written bytes
-         36
+        122 total bytes
+         3622
+        123 written bytes
+         3622
         200 OK
 done
         600 goodbye
@@ -64,19 +103,60 @@ done
 <P>The "user" and "done" commands may become mandatory, the rest may
 be freely used between them. For the interaction with a human, the
 "help" command is available.
-<P>The "brk" command currently stops the speech output for all
-the voices. This will change in the future.
 <P>It is legal to use "anonymous" instead of the address in the user
 command: "user anonymous". It is also legal to switch users
 with additional user commands. This may cause context switches.
 <P>It is advised to check the greeting string received to begin in 
 "preTTSCP" or "TTSCP ". If it doesn't, the client or possibly the
-server may be obsolete.
-<P>In this document, a "newline" produced by the client should be
-a single ASCII LF character, whereas the server should understand
-both LF and CR LF sequences as a single "newline". Subject to change.
+server may be obsolete or an unrelated protocol may be used at the
+port.
+<P>In this document, a "newline" produced by the server or the client should be
+a <CODE>CR LF</CODE> character sequence.  It is recommended for both parties to
+accept a <CODE>LF</CODE> character without a preceding <CODE>CR</CODE> character as a valid
+line separator.  Subject to change.
 <P>
-<H2><A NAME="formats"></A> <A NAME="ss4.1">4.1 Data formats</A>
+<H2><A NAME="ss4.1">4.1 Session header keywords</A>
+</H2>
+
+<P>
+<P>The set of session header keywords and their sequence may vary between
+TTSCP implementations.  Some lower case keywords are defined by this document;
+in addition, any implementation may supply its own keywords provided
+their first two characters are lower case <CODE>x</CODE> and dash, respectively,
+or they consist solely of upper case letters.  Both standard and
+implementation specific keywords are limited to upper and lower case
+letters (case sensitive), digits, dashes and underlines;
+however, the values associated with some keywords may contain any printable
+ISO 8859 characters.  There are three mandatory keywords
+(<CODE>protocol</CODE>, <CODE>extensions</CODE> and <CODE>handle</CODE>, in order of appearance
+in the session header).
+<P>
+<DL>
+<DT><B>extensions</B><DD><P>The value is a whitespace separated list of semi-standard and non-standard
+extensions supported by this TTSCP server.  Only extensions defined by
+this document or a future version of this document should be advertised;
+custom or experimental extensions may be advertised provided their
+first two characters are lower case <CODE>x</CODE> and dash, respectively.
+At present, there are no extensions defined, so the list should be empty,
+but this keyword is nevertheless mandatory.
+<DT><B>handle</B><DD><P>The value is a connection handle for this control connection. The handle
+stays valid when the connection is turned into a data connection.  Only 
+lower and upper case letters, digits, dashes and underlines may occur in
+the handle.  This keyword is mandatory and must appear last in the session
+header.
+<DT><B>protocol</B><DD><P>The value is a decimal number identifying the major TTSCP protocol version.
+The current protocol version number is <CODE>0</CODE> (previous versions had no
+session header).  It is likely that protocol versions unknown to the
+client will be fundamentally incompatible.  It is mandatory to begin the
+session header with this keyword.  It is recommended to check it on the
+client side.
+<DT><B>release</B><DD><P>Server release.  The formatting and interpretation is implementation dependent.
+<DT><B>server</B><DD><P>Server name.  Different versions of the same implementation should
+typically use an identical value for this keyword.
+</DL>
+<P>
+<P>
+<H2><A NAME="formats"></A> <A NAME="ss4.2">4.2 Data formats</A>
 </H2>
 
 <P>
@@ -123,7 +203,7 @@ They should preferably be zero.
 FIXME: more
 <P>
 <P>
-<H2><A NAME="ss4.2">4.2 TTSCP Commands</A>
+<H2><A NAME="ss4.3">4.3 TTSCP Commands</A>
 </H2>
 
 <P>
@@ -147,52 +227,55 @@ with a single space. This is the number of bytes written by the output
 module. This intermediate reply should be sent as soon as the number
 of bytes to be sent is known to the TTSCP server to avoid certain
 deadlock scenarios caused by an insufficient buffer capacity between
-the server and the client. The number of bytes actually received may
-be even smaller in case of a user break or another unexpected situation.
-In such cases, the behavior is (still) undefined; assume they never
-happen. FIXME: define it.
+the server and the client. The number of bytes actually sent may
+be even smaller in case of a user break or another unexpected situation;
+it shall never be larger and it shall be exactly the number of bytes
+sent by the server upon a successful completion reply.
+<P>Before the completion reply, one or more 123 replies are received
+by the client. Every 123 reply is followed by a decimal number
+on a line by itself, preceded with a single space.  This is the
+number of bytes actually successfully written by the output module.
+This intermediate reply should be sent as soon as the data is
+sent.  When the client eventually receives a completion reply,
+the sum of byte counts received with 123 replies shall match
+the number of bytes sent by the server.
+<P>The relative ordering of 122 and 123 replies is not specified by
+the TTSCP.
 <P>The completion response code is received when all the modules have
 finished processing and data has been output by the output module.
 Some of the data may however still be being processed by hardware,
 e.g. a sound card, or may be delayed by the network.
 <P>Using <CODE>appl</CODE> before the first <CODE>strm</CODE> command is forbidden.
 <P>
-<H3>brk</H3>
+<H3>intr</H3>
 
 <P>
-<P>Stop writing Signal into devices as soon as possible.
-(This command may disappear in the future.)
-<P>The only mandatory requirement is that there are no more speaking 
-processes upon receiving a 2xx error code.
+<P>Interrupt an active stream. The parameter is a control connection
+handle and controls the connection to be interrupted.
+<P>The server should try to discard as much pending data as possible,
+including e.g. waveform data already written to a sound card.
+<P>The server will reply a 401 completion code to the interrupted
+connection, whereas a 200 completion code will acknowledge
+a successful <CODE>intr</CODE> command.
 <P>
 <H3>data</H3>
 
 <P>
-<P>Turn this control connection into a data connection. The parameter,
-if any, is the desired connection handle. If no parameter is given,
-the server will supply a randomly generated handle.
-<P>It is preferred to rely on server generated unique handles,
-especially in a networked environment. The client-supplied
-handle may be refused if it is already an existing data
-connection handle.  A complying server may choose to reserve
-some data connection handles for its internal use, to enforce
-a certain format for the handles, or to reject all client-supplied
-handles altogether.
-<P>In reply to a <CODE>data</CODE> command without parameters, at least three lines
-are sent by the server. The first is a TTSCP reply announcing the forthcoming
-data connection handle (response code 142), immediately followed by the handle
-on a line by itself. (The handle is a newline-terminated string consisting
-of random alphanumeric, dash, and underline characters, case sensitive.)
-The handle is preceded by a single space character, which is not part of the
-handle. 
-The third line is the completion reply (response code 200 if successful).
+<P>Turn this control connection into a data connection. The parameter
+is the handle of an existing control connection to attach this connection to.
+The sole consequence of this attachment relation is a disconnect of the
+data connection when the specified control connection is disconnected.
+(It is therefore common for a client to open two connections, to get their
+connection handles, to turn one into a data connection and to attach it
+to the other connection.  That way the client obtains a control and a data
+connection which will gracefully shutdown even after the client abruptly
+disconnects.)
+<P>The server sends a completion reply for this command (response code 200 if successful).
 After the first newline character following the 200 response code is received,
 no more control information will arrive. Likewise, the client may not send any
 TTSCP commands after the newline-terminated data command.
-<P>In reply to a <CODE>data</CODE> command with a client supplied connection handle,
-only the completion reply is received.
-<P>If the <CODE>data</CODE> command is not successful, because the handle supplied is
-not unique or because of capacity reasons, the connection stays in a valid
+If the <CODE>data</CODE> command is not successful because of capacity or other reasons,
+the connection stays in a valid
 TTSCP control connection state and more commands may be submitted.
 <P>The data connection becomes valid at receipt of a 200 response code to
 this command.
@@ -227,6 +310,9 @@ or with no more than 24 lines of command resume.
 If a parameter is given, the server may supply more 
 specific information, such as verbose description of a single
 command.
+<P>The usual completion reply rules apply. Specifically, care
+must be taken lest the help text contain a line beginning
+with a digit.
 <P>
 <H3>pass</H3>
 
@@ -234,8 +320,11 @@ command.
 <P>Attempts to validate an account, as given by a previous "user"
 command. If no valid "user" command was ever received, the internal
 server password may be used. This may enable some internal commands
-such as "reap".
-<P>The password format is as yet unspecified. Work in progress.
+such as "down" or "setg".  (Epos stores this internal password
+in /var/run/epos.pwd while it is listening on the standard
+TTSCP port.)
+<P>The password is a string of alphanumeric characters, dashes and
+underlines, no more than 250 bytes long.
 <P>
 <H3>reap</H3>
 
@@ -246,29 +335,47 @@ kill a thread specified by a pid given by its parameter.
 The session must be validated to UID_SERVER before.
 <P>Will be removed in future.
 <P>
-<H3>say</H3>
+<H3>setg</H3>
 
 <P>
-<P>The parameter is a plain text. The server should process it and
-write the synthesized waveform to a device as configured.
-<P>This command is obsolete and will disappear in the future.
+<P>Globally set a server configuration parameter. The parameter is
+a whitespace-separated "option value" pair. The server may ignore
+this command altogether with an error code 442. The server will
+reply with an error code 412 if the value assigned is illegal,
+or with 451 if the server is configured not to allow to change
+this parameter (may depend on the current authentication status).
+<P>The settings, if successful, will apply to all future connections.
+They will typically not affect existing connections, unless specified
+otherwise. For this reason, this command should be available only
+to authenticated and trusted users.
+<P>If the option name is "language", the command will attempt to
+switch the default language. The same goes for "voice".
+<P>The standardization status of this command is still unclear.  It is definitely
+reasonable to use compatible option names between server implementations
+where applicable, but the set of useful configuration parameters
+seems to be impossible to specify in advance.
+Any comment on this issue is welcome.
 <P>
-<H3>set</H3>
+<H3>setl</H3>
 
 <P>
-<P>Set a server configuration parameter. The parameter is of the form
-"option=value". The server may ignore this command altogether
+<P>Set a server configuration parameter. The parameter is a whitespace-separated
+"option value" pair. The server may ignore this command altogether
 with an error code 442. In any case, this setting should never
 alter the execution environment of existing and/or future sessions.
 The server will reply with an error code 412 if the value assigned
 is illegal, or with 451 if the server is configured not to allow
-to change this parameter (may depend on authentication status).
+to change this parameter (may depend on the current authentication status).
+<P>The settings apply to the current session; use <CODE>setg</CODE> for more
+permanent settings.  Note also that setting some options can have
+arbitrary side-effects.
 <P>If the option name is "language", the command will attempt to
 switch the language. The same goes for "voice".
-<P>The official status of this command is still unclear.  It is definitely
+<P>The standardization status of this command is still unclear.  It is definitely
 reasonable to use compatible option names between server implementations
 where applicable, but the set of useful configuration parameters
-is impossible to specify in advance.  Any comment on this issue is welcome.
+seems to be impossible to specify in advance.
+Any comment on this issue is welcome.
 <P>
 <H3>show</H3>
 
@@ -403,7 +510,7 @@ its semantics may change.
 <P>
 <P>
 <P>
-<H2><A NAME="ss4.3">4.3 response codes</A>
+<H2><A NAME="ss4.4">4.4 response codes</A>
 </H2>
 
 <P>
@@ -479,7 +586,7 @@ code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 0 </TD><TD> none </TD><TD> relax; assume user-initiated interruption</TD></TR><TR><TD>
 1 </TD><TD> syntax </TD><TD> notify user</TD></TR><TR><TD>
 2 </TD><TD> busy </TD><TD> wait and retry</TD></TR><TR><TD>
-3 </TD><TD> data format </TD><TD> notify user</TD></TR><TR><TD>
+3 </TD><TD> bad data </TD><TD> notify user</TD></TR><TR><TD>
 4 </TD><TD> not found </TD><TD> notify user</TD></TR><TR><TD>
 5 </TD><TD> access denied </TD><TD> notify user</TD></TR><TR><TD>
 6 </TD><TD> server error </TD><TD> have user notify server author</TD></TR><TR><TD>
@@ -500,7 +607,8 @@ meanings in future TTSCP descriptions. Any comment is welcome.
 111     </TD><TD> daemon talks</TD></TR><TR><TD>
 112     </TD><TD> apply task started</TD></TR><TR><TD>
 121     </TD><TD> transcription follows</TD></TR><TR><TD>
-122     </TD><TD> apply task returned bytes count follows</TD></TR><TR><TD>
+122     </TD><TD> apply task total bytes count follows</TD></TR><TR><TD>
+123     </TD><TD> apply task chunk bytes count follows</TD></TR><TR><TD>
 141     </TD><TD> option value follows</TD></TR><TR><TD>
 142     </TD><TD> data connection handle follows</TD></TR><TR><TD>
 200     </TD><TD> daemon is happy and ready</TD></TR><TR><TD>
@@ -512,41 +620,42 @@ meanings in future TTSCP descriptions. Any comment is welcome.
 <P>
 <CENTER><TABLE BORDER><TR><TD>
 <BR>
-401     </TD><TD> brk command received</TD></TR><TR><TD>
+401     </TD><TD> intr command received</TD></TR><TR><TD>
 411     </TD><TD> command not recognized</TD></TR><TR><TD>
 412     </TD><TD> option passed illegal value</TD></TR><TR><TD>
 413     </TD><TD> command too long, ignored</TD></TR><TR><TD>
 414     </TD><TD> parameter should be a non-negative integer</TD></TR><TR><TD>
 415     </TD><TD> no or bad stream</TD></TR><TR><TD>
 416     </TD><TD> no parameter allowed</TD></TR><TR><TD>
+417     </TD><TD> parameter missing</TD></TR><TR><TD>
 421     </TD><TD> output voice busy</TD></TR><TR><TD>
-422     </TD><TD> data connection handle already in use</TD></TR><TR><TD>
+422     </TD><TD> out of memory</TD></TR><TR><TD>
 431     </TD><TD> unknown character in text</TD></TR><TR><TD>
 432     </TD><TD> received bad diphones</TD></TR><TR><TD>
+436     </TD><TD> data connection disconnected</TD></TR><TR><TD>
+437     </TD><TD> permanent read error</TD></TR><TR><TD>
+438     </TD><TD> end of file</TD></TR><TR><TD>
+439     </TD><TD> hw cannot handle this waveform</TD></TR><TR><TD>
 441     </TD><TD> help not available</TD></TR><TR><TD>
 442     </TD><TD> no such option</TD></TR><TR><TD>
 443     </TD><TD> no such language or voice</TD></TR><TR><TD>
-444     </TD><TD> invalid data connection handle</TD></TR><TR><TD>
+444     </TD><TD> invalid connection handle</TD></TR><TR><TD>
 445     </TD><TD> could not open file</TD></TR><TR><TD>
 446     </TD><TD> out of range</TD></TR><TR><TD>
 447     </TD><TD> invalid option value</TD></TR><TR><TD>
 448     </TD><TD> cannot send woven pointery</TD></TR><TR><TD>
-451     </TD><TD> option not changeable</TD></TR><TR><TD>
+451     </TD><TD> not authorized to do this</TD></TR><TR><TD>
 452     </TD><TD> no such user or bad password</TD></TR><TR><TD>
 461     </TD><TD> input triggered server bug</TD></TR><TR><TD>
 462     </TD><TD> unimplemented feature</TD></TR><TR><TD>
 463     </TD><TD> input triggered configuration bug</TD></TR><TR><TD>
-471     </TD><TD> tcpsyn received invalid waveform</TD></TR><TR><TD>
-472     </TD><TD> unknown remote tcpsyn server</TD></TR><TR><TD>
+464     </TD><TD> input triggered OS incompatibility</TD></TR><TR><TD>
+465     </TD><TD> i/o problem : error on close()471     </TD><TD> tcpsyn received invalid waveform</TD></TR><TR><TD>
+472     </TD><TD> unresolved remote tcpsyn server</TD></TR><TR><TD>
+473     </TD><TD> unreachable remote tcpsyn server</TD></TR><TR><TD>
+474     </TD><TD> remote tcpsyn server uses an unknown protocol</TD></TR><TR><TD>
+475     </TD><TD> remote tcpsyn server returned error</TD></TR><TR><TD>
 600     </TD><TD> session ended normally</TD></TR><TR><TD>
-661     </TD><TD> generic scheduler bug</TD></TR><TR><TD>
-662     </TD><TD> stream sanity violation bug</TD></TR><TR><TD>
-664     </TD><TD> out of memory</TD></TR><TR><TD>
-665     </TD><TD> error on close</TD></TR><TR><TD>
-671     </TD><TD> client unreachable</TD></TR><TR><TD>
-672     </TD><TD> third party unreachable</TD></TR><TR><TD>
-673     </TD><TD> server unreachable</TD></TR><TR><TD>
-674     </TD><TD> server speaks unrecognized protocol</TD></TR><TR><TD>
 800     </TD><TD> server shutting down as requested by client</TD></TR><TR><TD>
 801     </TD><TD> error explicitly reported in config files</TD></TR><TR><TD>
 811     </TD><TD> rules file syntax</TD></TR><TR><TD>
@@ -559,6 +668,7 @@ meanings in future TTSCP descriptions. Any comment is welcome.
 862     </TD><TD> internal error: invariance violation</TD></TR><TR><TD>
 863     </TD><TD> internal error: buffer overflow</TD></TR><TR><TD>
 864     </TD><TD> insufficient capacity</TD></TR><TR><TD>
+865     </TD><TD> server crashed, reason unspecified</TD></TR><TR><TD>
 869     </TD><TD> double fault</TD></TR><TR><TD>
 871     </TD><TD> network unreachable</TD></TR><TR><TD>
 872     </TD><TD> server already running</TD></TR><TR><TD>

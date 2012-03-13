@@ -29,7 +29,7 @@ nebo komentáø. Není-li hodnota uvedena, pou¾ívají se implicitní
 hodnoty uvedené v tabulce implicitních hodnot ní¾e.
    
 Typy jednotlivých parametrù, jejich identifikátory v textu programu,
-jejich struèný popis a pod. lze nalézt v souboru src/options.cc. Tento 
+jejich struèný popis a pod. lze nalézt v souboru src/options.lst. Tento 
 soubor je celkem èitelný i pro neprogramátory. Je té¾ vhodné podívat se
 dovnitø do souborù cfg/*.ini. 
 
@@ -105,7 +105,7 @@ v tomto poøadí (klesající priority):
 	inventáø	(inv/jazyk/inventáø.ini)
 	jazyk		(lng/jazyk/jazyk.ini)
 	fixed.ini       (pøesnìji, soubor daný parametrem fixed_ini_file)
-	default		(vestavìné hodnoty v src/options.cc)
+	default		(vestavìné hodnoty v src/options.lst)
 
 Pokud se v nìkterém souboru nebo na pøíkazové øádce objeví nìkterý parametr
 víckrát s rùznými hodnotami, pou¾ije se poslední z nich.

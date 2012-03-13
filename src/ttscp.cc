@@ -1,6 +1,6 @@
 /*
  *	epos/src/ttscp.cc
- *	(c) 1998 geo@ff.cuni.cz
+ *	(c) 1998-99 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,36 +19,16 @@
 #include "client.h"
 
 
-//#ifdef HAVE_UNISTD_H			// fork() only
-//	#include <unistd.h>	// in DOS, fork(){return -1;} is supplied in interf.cc
-//#endif
-//
-//#ifdef HAVE_SYS_IOCTL_H
-//	#include <sys/ioctl.h>
-//#endif
-//
-//#ifdef HAVE_NETINET_IN_H
-//	#include <netinet/in.h>
-//#endif
-//
-//#ifdef HAVE_LINUX_IN_H
-//	#include <linux/in.h>
-//#endif
-//
 #include <signal.h>
-//#include <fcntl.h>
-//#include <wait.h>
-//#include <errno.h>
 
-hash_table<char, int> *data_conns = new hash_table<char, int> (30);
-
+hash_table<char, a_ttscp> *data_conns = new hash_table<char, a_ttscp> (30);
+hash_table<char, a_ttscp> *ctrl_conns = new hash_table<char, a_ttscp> (30);
+a_accept *accept_conn = NULL;
 
 void reply(const char *text)
 {
-	fflush(NULL);
 	sputs(text, cfg->sd_out);
-	sputs("\n", cfg->sd_out);
-	fflush(NULL);
+	sputs("\r\n", cfg->sd_out);
 }
 
 void reply(int code, const char *text)
@@ -65,6 +45,13 @@ void reply(int code, const char *text)
 	reply(text);
 }
 
+static inline void reply(const char *text, context *real_context)
+{
+	if (real_context) real_context->enter();
+	reply(text);
+	if (real_context) real_context->leave();
+}
+
 inline ACCESS access_level(int uid)
 {
 	if (uid == UID_ROOT) return A_ROOT;
@@ -72,16 +59,15 @@ inline ACCESS access_level(int uid)
 	return A_AUTH;
 }
 
-
 int cmd_bad(char *)
 {
 	reply("411 He?");
 	return PA_NEXT;
 }
 
-int cmd_user(char *param, agent *)
+int cmd_user(char *param, a_ttscp *)
 {
-	if (param && !strcmp(param, "anonymous")) {
+	if (!strcmp(param, "anonymous")) {
 		reply("212 anonymous access allowed");
 		return PA_NEXT;
 	}
@@ -90,83 +76,48 @@ int cmd_user(char *param, agent *)
 	return PA_NEXT;
 }
 
-int cmd_pass(char *param, agent *)
+int cmd_pass(char *param, a_ttscp *)
 {
-	if (session_uid == UID_ANON && param && !strcmp(param, server_passwd)) {
+	if (this_context->uid == UID_ANON && !strcmp(param, server_passwd)) {
 		DEBUG(2,11,fprintf(STDDBG, "[core] It's me\n");)
-		session_uid = UID_SERVER;
+		this_context->uid = UID_SERVER;
+		reply("200 OK");
+		return PA_NEXT;
 	}
 	reply("452 bad password");
 //	reply("211 go ahead");			// 211 anonymous access
 	return PA_NEXT;
 }
 
-int cmd_done(char *param, agent *)
+int cmd_done(char *param, a_ttscp *a)
 {
-	if (param) shriek(416, "done should have no param");
 	reply("600 OK");
 	return PA_DONE;
 }
 
-#ifdef SAY_IS_OBSOLETE_BUT
-
-int cmd_say(char *param, agent *)
+int cmd_intr(char *param, a_ttscp *a)
 {
-	unit *root = str2units(param);
-	this_lang->ruleset->apply(root);
-
-//	if (cfg->trans) root->fout(NULL);
-
-/*	if (this_voice->fd == -1) {
- *		delete root;
- *		reply("421 voice busy");
- *		return;
- *	}
- *	this_voice->fd = -1;
- */
-	reply("111 Text ok");
-
-#ifdef FANCY_CHILDREN
-	int child = my_fork();
-	if (child > 0) register_child(child);
-	else play_diphones(root, this_voice);
-	if (!child) done_child();
-#else
-	play_diphones(root, this_voice);
-#endif
-	if (cfg->show_diph) show_diphones(root);
-
-	delete root;
-
-	reply("200 OK");
-	return PA_NEXT;
-}
-
-#endif
-
-
-int cmd_break(char *param, agent *a)
-{
-	if (param) shriek(416, "break should have no param");
-
 	/*
 	 * EXPERIMENTAL
 	 *	the 401 reply is sent by the agent with inb != NULL
 	 */
 
-	a->c->leave();
-	ctrl_conns->brkall();
-	a->c->enter();
+	a_ttscp *ctrl = ctrl_conns->translate(param);
+	if (!ctrl) shriek(444, "ctrl connection handle bad");
 
-//	for (a_ttscp *at = ctrl_conns; at; at = at->next)
-//	shriek(462, "break broken");
-//	register_child(0);
+	a->c->leave();
+	ctrl->c->enter();
+	ctrl->brk();
+	ctrl->c->leave();
+	a->c->enter();
 
 	reply("200 OK");
 	return PA_NEXT;
 }
 
-int cmd_transcribe(char *param, agent *)
+/******
+
+int cmd_transcribe(char *param, a_ttscp *)
 {
 	reply("121 Transcription being sent");
 	unit *root = str2units(param);
@@ -176,47 +127,95 @@ int cmd_transcribe(char *param, agent *)
 	return PA_NEXT;
 }
 
-int cmd_set(char *param, agent *)
+****/
+
+static inline int do_set(char *param, context *real)
 {
 	char *value = split_string(param);
-
 	option *o = option_struct(param, this_lang->soft_options);
 
 	if (o) {
-		if (access_level(session_uid) >= o->writable) {
-			if (set_option(o, value)) reply("200 OK");
-			else reply("412 illegal value");
-		} else reply("451 Access denied");
+		if (access_level(this_context->uid) >= o->writable) {
+			if (set_option(o, value)) reply ("200 OK", real);
+			else reply ("412 illegal value", real);
+		} else reply ("451 Access denied", real);
 	} else {
 		if (!param) param = "";
 		if (!strcmp("language", param)) {
-			if (lang_switch(value)) reply ("200 OK");
-			else reply ("443 unknown language");
+			if (lang_switch(value)) reply ("200 OK", real);
+			else reply ("443 unknown language", real);
 			return PA_NEXT;
 		}
 		if (!strcmp("voice", param)) {
-			if (voice_switch(value)) reply ("200 OK");
-			else reply ("443 unknown voice");
+			if (voice_switch(value)) reply ("200 OK", real);
+			else reply ("443 unknown voice", real);
 			return PA_NEXT;
 		}
-		reply("442 No such option");
+		reply("442 No such option", real);
 	}
 	return PA_NEXT;
 }
 
 
-int cmd_help(char *param, agent *)
+int cmd_setl(char *param, a_ttscp *a)
+{
+	stream *cs = cfg->current_stream;
+	if (cs) {
+		int result = do_set(param, NULL);
+		return result;
+	}
+	return do_set(param, NULL);
+}
+
+int cmd_setg(char *param, a_ttscp *a)
+{
+	int failed = 0;
+	const char *msg;
+	int result;
+
+	if (this_context->uid != UID_SERVER) shriek(451,  "Access denied.");
+	a->c->leave();
+	try {
+		result = do_set(param, a->c);
+	} catch (any_exception *e) {
+		failed = e->code;
+		msg = e->msg;
+		delete e;
+		printf("first\n");
+	}
+//	printf("second\n");
+	a->c->enter();
+	if (failed) shriek(failed, msg);
+	return result;
+}
+
+
+int cmd_help(char *param, a_ttscp *)
 {
 	if (param) {
+		FILE *f;
+		char *pathname;
+
 		ttscp_cmd *cmd = ttscp_cmd_set;
 		while (cmd->name && strncmp((char *)&cmd->name, param, 4)) cmd++;
-		if (!cmd->name) {
-			reply("441 No such command");
+		if (cmd->name) {
+			sprintf(scratch, "%.4s %s", (char *)&cmd->name, cmd->short_help);
+			reply(scratch);
+		}
+
+		pathname = compose_pathname(param, cfg->help_dir);
+		f = fopen(pathname, "rt");
+		free(pathname);
+		if (!f) {
+			reply("441 No help on that");
 			return PA_NEXT;
 		}
-		sprintf(scratch, "%.4s %s\n%s", (char *)&cmd->name, cmd->short_help,
-			cmd->long_help);
-		reply(scratch);
+		*scratch = ' ';
+		while (fgets(scratch + 1, cfg->scratch - 3, f)) {
+			int l = strlen(scratch);
+			scratch[l-1] = '\r'; scratch[l] = '\n'; scratch[l+1] = 0;
+			sputs(scratch, cfg->sd_out);
+		}
 	} else
 		for (ttscp_cmd *cmd = ttscp_cmd_set; cmd->name; cmd++) {
 			sprintf(scratch, "%.4s %s", (char *)&cmd->name, cmd->short_help);
@@ -226,22 +225,29 @@ int cmd_help(char *param, agent *)
 	return PA_NEXT;
 }
 
-int cmd_shutdown(char *param, agent *)
+void free_sleep_table();
+
+int cmd_shutdown(char *param, a_ttscp *a)
 {
-	if (param) shriek(416, "shutdown should have no param");
+	if (this_context->uid != UID_SERVER) shriek(451,  "Access denied.");
 	reply("800 shutdown OK");
-//	register_child(0);	// kill all children, release memory
-//	leave_context(cfg->sd);		FIXME
-	close(cfg->sd_in);
-	if (cfg->sd_in != cfg->sd_out)
-		close(cfg->sd_out);
-//	for (int i=0; i<n_contexts; i++)
-//		if (context_table[i]) forget_context(i);
-//	free(context_table);
-//	delete ttscp_keywords;
+	a->c->leave();
+	ctrl_conns->remove(a->handle);
+	while (ctrl_conns->items) {
+		a_ttscp *tmp = ctrl_conns->translate(ctrl_conns->get_random());
+		sputs("800 shutdown requested\r\n", tmp->c->config->sd_out);
+		delete ctrl_conns->remove(tmp->handle);
+	}
+	if (cfg->pwdfile) remove(cfg->pwdfile);
+	delete a;		/* I'm not sure this is OK */
+	delete accept_conn;
+	delete ctrl_conns;
 	delete data_conns;
+	delete master_context;
+	free_sleep_table();
 	epos_done();
 	exit(0);
+	return PA_DONE;		/* naive compilers */
 }
 
 /************ ain't work (see the next line in server() just after the dispatcher call)
@@ -258,13 +264,13 @@ void cmd_restart(char *param)
 }
 **************/
 
-void cmd_reap(char *param, agent *)
+void cmd_reap(char *param, a_ttscp *)
 {
 
 	shriek(462, "reap broken");
 
-/*	if (session_uid != UID_SERVER) {
- *		DEBUG(3,11,fprintf(STDDBG, "Unauthorised reap attempt, uid=%d\n", session_uid);)
+/*	if (this_context->uid != UID_SERVER) {
+ *		DEBUG(3,11,fprintf(STDDBG, "Unauthorised reap attempt, uid=%d\n", this_context->uid);)
  *		reply("411 no such command");
 		return;
 	}
@@ -275,7 +281,7 @@ void cmd_reap(char *param, agent *)
 		if (cpid) kill(cpid, SIGHUP);
 		cpid = wait(NULL);
 		if (cpid == -1) {
-			DEBUG(2,11,fprintf(STDDBG, "[core] No child returned upon reap %d, uid=%d!\n", cpid, session_uid);)
+			DEBUG(2,11,fprintf(STDDBG, "[core] No child returned upon reap %d, uid=%d!\n", cpid, this_context->uid);)
 			return;
 		}
 		DEBUG(1,11,fprintf(STDDBG, "[core] Suddenly, child %d returned\n",  cpid);)
@@ -285,14 +291,13 @@ void cmd_reap(char *param, agent *)
  */
 }
 
-int cmd_show(char *param, agent *)
+int do_show(char *param)
 {
 	int i;
-
 	option *o = option_struct(param, this_lang->soft_options);
 
 	if (o) {
-		if (access_level(session_uid) >= o->readable) {
+		if (access_level(this_context->uid) >= o->readable) {
 			char *tmp = format_option(o);
 			reply(tmp);
 			free(tmp);
@@ -344,21 +349,32 @@ int cmd_show(char *param, agent *)
 	return PA_NEXT;
 }
 
-int cmd_stream(char *param, agent *)
+
+int cmd_show(char *param, a_ttscp *a)
 {
-	if (!param) {
-		reply("415 Bad stream");
-		return PA_NEXT;
+	stream *cs = cfg->current_stream;
+	if (cs) {
+		a->c->leave();
+		cs->c->enter();
+		int result = do_show(param);
+		cs->c->leave();
+		a->c->enter();
+		return result;
 	}
-	DEBUG(1,11,fprintf(STDDBG, "current_strm %p\n", cfg->current_stream);)
+	return do_show(param);
+}
+
+int cmd_stream(char *param, a_ttscp *a)
+{
+	DEBUG(1,11,fprintf(STDDBG, "current_stream %p\n", cfg->current_stream);)
 	if (cfg->current_stream) delete cfg->current_stream;
 	cfg->current_stream = NULL;
-	cfg->current_stream = new stream(param);
+	cfg->current_stream = new stream(param, a->c);
 	reply("200 OK");
 	return PA_NEXT;
 }
 
-int cmd_apply(char *param, agent *a)
+int cmd_apply(char *param, a_ttscp *a)
 {
 	int n;
 	if (!sscanf(param, "%d", &n) || n < 0) {
@@ -375,107 +391,55 @@ int cmd_apply(char *param, agent *a)
 	return PA_WAIT;
 }
 
-#define DATA_HANDLE_SIZE   4
-
-int cmd_data(char *param, agent *)
+int cmd_data(char *param, a_ttscp *a)
 {
-	if (cfg->sd_in != cfg->sd_out) shriek(862, "Data connection halved");
-	if (param) {
-		if (data_conns->translate(param)) {
-			reply("422 Not unique");
-			return PA_NEXT;
-		}
-		data_conns->add(param, &cfg->sd_in);
-	} else {
-		*scratch = ' ';		/* in TTSCP, the handle must be preceded by a ' ' */
-		do make_rnd_passwd(scratch + 1, DATA_HANDLE_SIZE);
-			while (data_conns->translate(scratch));
-		reply("142 data connection handle follows");
-		reply(scratch);
-		data_conns->add(scratch + 1, &cfg->sd_in);
+	a_ttscp *ctrl = ctrl_conns->translate(param);
+	if (!ctrl) {
+		reply("444 invalid ctrl connection handle");
+		return PA_NEXT;
 	}
+
+	ctrl_conns->remove(a->handle);
+	a->ctrl = ctrl;
+	ctrl->deps->add(a->handle, a);
+	data_conns->add(a->handle, a);
+
 	reply("200 OK");
-	cfg->sd_in = -1;	/* protect the socket from closing */
-	cfg->sd_out = -1;
-	return PA_DONE;
+	return PA_WAIT;
 }
 
-int cmd_delhandle(char *param, agent *)
+int cmd_delhandle(char *param, a_ttscp *a)
 {
-	if (!param) shriek(416, "delete handle needs param");
-	int *fd = data_conns->remove(param);
-	if (!fd) shriek(444, "invalid data connection handle");
-	async_close(*fd);
-	delete fd;
+	a_ttscp *da = data_conns->remove(param);
+	if (!da) shriek(444, "invalid data connection handle");
+	else if (da->ctrl) da->ctrl->deps->remove(param);
+	a->c->leave();
+	delete da;
+	a->c->enter();
 	reply("200 OK");
 	return PA_NEXT;
 }
-
-/******
-	if (param && (value = format_option(param))) {
-		reply("141 here you are");
-		reply(value);
-		reply("200 OK");
-		free(value);
-	} else reply("442 No such option");
-
-#define keyword_list "user:pass:done:help:say:set:trans:break:shutdown:reap:show:strm:"
-void (*dispatch[])(char *param) = {cmd_user, cmd_pass, cmd_done, cmd_help, cmd_say, cmd_set,
-		cmd_transcribe, cmd_break, cmd_shutdown, cmd_reap, cmd_show,
-		cmd_stream};
-
-********/
-
 
 /*
  *	The commands below are ordered by their estimated relative frequency
  *	in real world TTSCP sessions, for efficiency reasons.
  */
 
-
-#define APPLY_HELP	"Process n bytes by the current stream."
-
-#define DATA_HELP	"Turn this control connection to a data connection.\n"\
-			"The server will reply with a data connection handle\n"\
-			"to be referred to in subsequent commands."
-
-#define SET_HELP	"Set an operating parameter to the value specified.\n"\
-			"It is also possible to set the current language or\n"\
-			"the current voice. Note that some parameters may have\n"\
-			"access restrictions configured for security reasons."
-
-#define SHOW_HELP	"Show the current value for an operating parameter.\n"\
-			"It is also possible to view the current language or voice\n"\
-			"as well as the list of all available languages or voices.\n"\
-			"set language\nset voice\nset languages\nset voices"
-
-#define STRM_HELP	"Create a new current stream. The stream is described\n"\
-			"as a colon separated list of interconnected modules.\n"
-
-#define USER_HELP	"Authenticate as a specified user. The authentication stays\n"\
-			"incomplete until a valid \"pass\" command is issued.\n"\
-			"The control connection is initially in an \"incomplete superuser\"\n"\
-			"authentication state. A successful authentication may have\n"\
-			"effect on access restrictions, particularly the \"set\" command."
-	
-
-#define TTSCP_COMMAND(x,y,s,l) {*(int *)x, &y, s, *(l) ? (l) : "(no help)", },
+#define TTSCP_COMMAND(x,y,s,p) {*(int *)x, &y, s, p},
 
 ttscp_cmd ttscp_cmd_set[] = {
-	TTSCP_COMMAND("appl", cmd_apply, "n", APPLY_HELP)
-	TTSCP_COMMAND("set",  cmd_set, "parameter value", SET_HELP)
-	TTSCP_COMMAND("show", cmd_show, "parameter", SHOW_HELP)
-	TTSCP_COMMAND("strm", cmd_stream, "stream", STRM_HELP)
-	TTSCP_COMMAND("data", cmd_data, "", DATA_HELP)
-	TTSCP_COMMAND("delh", cmd_delhandle, "handle", "Terminate a specified data connection.\n")
-	TTSCP_COMMAND("pass", cmd_pass, "password", "See \"help user\"")
-	TTSCP_COMMAND("user", cmd_user, "username", USER_HELP)
-	TTSCP_COMMAND("done", cmd_done, "", "Terminate this control connection.")
-	TTSCP_COMMAND("brk",  cmd_break, "", "Cancel all running appl commands.")
-//	TTSCP_COMMAND("say",  cmd_say, "text", "")
-//	TTSCP_COMMAND("xscr", cmd_trans, "", "Transcribe the text and return it in the control connection.")
-//	TTSCP_COMMAND("trns", cmd_trans, "", "")
-	TTSCP_COMMAND("help", cmd_help, "[command]", "")
-	TTSCP_COMMAND("down", cmd_shutdown, "", "Shutdown the daemon.")
-	{0, NULL, "", ""}
+	TTSCP_COMMAND("appl", cmd_apply, "n",		   PAR_REQ)
+	TTSCP_COMMAND("setl", cmd_setl, "parameter value", PAR_REQ)
+	TTSCP_COMMAND("show", cmd_show, "parameter",	   PAR_REQ)
+	TTSCP_COMMAND("strm", cmd_stream, "stream",	   PAR_REQ)
+	TTSCP_COMMAND("data", cmd_data, "handle",	   PAR_REQ)
+	TTSCP_COMMAND("delh", cmd_delhandle, "handle",	   PAR_REQ)
+	TTSCP_COMMAND("pass", cmd_pass, "password",	   PAR_REQ)
+	TTSCP_COMMAND("user", cmd_user, "username",	   PAR_REQ)
+	TTSCP_COMMAND("done", cmd_done, "",		   PAR_FORBIDDEN)
+	TTSCP_COMMAND("intr", cmd_intr, "handle",	   PAR_REQ)
+	TTSCP_COMMAND("help", cmd_help, "[command]",	   PAR_OPTIONAL)
+	TTSCP_COMMAND("setg", cmd_setg, "parameter value", PAR_REQ)
+	TTSCP_COMMAND("down", cmd_shutdown, "",		   PAR_FORBIDDEN)
+	{0, NULL, ""}
 };

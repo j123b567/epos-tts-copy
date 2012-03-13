@@ -16,19 +16,12 @@
 
 #include "common.h"
 #include "ktdsyn.h"
+#include "ptdsyn.h"
 #include "lpcsyn.h"
 #include "tcpsyn.h"
 
-synth *setup_synth(voice *v)		//FIXME
+synth *setup_synth(voice *v)
 {
-//	DEBUG(3,9,fprintf(STDDBG, "Setting up syntheses\n");)
-//	if (syn[S_KTD]) delete syn[S_KTD];
-//	syn[S_KTD] = new ktdsyn(cfg->ktd_pitch, cfg->ktd_speed);
-/*		dsynth *ds = new dsynth(cfg->inv_type, cfg->inv_counts,
-			cfg->inv_models, cfg->inv_book, cfg->inv_dpt,
-			cfg->inv_f0, cfg->inv_i0, cfg->inv_t0, cfg->inv_hz);
-*/	// FIXME!!!
-
 	if (v->syn) shriek(862, "new v->syn - again");
 
 	switch (v->type) {
@@ -44,8 +37,8 @@ synth *setup_synth(voice *v)		//FIXME
 		case S_LPC_INT:
 		case S_LPC_VQ:	return new voidsyn;
 #endif
-//		case S_KTD:	return new ktdsyn(cfg->ktd_pitch, cfg->ktd_speed);
 		case S_KTD:	return new ktdsyn(v);
+		case S_PTD:	return new ptdsyn(v);
 		default:	shriek(861, "Impossible synth type");
 	}
 	return NULL;
@@ -56,7 +49,7 @@ synth *setup_synth(voice *v)		//FIXME
 void frob_diphones(diphone *d, int n, voice *v)
 {
 	for (int j=0;j<n;j++) {
-//		d[j].f=this_voice->samp_rate * 100 / (d[j].f*cfg->inv_f0);  - fixed 8.7.98 by Petr
+//		d[j].f=v->samp_rate * 100 / (d[j].f*cfg->inv_f0);  - fixed 8.7.98 by Petr
 		d[j].t=v->init_t * d[j].t / 100;            //corrections for t,f,i by Petr
 		d[j].f=v->samp_rate * 100 / (v->init_f * d[j].f);
 		d[j].e=v->init_i * d[j].e / 100;
@@ -90,13 +83,15 @@ void show_diphones(unit *root)
 {
 	static diphone d[BUFF_SIZE]; 
 	int i=BUFF_SIZE;
+	voice *v = this_voice;
 	
 	if (!cfg->show_diph) return;
+	v->claim_diphone_names();
 	for (int k=0; i==BUFF_SIZE; k+=BUFF_SIZE) {
 		i=root->write_diphs(d,k,BUFF_SIZE);
 		for (int j=0;j<i;j++) {
 			if (cfg->diph_raw) fprintf(STDDBG,  "%5d", d[j].code);
-			fprintf(STDDBG," %.3s f=%d t=%d i=%d\n", d[j].code<441 ? ((char(*)[5])this_voice->diphone_names->data)[d[j].code] : "?!", d[j].f, d[j].t, d[j].e);
+			fprintf(STDDBG," %.3s f=%d t=%d i=%d\n", d[j].code<441 && v->diphone_names ? ((char(*)[4])v->diphone_names->data)[d[j].code] : "?!", d[j].f, d[j].t, d[j].e);
 		}
 	}
 }
@@ -105,12 +100,12 @@ void show_diphones(unit *root)
 
 synth::synth()
 {
-	// printf("FIXME synth::synth\n");   but do fix me!
+	DEBUG(1,9,fprintf(STDDBG,"A synthesis going to initialise\n");)
 }
 
 synth::~synth()
 {
-//	printf("FIXME synth::~synth\n"); but do fix me!
+	DEBUG(1,9,fprintf(STDDBG,"A synthesis deconstructed\n");)
 }
 
 void
@@ -123,13 +118,22 @@ void
 synth::syndiphs(voice *v, diphone *d, int n, wavefm *w)
 {
 	diphone x;
-
+#ifndef NO_HACKS		// FIXME
+	v->claim_diphone_names();
+#endif
 	for (int i=0; i<n; i++) {
 		x.code = d[i].code;
 		x.t = v->init_t * d[i].t / 100;            // fixed 8.7.98 by Petr
 		x.f = v->samp_rate * 100 / (v->init_f * d[i].f);
 		x.e = v->init_i * d[i].e / 100;
+#ifndef NO_HACKS		// FIXME
+		int hackint = w->offset();
+#endif
 		syndiph(v, x, w);
+#ifndef NO_HACKS
+		if (cfg->show_labels) fprintf(STDDBG, "%d %d %.3s\n", hackint, w->offset() - 1,
+			(((char(*)[4])v->diphone_names->data)[d[i].code]));
+#endif
 	}
 }
 

@@ -26,7 +26,7 @@ Overall coding priorities, approximately in order of decreasing precedence:
 	<item> code readability
 	<item> speed
 	<item> space
-	<item> possible paralelizability
+	<item> possible parallelizability
 </itemize>
 
 <sect1> Isolated classes
@@ -63,7 +63,7 @@ The STML parser is still unimplemented.
 
 This class is the fundamental element of the <ref id="tsr"
 name="text structure representation">. Its methods are listed in
-<tt/elements.h/.  Every object of this type represents a single
+<tt/unit.h/.  Every object of this type represents a single
 text unit.  Every unit includes pointers to its immediate
 container, and to its contents. The contents are organized in a
 bidirectional linked list; pointers to the head and tail units
@@ -89,7 +89,7 @@ of description above the current unit.
 <p>
 
 This class represents a logical line-oriented text file. It handles things
-like the <ref id="include-directive" name="&num;include directive">,
+like the <ref id="include-directive" name="&commat;include directive">,
 <ref id="escaping" name ="backslash-escaped special characters">,
 initial whitespace and comment stripping. It is used for the <ref id="rules"
 name="rule files"> and <ref id="cfg-files" name="configuration files">,
@@ -256,6 +256,30 @@ agent
 		</itemize>
 	</itemize>
 </itemize>
+
+<sect1> Testing
+<p>
+
+The Epos package contains three TTSCP clients.  One of them is the standalone
+<tt/say/ utility, which is provided as a good and simple example of a TTSCP
+client.  We suggest to use it as a starting point for developing specialized
+TTSCP clients.
+
+The <tt/tcpsyn/ virtual synthesizer also embeds a TTSCP client; it is
+wise to check its proper functioning after making changes to the TTSCP
+server implementation.
+
+A standalone test suite is compiled under the name <tt/verify/.  It is currently
+only trying a few standard tricks to crash the server and is far from being
+a rigorous test suite.  However, it manages to catch much more programming
+errors than <tt/say/ and we recommend to run it after making any changes to
+the source code of Epos.  This test suite assumes Epos has been configured
+correctly and is listening at the standard TTSCP port.
+
+No part of the <tt/verify/ TTSCP client should be mimicked by other software
+or be used as a study material. This client tries to be as ugly as possible
+and to crash any crashable server.  Adding some ugly tests to this piece of
+code might raise the average code quality of Epos significantly.
 
 <sect1> More information
 <p>

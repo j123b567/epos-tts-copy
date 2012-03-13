@@ -10,7 +10,7 @@ character, and a few enumerated types.
 
 Almost all individual options are documented in <ref id="indivopts"
 name="this document">. 
-The reliable list of all built-in long options can be found in <tt>src/options.cc</tt>.
+The reliable list of all built-in long options can be found in <tt>src/options.lst</tt>.
 (See approximately line 275 and below. Every line represents at most one
 option for every option class as explained below. The option name is
 quoted; its semantics is usually explained following the option.)
@@ -119,6 +119,7 @@ The available escape sequences are listed in <ref id="escapes" name="the table o
 	&bsol;   |  hard space    | 255  |@
 	&bsol;&num;  |  hash      |  35  |@
 	&bsol;;  |  semicolon     |  59  |@
+	&bsol;&commat; |  at sign |  34  |@
 	&bsol;&tilde;  |  dots	      |  (1) |  No...@
 	&bsol;.  |  decimal point |  (2) |  1.2 kg@
 	&bsol;-  |  range	      |  (3) |  2-3 people@
@@ -135,7 +136,7 @@ and <tt>value&lowbar;esc</tt> constants in <tt>option.cc</tt>, or the table in
 purposes by Epos.
 
 
-<sect2> Comments and the &num;include directive <label id="include-directive">
+<sect2> Comments and the &commat;include directive <label id="include-directive">
 <p>
 
 A configuration file usually contains various comments. A comment can start
@@ -144,15 +145,15 @@ The semicolon (or hash mark) must be located at the beginning of line
 or just after some whitespace. Semicolons in the middle of a word don't
 start a comment.
 
-As an exception, if a line begins with <tt>&num;include</tt> starting in the first column,
+If a line begins with <tt>&commat;include</tt> starting in the first column,
 it is treated as the <em>include directive</em>.
-The format of the line should be <tt>&num;include "filename"</tt> and it will
+The format of the line should be <tt>&commat;include "filename"</tt> and it will
 cause the contents of the <tt>filename</tt> file to be inserted at this place of the 
 main <tt>.ini</tt> file. These includes can be nested to any finite depth; if no or
 relative path is specified, the directory which holds the topmost file is used for
 the lookup.
 
-Two more directives, <tt>&num;warn</tt> and <tt>&num;error</tt> with obvious semantics
+Two more directives, <tt>&commat;warn</tt> and <tt>&commat;error</tt> with obvious semantics
 are available for diagnostic purposes.
 
 <sect1> Command line
@@ -359,7 +360,7 @@ to grow at a moderate pace just now.
 
 A few individual options will be described in this section.  The rest are either
 straightforward or rarely useful. A complete list of options can be obtained
-through <tt/epos -H/ or in <tt>src/options.cc</tt>.
+through <tt/epos -H/ or in <tt>src/options.lst</tt>.
 
 The type and the semantic class of the argument is indicated for all individual
 options except for truth value (<tt/on//<tt/off/) options.  This is because
@@ -399,6 +400,14 @@ engineering dilemmata.
 	the input text, but not the input stream.  It is also necessary
 	to press <tt/Enter/ after the character. Applies only to the
 	monolithic Epos.
+<tag>--asyncing</tag>
+	Turn on to enable asynchronous close() processing. Usable only
+	on unices; uses fork to delegate the synchronous close()
+	to a child. This option can be useful for eliminating communication
+	delays when closing a sound card file descriptor, but it can cause
+	subsequent references to the same device fail, because the child
+	still hasn't released the device.  The option has no meaning
+	on non-UNIX systems, where the close() is always synchronous.
 <tag>--forking</tag>
 	Turn on to allow forking and fully detaching the Epos daemon.
 	Usable only on unices.  If off, some debugging information will
@@ -704,10 +713,17 @@ option is thence language dependent.
 	while the directory name matches the voice name and is located under
 	the directory as determined by the per language (default) <tt/inv_dir/
 	option.  The first voice listed will become the default voice for its
-	language.
+	language until switched.
 <tag>--soft_options <sl/list/</tag>
 	Lists available soft options as described in subsection
 	<ref id="soft-options" name="soft options">.
+<tag>--fallback_voice <sl/voicename/</tag>
+	Not used under normal circumstances.  Epos initialises its
+	synthesis type depended specific structures the first time
+	it uses a voice.  Should such an initialization fail because
+	of a network error, the current voice will be switched to
+	the voice specified by this option and the initialisation will be
+	retried.
 <tag>--suppress_side_syll</tag>
 	This option should be off for most languages.  It makes the
 	<tt/syll/ rule avoid splitting off an insufficiently sonorous
@@ -753,7 +769,8 @@ option is thence language dependent.
 	<tt>lpc-int</tt>	| voice uses a LPC synthesis (integer diphone inventory)@
 	<tt>lpc-float</tt>	| voice uses a LPC synthesis (float diphone inventory)@
 	<tt>lpc-vq</tt>		| voice uses a LPC synthesis (vector quantified diphone inventory)@
-	<tt>ktd</tt>		| voice uses a time domain synthesis@
+	<tt>ktd</tt>		| voice uses a time domain synthesis (Zdenek Kadlec)@
+	<tt>ptd</tt>		| voice uses a time domain synthesis (Martin Petriska)@
    </tabular>
    </table>
 	This option may influence other voice dependent options quite significantly,
@@ -999,6 +1016,11 @@ change them in the configuration files instead.
 	The value is a file name. This option can be used to set the file
 	where various information about the Epos process is recorded.
 	At the moment that is of little practical use except for debugging.
+<tag>--server&lowbar;pwd&lowbar;file <sl/filename/</tag>
+	The value is a file name. This option can be used to force the server
+	to store its internal password to a file.  This password can then
+	be used for TTSCP authentication in order to issue restricted commands
+	such as <tt/down/.
 <tag>--allow&lowbar;options&lowbar;file <sl/filename/</tag>
 	The file named by this parameter provides access control in TTSCP to individual
 	options.  Its syntax is described <ref id="allowed-options" name="above">.
@@ -1060,14 +1082,14 @@ level | debugging messages | comment @
 <tag>--assim&lowbar;debug <sl/level/</tag>
 	Severity level threshold for the code area of <tt/regress/ and
 	related types of rules, as well as their implementation in the
-	<tt>src/elements.cc</tt> file.
+	<tt>src/unit.cc</tt> file.
 <tag>--cfg&lowbar;debug <sl/level/</tag>
 	Severity level threshold for the code area of parsing
 	the Epos configuration <tt/.ini/ files.
 	A few instances in this area may not be handled properly, because
 	they are called before this option is set itself. In this case,
 	the default severity level threshold as found in the
-	<tt>src/options.cc</tt> file.
+	<tt>src/options.lst</tt> file.
 <tag>--daemon&lowbar;debug <sl/level/</tag>
 	Severity level threshold for the code areas of scheduling and TTSCP
 	interpretation. This code is absent from the monolithic Epos.
@@ -1091,13 +1113,13 @@ level | debugging messages | comment @
 <tag>--split&lowbar;debug <sl/level/</tag>
 	Severity level threshold for the code area of most
 	types of rules, as well as their implementation in the
-	<tt>src/elements.cc</tt> file.  This covers especially
+	<tt>src/unit.cc</tt> file.  This covers especially
 	syllabification, diphonization and other structure
 	manipulations.
 <tag>--subst&lowbar;debug <sl/level/</tag>
 	Severity level threshold for the code area of <tt/subst/ and
 	related types of rules, as well as their implementation in the
-	<tt>src/elements.cc</tt> file
+	<tt>src/unit.cc</tt> file
 <tag>--synth&lowbar;debug <sl/level/</tag>
 	Severity level threshold for the code area of low level
 	speech syntheses (diphone to speech). It covers both

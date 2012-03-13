@@ -5,10 +5,12 @@ cd ..\..\src
 move agent.cc agent.cpp
 move client.cc client.cpp
 move daemon.cc daemon.cpp
-move elements.cc elements.cpp
+move unit.cc unit.cpp
 move hash.cc hash.cpp
 move interf.cc interf.cpp
+move options.cc options.cpp
 move ktdsyn.cc ktdsyn.cpp
+move ptdsyn.cc ptdsyn.cpp
 move lpcsyn.cc lpcsyn.cpp
 move monolith.cc monolith.cpp
 move parser.cc parser.cpp
@@ -22,9 +24,12 @@ move voice.cc voice.cpp
 move waveform.cc waveform.cpp
 
 del config.h
-copy ..\arch\win\config.h.winnt .\config.h
+copy ..\arch\win\config.in .\config.h
 copy ..\arch\win\epos.dsp .
 copy ..\arch\win\epos.dsw .
+
+if not exist lpcsyn.cc echo /**/ > lpcsyn.cc
+if not exist lpcsyn.h  echo /**/ > lpcsyn.h
 
 cd ..\cfg\cfg
 

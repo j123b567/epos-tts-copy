@@ -1,7 +1,7 @@
 /*
  *	epos/src/ktdsyn.h
- *	(c) 1996-98 Zdenek Kadlec, kadlec@phil.muni.cz
- *	(c) 1997-98 Martin Petriska, petriska@decef.stuba.sk
+*	(c) 1996-98 Zdenek Kadlec, kadlec@phil.muni.cz
+ *	(c) 1997-98 Martin Petriska, petriska@decef.elf.stuba.sk
  *	(c) 1997-98 Petr Horak, horak@ure.cas.cz
  *		Czech Academy of Sciences (URE AV CR)
  *	(c) 1998 Jirka Hanika, geo@ff.cuni.cz

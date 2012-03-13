@@ -38,12 +38,12 @@ epos.info: epos.sgml
 #	@ln -s /usr/lib/sgml-tools/linuxdoc-sgml.sty $@
 
 clean:
-	@rm -rf *~ *.bak epostwk.* epos.sgml epos.tex
+	@rm -rf *~ *.bak *.log epostwk.* epos.sgml epos.tex
 
 realclean:
-	@rm -rf *~ *.bak epos* missfont.log /tmp/sgml2* /tmp/sgmltmp*
+	@rm -rf *~ *.bak epos* *.log /tmp/sgml2* /tmp/sgmltmp*
 
-dist: realclean epos.dvi epos.html epos.txt clean
+dist: realclean epos.html clean
 
 header.sgml: ../../src/common.h
 	@ echo Source code version may have changed, documentation adjusted.

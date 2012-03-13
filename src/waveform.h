@@ -1,6 +1,6 @@
 /*
  *	epos/src/waveform.h
- *	(c) 1998 Jirka Hanika, geo@ff.cuni.cz
+ *	(c) 1998-99 Jirka Hanika, geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -12,6 +12,11 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License in doc/COPYING for more details.
  */
+
+void async_close(int fd);
+int ywrite(int, const void *, int size);
+int yread(int, void *, int size);
+
 
 struct wave_header
 {
@@ -39,6 +44,12 @@ class wavefm
 	wavefm(voice *);
 	~wavefm();
 
+	int written;		// bytes written by the last flush() only
+	inline int offset()
+	{
+		return written + buffer_idx;
+	}
+
 	bool flush();		// write out at least something
 				// see waveform.cc for more documentation
 	void ioctl_attach();
@@ -54,12 +65,12 @@ class wavefm
 	{
 		if (buff_size <= buffer_idx + samp_size_bytes)
 			flush();
-		buffer_idx += samp_size_bytes;
 		switch (samp_size_bytes)
 		{
 			case 1:	*(unsigned char *) (buffer + buffer_idx) = sample; break;
 			case 2:	*(unsigned short *)(buffer + buffer_idx) = sample; break;
 		}
+		buffer_idx += samp_size_bytes;
 	}
 
 	inline void sample(unsigned int sample)

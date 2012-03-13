@@ -23,11 +23,11 @@
 
 #ifndef EXCEPTION_ALREADY_DECLARED
 #define EXCEPTION_ALREADY_DECLARED
-struct exception
+struct any_exception
 {
 	int code;
 	const char *msg;
-	exception(int code, const char *msg);
+	any_exception(int code, const char *msg);
 };
 
 #define MUTE_EXCEPTION	0	/* code of MUTE_EXCEPTION invalidates the message */
@@ -44,9 +44,9 @@ struct derived : public base\
 #endif
 
 
-DERIVE_EXCEPTION(exception, command_failed)
-DERIVE_EXCEPTION(exception, connection_lost)
-DERIVE_EXCEPTION(exception, fatal_error)	/* wild pointers found and worse   */
+DERIVE_EXCEPTION(any_exception, command_failed)
+DERIVE_EXCEPTION(any_exception, connection_lost)
+DERIVE_EXCEPTION(any_exception, fatal_error)	/* wild pointers found and worse   */
 
 
 #undef DERIVE_EXCEPTION

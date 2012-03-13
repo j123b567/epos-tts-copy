@@ -16,7 +16,7 @@
  *
  *	Note that you may receive quite random behavior if
  *	you call rules::apply() for any other rule set than that
- *	of this_lang->rules. this_voice must be set to a voice
+ *	of this_lang->ruleset. this_voice must be set to a voice
  *	of the same language as well. This is because r_if may
  *	refer to a soft option and the set of available soft options
  *	is language dependent.

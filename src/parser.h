@@ -45,6 +45,8 @@ class parser
 	void done();		// shriek if some input left
 };
 
+#define NO_CONT            '_'    // null contents of a unit
+
 /*
  *	Special tokens added to ASCII instead of some absurd ctrl chars:
  *	DOTS	 ...	\~

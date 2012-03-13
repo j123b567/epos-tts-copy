@@ -104,17 +104,17 @@ of the target level.
 usually is.
 <P>
 <P>
-<H2><A NAME="ss2.3">2.3 Using comments and the <CODE>#include</CODE> directive</A>
+<H2><A NAME="ss2.3">2.3 Using comments and the <CODE>&commat;include</CODE> directive</A>
 </H2>
 
 <P>
 <P>Any text starting with a semicolon or <CODE>#</CODE> not in the middle of a word up to the
 end of the line is a comment.  It will be properly ignored.  If a line
 doesn't contain anything except whitespace and/or comment, it is also
-ignored.  The <CODE>#include</CODE> directive can be used to nest the rule
+ignored.  The <CODE>&commat;include</CODE> directive can be used to nest the rule
 files.  The same rules apply within <CODE>.ini</CODE> files; for more
 details, see 
-<A HREF="epos-3.html#include-directive">the #include directive in configuration files</A>.
+<A HREF="epos-3.html#include-directive">the &commat;include directive in configuration files</A>.
 <P>
 <H2><A NAME="ss2.4">2.4 Variables (macros)</A>
 </H2>
@@ -128,7 +128,7 @@ $vowel = aeiouy
 </PRE>
 </CODE></BLOCKQUOTE>
 
-Alternatively, the keyword <CODE>external</CODE> may follow an identifier except of
+Alternatively, the keyword <CODE>external</CODE> may follow an identifier instead of
 the equality sign and the replacement:
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -461,7 +461,11 @@ in a scope unit, must match the number of adjustments specified
 in a <CODE>contour</CODE> rule, otherwise an error occurs; consider
 the 
 <A HREF="#counters">length-based selection of rules</A>
-to ensure that.
+to ensure that.  As an exception to that, it is possible
+to specify padding in the contour.  At most one
+adjustment may be immediately followed by an asterisk.  This
+adjustment will be used for zero or more consecutive target
+units as necessary to stretch the contour over the scope unit.
 <P>
 <P>
 <H3><A NAME="prosody-rule"></A> Type <CODE>prosody</CODE> </H3>

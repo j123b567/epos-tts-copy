@@ -1,5 +1,5 @@
 /*
- *	(c) 1998 Jirka Hanika <geo@ff.cuni.cz>
+ *	(c) 1998-99 Jirka Hanika <geo@ff.cuni.cz>
  *
  *	This single source file src/client.cc, but NOT THE REST OF THIS PACKAGE,
  *	is considered to be in Public Domain. Parts of this single source file may be
@@ -11,18 +11,49 @@
  *
  *	This file implements support routines for a simple TTSCP client.
  *	See doc/english/ttscp.doc for a preliminary technical specification.
+ *
+ *	This file can be included with cfg pointing to two very different
+ *	structures.  The usual interpretation, the one compiled into client.o,
+ *	is a few hundred bytes long structure.  However, when the "say" client
+ *	is compiled, this file is #included directly and now cfg points to
+ *	a fake constant structure with only a few items needed to compile
+ *	this file.  This scheme is probably too clever to keep, but anyway,
+ *	at the moment it prevents using client.o for actual client stuff.
  */
 
 #ifndef EPOS_COMMON_H
 #include "common.h"
 #endif
 
-#ifndef SCRATCH_SPACE
-#define SCRATCH_SPACE   cfg->scratch
+
+#ifdef THIS_IS_A_TTSCP_CLIENT
+
+#define SCRATCH_SPACE 16384
+
+struct pseudoconfiguration
+{
+	int asyncing;
+	int scratch;
+};
+
+pseudoconfiguration pseudocfg = {1, SCRATCH_SPACE};
+
+pseudoconfiguration *cfg = &pseudocfg;
+
+char scratch[SCRATCH_SPACE + 2];
+
 #endif
+
+
+
+#include "client.h"
 
 #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
+#endif
+
+#ifdef HAVE_UNIX_H
+	#include <unix.h>
 #endif
 
 #ifdef HAVE_SYS_SOCKET_H
@@ -45,6 +76,10 @@
 	#include <winsock2.h>
 #endif
 
+//#ifdef HAVE_ERRNO_H
+//	#include <errno.h>
+//#endif
+
 
 /*
  *	blocking sgets() 
@@ -57,7 +92,7 @@ int sgets(char *buffer, int buffer_size, int sd)
 	buffer[0] = 0;
 
 	for (i=0; i < buffer_size; i++) {
-		result = read(sd, buffer+i, 1);
+		result = yread(sd, buffer+i, 1);
 		if (result == 0) return 0;
 		if (result == -1) return 0;		// error
 		if (buffer[i] == '\n' || !buffer[i]) {
@@ -67,7 +102,7 @@ int sgets(char *buffer, int buffer_size, int sd)
 		}
 	}
 	buffer[i+1] = 0;
-	return 1;	// error though
+	return 1;	// error though - FIXME
 }
 
 int getaddrbyname(const char *inet_name)
@@ -83,13 +118,14 @@ int just_connect_socket(unsigned int ipaddr, int port)
 	sockaddr_in addr;
 	int sd;
 
+
 	sd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (sd == -1) shriek(672, "No socket\n");
+	if (sd == -1) shriek(464, "No socket\n");
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
 	if (!ipaddr) {
-		gethostname(scratch, SCRATCH_SPACE);
+		gethostname(scratch, cfg->scratch);
 		ipaddr = getaddrbyname(scratch);
 	}
 	addr.sin_addr.s_addr = ipaddr;
@@ -101,80 +137,63 @@ int connect_socket(unsigned int ipaddr, int port)
 {
 	int sd = just_connect_socket(ipaddr, port);
 	if (sd == -1) {
-//		printf("Could not connect: %s\n", strerror(errno));
-		shriek(673, "Cannot find epos running!\n");
+		shriek(473, "Server unreachable\n");
 	}
-	sgets(scratch, SCRATCH_SPACE, sd);
-	if (strncmp(scratch, "TTSCP rev ", 10)) {
-		scratch[12] = 0;
-//		printf(scratch);
-		shriek(674, "Protocol not recognized");
+	sgets(scratch, cfg->scratch, sd);
+	if (strncmp(scratch, "TTSCP spoken here", 18)) {
+		scratch[15] = 0;
+		shriek(474, "Protocol not recognized");
 	}
 	return sd;
+}
+
+char *get_handle(int sd)
+{
+	do {
+		sgets(scratch, cfg->scratch, sd);
+	} while (*scratch && strncmp(scratch, "handle: ", 8));
+	if (!*scratch) {
+		printf("NULL handle\n");
+		return NULL;
+	}
+	return strdup(scratch + 8);
 }
 
 int sputs(const char *buffer, int sd)
 {
 //	printf("Sending: %s", buffer);
 	if (!buffer) return 0;
-	return write(sd, buffer, strlen(buffer));
+	return ywrite(sd, buffer, strlen(buffer));
 }
 
 
 void xmit_option(char *name, char *value, int sd)
 {
-	sputs("set ", sd);
+	sputs("setl ", sd);
 	sputs(name, sd);
 	sputs(" ", sd);
 	sputs(value, sd);
-	sputs("\n", sd);
+	sputs("\r\n", sd);
 }
 
-char *data_conn(int sd)
+#define ERROR_CODE ((scratch[0]-'0')*100+(scratch[1]-'0')*10+(scratch[2]-'0'))
+
+int sync_finish_command(int ctrld)
 {
-	sputs("data\n", sd);
-	do {
-		sgets(scratch, SCRATCH_SPACE, sd);
-	} while (strncmp(scratch, "142 ", 4));
-
-	sgets(scratch, SCRATCH_SPACE, sd);
-	char *h = strdup(scratch + 1);
-	sgets(scratch, SCRATCH_SPACE, sd);
-//	printf("handle is %s\n", handle);
-	return h;
-}
-
-int send_appl(int bytes, int ctrld)
-{
-	sputs("appl ", ctrld);
-	sprintf(scratch, "%d", bytes);
-	sputs(scratch, ctrld);
-	sputs("\n", ctrld);
-	do {
-		sgets(scratch, SCRATCH_SPACE, ctrld);
-	} while (strncmp(scratch, "122 ", 4));
-	sgets(scratch, SCRATCH_SPACE, ctrld);
-	sscanf(scratch, " %d", &bytes);
-	return bytes;
-
-}
-
-void sync_finish_command(int ctrld)
-{
-	while (sgets(scratch, SCRATCH_SPACE, ctrld)) {
-		scratch[SCRATCH_SPACE] = 0;
+	while (sgets(scratch, cfg->scratch, ctrld)) {
+		scratch[cfg->scratch] = 0;
 //		printf("Received: %s\n", scratch);
 		switch(*scratch) {
 			case '1': continue;
-			case '2': return;
+			case '2': return 0;
 			case '3': break;
 			case '4': // printf("%s\n", scratch+strspn(scratch, "0123456789x "));
-				  return;
+				  return ERROR_CODE;
 			case '6': if (!strncmp(scratch, "600 ", 4)) {
-					  return;	// exit(0); FIXME
+					  return 0;	// exit(0); FIXME
 				  } /* else fall through */
 			case '8': // printf("%s\n", scratch+strspn(scratch, "0123456789x "));
-				  return; // exit(2); FIXME
+				  return ERROR_CODE ; // exit(2); FIXME
 
 			case '5':
 			case '7':
@@ -185,14 +204,7 @@ void sync_finish_command(int ctrld)
 		}
 		printf("%s\n", scratch+strspn(scratch, "0123456789 "));
 	}
+	return 649;
 }
 
-void make_rnd_passwd(char *buffer, int size)
-{
-	int i;
-	for (i = 0; i < size; i++) buffer[i] =
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
-			[rand() & 63];
-	buffer[i] = 0;
-}
-
+#undef ERROR_CODE

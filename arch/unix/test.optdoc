@@ -9,7 +9,7 @@ if [ -d $dir ]; then
 fi
 mkdir -p $dir
 
-srcopts=`cat options.cc | grep '^OPTION\|^LNG_OPTION\|^INV_OPTION' | awk -F\" '{ printf("%s ", $2); }' `
+srcopts=`cat ../src/options.lst | grep '^OPTION\|^LNG_OPTION\|^INV_OPTION' | awk -F\" '{ printf("%s ", $2); }' `
 for i in $srcopts; do
 	echo -n > $dir/$i
 #	ls $dir/$i

@@ -1,0 +1,10 @@
+
+If you have a recent version of sgml-tools installed, you can compile
+the documentation into various formats:
+
+make epos.txt		text-only doc, to be viewed with "less"
+make epos.dvi		finely typeset doc, to be printed with "dvips"
+make epos.html		a hypertext documentation, to be viewed e.g. with "lynx"
+make epos.info		GNU info documentation
+
+If you a developer, please make any changes to the original .sgml files only.

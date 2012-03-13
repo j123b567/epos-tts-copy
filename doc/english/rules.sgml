@@ -103,15 +103,15 @@ The code, scope and target identifier is not case sensitive, but the parameter
 usually is.
 
 
-<sect1> Using comments and the <tt>&num;include</tt> directive
+<sect1> Using comments and the <tt>&commat;include</tt> directive
 <p>
 
 Any text starting with a semicolon or <tt/&num;/ not in the middle of a word up to the
 end of the line is a comment.  It will be properly ignored.  If a line
 doesn't contain anything except whitespace and/or comment, it is also
-ignored.  The <tt>&num;include</tt> directive can be used to nest the rule
+ignored.  The <tt>&commat;include</tt> directive can be used to nest the rule
 files.  The same rules apply within <tt>.ini</tt> files; for more
-details, see <ref id="include-directive" name="the &num;include directive in
+details, see <ref id="include-directive" name="the &commat;include directive in
 configuration files">.
 
 <sect1> Variables (macros)
@@ -124,7 +124,7 @@ It is specified as <tt>identifier = replacement</tt>, for example,
 $vowel = aeiouy
 </verb>
 </tscreen>
-Alternatively, the keyword <tt>external</tt> may follow an identifier except of
+Alternatively, the keyword <tt>external</tt> may follow an identifier instead of
 the equality sign and the replacement:
 <tscreen>
 <verb>
@@ -454,7 +454,11 @@ of syllables in a word, or, more generally, of the target units
 in a scope unit, must match the number of adjustments specified
 in a <tt/contour/ rule, otherwise an error occurs; consider
 the <ref id="counters" name="length-based selection of rules">
-to ensure that.
+to ensure that.  As an exception to that, it is possible
+to specify padding in the contour.  At most one
+adjustment may be immediately followed by an asterisk.  This
+adjustment will be used for zero or more consecutive target
+units as necessary to stretch the contour over the scope unit.
 
 
 <sect2> Type <tt>prosody</tt> <label id="prosody-rule">

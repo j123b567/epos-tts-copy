@@ -19,7 +19,7 @@
 #ifndef EPOS_TEXT
 #define EPOS_TEXT
 
-extern hash *_directive_prefices;		//called only by epos_done()
+// extern hash *_directive_prefices;		//called only by epos_done()
 
 struct textlink;
 

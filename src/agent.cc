@@ -1,6 +1,6 @@
 /*
  *	epos/src/agent.cc
- *	(c) 1998 geo@ff.cuni.cz
+ *	(c) 1998-99 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,6 +24,14 @@
 	#include <sys/time.h>
 #endif
 
+#ifdef HAVE_UNIX_H
+	#include <unix.h>
+#endif
+
+#ifdef HAVE_SYS_SOCKET_H
+	#include <sys/socket.h>
+#endif
+
 #ifndef HAVE_SOCKLEN_T
 	#define socklen_t int
 #endif
@@ -34,6 +42,10 @@
 
 #include <fcntl.h>
 #include <errno.h>
+
+#ifndef O_NONBLOCK
+	#define O_NONBLOCK 0
+#endif
 
 
 #define DARK_ERRLOG 2	/* 2 == stderr; for global stdshriek and stddbg output */
@@ -48,7 +60,7 @@ agent::agent(DATA_TYPE typein, DATA_TYPE typeout)
 
 agent::~agent()
 {
-	DEBUG(1,11,fprintf(STDDBG, "Handler deleted.\n");)
+//	DEBUG(1,11,fprintf(STDDBG, "Handler deleted.\n");)
 }
 
 void
@@ -58,7 +70,7 @@ agent::timeslice()
 	if (inb || in == T_NONE) {
 		run();
 	} else {
-		/* We may take this path legally after a brk command */
+		/* We may take this path legally after an intr command */
 		DEBUG(2,11,fprintf(STDDBG, "No input of type %i; shrugging off\n", in);)
 	}
 	c->leave();
@@ -75,7 +87,7 @@ agent::relax()
 {
 	if (inb) switch (in) {
 		case T_NONE:	break;
-		case T_ANY:	shriek(462, "Cannot relax"); break;
+		case T_INPUT:	free(inb); break;
 		case T_STML:	
 		case T_TEXT:	free(inb); break;
 		case T_UNITS:	delete ((unit *)inb); break;
@@ -83,8 +95,7 @@ agent::relax()
 		case T_WAVEFM:	delete((wavefm *)inb); break;
 	}
 	inb = NULL;
-	if (outb) shriek(462, "outb used?!");
-	outb = NULL;
+	if (outb) outb = NULL, shriek(462, "outb used?!");
 }
 
 void
@@ -99,14 +110,14 @@ void agent::brk()
 {
 	if (inb) reply("401 user break");
 	relax();
-	DEBUG(1,11,fprintf(STDDBG, "brking an agent, intype %i, outtype %i\n", in, out);)
+	DEBUG(1,11,fprintf(STDDBG, "interrupting an agent, intype %i, outtype %i\n", in, out);)
 }
 
 void
 agent::pass()
 {
-	if (!outb) shriek(662, "Nothing to pass");
-	if (!next) shriek(662, "Nowhere to pass to");
+	if (!outb) shriek(862, "Nothing to pass");
+	if (!next) shriek(862, "Nowhere to pass to");
 		// FIXME: if (already next->inb)
 	next->inb = outb;
 	outb = NULL;
@@ -123,7 +134,6 @@ class a_ascii : public agent
 void
 a_ascii::run()
 {
-//	if (!inb) shriek(662, "Boredom");
 	outb = str2units((char *)inb);
 	free(inb);
 	inb = NULL;
@@ -155,7 +165,6 @@ class a_rules : public agent
 void
 a_rules::run()
 {
-//	if (!inb) shriek(662, "Boredom");
 	outb = inb;
 	inb = NULL;
 	this_lang->ruleset->apply((unit *)outb);
@@ -170,12 +179,11 @@ class a_print : public agent
 	a_print() : agent(T_UNITS, T_TEXT) {};
 };
 
-#define UGLY_TMP_CONSTANT	65534
+#define UGLY_TMP_CONSTANT	65534		// FIXME
 
 void
 a_print::run()
 {
-//	if (!inb) shriek(662, "Boredom");
 	char * s = (char *)malloc(UGLY_TMP_CONSTANT + 1);
 	*((unit *)inb)->gather(s, s + UGLY_TMP_CONSTANT, true /* (incl. ssegs) */ ) = 0;
 
@@ -185,6 +193,7 @@ a_print::run()
 	pass();
 }
 
+#undef UGLY_TMP_CONSTANT
 
 class a_diphs : public agent
 {
@@ -225,15 +234,13 @@ class a_synth : public agent
 void
 a_synth::run()
 {
-//	if (!inb) shriek(662, "Boredom");
-
 	if (!this_voice) shriek(861, "No current voice");
 	if (!this_voice->syn) {
 		try {
 			this_voice->syn = setup_synth(this_voice);
 		} catch (command_failed *e) {
-			if (e->code == 472) {	// FIXME: the ugliest hack !
-				voice_switch("kadlec");
+			if (e->code / 10 == 47 && this_lang->fallback_voice) {	// FIXME: ugly
+				voice_switch(this_lang->fallback_voice);
 				delete e;
 				run();
 				return;
@@ -249,6 +256,36 @@ a_synth::run()
 	inb = NULL;
 	pass();
 }
+
+/******** not finished, misconcepted
+
+class a_label : public agent
+{
+	virtual void run();
+   public:
+	a_label() : agent(T_DIPHS, T_TEXT) {};
+};
+
+#define UGLY_TMP_CONSTANT	65534		// FIXME
+
+void
+a_label::run()
+{
+	char * s = (char *)malloc(UGLY_TMP_CONSTANT + 1);
+	diphone *d = ((diphone *)inb);
+	int offs = 0;
+	for (int i = 1; i < d->code; i++) {
+		offs += sprintf(s + offs, "%d %d %s\n",,,);
+		if (offs > UGLY_TMP_CONSTANT - 32) shriek(461, "Out of buffer space");
+	}
+
+	outb = s;
+	delete (unit *) inb;
+	inb = NULL;
+	pass();
+}
+
+******/
 
 template <DATA_TYPE TYPE> class a_type : public agent
 {
@@ -270,7 +307,8 @@ class a_io : public agent
 	virtual void run() = 0;
    protected:
 	int socket;
-	bool close_upon_exit;
+	a_ttscp *dc;
+//	bool close_upon_exit;
    public:
 	a_io(const char *, DATA_TYPE, DATA_TYPE);
 	virtual ~a_io();
@@ -278,24 +316,27 @@ class a_io : public agent
 
 a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 {
-	int *tmp;
+//	a_ttscp *tmp;
 	char *filename;
 
-	close_upon_exit = false;
+//	close_upon_exit = false;
+	dc = NULL;
 
 	switch(*par) {
-		case '$': tmp = data_conns->translate(par + 1);
-			  if (!tmp) shriek(444, "Not a known data connection handle");
-			  else socket = *tmp;
+		case '$': dc = data_conns->translate(par + 1);
+			  if (!dc) shriek(444, "Not a known data connection handle");
+			  else socket = (in == T_INPUT ? dc->c->config->sd_in : dc->c->config->sd_out);
 			  break;
 		case '/': filename = limit_pathname(par, cfg->pseudo_root_dir);
-			  socket = open(filename, in == T_NONE ? O_RDONLY | O_NONBLOCK
+			  socket = open(filename, in == T_INPUT ? O_RDONLY | O_NONBLOCK
 						: O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK);
 			  free(filename);
 			  if (socket == -1) shriek(445, fmt("Cannot open file %s", par));
-			  else close_upon_exit = true;
+//			  else close_upon_exit = true;
 			  break;
 		default:  shriek(462, "unimplemented i/o agent class");
+			/* if ever adding classes, take care of closing/nonclosing
+			 * the socket upon exit        */
 	}
 	DEBUG(0,11,fprintf(STDDBG, "I/O agent is %p\n", this);)
 }
@@ -303,7 +344,8 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 a_io::~a_io()
 {
 	DEBUG(0,11,fprintf(STDDBG, "~a_io\n");)
-	if (close_upon_exit) async_close(socket);
+//	if (close_upon_exit)
+	if (!dc) async_close(socket);
 }
 
 class a_input : public a_io
@@ -318,7 +360,7 @@ class a_input : public a_io
 	a_input(const char *);
 };
 
-a_input::a_input(const char *par) : a_io(par, T_NONE, T_TEXT)
+a_input::a_input(const char *par) : a_io(par, T_INPUT, T_TEXT)
 {
 }
 
@@ -327,8 +369,18 @@ void a_input::run()
 {
 	int res;
 	DEBUG(0,11,fprintf(STDDBG, "Entering input agent\n");)
-	res = read(socket, (char *)inb + offset, toread - offset);
-	if (res < 0) shriek(671, fmt("data conn %d lost", socket));
+	res = yread(socket, (char *)inb + offset, toread - offset);
+	if (res <= 0) {
+		if (!dc) {
+			if (res == 0) shriek(438, "end of file");
+			else shriek(437, "read error");
+		}
+		if (dc->ctrl) dc->ctrl->deps->remove(dc->handle);
+		c->leave();
+		delete data_conns->remove(dc->handle);
+		c->enter();
+		shriek(436, fmt("data conn %d lost", socket));
+	}
 	offset += res;
 	if (offset == toread) {
 		switch (out) {
@@ -383,7 +435,7 @@ class a_output : public a_io
 	bool foreground() {return ((stream *)next)->foreground(); };
 	int written;
    protected:
-	void report(int written);
+	void report(bool total, int written);
    public:
 	a_output(const char *par, DATA_TYPE i) : a_io(par, i, T_NONE) {written = 0;};
 };
@@ -393,10 +445,12 @@ a_output::run()
 {
 	int size = insize();
 	if (written) {
-		written += write(socket, (char *)inb + written, size - written);
+		int now_written = ywrite(socket, (char *)inb + written, size - written);
+		report(false, now_written);
+		written += now_written;
 	} else {
-		written = write(socket, (char *)inb, size);
-		if (written) report(size);	// early and risky
+		written = ywrite(socket, (char *)inb, size);
+		if (written) report(true, size);
 	}
 	if (written == size) {
 		written = 0;
@@ -407,11 +461,11 @@ a_output::run()
 }
 
 void
-a_output::report(int written)
+a_output::report(bool total, int written)
 {
 //	inb = NULL;
 	if (foreground()) {
-		reply("122 written bytes");
+		reply(total ? "122 total bytes" : "123 written bytes");
 		sprintf(scratch, " %d", written);
 		reply(scratch);
 	}
@@ -448,7 +502,7 @@ class oa_diph : public a_output
 class oa_wavefm : public a_output
 {
 	virtual int insize() {
-		shriek(462, "cannot send waveform"); return 0;
+		shriek(462, "abstract oa_wavefm::insize"); return 0;
 	}
 	virtual void run();
 	virtual void brk();
@@ -462,12 +516,16 @@ oa_wavefm::run()
 {
 	wavefm *w = (wavefm *)inb;
 	if (!attached) {
+		report(true, w->written_bytes() + sizeof(wave_header));
 		w->attach(socket);
+		report(false, w->written + sizeof(wave_header));
 		attached = true;
 	}
-	if (w->flush()) push(socket);
-	else {
-		report(w->written_bytes());	// late and reliable
+	if (w->flush()) {
+		if (w->written) report(false, w->written);
+		push(socket);
+	} else {
+		if (w->written) report(false, w->written);
 		w->detach(socket);
 		DEBUG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n, ", w->written_bytes());)
 		attached = false;
@@ -485,7 +543,7 @@ oa_wavefm::brk()
 
 		wavefm *w = (wavefm *)inb;
 		
-		report(w->written_bytes());
+		report(false, w->written_bytes());
 		w->brk();
 		if (attached) w->detach(socket);
 		DEBUG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n, ", w->written_bytes());)
@@ -541,19 +599,21 @@ agent *make_agent(char *s, agent *preceding)
 }
 
 
-stream::stream(char *s) : agent(T_NONE, T_NONE)
+stream::stream(char *s, context *pc) : agent(T_NONE, T_NONE)
 {
 	char *tmp;
 	agent *a;
 	agent *l = head = NULL;
 
 	callbk = NULL;
-	c = new context(cfg->sd_in, cfg->sd_out);	// a little redundant
-	navelcord<context> ncc(c);
+//	c = new context(cfg->sd_in, cfg->sd_out);	// a little redundant
+	c = pc;
+//	navelcord<context> ncc(c);
 
-	if (!strchr(s, LIST_DELIM)) shriek(415, "Bad stream syntax");
+	tmp = strchr(s, LIST_DELIM);
+	if (!tmp) shriek(415, "Bad stream syntax");
 
-	while((tmp = strchr(s, LIST_DELIM))) {
+	do {
 		*tmp = 0;
 		DEBUG(1,11,fprintf(STDDBG, "Making agent out of %s\n", s);)
 		try {
@@ -567,18 +627,18 @@ stream::stream(char *s) : agent(T_NONE, T_NONE)
 		if (!l) head = a;
 		else l->next = a;
 		l = a;
-	}
+	} while((tmp = strchr(s, LIST_DELIM)));
 	a = make_agent(s, a); a->c = c;
 	l->next = a;
 	a->next = this;
 	if (head->next != this) head->out = head->next->in;	/* adjust a_input type */
-	ncc.release();
+//	ncc.release();
 }
 
 stream::~stream()
 {
 	release_agents();
-	delete c;
+//	delete c;
 }
 
 void
@@ -684,8 +744,7 @@ void a_protocol::run()
 	int res;
 	res = sgets(buffer, cfg->max_net_cmd, cfg->sd_in, sgets_buff);
 	if (res < 0) {
-		DEBUG(2,11,fprintf(STDDBG, "ctrl conn %d lost\n", cfg->sd_in);)
-		disconnector.disconnect(this);
+		disconnect();
 		return;
 	}
 
@@ -699,7 +758,7 @@ void a_protocol::run()
 			return;
 		case PA_DONE:
 			DEBUG(0,11,fprintf(STDDBG, "PA_DONE\n");)
-			disconnector.disconnect(this);
+			disconnect();
 			return;
 		case PA_WAIT:
 			DEBUG(0,11,fprintf(STDDBG, "PA_WAIT\n");)
@@ -714,18 +773,28 @@ void a_protocol::run()
 //	non-blocking get_line etc.
 }
 
-a_ttscp *ctrl_conns = NULL;
-
 a_ttscp::a_ttscp(int sd_in, int sd_out) : a_protocol()
 {
 	c = new context(sd_in, sd_out);
 	c->enter();
-	cow_claim(this);
-	next = ctrl_conns;
-	prev = NULL;
-	if (next) next->prev = this;
-	ctrl_conns = this;
-	reply("TTSCP rev 0 spoken here (Epos version " VERSION ")");
+//	cow_claim();	//FIXME: rethink 
+	
+	do make_rnd_passwd(handle, HANDLE_SIZE);
+		while (data_conns->translate(handle));
+	ctrl_conns->add(handle, this);
+
+	sputs(
+		"TTSCP spoken here\r\n"
+		"protocol: 0\r\n"
+		"extensions:\r\n"
+		"server: Epos\r\n"
+		"release: " VERSION "\r\n"
+		"handle: ", cfg->sd_out);
+	reply(handle);
+	reply("");
+	ctrl = NULL;
+	deps = new hash_table<char, a_ttscp>(4);
+	deps->dupdata = deps->dupkey = false;
 	c->leave();
 	block(sd_in);
 }
@@ -735,21 +804,33 @@ a_ttscp::a_ttscp(int sd_in, int sd_out) : a_protocol()
  *	therefore, be careful with using cfg etc.
  */
 
+//static void kill_my_data_conns(char *, a_ttscp *a, void *me)
+//{
+//	if (a->ctrl == me) {
+//		disconnector.disconnect(a);
+//	}
+//}
+
 a_ttscp::~a_ttscp()
 {
 	c->enter();
-	if (prev) prev->next = next;
-	else ctrl_conns = next;
-	if (next) next->prev = prev;
 	if (cfg->current_stream) delete cfg->current_stream;
 	cfg->current_stream = NULL;
 	DEBUG(2,11,fprintf(STDDBG, "deleted context closes fd %d and %d\n", cfg->sd_in, cfg->sd_out);)
-//	fclose(cfg->stddbg);
-//	fclose(cfg->stdshriek);
+	c->leave();
+	while (deps->items) {
+		a_ttscp *tmp = deps->translate(deps->get_random());
+		deps->remove(tmp->handle);
+		delete data_conns->remove(tmp->handle);
+	}
+	delete deps;
+	c->enter();
 	if (cfg->sd_in != -1)
 		async_close(cfg->sd_in);
 	if (cfg->sd_out != -1 && cfg->sd_out != cfg->sd_in)
 		async_close(cfg->sd_out);
+	if (data_conns->translate(handle) || ctrl_conns->translate(handle))
+		shriek(862, "Forgot to forget a_ttscp");
 	c->leave();
 	delete c;
 	// close the descriptor? no, the ~context does that
@@ -758,9 +839,11 @@ a_ttscp::~a_ttscp()
 void
 a_ttscp::brk()
 {
-	if (c->cfg->current_stream)
-		c->cfg->current_stream->brk();
+	if (c->config->current_stream)
+		c->config->current_stream->brk();
 }
+
+/*
 
 void
 a_ttscp::brkall()		// FIXME: replace this method
@@ -771,6 +854,7 @@ a_ttscp::brkall()		// FIXME: replace this method
 	if (next) next->brkall();
 }
 
+*/
 
 int
 a_ttscp::run_command(char *cmd)
@@ -794,7 +878,17 @@ a_ttscp::run_command(char *cmd)
 		(*(const int *)keyword != *(const int *)&ttscp_cmd_set[i].name);)
 			i++;
 	if (!ttscp_cmd_set[i].name) goto bad;
-	else try {
+	
+	if (!param && ttscp_cmd_set[i].param == PAR_REQ) {
+		reply("417 parameter missing");
+		return PA_NEXT;
+	}
+	if (param && ttscp_cmd_set[i].param == PAR_FORBIDDEN) {
+		reply("416 parameter not allowed");
+		return PA_NEXT;
+	}
+
+	try {
 		return ttscp_cmd_set[i].impl(param, this);
 	} catch (command_failed *e) {
 		DEBUG(2,11,fprintf(STDDBG, "Command failed, %d, %.60s\n", e->code, e->msg);)
@@ -814,6 +908,15 @@ a_ttscp::run_command(char *cmd)
 	return PA_NEXT;
 }
 
+void
+a_ttscp::disconnect()
+{
+	DEBUG(2,11,fprintf(STDDBG, "ctrl conn %d lost\n", cfg->sd_in);)
+	if (this != ctrl_conns->remove(handle) /* && this != data_conns->remove(handle) */ )
+		shriek(862, "Failed to disconnect a ctrl connection");
+	disconnector.disconnect(this);
+}
+
 a_accept::a_accept() : agent(T_NONE, T_NONE)
 {
 //	static socklen_t sia = sizeof(sockaddr);	// __QNX__ wants signed :-(
@@ -829,16 +932,11 @@ a_accept::a_accept() : agent(T_NONE, T_NONE)
 	memset(&sa, 0, sizeof(sa));
 	gethostname(scratch, cfg->scratch - 1);
 	sa.sin_family = AF_INET;
-//	sa.sin_addr.s_addr = htonl(0x7f000001);
-//	sa.sin_addr.s_addr = getaddrbyname(scratch);
 	sa.sin_addr.s_addr = htonl(INADDR_ANY);
 	sa.sin_port = htons(cfg->listen_port);
 	setsockopt(cfg->sd_in, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
 	DEBUG(2,11,fprintf(STDDBG, "[core] Trying to bind...\n");)
 	if (bind(cfg->sd_in, (sockaddr *)&sa, sizeof (sa))) shriek(871, "Could not bind");
-//	while (bind(cfg->sd_in, (sockaddr *)&sa, sizeof (sa)) && --cfg->persistence) 
-//		sleep(1);
-//	if (!cfg->persistence) shriek(871, fmt("Could not bind: %s", strerror(errno)));
 	if (listen(cfg->sd_in, 64)) shriek(871, "Could not listen");
 
 	ia.sin_family = AF_INET;
@@ -861,7 +959,11 @@ a_accept::run()
 	static socklen_t sia = sizeof(sockaddr);	// Will __QNX__ complain?
 	int f = accept(cfg->sd_in, (sockaddr *)&ia, &sia);
 	if (f == -1) shriek(871, "Cannot accept() - network problem");
+#ifdef HAVE_WINSOCK2_H
+	ioctlsocket((unsigned long)f, FIONBIO, (unsigned long *)&sia);	// &sia is a dummy non-NULL pointer
+#else
 	fcntl(f, F_SETFL, O_NONBLOCK);
+#endif
 	DEBUG(2,11,fprintf(STDDBG, "[core] Accepted %d (on %d).\n", f, cfg->sd_in);)
 	c->leave();
 	unuse(new a_ttscp(f, f));
@@ -877,7 +979,7 @@ int runnable_agents = 0;
 void
 agent::schedule()
 {
-	if (!this) shriek(661, "scheduling garbage");
+	if (!this) shriek(862, "scheduling garbage");
 	runnable_agents++;
 	sched_aq *tmp = new sched_aq;
 	tmp->ag = this;
@@ -892,7 +994,7 @@ agent *sched_sel()
 {
 	agent *r;
 	sched_aq *tmp;
-	if (!sched_tail) shriek(661, "agent queue empty");
+	if (!sched_tail) shriek(862, "agent queue empty");
 	if (!sched_tail->prev) sched_head = NULL;
 	else sched_tail->prev->next = NULL;
 	r = sched_tail->ag;
@@ -922,7 +1024,7 @@ agent::block(int fd)
 		for ( ; select_fd_max <= fd; select_fd_max++)
 			sleep_table[select_fd_max] = NULL;
 	}
-	if (sleep_table[fd]) shriek(661, fmt("%ssleeping on %d", this == sleep_table[fd]
+	if (sleep_table[fd]) shriek(861, fmt("%ssleeping on %d", this == sleep_table[fd]
 			? "Re" : "Cross", fd));
 	sleep_table[fd] = this;
 	FD_SET(fd, &block_set);
@@ -938,9 +1040,14 @@ agent::push(int fd)
 		for ( ; select_fd_max <= fd; select_fd_max++)
 			sleep_table[select_fd_max] = NULL;
 	}
-	if (sleep_table[fd]) shriek(661, fmt("%ssleeping on %d", this == sleep_table[fd]
+	if (sleep_table[fd]) shriek(861, fmt("%ssleeping on %d", this == sleep_table[fd]
 			? "Re" : "Cross", fd));
 	sleep_table[fd] = this;
 	FD_SET(fd, &push_set);
 	return;
+}
+
+void free_sleep_table()
+{
+	free(sleep_table);
 }

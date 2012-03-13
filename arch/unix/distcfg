@@ -10,7 +10,7 @@ if [ -d $libdir ]; then
 		rm -r $dir/cfg
 	fi
 	cp -af $libdir $dir/cfg
-	rm -fr $dir/cfg/inv/*/{l97,lkubec,lvichova,m97,mkubec,mtheim1,mtheimer,mvichova,ptacek97,rc_cs}.{dat,syn,vq,int,kni} 2>/dev/null
+	rm -fr $dir/cfg/inv/*
 	if [ -f $dir/src/lpcsyn.cc ]; then
 		echo '(excluding lpc)'
 		cp -f $dir/src/lpcsyn.{cc,h} lpc/insurance 2>/dev/null

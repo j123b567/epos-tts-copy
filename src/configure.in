@@ -1,7 +1,7 @@
 
 dnl Process this file with autoconf to produce a configure script
 
-AC_INIT(elements.cc)
+AC_INIT(unit.cc)
 AC_PREFIX_DEFAULT(/usr)
 
 AC_ARG_ENABLE(DMALLOC, dmalloc debugging library (developers only))
@@ -11,7 +11,7 @@ CCC="g++ c++ cc++ gcc cc"
 AC_PROG_CXX
 if test $GXX = yes; then 
 	if $CXX -v 2>&1 | grep -q egcs
-		then CFLAGS="-Wall -Wunused -pipe -gstabs+"
+		then CFLAGS="-Wall -Wunused -pipe -gstabs -fdefer-pop"
 		else CFLAGS="-Wall -Wunused -pipe -fhandle-exceptions"
 	fi
 	else CFLAGS=-O
@@ -35,6 +35,7 @@ AC_HAVE_HEADERS(regex.h)
 AC_HAVE_HEADERS(errno.h)
 AC_HAVE_HEADERS(wait.h)
 AC_HAVE_HEADERS(unistd.h)
+AC_HAVE_HEADERS(unix.h)
 AC_HAVE_HEADERS(signal.h)
 AC_HAVE_HEADERS(sys/soundcard.h)
 AC_HAVE_HEADERS(sys/audio.h)
@@ -43,10 +44,13 @@ AC_HAVE_HEADERS(sys/ioctl.h)
 AC_HAVE_HEADERS(sys/socket.h)
 AC_HAVE_HEADERS(sys/select.h)
 AC_HAVE_HEADERS(sys/time.h)
+AC_HAVE_HEADERS(sys/types.h)
 AC_HAVE_HEADERS(netdb.h)
 AC_HAVE_HEADERS(netinet/in.h)
 AC_HAVE_HEADERS(linux/kd.h)
-AC_HAVE_FUNCS(strerror strdup fork strcasecmp stricmp)
+AC_HAVE_HEADERS(sys/kernel.h)
+AC_HAVE_HEADERS(sys/name.h)
+AC_HAVE_FUNCS(strerror strdup fork strcasecmp stricmp qnx_name_attach)
 AC_INLINE
 AC_CONST
 
@@ -99,6 +103,33 @@ AC_CACHE_CHECK("for socklen_t",
 )
 if test "$epos_cv_type_socklen" = yes; then
    AC_DEFINE(HAVE_SOCKLEN_T)
+fi
+
+broken_enum_bitfields_test='\
+	enum t { a, b, c };	\
+	struct s		\
+	{			\
+		t m : 2;	\
+		t n : 2;	\
+		t o : 2;	\
+	};			\
+	s arr[[2]] = {{a, b, c},{c, c, c}};\
+	void main()		\
+	{			\
+		exit (arr[[1]].n != 2);	\
+	}\
+	'
+
+AC_CACHE_CHECK("for broken enum bitfields",
+   epos_cv_c_broken_enum_bitfields,
+   AC_TRY_RUN(
+	$broken_enum_bitfields_test,
+	epos_cv_c_broken_enum_bitfields=no,
+	epos_cv_c_broken_enum_bitfields=yes,
+	epos_cv_c_broken_enum_bitfields=yes)
+)
+if test "$epos_cv_c_broken_enum_bitfields" = yes; then
+   AC_DEFINE(BROKEN_ENUM_BITFIELDS)
 fi
 
 

@@ -52,18 +52,19 @@ The Epos daemon binary is called <CODE>epos</CODE>; a simple client named <CODE>
 has been provided.  This client instructs the daemon to process the text
 sent by the client and to write the resulting waveform into <CODE>/dev/dsp</CODE>,
 which is hopefully a sound card device.
-<P>Epos currently supports two main speech generation algorithms.  The first one
-is a diphone concatenation in the time domain, originally contributed by
-Zdenek Kadlec, Masaryk University, Brno.  This algorithm, including a low quality
-diphone inventory, is available as part of Epos subject to GPL.  The second one
-is a linear prediction coding speech synthesis written by E. V&iacute;chov&aacute;,
+<P>Epos currently supports three main speech generation algorithms.  Two ones
+employ diphone concatenation in the time domain; these have been contributed by
+Zdenek Kadlec, Masaryk University, Brno, and Martin Petriska, Slovak Technical
+University, Bratislava, respectively.  These algorithms, including low quality
+diphone inventories, are available as part of Epos subject to GPL.  The third one
+is a linear prediction coding speech synthesis written by Ellen V&iacute;chov&aacute;,
 which
 actually gives very good results, but is not freely available (existing commercial
 applications prohibit this). You can however use a virtual speech synthesis to
 synthesize your own texts using the linear prediction algorithm, if you are
 connected to the Internet. (Your text is partly processed and sent to our server.
 Then the generated speech signal is sent back to you.) We are constantly working
-on improving especially the freely distributable synthesis.
+on improving especially the freely distributable syntheses.
 <P>The name Epos is not an acronym.  It is Greek for...um, go have a look yourself.
 <P>This section still has to be (re)written by somebody. At present, try to look at
 <CODE> 

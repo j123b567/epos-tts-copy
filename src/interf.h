@@ -21,83 +21,22 @@
 
 #define CFG_FILE_ENVIR_VAR	"EPOSCFGFILE"
 
-enum OPT_STRUCT { OS_CFG, OS_LANG, OS_VOICE };
-enum ACCESS { A_PUBLIC, A_AUTH, A_ROOT, A_NOACCESS };
-enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SYNTH, O_CHANNEL, O_DBG_AREA, O_INT, O_CHAR, O_STRING};
-								//various types of options
 enum OUT_ML { ML_NONE, ML_ANSI, ML_RTF};
 #define OUT_MLstr "none:ansi:rtf:"
 enum _DEBUG_AREA_ {_INTERF_, _RULES_, _ELEM_, _SUBST_, _ASSIM_, _SPLIT_,
 			_PARSER_=7, _SYNTH_=9, _CFG_=10, _DAEMON_=11, _NONE_=127}; 
            //Don't touch this enum. We're gonna mix these identifiers and raw integer constants;
            // this way, _INTERF_ will be treated as equal to zero, _RULES_ equal to one etc.
-           // Some more info can be found in doc/debug.txt
 #define DEBUG_AREAstr "interf:rules:elem:subst:assim:split::parser::synth:cfg:daemon:"
 
-void cow(cowabilium **p, int size);	/* copy **p if shared and adjust *p, see interf.cc */
-void cow_claim(void *owner);	/* claim the ownership of all current cfg */
 
-#define CONFIG_DECLARE
-struct configuration : public cowabilium	//Some description & defaults can be found in options.cc
-{
-	#include "options.cc"
-
-	int n_langs;
-	lang **langs;
-
-	FILE *stdshriek;
-	FILE *stddbg;
-
-	stream * current_stream;
-
-	configuration();
-	void shutdown();	// destructor of some sort
-};
-
-#ifdef  BROKEN_ENUM_BITFIELDS
-	#define BIT_FIELD(x)	/* Visual C++ 6.0 generates incorrect code
-					for enum bit fields                */
-#else
-	#define BIT_FIELD(x) : x	/* most compilers are OK */
-#endif
-
-
-struct option
-{
-	const char *optname;
-  	OPT_TYPE opttype	BIT_FIELD(5);
-//	int reserved		BIT_FIELD(3);
-	OPT_STRUCT structype	BIT_FIELD(2);
-	ACCESS 	readable	BIT_FIELD(2);
-	ACCESS 	writable	BIT_FIELD(2);
-//	int reserved		BIT_FIELD(2);
-	short int offset;
-};
-
-// void process_options(hash *tab, option *list, void *base);
-char *get_named_cfg(const char *option_name);
-option *option_struct(const char *name, hash_table<char, option> *softopts);
-bool set_option(option *o, char *value);
-bool set_option(option *o, char *value, void *whither);
-char *format_option(option *name);	// will malloc some space
-char *format_option(const char *name);	// will malloc some space
-
-bool lang_switch(const char *name);
-bool voice_switch(const char *name);
-
-extern configuration master_cfg;
-extern configuration *cfg;
 extern int argc;
 extern char** argv;
 
 void epos_init(int argc, char**argv);
 void epos_init();
 void epos_reinit();
-void load_config(const char *filename);
-void load_config(const char *filename, const char *dirname, const char *what,
-		OPT_STRUCT type, void *whither, lang *parent_lang);
 void epos_done();		// No real need to call, ever. Just to be 100% dmalloc correct.
-
 
 #define color(stream, seq) if (cfg->colored) fprintf(stream, seq)
 void colorize(int level, FILE *handle);  // See this function in interf.cc for various #defines
@@ -106,8 +45,7 @@ void colorize(int level, FILE *handle);  // See this function in interf.cc for v
 				// than that. We need to have it on the stack,
 				// as we dare not allocate it if in trouble
 
-void check_lib_version(const char *s);
-
+// void check_lib_version(const char *s);
 
 char *fmt(const char *s, int userval);
 char *fmt(const char *s, int userval, int anotherval);
@@ -116,6 +54,7 @@ char *fmt(const char *s, const char *t);
 char *fmt(const char *s, const char *t, const char *u);
 char *fmt(const char *s, const char *t, const char *u, int userval);
 char *fmt(const char *s, const char *t, const char *u, const char *v);
+char *fmt(const char *s, int userval, const char *u);
 
 void user_pause();
 
@@ -138,11 +77,12 @@ FIT_IDX fit(char c);		 // converts 'f', 'i' or 't' to 0, 1 or 2, respectively
 UNIT str2enum(const char *item, const char *list, int dflt);
 char *enum2str(int item, const char *list);
 hash *str2hash(const char *list, unsigned int max_item_len);
-unit *str2units(char *text);
+unit *str2units(const char *text);
 char *fntab(const char *s, const char *t); //will calloc and return 256 bytes not freeing s,t
                                        //if len(s)!=len(t), ignore the rest if not cfg.paranoid
 bool *booltab(const char *s);          //will calloc and return 256 bytes not freeing s
 
+char *compose_pathname(const char *filename, const char *dirname, const char *treename);
 char *compose_pathname(const char *filename, const char *dirname);
 char *limit_pathname(const char *filename, const char *dirname);
 
@@ -155,12 +95,12 @@ struct file
 	~file();
 };
 
-file *claim(const char *filename, const char *dirname, const char *flags, const char *description);
+file *claim(const char *filename, const char *dirname, const char *treename, const char *flags, const char *description);
 bool reclaim(file *);	// false...unchanged, true...changed
 void unclaim(file *);
 
-void list_languages();
-void list_voices();
+// void list_languages();
+// void list_voices();
 
 class unit;
 void process_diphones(unit *root);
@@ -179,7 +119,7 @@ extern char *esctab;
 // extern FILE *stdwarn;
 // extern FILE *stddbg;
 
-extern int session_uid;
+// extern int session_uid;
 
 #define	UID_ANON	-1
 #define	UID_ROOT	 0
@@ -188,8 +128,6 @@ extern int session_uid;
 #ifndef HAVE_FORK
 	int fork();
 #endif
-
-void async_close(int fd);
 
 
 #define DEBUGGING     

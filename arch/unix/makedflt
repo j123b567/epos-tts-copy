@@ -1,12 +1,12 @@
 #! /bin/sh
 
-#     generate  cfg/default.ini  from  src/options.cc
+#     generate  cfg/default.ini  from  src/options.lst
 
 echo \# This file is generated automatically. Do not edit! >$1
 echo \# It is used by epos_reinit\(\) only and its content is not crucial.>>$1
 echo \ >>$1
 
-cat ../src/options.cc | awk -F, '/^OPTION / || /^OPTIONITEM / {\
+cat ../src/options.lst | awk -F, '/^OPTION / || /^OPTIONITEM / {\
 while(substr($4,1,1)==" ") $4=substr($4,2,length($4)-1);\
 while(substr($2,1,1)==" ") $2=substr($2,2,length($2)-1);\
 if ($2!="\"\"")\

@@ -1,7 +1,7 @@
 /*
  *	epos/src/ktdsyn.cc
  *	(c) 1996-98 Zdenek Kadlec, kadlec@phil.muni.cz
- *	(c) 1997-98 Martin Petriska, petriska@decef.stuba.sk
+ *	(c) 1997-98 Martin Petriska, petriska@decef.elf.stuba.sk
  *	(c) 1997-98 Petr Horak, horak@ure.cas.cz
  *		Czech Academy of Sciences (URE AV CR)
  *	(c) 1998 Jirka Hanika, geo@ff.cuni.cz
@@ -22,17 +22,21 @@
 #include "common.h"
 #include "ktdsyn.h"
 
-#ifdef HAVE_IO_H
-#include <io.h>		/* open, write, (ioctl,) ... */
-#endif
+//#ifdef HAVE_MATH_H
+#include <math.h>
+//#endif
+
+//#ifdef HAVE_IO_H
+//#include <io.h>		/* open, write, (ioctl,) ... */
+//#endif
 
 #ifndef O_BINARY	/* open */
 #define O_BINARY  0
 #endif
 
 
-#pragma hdrstop
-#pragma warn -pia
+//#pragma hdrstop
+//#pragma warn -pia
 
 
 extern double buf[6];
@@ -40,12 +44,12 @@ extern double buf[6];
 ktdsyn::ktdsyn (voice *v)
 {
 	FILE *f;
-	char * pathname = compose_pathname("useky.dat", v->inv_dir);
+	char * pathname = compose_pathname("useky.dat", v->loc, cfg->inv_base_dir);
 	f = fopen (pathname, "rt");
 	free(pathname);
 	if (!f) shriek(841, "Cannot open file useky.dat");
 	po_u = 0;
- 	while (!feof (f)) {		/* FIXME: consider turning into a freadin() call */
+ 	while (!feof (f)) {		/* FIXME: consider turning into a claim() call */
 		int imp_int;		/* to make scanf() happy */
 		fscanf (f, "%s%i%i", U[po_u].jm, &imp_int, &U[po_u].delk);
 		U[po_u].imp = imp_int;
@@ -72,8 +76,10 @@ void ktdsyn::syndiph(voice *v, diphone d, wavefm *w)
 
 	strcpy (m_sub, cfg->base_dir);
 	strcat (m_sub, "/");
-	strcat (m_sub, v->inv_dir);
-	strcat (m_sub, "/USEKY/");
+	strcat (m_sub, cfg->inv_base_dir);
+	strcat (m_sub, "/");
+	strcat (m_sub, v->loc);
+	strcat (m_sub, "/");
 	dif2psl (U[d.code].jm, m_sub);
 	strcat (m_sub, ".PSL");
 	op_psl (m_sub, s_psl);

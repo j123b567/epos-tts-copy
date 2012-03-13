@@ -1,6 +1,6 @@
 /*
  *	epos/src/waveform.cc
- *	(c) 1998 geo@ff.cuni.cz
+ *	(c) 1998-99 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,49 +15,59 @@
  */
  
 #include "common.h"
+#include "client.h"
+
 #include <fcntl.h>
 
+#ifdef HAVE_ERRNO_H
+	#include <errno.h>
+#endif
+
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+	#include <unistd.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+	#include <signal.h>
 #endif
 
 #ifdef HAVE_SYS_IOCTL_H
-#include <sys/ioctl.h>
+	#include <sys/ioctl.h>
 #endif
 
 #ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
+	#include <sys/stat.h>
 #endif
 
 #ifdef HAVE_SYS_AUDIO_H
-#include <sys/audio.h>
+	#include <sys/audio.h>
 #endif
 
 #ifdef HAVE_SYS_SOUNDCARD_H
-#include <sys/soundcard.h>
+	#include <sys/soundcard.h>
 #endif
 
 #ifdef HAVE_LINUX_KD_H
-#include <linux/kd.h>	// too unimportant
+	#include <linux/kd.h>	// too unimportant
 #endif
 
 #ifdef HAVE_IO_H
-#include <io.h>		/* open, write, (ioctl,) ... */
+	#include <io.h>		/* open, (ioctl,) ... */
 #endif
 
 #ifndef O_BINARY	/* open */
-#define O_BINARY  0
+	#define O_BINARY  0
 #endif
 
-#pragma hdrstop
+//#pragma hdrstop
 
 #ifdef KDGETLED		// Feel free to disable or delete the following stuff
 inline void mark_voice(int a)
 {
-	static voices_attached = 0;
+	static int voices_attached = 0;
 	voices_attached += a;
 	int kbd_flags = 0;
-	ioctl(1, KDGETLED, kbd_flags);
+	ioctl(1, KDGETLED, &kbd_flags);
 	kbd_flags = kbd_flags & ~LED_SCR;
 	if (voices_attached) kbd_flags |= LED_SCR;
 	ioctl(1, KDSETLED, kbd_flags);
@@ -66,26 +76,6 @@ inline void mark_voice(int a)
 inline void mark_voice(int) {};
 #endif
 
-
-
-
-const inline bool ioctlable(int fd)
-{
-#ifdef SOUND_PCM_GETFMTS
-	int tmp;
-	return !ioctl (fd, SOUND_PCM_GETFMTS, &tmp);
-#else
-   #ifdef SNDCTL_DSP_GETFMTS
-	int tmp;
-	return !ioctl (fd, SNDCTL_DSP_GETFMTS, &tmp);
-   #else
-//	DEBUG(3,9,fprintf(STDDBG, "Sound ioctl's absent\n");)
-	return false;
-	#error The sound card ioctls seem to be broken or absent, remove this #error
-   #endif
-#endif
-	
-}
 
 
 wavefm::wavefm(voice *v)
@@ -109,6 +99,7 @@ wavefm::wavefm(voice *v)
 //	write(fd, wavh, sizeof(wave_header));         //zapsani prazdne wav hlavicky na zacatek souboru
 
 	fd = -1;
+	written = 0;
 //	buff_size = cfg->buffer_size;
 //	buffer = (char *)malloc(buff_size);
 	buff_size = 0;
@@ -122,42 +113,181 @@ wavefm::~wavefm()
 	free(buffer);
 }
 
+
+
+
 #define DEFAULT_BUFF_SIZE	4096
+
+
+#ifndef FORGET_SOUND_IOCTLS
+
+#ifndef SNDCTL_DSP_SETFMT
+#define SNDCTL_DSP_SETFMT	SOUND_PCM_WRITE_BITS
+#endif
+
+#ifndef SNDCTL_DSP_GETFMTS
+#define SNDCTL_DSP_GETFMTS	SOUND_PCM_GETFMTS
+#ifndef SOUND_PCM_GETFMTS
+#error The sound card ioctls seem to be broken or absent, remove this #error
+#endif
+#endif
+
+#ifndef SNDCTL_DSP_SPEED
+#define SNDCTL_DSP_SPEED	SOUND_PCM_WRITE_RATE
+#endif
+
+#ifndef SNDCTL_DSP_CHANNELS
+#define SNDCTL_DSP_CHANNELS	SOUND_PCM_WRITE_CHANNELS
+#endif
+
+#ifndef SNDCTL_DSP_GETBLKSIZE
+#define SNDCTL_DSP_GETBLKSIZE	SOUND_PCM_GETBLKSIZE
+#endif
+
+#ifndef SNDCTL_DSP_SYNC
+#define SNDCTL_DSP_SYNC		SOUND_PCM_SYNC
+#endif
+
+#ifndef SNDCTL_DSP_RESET
+#define SNDCTL_DSP_RESET	SOUND_PCM_RESET
+#endif
+
+
+
+const static inline bool ioctlable(int fd)
+{
+	int tmp;
+	return !ioctl (fd, SNDCTL_DSP_GETFMTS, &tmp);
+}
+
+static inline void set_samp_size(int fd, int samp_size_bits)
+{
+	if (!ioctl (fd, SNDCTL_DSP_SETFMT, &samp_size_bits))
+		return;
+//   #ifdef SNDCTL_DSP_GETFMTS
+	int mask = (unsigned int)-1;
+	ioctl (fd, SNDCTL_DSP_GETFMTS, &mask);
+	DEBUG(3,9,fprintf(STDDBG,"Hardware format mask is 0x%04x\n", mask);)
+	if (!(samp_size_bits & mask)) shriek(439, "Sampling rate not supported");
+//   #endif
+}
+
+static inline void set_samp_rate(int fd, int samp_rate)
+{
+	ioctl(fd, SNDCTL_DSP_SPEED, &samp_rate);
+}
+
+
+static inline void set_channels(int fd, int channels)
+{
+	ioctl(fd, SNDCTL_DSP_CHANNELS, &channels);
+}
+
+
+#ifndef SNDCTL_DSP_NONBLOCK
+	#ifdef	SOUND_PCM_NONBLOCK
+		#define SNDCTL_DSP_NONBLOCK	SOUND_PCM_NONBLOCK
+	#endif
+#endif
+
+static inline void set_nonblocking(int fd)
+{
+   #ifdef SNDCTL_DSP_NONBLOCK
+	ioctl(fd, SNDCTL_DSP_NONBLOCK);
+   #endif
+}
+
+static inline int get_blksize(int fd)
+{
+	int buff_size = 0;
+	if (ioctl(fd, SNDCTL_DSP_GETBLKSIZE, &buff_size))
+		buff_size = DEFAULT_BUFF_SIZE;
+	return buff_size ? buff_size : DEFAULT_BUFF_SIZE;
+}
+
+static inline void sync_soundcard(int fd)
+{
+	if (ioctlable(fd)) ioctl (fd, SNDCTL_DSP_SYNC);
+}
+
+static inline void reset_soundcard(int fd)
+{
+	if (ioctlable(fd)) ioctl (fd, SNDCTL_DSP_RESET);
+}
+
+
+#else		// FORGET_SOUND_IOCTLS
+
+static const inline bool ioctlable(int fd)
+{
+	DEBUG(2,9,fprintf(STDDBG, "Sound ioctl's absent\n");)
+	return false;
+}
+
+static inline void set_samp_size(int fd, int samp_size_bits)
+{
+}
+
+static inline void set_samp_rate(int fd, int samp_rate)
+{
+}
+
+static inline void set_channels(int fd, int channels)
+{
+}
+
+static inline void set_nonblocking(int fd)
+{
+}
+
+static inline int get_blksize(int fd)
+{
+	return DEFAULT_BUFF_SIZE;
+}
+
+static inline void sync_soundcard(int fd)
+{
+}
+
+static inline void reset_soundcard(int fd)
+{
+}
+
+
+#endif		// FORGET_SOUND_IOCTLS
+
+
 
 void
 wavefm::ioctl_attach()
 {
-	int stereo = channel==CT_MONO ? 0 : 1;
-	int samp_size = samp_size_bytes << 3;
-#ifdef SOUND_PCM_GETBLKSIZE
-	stereo++;	/* 1 or 2 channels */
-	ioctl (fd, SOUND_PCM_WRITE_CHANNELS, &stereo);  // keep it mono (disabled)
-	ioctl (fd, SOUND_PCM_WRITE_RATE, &samp_rate);
-	ioctl (fd, SOUND_PCM_WRITE_BITS, &samp_size);
-	ioctl (fd, SOUND_PCM_NONBLOCK);
-//	ioctl (fd, SOUND_PCM_GETBLKSIZE, &buff_size) && (buff_size = DEFAULT_BUFF_SIZE);
-#else
-   #ifdef SNDCTL_DSP_SPEED
-	ioctl (fd, SNDCTL_DSP_STEREO, &stereo);		// keep it mono (disabled)
-	ioctl (fd, SNDCTL_DSP_SPEED, &samp_rate);
-
-      #ifdef DEBUGGING		/* Badly placed */
-	int mask = (unsigned int)-1;
-	ioctl (fd, SNDCTL_DSP_GETFMTS, &mask);
-	DEBUG(2,9,fprintf(STDDBG,"Hardware format mask is 0x%04x\n", mask);)
-	if (!(samp_size & mask)) shriek(813, "Sampling rate not supported");
-      #endif
-
-	ioctl (fd, SNDCTL_DSP_SETFMT, &samp_size);
-	ioctl (fd, SNDCTL_DSP_NONBLOCK);
-//	ioctl (fd, SNDCTL_DSP_GETBLKSIZE, &buff_size) && (buff_size = DEFAULT_BUFF_SIZE);
-   #else
-	DEBUG(3,9,fprintf(STDDBG, "Sound ioctl's absent\n");)
-	unuse(stereo);
-//	buff_size = DEFAULT_BUFF_SIZE;
-   #endif
-#endif
+	set_channels(fd, channel==CT_MONO ? 1 : 2);
+	set_samp_rate(fd, samp_rate);
+	set_samp_size(fd, samp_size_bytes << 3);
+	set_nonblocking(fd);
+	buff_size = get_blksize(fd);
 }
+
+void
+wavefm::detach(int)
+{
+	while (buffer_idx) flush();		// FIXME: think slow network write
+	DEBUG(2,9,fprintf(STDDBG,"Detaching waveform %s\n", ""););
+	sync_soundcard(fd);
+	if (cfg->wav_hdr && !ioctlable(fd)) write_header();
+	mark_voice(-1);
+	fd = -1;
+//	free(buffer);
+//	buffer = NULL;
+}
+
+void
+wavefm::brk()
+{
+	buffer_idx = 0;		// forget wavefm hanging in userland
+	reset_soundcard(fd);	// forget wavefm hanging in kernel
+}
+
 
 void
 wavefm::attach(int d)
@@ -196,25 +326,6 @@ wavefm::attach()
 }
 
 void
-wavefm::detach(int)
-{
-	while (buffer_idx) flush();		// FIXME: think slow network write
-	DEBUG(2,9,fprintf(STDDBG,"Detaching waveform %s\n", ""););
-#ifdef SNDCTL_DSP_SYNC
-	if (ioctlable(fd)) ioctl (fd, SNDCTL_DSP_SYNC);
-#else
-   #ifdef SOUND_PCM_SYNC
-	if (ioctlable(fd)) ioctl (fd, SOUND_PCM_SYNC);
-   #endif
-#endif
-	if (cfg->wav_hdr && !ioctlable(fd)) write_header();
-	mark_voice(-1);
-	fd = -1;
-//	free(buffer);
-//	buffer = NULL;
-}
-
-void
 wavefm::detach()
 {
 	detach(fd);
@@ -222,37 +333,27 @@ wavefm::detach()
 	fd = -1;
 }
 
-void
-wavefm::brk()
-{
-	buffer_idx = 0;		// forget wavefm hanging in userland
-#ifdef SNDCTL_DSP_RESET		// forget wavefm hanging in kernel
-	if (ioctlable(fd)) ioctl (fd, SNDCTL_DSP_RESET);
-#else
-   #ifdef SOUND_PCM_RESET
-	if (ioctlable(fd)) ioctl (fd, SOUND_PCM_RESET);
-   #endif
-#endif
-}
-
 /*
  *	flush() is called whenever it is desirable to write out some data.
  *	This method can be called even for a detached waveform. The semantics
- *	is to write() out as much data as possible, and to have at least one
- *	byte of buffer space available upon return.
+ *	is to write() out as much data as possible, and to have at least two
+ *	bytes of buffer space available upon return.
  *
  *	This implementation writes out as much data as possible; if that is
- *	zero (detached waveform or kernel tx buffer overflow), the buffer
+ *	zero (detached waveform or out of kernel buffers), the buffer
  *	size is doubled.
  *
  *	Returns: true  ...more data remains to be written
  *		 false ...flushed completely
+ *
+ *	Also, "written" is set to the number of bytes actually written by the last
+ *	invocation of flush()
  */
 
 bool
 wavefm::flush()
 {
-	int written;
+	written = 0;
 
 	if (buff_size == 0) {
 		buff_size = cfg->buffer_size;
@@ -263,10 +364,14 @@ wavefm::flush()
 		DEBUG(2,9,fprintf(STDDBG, "Flushing the signal (nothing!)\n");)
 		return false;
 	}
-	if (fd == -1 || ! (written = write(fd, buffer, buffer_idx))) {
+	if (fd == -1 || 1 > (written = ywrite(fd, buffer, buffer_idx))) {
 		DEBUG(2,9,fprintf(STDDBG, "Flushing the signal (deferred)\n");)
+		written = 0;
+		if (buffer_idx + 2 <= buff_size)
+			return true;
 		buff_size <<= 1;
 		buffer = (char *)realloc(buffer, buff_size);
+		if (!buffer) shriek(422, "out of memory");
 		return true;
 	}
 	DEBUG(2,9,fprintf(STDDBG, "Flushing the signal to device\n");)
@@ -300,7 +405,7 @@ void
 wavefm::skip_header()
 {
 	if (lseek(fd, sizeof(wave_header), SEEK_SET) == -1)
-		write(fd, &hdr, sizeof(wave_header));
+		ywrite(fd, &hdr, sizeof(wave_header));
 }
 
 void
@@ -311,7 +416,7 @@ wavefm::write_header()
 		return;		/* devices incapable of lseek() don't need
 				 *	the length field filled in correctly
 				 */
-	write(fd, &hdr, sizeof(wave_header));         //zapsani prazdne wav hlavicky na zacatek souboru
+	ywrite(fd, &hdr, sizeof(wave_header));         //zapsani prazdne wav hlavicky na zacatek souboru
 }
 
 void
@@ -326,4 +431,7 @@ wavefm::become(void *b, int size)
 	buffer_idx = size;
 	hdr.written_bytes = 0;
 	hdr.flen = 0;
+	channel = hdr.sf2 ? CT_BOTH : CT_MONO;
+	samp_rate = hdr.sf1;
+	samp_size_bytes = hdr.wlenB;
 }

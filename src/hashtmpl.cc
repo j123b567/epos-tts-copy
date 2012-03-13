@@ -377,12 +377,10 @@ if (_hash_sp) hash_shriek("Hash stack dirty! %s%d", "", _hash_sp);
 
 }
 
-FILE * _outfile;
-
 void
-_writetree(char *key, char *data)
+_writetree(char *key, char *data, void *outfile)
 {
-	fprintf(_outfile, strcmp(key, data) ? "%s \t%s\n" : "%s\n", key, data);
+	fprintf((FILE *)outfile, strcmp(key, data) ? "%s \t%s\n" : "%s\n", key, data);
 }
 
 /****************************************************************************
@@ -398,33 +396,36 @@ int
 hash::write(char *filename, bool keep_backup)
 {
 	FILE *old = fopen(filename, "rt");
+	FILE *outfile;
 	char *buff = (char *)malloc(hash_max_line);
 	char *backup;
 	int result;
 	
 	if (old) {
+		FILE *outfile;
+
 		strcpy(buff, "~");
 		strcat(buff, filename);
 		backup = strdup(buff);
 		rename (filename, backup);
-		_outfile = fopen(filename, "w");
+		outfile = fopen(filename, "w");
 		fgets(buff, hash_max_line, old);
 		while (!feof(old) && strchr(COMMENT_LINES, buff[strspn(buff, WHITESPACE)])) {
-			fputs(buff, _outfile);
+			fputs(buff, outfile);
 			fgets(buff, hash_max_line, old);
 		}
 		fclose(old);
-		forall(_writetree);
-		result = !fprintf(_outfile,"\n");
-		fclose (_outfile);
+		forall(_writetree, outfile);
+		result = !fprintf(outfile,"\n");
+		fclose (outfile);
 	
 		if (!keep_backup && !result) remove(backup);
 		free(backup);
 	} else {
-		_outfile = fopen(filename, "w");
-		forall(_writetree);
-		result = !fprintf(_outfile,"\n");
-		fclose (_outfile);
+		outfile = fopen(filename, "w");
+		forall(_writetree, outfile);
+		result = !fprintf(outfile,"\n");
+		fclose (outfile);
 	}
 	free(buff);
 	return result;
@@ -440,6 +441,7 @@ int
 hash::update(char *filename, bool keep_backup, bool remove_removed)
 {
 	FILE *old = fopen(filename, "rt");
+	FILE *outfile;
 	char *buff = (char *)malloc(hash_max_line);
 	char *backup;
 
@@ -458,7 +460,7 @@ hash::update(char *filename, bool keep_backup, bool remove_removed)
 	backup = strdup(buff);
 	rename (filename, backup);
 
-	_outfile = fopen(filename, "w");
+	outfile = fopen(filename, "w");
 	while (fgets(buff, hash_max_line, old)) {
 		tmp = buff + strspn(buff, WHITESPACE); key = tmp;
 		tmp += strcspn(tmp, WHITESPACE); zero = tmp;
@@ -475,13 +477,13 @@ hash::update(char *filename, bool keep_backup, bool remove_removed)
 			keydel(remove(key));
 		} else if (remove_removed) continue;
 		*zero = holdchar;
-		if (fputs(buff, _outfile)==EOF) result = 1;
+		if (fputs(buff, outfile)==EOF) result = 1;
 	}
 	fclose(old);
 
-	forall(_writetree);
+	forall(_writetree, outfile);
 
-	fclose (_outfile);
+	fclose (outfile);
 	
 	if (!keep_backup && !result) remove(backup);
 	free(backup);
@@ -647,12 +649,13 @@ printf("Rehash? (%d of %d)\n",items, min_items);
 template <class key_t, class data_t>
 void 
 hash_table<key_t, data_t>::fortree(hsearchtree<key_t, data_t> *tree,
-				void usefn(key_t *key, data_t *value))
+				void usefn(key_t *key, data_t *value, void *parm),
+				void *parm)
 {
 	if (tree!=NULL) {
-		fortree(tree->r,usefn);
-		usefn(tree->key,tree->data);
-		fortree(tree->l,usefn);
+		fortree(tree->r,usefn, parm);
+		usefn(tree->key,tree->data, parm);
+		fortree(tree->l,usefn, parm);
 	}
 }
 
@@ -663,10 +666,10 @@ hash_table<key_t, data_t>::fortree(hsearchtree<key_t, data_t> *tree,
 
 template <class key_t, class data_t>
 void 
-hash_table<key_t, data_t>::forall(void usefn(key_t *key, data_t *value))
+hash_table<key_t, data_t>::forall(void usefn(key_t *key, data_t *value, void *parm), void *parm)
 {
 	int i;
-	for(i=0;i<capacity;i++) fortree(ht[i],usefn);
+	for(i = 0; i < capacity; i++) fortree(ht[i],usefn, parm);
 }
 
 /****************************************************************************
@@ -685,6 +688,25 @@ hash_table<key_t, data_t>::dissolvetree(hsearchtree<key_t, data_t> *tree)
 		datadel(tree->data);
 		tree_delete(tree);
 	}
+}
+
+
+/****************************************************************************
+ hash::get_random - find a random key in the table; some colliding keys may
+	never come up
+ ****************************************************************************/
+
+template <class key_t, class data_t>
+key_t *
+hash_table<key_t, data_t>::get_random()
+{
+	static int seed;	/* move seed to class hash_table, if used wide and wild */
+	if (seed >= capacity) {
+		if (!items) return NULL;
+		seed %= capacity;
+	}
+	while (!ht[seed]) if (++seed == capacity) seed = 0;
+	return ht[seed]->key;
 }
 
 

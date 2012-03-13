@@ -1,6 +1,6 @@
 /*
  *	epos/src/rule.cc
- *	(c) 1996-98 geo@ff.cuni.cz
+ *	(c) 1996-99 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -405,6 +405,7 @@ class r_contour: public rule
 	virtual OPCODE code() {return OP_CONTOUR;};
 	int *contour;
 	int l;
+	int padd_start;
 	FIT_IDX quantity;
    public:
 		r_contour(char *param);
@@ -419,10 +420,14 @@ r_contour::r_contour(char *param) : rule(param)
 	
 	contour = (int *)malloc(strlen(param)*sizeof(int));
 	contour[0] = l = 0;
+	padd_start = -1;
 	for (p=param+1+(param[1]=='/'); *p; p++) {
 		switch (*p) {
-		case ':': contour[l++] += tmp*sgn; tmp=0;
-			   sgn=1; contour[l] = 0;  break;
+		case ':':  contour[l++] += tmp*sgn; tmp=0;
+				sgn=1; contour[l] = 0;  break;
+		case '*':  if (p[1] && p[1] != ':') shriek(811, fmt("A ':' should follow '*'%s", debug_tag()));
+			   if (padd_start > -1) shriek(811, fmt("Ambiguous padding%s", debug_tag()));
+				padd_start = l; break;
 		case '-':
 		case '+':  contour[l]+=tmp*sgn; sgn=(*p=='+' ?+1:-1); break;
 		default:   if (*p<'0' || *p>'9') shriek(811, fmt("Expected a number, found \"%s\"%s",
@@ -442,7 +447,7 @@ r_contour::~r_contour()
 
 void r_contour::apply(unit *root)
 {
-	root->contour(target, contour, l, quantity, false);
+	root->contour(target, contour, l, padd_start, quantity, false);
 }
 
 
@@ -488,7 +493,7 @@ r_smooth::r_smooth(char *param) : rule(param)
 	}
 	if (tmp) list[l++]+=tmp*sgn, total+=tmp*sgn;
 	if (total!=RATIO_TOTAL)
-		shriek (811, fmt("Smooth percentages don't add up to 100%% (%d%%)", total));
+		shriek (811, fmt("Smooth percentages don't add up to 100%% (%d%%)%s", total, debug_tag()));
 	if (cfg->paranoid) {
 		for (tmp=max=0; tmp<l; tmp++)
 			if (list[tmp]>max) max=list[tmp];
@@ -964,15 +969,10 @@ class r_if: public cond_rule
 
 r_if::r_if(char *param, text *file, hash *vars) : cond_rule(param, file, vars)
 {
-//	char *tmp = strchr(raw, '=');
-//	if (!tmp) shriek("Conditional expression must contain '='%s", debug_tag());
-//	if (strchr(++tmp, '=')) shriek("Too many eq's%s", debug_tag());
-//	result =  raw+strlen(tmp) == tmp-1  &&  !strncmp(raw, tmp, strlen(tmp));
-//	DEBUG(1,1,fprintf(STDDBG, "r_if result is constant and %s\n", result?"true":"false");)
 	option *o = option_struct(raw + (*raw == EXCL) , this_lang->soft_options);
-	if (!o) shriek(811, fmt("Not an option: %s in %s", raw, debug_tag()));
-	if (o->opttype != O_BOOL) shriek(811, fmt("Not a truth value option: %s in %s", raw, debug_tag()));
-	if (o->structype != OS_VOICE) shriek(811, fmt("Not a voice option: %s in %s", raw, debug_tag()));
+	if (!o) shriek(811, fmt("Not an option: %s%s", raw, debug_tag()));
+	if (o->opttype != O_BOOL) shriek(811, fmt("Not a truth value option: %s%s", raw, debug_tag()));
+	if (o->structype != OS_VOICE) shriek(811, fmt("Not a voice option: %s%s", raw, debug_tag()));
 	flag_offs = o->offset;
 }
 

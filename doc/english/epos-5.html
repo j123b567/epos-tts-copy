@@ -39,7 +39,7 @@ become outdated due to lack of interest.
 <LI> code readability</LI>
 <LI> speed</LI>
 <LI> space</LI>
-<LI> possible paralelizability</LI>
+<LI> possible parallelizability</LI>
 </UL>
 <P>
 <H2><A NAME="ss5.2">5.2 Isolated classes</A>
@@ -76,7 +76,7 @@ deletion) by the minimum necessary tokenization.
 <P>
 <P>This class is the fundamental element of the 
 <A HREF="epos-2.html#tsr">text structure representation</A>. Its methods are listed in
-<CODE>elements.h</CODE>.  Every object of this type represents a single
+<CODE>unit.h</CODE>.  Every object of this type represents a single
 text unit.  Every unit includes pointers to its immediate
 container, and to its contents. The contents are organized in a
 bidirectional linked list; pointers to the head and tail units
@@ -102,7 +102,7 @@ of description above the current unit.
 <P>
 <P>This class represents a logical line-oriented text file. It handles things
 like the 
-<A HREF="epos-3.html#include-directive">#include directive</A>,
+<A HREF="epos-3.html#include-directive">&commat;include directive</A>,
 <A HREF="epos-3.html#escaping">backslash-escaped special characters</A>,
 initial whitespace and comment stripping. It is used for the 
 <A HREF="epos-2.html#rules">rule files</A> and 
@@ -273,7 +273,29 @@ agents when they need to delete themselves.
 </LI>
 </UL>
 <P>
-<H2><A NAME="ss5.4">5.4 More information</A>
+<H2><A NAME="ss5.4">5.4 Testing</A>
+</H2>
+
+<P>
+<P>The Epos package contains three TTSCP clients.  One of them is the standalone
+<CODE>say</CODE> utility, which is provided as a good and simple example of a TTSCP
+client.  We suggest to use it as a starting point for developing specialized
+TTSCP clients.
+<P>The <CODE>tcpsyn</CODE> virtual synthesizer also embeds a TTSCP client; it is
+wise to check its proper functioning after making changes to the TTSCP
+server implementation.
+<P>A standalone test suite is compiled under the name <CODE>verify</CODE>.  It is currently
+only trying a few standard tricks to crash the server and is far from being
+a rigorous test suite.  However, it manages to catch much more programming
+errors than <CODE>say</CODE> and we recommend to run it after making any changes to
+the source code of Epos.  This test suite assumes Epos has been configured
+correctly and is listening at the standard TTSCP port.
+<P>No part of the <CODE>verify</CODE> TTSCP client should be mimicked by other software
+or be used as a study material. This client tries to be as ugly as possible
+and to crash any crashable server.  Adding some ugly tests to this piece of
+code might raise the average code quality of Epos significantly.
+<P>
+<H2><A NAME="ss5.5">5.5 More information</A>
 </H2>
 
 <P>

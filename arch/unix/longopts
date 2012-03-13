@@ -1,6 +1,6 @@
 #! /bin/sh
 
-cat ../src/options.cc \
+cat ../src/options.lst \
 |sed 's/"[^"]*")/)/g'\
 |tee tmp00\
 |sed s,\",/,g\

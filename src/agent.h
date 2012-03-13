@@ -1,6 +1,6 @@
 /*
  *	epos/src/agent.h
- *	(c) 1998 geo@ff.cuni.cz
+ *	(c) 1998-99 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,12 +18,20 @@
 	#include <unistd.h>	// in DOS, fork(){return -1;} is supplied in interf.cc
 #endif
 
+#ifdef HAVE_SYS_SELECT_H
+	#include <sys/select.h>
+#endif
+
 #ifdef HAVE_NETINET_IN_H
 	#include <netinet/in.h>
 #endif
 
 #ifdef HAVE_LINUX_IN_H
 	#include <linux/in.h>
+#endif
+
+#ifdef HAVE_WINSOCK2_H
+	#include <winsock2.h>
 #endif
 
 #ifdef HAVE_IO_H
@@ -42,9 +50,9 @@ class context
    public:
 	int uid;
 
-	configuration *cfg;
-	lang *this_lang;
-	voice *this_voice;
+	configuration *config;
+//	lang *this_lang;
+//	voice *this_voice;
 
 	char *sgets_buff;	/* not touched upon context switch */
 
@@ -62,7 +70,7 @@ class context
 
 class stream;
 
-enum DATA_TYPE {T_NONE, T_ANY, T_TEXT, T_STML, T_UNITS, T_DIPHS, T_WAVEFM};
+enum DATA_TYPE {T_NONE, T_INPUT, T_TEXT, T_STML, T_UNITS, T_DIPHS, T_WAVEFM};
 
 class agent
 {
@@ -102,7 +110,7 @@ class stream : public agent
 	virtual void run();
 	virtual void finis();
    public:
-	stream(char *);
+	stream(char *, context *);
 	virtual ~stream();
 	virtual void brk();
 	virtual void apply(agent *ref, int bytes);
@@ -119,24 +127,28 @@ class a_protocol : public agent
    public:
 	a_protocol();
 	virtual ~a_protocol();
-	void disconnect();	// destructor, executes delayed. Also cleanup.
+	virtual void disconnect() = NULL;	// destructor, executes delayed. Also cleanup.
 };
+
+#define HANDLE_SIZE	3
 
 class a_ttscp : public a_protocol
 {
 	virtual int run_command(char *);
 
-	a_ttscp *prev;
-	a_ttscp *next;
    public:
+	a_ttscp *ctrl;
+	hash_table<char, a_ttscp> *deps;
+	char handle[HANDLE_SIZE];
 	a_ttscp(int sd_in, int sd_out);
 	virtual ~a_ttscp();
 	virtual void brk();
+	virtual void disconnect();
 
-	void brkall();		/* FIXME: should never be used; remove */
+//	void brkall();		/* FIXME: should never be used; remove */
 };
 
-extern a_ttscp *ctrl_conns;
+//extern a_ttscp *ctrl_conns;
 
 class a_accept : public agent
 {
@@ -179,21 +191,37 @@ int sgets(char *buffer, int space, int sd, char *partbuff);
 
 extern char server_passwd[];
 
+/*
+ *	make_rnd_passwd() generates a random password or handle consisting
+ *	of lowercase and uppercase characters, digits, dash and underscore.
+ */
+
+void make_rnd_passwd(char *buffer, int size);
+
+
 #define PA_NEXT		0
 #define PA_DONE		1
 #define PA_WAIT		2
+
+enum PAR_SYNTAX {PAR_REQ, PAR_FORBIDDEN, PAR_OPTIONAL};
 
 struct ttscp_cmd
 {
 //	char name[4];
 	int name;
-	int(*impl)(char *param, agent *a);
+	int(*impl)(char *param, a_ttscp *a);
 	char *short_help;
-	char *long_help;
+	PAR_SYNTAX param;
 };
 
 extern ttscp_cmd ttscp_cmd_set[];
 int cmd_bad(char *);
 
-extern hash_table<char, int> *data_conns;
+extern hash_table<char, a_ttscp> *data_conns;
+extern hash_table<char, a_ttscp> *ctrl_conns;
+extern a_accept *accept_conn;
+extern context *master_context;
+extern context *this_context;
+
+//extern int session_uid;
 

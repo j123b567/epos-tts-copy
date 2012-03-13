@@ -1,6 +1,6 @@
 /*
  *	epos/src/text.cc
- *	(c) 1997 geo@ff.cuni.cz
+ *	(c) 1997-99 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,13 +18,20 @@
 
 enum DIRECTIVE {DI_INCL, DI_WARN, DI_ERROR};
 
-#define DIRECTIVEstr "#include:#warn:#error:"
-#define MAX_DIRECTIVE_LEN 16		//Keep in sync with text::getline's format string
+#define PP_ESCAPE	'@'
+#define D_INCLUDE	"include"
+#define D_WARN		"warn"
+#define D_ERROR		"error"
+
+//#define DIRECTIVEstr "@include:@warn:@error:"
+//#define MAX_DIRECTIVE_LEN 16		//Keep in sync with text::getline's format string
 #define MAX_INCL_EMBED	32
 
 #define SPECIAL_CHARS "#;\n\\"
 
-hash *_directive_prefices=NULL;
+// hash *_directive_prefices=NULL;
+
+/*
 
 void doneprefices()
 {
@@ -32,6 +39,8 @@ void doneprefices()
 	delete _directive_prefices;
 	_directive_prefices=NULL;
 };
+
+*/
 
 void strip(char *s)
 {
@@ -49,8 +58,8 @@ void strip(char *s)
 				return;
 			case ESCAPE:
 				if (!*++t || *t=='\n') shriek(462, "text.cc still cannot split lines");
-				if (strchr(cfg->token_esc, *t))	*r = esctab[*t];
-				else t--;	/* insert self */
+				if (strchr(cfg->token_esc, *t)) *r = esctab[*t];
+				else r++;
 				break;
 			default:;
 		}
@@ -67,8 +76,8 @@ struct textlink {
 
 text::text(const char *filename, const char *dirname, const char *description, bool warnings)
 {
-	if (!_directive_prefices) 
-		_directive_prefices = str2hash(DIRECTIVEstr, MAX_DIRECTIVE_LEN);
+//	if (!_directive_prefices) 
+//		_directive_prefices = str2hash(DIRECTIVEstr, MAX_DIRECTIVE_LEN);
 	dir = dirname;
 	tag = description;
 	base = strdup(filename);
@@ -88,7 +97,7 @@ text::subfile(const char *filename)
 
 	parent=current;
 	current=new textlink;
-	if (!current) shriek(664, "text::subfile out of memory");
+	if (!current) shriek(422, "text::subfile out of memory");
 	if (!filename || !*filename) {
 		current->f=stdin;
 	} else { 
@@ -125,11 +134,15 @@ text::exists()
 	return current && current->f;
 }
 
+inline bool begins(char *buffer, char *s)
+{
+	return !strncasecmp(buffer + strspn(buffer, WHITESPACE) + 1, s, strlen(s));
+}
 
 bool
 text::getline(char *buffer)
 {
-	static char wordbuff[MAX_DIRECTIVE_LEN+1];
+//	static char wordbuff[MAX_DIRECTIVE_LEN+1];
 	char *tmp1;
 	char *tmp2;
 
@@ -145,10 +158,12 @@ text::getline(char *buffer)
 		global_current_file = current_file;
 		
 		DEBUG(1,1,fprintf(STDDBG,"text::getline processing %s",buffer);)
-		*(int *)wordbuff = 0; sscanf(buffer,"%16s",wordbuff);
+//		*(int *)wordbuff = 0; sscanf(buffer,"%16s",wordbuff);
 		strip(buffer);
 //		buffer[strcspn(buffer, COMMENT_LINES)]=0;
-		switch(_directive_prefices->translate_int(wordbuff)) {
+//		switch(_directive_prefices->translate_int(wordbuff)) {
+//		switch(str2enum(buffer + strspn(buffer, WHITESPACE), DIRECTIVEstr, 0)) {
+/*
 			case DI_INCL:
 				tmp1=strchr(buffer+1, DQUOT);
 				if (!tmp1) shriek (812, fmt("Forgotten quotes in file %s line %d", current_file, current_line));
@@ -172,7 +187,33 @@ text::getline(char *buffer)
 				DEBUG(0,1,fprintf(STDDBG,"text::getline default is %s\n",buffer);)
 				if (!buffer[strspn(buffer,WHITESPACE)]) continue;
 				return true;
+*/
+		if (buffer[strspn(buffer, WHITESPACE)] != PP_ESCAPE) {
+			DEBUG(0,1,fprintf(STDDBG,"text::getline default is %s\n",buffer);)
+			if (!buffer[strspn(buffer,WHITESPACE)]) continue;
+			return true;
 		}
+		if (begins(buffer, D_INCLUDE)) {
+			tmp1=strchr(buffer+1, DQUOT);
+			if (!tmp1) shriek (812, fmt("Forgotten quotes in file %s line %d", current_file, current_line));
+			tmp2=strchr(++tmp1,DQUOT);
+			if (!tmp2) shriek (812, fmt("Forgotten quotes in file %s line %d", current_file, current_line));
+			*tmp2=0;
+			subfile(tmp1);
+			continue;
+		} else if (begins(buffer, D_WARN)) {
+			if (warn) fprintf(cfg->stdshriek,
+				"%s\n",buffer+1+strcspn(buffer+1, WHITESPACE));
+			continue;
+		} else if (begins(buffer, D_ERROR)) {
+		
+			tmp1=strchr(buffer+1, DQUOT);
+			if (!tmp1) shriek (812, fmt("Forgotten quotes in file %s line %d", current_file, current_line));
+			tmp2=strchr(++tmp1,DQUOT);
+			if (!tmp2) shriek (812, fmt("Forgotten quotes in file %s line %d", current_file, current_line));
+			*tmp2=0;
+			shriek(801, tmp1);
+		} else shriek(812, fmt("Bad directive in file %s line %d", current_file, current_line));
 	}
 }
 
@@ -194,7 +235,7 @@ text::~text()
 {
 	done();
 	free(base);
-	doneprefices();
+//	doneprefices();
 };
 
 void

@@ -14,7 +14,7 @@
  *
  *	These procedures provide the input to the MATLAB-implemented 
  *	neural networks by Jana Tuckova. Their corresponding header
- *	file is elements.h and this file gets included by elements.cc.
+ *	file is unit.h and this file gets included by unit.cc.
  */
 
 #define NN_VOCAL	'A' 

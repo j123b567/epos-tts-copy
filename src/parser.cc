@@ -29,7 +29,7 @@ parser::parser(const char *filename, int mode)
 		register signed char c;
 		int i = 0;
 		text = (unsigned char *)malloc(cfg->dev_txtlen+1);
-		if(!text) shriek(664, "Parser: Out of memory");
+		if(!text) shriek(422, "Parser: Out of memory");
 		do text[i++] = c = getchar(); 
 			while(c!=-1 && c!=cfg->eof_char && i<cfg->dev_txtlen);
 		text[--i] = 0;
@@ -37,7 +37,7 @@ parser::parser(const char *filename, int mode)
 	} else { 
 		if (mode) text = (unsigned char *) strdup(filename);
 		else {
-			file *f = claim(filename, this_lang->input_dir, "rt", "input text");
+			file *f = claim(filename, this_lang->input_dir, cfg->lang_base_dir, "rt", "input text");
 			text = (unsigned char *)strdup(f->data);
 			unclaim(f);
 		}

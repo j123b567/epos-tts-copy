@@ -1,6 +1,6 @@
 /*
  *	epos/src/monolith.cc
- *	(c) 1996-98 geo@ff.cuni.cz
+ *	(c) 1996-99 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -12,8 +12,6 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License in doc/COPYING for more details.
  *
- *	Take this as an example how to call the rest of code.
- *	Delete, rewrite, edit.
  */
 
 #include "common.h"
@@ -24,20 +22,15 @@
 	int fork();
 #endif
 
-int session_uid = 0;
+// int session_uid = 0;
 
 int submain()
 {
 	unit *root;
-	parser *parsie;
 
-//	check_lib_version(VERSION);
-	parsie = cfg->input_text && *cfg->input_text ? new parser(cfg->input_text, 1)
-		: new parser(this_lang->input_file, 0);
-	root=new unit(U_TEXT, parsie);
-	delete parsie;
+	root = str2units(cfg->input_text);
 	this_lang->ruleset->apply(root);
-	fprintf(stdout,"*********************************************\n");
+//	fprintf(stdout,"*********************************************\n");
 	root->fout(NULL);
 
 	if (cfg->use_diph || cfg->show_phones) {
@@ -58,7 +51,7 @@ int submain()
 
 	if (cfg->neuronet) root->nnet_out(cfg->nnet_file, cfg->matlab_dir);
 	delete(root);
-	fprintf(stdout,"***** The End. ******************************\n");
+//	fprintf(stdout,"***** The End. ******************************\n");
 	return 0;
 }
 
@@ -69,7 +62,7 @@ int main(int argc, char **argv)
 		submain();
 		epos_done();
 		return 0;
-	} catch (exception *e) {	// this one is preferred, however.
+	} catch (any_exception *e) {	// this one is preferred, however.
 //	} catch (old_style_exc *e) {	// this one is required by the g++ bugware
 		printf("*****************\n");
 		return 4;

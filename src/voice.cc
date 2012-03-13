@@ -1,6 +1,6 @@
 /*
  *	epos/src/voice.cc
- *	(c) 1998 geo@ff.cuni.cz
+ *	(c) 1998-99 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -33,9 +33,9 @@
 #include <sys/audio.h>
 #endif
 
-#ifdef HAVE_SYS_SOUNDCARD_H
-#include <sys/soundcard.h>
-#endif
+//#ifdef HAVE_SYS_SOUNDCARD_H
+//#include <sys/soundcard.h>
+//#endif
 
 #ifdef HAVE_LINUX_KD_H
 #include <linux/kd.h>	// too unimportant
@@ -49,12 +49,12 @@
 #define O_BINARY  0
 #endif
 
-#pragma hdrstop
+//#pragma hdrstop
 
 #ifdef KDGETLED		// Feel free to disable or delete the following stuff
 inline void mark_voice(int a)
 {
-	static voices_attached = 0;
+	static int voices_attached = 0;
 	voices_attached += a;
 	int kbd_flags = 0;
 	ioctl(1, KDGETLED, kbd_flags);
@@ -77,18 +77,18 @@ inline void mark_voice(int) {};
 // int allocated_langs = 0;
 // lang **langs = NULL;
 
-voice *this_voice = NULL;
-lang *this_lang = NULL;
+// voice *this_voice = NULL;
+// lang *this_lang = NULL;
 
 #define CONFIG_LANG_DESCRIBE
 option langoptlist[] = {
-	#include "options.cc"
+	#include "options.lst"
 	{NULL}
 };
 
 #define CONFIG_INV_DESCRIBE
 option voiceoptlist[] = {
-	#include "options.cc"
+	#include "options.lst"
 	{NULL}
 };
 
@@ -96,16 +96,16 @@ option voiceoptlist[] = {
 #define CONFIG_LANG_INITIALIZE
 lang::lang(const char *filename, const char *dirname) : cowabilium()
 {
-	#include "options.cc"
-	lang_name = "(unnamed)";
+	#include "options.lst"
+	name = "(unnamed)";
 	ruleset = NULL;
 	soft_options = NULL;
 	soft_defaults = NULL;
 	n_voices = 0;
 	voices = NULL;
-	default_voice = NULL;
+	default_voice = 0;
 	load_config(filename, dirname, "language", OS_LANG, this, NULL);
-	if (!this_lang) this_lang = this;
+//	if (!this_lang) this_lang = this;
 	add_soft_opts(soft_option_names);
 	add_voices(voice_names);
 }
@@ -115,26 +115,40 @@ lang::~lang()
 	for (int i=0; i<n_voices; i++) delete voices[i];
 	if (voices) free(voices);
 	if (ruleset) delete ruleset;
-	if (soft_options) delete soft_options;
+	if (soft_options) {
+		while (soft_options->items) {
+			char *tmp = soft_options->get_random();
+			if (tmp[0] != 'V' || tmp[1] != ':')
+				tmp -= 2;
+			delete soft_options->remove(tmp);
+			delete soft_options->remove(tmp + 2);
+			free(tmp);
+		}
+		delete soft_options;
+	}
 	if (soft_defaults) free(soft_defaults);
 }
+
+/*
+ *	add_voice will horribly fail if cfg != master_context->config
+ *	(the shadow voice lists cannot grow)
+ */
 
 void
 lang::add_voice(const char *voice_name)
 {
 	char *filename = (char *)malloc(strlen(voice_name) + 6);
-	char *dirname = (char *)malloc(strlen(voice_name) + strlen(inv_dir) + 6);
+	char *dirname = (char *)malloc(strlen(name) + strlen(cfg->voice_base_dir) + 6);
 	sprintf(filename, "%s.ini", voice_name);
-	sprintf(dirname, "%s%c%s", inv_dir, SLASH, voice_name);
+	sprintf(dirname, "%s%c%s", cfg->voice_base_dir, SLASH, name);
 	if (*voice_name) {
 		if (!voices) voices = (voice **)malloc(8*sizeof (void *));
 		else if (!(n_voices-1 & n_voices) && n_voices > 4)  // if n_voices==8,16,32...
 			voices = (voice **)realloc(voices, n_voices << 1);
-		voices[n_voices++] = new voice(filename, dirname, this);
+		voices[n_voices++] = new(this) voice(filename, dirname, this);
 	}
 	free(filename);
 	free(dirname);
-	if (!default_voice && voices) default_voice = voices[0];
 }
 
 void
@@ -161,7 +175,7 @@ lang::add_soft_option(const char *optname)
 	char *dflt = strchr(optname, EQUALSIGN);
 	if (dflt) *dflt++ = 0;
 	else dflt = "";
-	char *closing = strchr(optname, CLOSING);
+	char *closing = (char *)strchr(optname, CLOSING);
 
 	option o;
 	o.opttype = O_BOOL;		// default type
@@ -241,7 +255,7 @@ lang::compile_rules()
 #define CONFIG_INV_INITIALIZE
 voice::voice(const char *filename, const char *dirname, lang *parent_lang) : cowabilium()
 {
-	#include "options.cc"
+	#include "options.lst"
 
 	if (parent_lang->soft_defaults)
 		memcpy(this + 1, parent_lang->soft_defaults,
@@ -249,9 +263,9 @@ voice::voice(const char *filename, const char *dirname, lang *parent_lang) : cow
 	
 	load_config(filename, dirname, "voice", OS_VOICE, this, parent_lang);
 	if (!parent_lang->default_voice) {
-		parent_lang->default_voice = this;
-		if (!this_voice)
-			this_voice = this;
+//		parent_lang->default_voice = this...;
+//		if (!this_voice)
+//			this_voice = this;
 	}
 	if (parent_lang->name == name) {	/* default the name to the stripped filename */
 		if (strrchr(filename, SLASH))
@@ -263,11 +277,15 @@ voice::voice(const char *filename, const char *dirname, lang *parent_lang) : cow
 		name = nname;
 	}
 
-	diphone_names = claim(dptfile, inv_dir, "rt", "diphone names");
-	
-//	buffer = 0;
-//	fd = 0;
+	diphone_names = NULL;
 	syn = NULL;
+}
+
+void
+voice::claim_diphone_names()
+{
+	if (!diphone_names && dptfile && *dptfile)
+		diphone_names = claim(dptfile, loc, cfg->inv_base_dir, "rt", "diphone names");
 }
 
 voice::~voice()
@@ -278,7 +296,7 @@ voice::~voice()
 }
 
 void *
-voice::operator new(size_t size)
+voice::operator new(size_t size, lang *parent_lang)
 {
 	int nso;
 
@@ -286,8 +304,8 @@ voice::operator new(size_t size)
 	if (size != sizeof(voice)) shriek(862, "I'm missing something");
 #endif
 	
-	if (!this_lang || !this_lang->soft_options) nso = 0;
-	else nso = this_lang->soft_options->items >> 1;
+	if (!parent_lang || !parent_lang->soft_options) nso = 0;
+	else nso = parent_lang->soft_options->items >> 1;
 	return malloc(size + nso * sizeof(void *));
 }
 

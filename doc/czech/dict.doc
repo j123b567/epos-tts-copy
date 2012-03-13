@@ -47,7 +47,7 @@ znaku '^' na zaèátku nebo '$' na konci, tady napø.
 
 Nedoporuèuje se, aby byl nahrazující výraz o moc vìt¹í, ne¾ nahrazovaný,
 nanejvý¹ asi o pìt znakù; jinak je vhodné odpovídajícím zpùsobem zvý¹it 
-safe_grow v options.cc a rekompilovat. (Pøi pøekroèení v meznì dlouhých
+safe_grow v options.lst a rekompilovat. (Pøi pøekroèení v meznì dlouhých
 slovech mù¾e dojít k pøeteèení pole unit::subst::result). Zvý¹ení defaultu
 by nemìlo mít ¾ádný nepøíznivý vliv.
 

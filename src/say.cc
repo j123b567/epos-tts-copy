@@ -1,5 +1,5 @@
 /*
- *	(c) 1998 Jirka Hanika <geo@ff.cuni.cz>
+ *	(c) 1998-99 Jirka Hanika <geo@ff.cuni.cz>
  *
  *	This single source file src/say.cc, but NOT THE REST OF THIS PACKAGE,
  *	is considered to be in Public Domain. Parts of this single source file may be
@@ -16,16 +16,18 @@
  *	compiler just to avoid additional configure complexity.
  */
 
+#define THIS_IS_A_TTSCP_CLIENT
+
+#include "config.h"	/* You can usually remove this item */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 
-#include "config.h"	/* You can usually remove this item */
-
 #define TTSCP_PORT	8778
 
-const char *COMMENT_LINES = "#;\n";
+const char *COMMENT_LINES = "#;\r\n";
 const char *WHITESPACE = " \t";
 
 const char *output_file = "/dev/dsp";
@@ -33,10 +35,8 @@ const char *output_file = "/dev/dsp";
 int ctrld, datad;		/* file descriptors for the control and data connections */
 char *data = NULL;
 
-#define SCRATCH_SPACE 16384
-char scratch[SCRATCH_SPACE + 2];
-
-char *handle;
+char *ch;
+char *dh;
 
 void shriek(char *txt)
 {
@@ -51,11 +51,12 @@ void shriek(int, char *txt)
 
 
 #define EPOS_COMMON_H	// this is a lie
+#include "exc.h"
 #include "client.cc"
 
-int get_result()
+int get_result(int sd)
 {
-	while (sgets(scratch, SCRATCH_SPACE, ctrld)) {
+	while (sgets(scratch, SCRATCH_SPACE, sd)) {
 		scratch[SCRATCH_SPACE] = 0;
 //		printf("Received: %s\n", scratch);
 		switch(*scratch) {
@@ -76,7 +77,8 @@ int get_result()
 			case '0': printf("%s\n", scratch); shriek("Unhandled response code");
 			default : ;
 		}
-		printf("%s\n", scratch+strspn(scratch, "0123456789 "));
+		char *o = scratch+strspn(scratch, "0123456789 ");
+		if (*scratch && *o) printf("%s\n", o);
 	}
 	return 8;	/* guessing */
 }
@@ -85,40 +87,40 @@ void say_data()
 {
 	if (!data) data = "No.";
 	sputs("strm $", ctrld);
-	sputs(handle, ctrld);
+	sputs(dh, ctrld);
 	sputs(":raw:rules:diphs:synth:", ctrld);
 	sputs(output_file, ctrld);
-	sputs("\n", ctrld);
+	sputs("\r\n", ctrld);
 	sputs("appl ", ctrld);
 	sprintf(scratch, "%d", strlen(data));
 	sputs(scratch, ctrld);
-	sputs("\n", ctrld);
+	sputs("\r\n", ctrld);
 	sputs(data, datad);
-	if (get_result() > 2) shriek("Could not set up a stream");
-	if (get_result() > 2) shriek("Could not apply a stream to text");
+	if (get_result(ctrld) > 2) shriek("Could not set up a stream");
+	if (get_result(ctrld) > 2) shriek("Could not apply a stream to text");
 }
 
 void trans_data()
 {
 	if (!data) data = "No.";
 	sputs("strm $", ctrld);
-	sputs(handle, ctrld);
+	sputs(dh, ctrld);
 	sputs(":raw:rules:print:$", ctrld);
-	sputs(handle, ctrld);
-	sputs("\n", ctrld);
+	sputs(dh, ctrld);
+	sputs("\r\n", ctrld);
 	sputs("appl ", ctrld);
 	sprintf(scratch, "%d", strlen(data));
 	sputs(scratch, ctrld);
-	sputs("\n", ctrld);
+	sputs("\r\n", ctrld);
 	sputs(data, datad);
-	get_result();
-	get_result();
+	get_result(ctrld);
+	get_result(ctrld);
 }
 
 void send_option(char *name, char *value)
 {
 	xmit_option(name, value, ctrld);
-	get_result();
+	get_result(ctrld);
 }
 
 #define CMD_LINE_OPT "-"
@@ -169,14 +171,21 @@ void send_cmd_line(int argc, char **argv)
 				case 'H': send_option("long_help", "true");	/* fall through */
 				case 'h': dump_help(); exit(0);
 				case 'i': send_option("irony", "true"); break;
-				case 'k': sputs("down\n", ctrld);
-					  get_result();
+				case 'k': FILE *f;
+					  f = fopen("/var/run/epos.pwd", "r");
+					  if (!f) shriek("Cannot open /var/run/epos.pwd");
+					  sputs("pass ", ctrld);
+					  scratch[fread(scratch, 1, 1024, f)] = 0;
+					  sputs(scratch, ctrld);
+					  sputs("down\r\n", ctrld);
+					  get_result(ctrld);
+					  get_result(ctrld);
 					  exit(0);
-				case 'l': sputs("show languages\nshow voices\n", ctrld);
+				case 'l': sputs("show languages\r\nshow voices\r\n", ctrld);
 					  printf("Languages available:\n");
-					  get_result();
+					  get_result(ctrld);
 					  printf("Voices available for the current language:\n");
-					  get_result();
+					  get_result(ctrld);
 					  exit(0);
 			//	case 'n': cfg->rules_file="nnet.rul";
 			//		  if (this_lang)
@@ -215,11 +224,20 @@ void send_cmd_line(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	datad = connect_socket(0, TTSCP_PORT);
-	handle = data_conn(datad);
+#ifdef HAVE_WINSOCK2_H
+	if (WSAStartup(0x200, (LPWSADATA)scratch)) shriek(464, "No winsock");
+#endif
 	ctrld = connect_socket(0, TTSCP_PORT);
+	ch = get_handle(ctrld);
+	datad = connect_socket(0, TTSCP_PORT);
+	sputs("data ", datad);
+	sputs(ch, datad);
+	sputs("\r\n", datad);
+	free(ch);
+	dh = get_handle(datad);
+	get_result(datad);
 	send_cmd_line(argc, argv);
-//	sputs("brk\n", ctrld);
+//	sputs("intr\r\n", ctrld);
 
 // #ifdef HAVE_GETENV
 	FILE *f = fopen(getenv("TTSCP_USER"), "rt");
@@ -229,7 +247,7 @@ int main(int argc, char **argv)
 			fgets(scratch, SCRATCH_SPACE, f);
 			if (*scratch && !strchr(COMMENT_LINES, scratch[strspn(scratch, WHITESPACE)])) {
 				sputs(scratch, ctrld);
-				get_result();
+				get_result(ctrld);
 			}
 		}
 		fclose(f);
@@ -240,10 +258,10 @@ int main(int argc, char **argv)
 	trans_data();
 //	printf("\n");
 	sputs("delh ", ctrld);
-	sputs(handle, ctrld);
-	sputs("\ndone\n", ctrld);
-	get_result();
-	get_result();
+	sputs(dh, ctrld);
+	sputs("\r\ndone\r\n", ctrld);
+	get_result(ctrld);
+	get_result(ctrld);
 	close(datad);
 	close(ctrld);
 	return 0;
