@@ -2,6 +2,8 @@
 # pøíklad øešení jednoduchých znaèek
 
 +	~plus~
+\-	~až~
+\m	~mínus~
 =	~rovná~se~
 /	~lomeno~
 @	~zavináè~
@@ -23,5 +25,3 @@ _	~podtržítko~
 `	~zpìtný~apostrof~
 \\	~zvrácené~lomítko~
 
-
-#  pozor:  -	mínus zatím slouží jen jako interpunkce, atp.

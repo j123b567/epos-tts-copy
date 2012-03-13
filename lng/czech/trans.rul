@@ -90,12 +90,17 @@ regress  ${upper_case}>${lower_case}($everywhere)			colon
  progress  0>S(!S_szšž)	 colon  
  progress  S>0(!_!0)     word   ; "S" jen pøed hranicí slov, za níž je sykavka
  progress  0>S(0_s)	 colon	; "S" pøed první hláskou v klausi
+ inside  P
+ {
+	prep	"Sse,se seS,se SseS,se"	  ; "se" jako pøedložka
+ }
+ progress  S>0($everywhere)
 
  inside	 P			word
  {
 	prep	preps.dic	word
  }
- progress  S>0($everywhere)
+ progress  P>\ ($everywhere)	word	word
 
  prep	nonsyl.dic		syll
 

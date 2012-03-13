@@ -53,4 +53,4 @@ $sonority  = 0'<$fric$afric${stop}$nasal<lrj<$vowel
  regress   q>0(!_0)
  regress   h>0($long_!)		syll
 
- diphones  kadlec.dph		tex
+ diphones  kadlec.dph		colo

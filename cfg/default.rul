@@ -32,7 +32,7 @@ $prosody   = ${base_dir}/${prosody_dir}
 
  if      $irony		sent
  {
-	inside  , colon		; tohle nefunguje rozumnì
+	inside  ,- colon		; tohle nefunguje rozumnì
 	{
 		prosody  $prosody/ir_unter.dic colon phone
 #		debug pause
@@ -46,7 +46,7 @@ $prosody   = ${base_dir}/${prosody_dir}
 	regress   L>_($everywhere) 		sent	word
  }
 
- inside  .:   sent    ; Následující jen pro oznamovací vìty a doplòovací otázky
+ inside  .:\~   sent    ; Následující jen pro oznamovací vìty a doplòovací otázky
  {
 	inside   :   sent
 	{
