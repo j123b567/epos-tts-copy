@@ -418,9 +418,9 @@ inside	\#	phone
 5x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
 
 if   kadlec_dph
-	diphones  kadlec.dph    colon
+	segments  kadlec.dph    colon
 if   !kadlec_dph
-	diphones  traditnl.dph  colon
+	segments  traditnl.dph  colon
 
 #
 #  mírné vyhlazování se zejména sna¾í, aby hranièní difony

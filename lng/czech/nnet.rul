@@ -8,7 +8,7 @@
 
 ;#warn Now applying extra nnet rules
 
- diphones ~				; pryè s difony
+ segments ~				; pryè s difony
 
  regress 0>%(!_0) word			; pøidat na konce slov procentítka
 ;dosud: subst  neurpunc.dic  syll
