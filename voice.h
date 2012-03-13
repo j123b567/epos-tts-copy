@@ -66,6 +66,7 @@ struct voice
 	char *buffer;
 	int fd;		/* This is a file descriptor to write the samples to.
 			 * Can also be an open device or a socket.
+			 * -1 means "busy, don't use" (daemon code sets this)
 			 */
 /*
  *	CHANNEL_TYPE channel;	// mono, first, second, both

@@ -18,8 +18,10 @@
  *
  */
 
+#ifndef SS_KTD_H
+#define SS_KTD_H
+
 #define  sample2_t	unsigned char
-//#define T_SAMPL unsigned char
 
 typedef struct
   {
@@ -43,8 +45,8 @@ class ktdsyn : public synth
 {
    public:
 	double buf[9];
-	int vyska;
-	int tempo;
+//	int vyska;
+//	int tempo;
 	
 	//   etc.    FIXME??
 
@@ -59,9 +61,10 @@ class ktdsyn : public synth
 	int dif2psl (char *, char *);
 	int op_psl (char *, sample2_t *);
 
-	     ktdsyn (int, int);
+//	     ktdsyn (int, int);
+	     ktdsyn (voice *);
 	    ~ktdsyn ();
-	void syndiph (voice *v, diphone d);
+	virtual void syndiph (voice *v, diphone d);
 	
 //	int sampel2file ();
 //	int sampel2wav ();
@@ -79,26 +82,4 @@ class ktdsyn : public synth
 //	T_SAMPL *sampel;
 };
 
-/*
-class Kadlec:public ktdsynteza
-{
-	private:
-	USEK U[1000];
-	int uind, pocimp, peri, pocp;
-	double delka, smer, pomr;
-	int po_u;			//pocet usekov
-
-	int kw;			// smernik na aktualnu poziciu vo vystupnom poli
-	int fr_vz;			//frekvencia vzorkovania
-
-	int dif2psl (char *, char *);
-	int op_psl (char *, sample2_t *);
-
-	public:
-	Kadlec (int, int);		// konstruktor
-
-	void ktdsyndif (diphone d);
-	~Kadlec ();
-
-};
-*/
+#endif		// SS_KTD_H

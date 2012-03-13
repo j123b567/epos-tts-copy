@@ -180,6 +180,7 @@ them will consist of digits only and will be space-terminated.
 360	command ignored (possibly not fully implemented)
 
 411	command not recognized
+421	output voice busy
 441	no such option
 442	help not available
 

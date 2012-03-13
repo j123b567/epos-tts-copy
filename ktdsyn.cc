@@ -37,12 +37,11 @@
 
 extern double buf[6];
 
-ktdsyn::ktdsyn (int v, int t)
+//ktdsyn::ktdsyn (int v, int t)
+ktdsyn::ktdsyn (voice *)
 {
 	pocet_vzorku=0;
 	
-	vyska = v;
-	tempo = t;
 	kw = 100;
 	fr_vz = 8000;
 	po_u = 0;
@@ -109,13 +108,13 @@ void ktdsyn::syndiph(voice *v, diphone d)
 	op_psl (m_sub, s_psl);
 	uind = d.code;
 	pocimp = U[d.code].imp;
-	delka = ((double) d.t / 100 * (double) U[d.code].delk / 100 * (double) tempo / 10 + 0.5);
-	peri = (int) (fr_vz / (((double) d.f / 100 * vyska)) + 0.5);
+	delka = ((double) d.t / 100 * (double) U[d.code].delk / 100 * (double) v->init_t * 40 / 10 + 0.5); // ugly as microsoft's code
+	peri = (int) (fr_vz / (((double) d.f / 100 * v->init_f)) + 0.5);
 	pocp = (int) (delka / peri);
 
 
 // printf("\nU=%d:%s, imp=%d pocp=%i delka=%f peri=%i - ",uind,U[uind].jm,pocimp,pocp,delka,peri); 
-// printf("d=%d p=%d t=%d m=%d v=%d - ",U[uind].delk,d.t,tempo,d.f,vyska); 
+// printf("d=%d p=%d t=%d m=%d v=%d - ",U[uind].delk,d.t,v->init_t,d.f,v->init_f); 
 
 	if (pocp > 1) {
 		smer = (pocimp - 1) / (pocp - 1);

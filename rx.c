@@ -35,6 +35,10 @@
 #include <config.h>
 #endif
 
+#ifndef  __STDC__
+#define  __STDC__  1
+#endif
+
 #if defined(STDC_HEADERS) && !defined(emacs)
 #include <stddef.h>
 #else

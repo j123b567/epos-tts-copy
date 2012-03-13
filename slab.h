@@ -60,7 +60,7 @@ inline slab<size>::~slab()
 		cells -= SLAB_FRAGMENT_SIZE - 1;
 	}
 	free(tmp2);
-	if (cells) shriek("%sHash slab lost %d cells", "", cells);
+	if (cells) shriek("%sHash slab lost %d cells", "", -cells);
 	tail = NULL;
 	slices = NULL;
 }

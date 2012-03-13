@@ -19,7 +19,9 @@
 #include "common.h"
 
 #ifdef HAVE_UNISTD_H		// fork() only
-	#include <unistd.h>	// in DOS, fork(){return -1;} is supplied in ss.cpp
+	#include <unistd.h>
+#else
+	int fork();
 #endif
 
 int session_uid = 0;

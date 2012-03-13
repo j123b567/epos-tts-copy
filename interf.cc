@@ -146,7 +146,7 @@ fopen(const char *filename, const char *flags, const char *reason)
 	switch (*flags) {
 		case 'r': message = "Failed to read %s from %s: %s"; break;
 		case 'w': message = "Failed to write %s to %s: %s"; break;
-		default : shriek("Bad flags for %s", reason);
+		default : shriek("Bad flags for %s", reason); message = NULL;
 	}
 	f = fopen(filename, flags);
 	if (!f) shriek(message, reason, filename, strerror(errno));
@@ -319,16 +319,8 @@ char *compose_pathname(const char *filename, const char *dirname)
 	return pathname;
 }
 
-
 #undef IS_NOT_SLASH
 
-
-struct freadin_file
-{
-	char *data;
-	int ref_count;
-	~freadin_file();
-};
 
 freadin_file::~freadin_file()
 {
@@ -381,7 +373,7 @@ char *freadin(const char *filename, const char *dirname, const char *flags, cons
  *		before changing it. A nice space-saving technique.
  */
 
-int cow(void *p, int size)
+void cow(void *p, int size)
 {
 	void *src;
 	void **ptr = (void **)p; 

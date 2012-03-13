@@ -27,7 +27,7 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@ff.cuni.cz"
-#define VERSION     "2.1.0"
+#define VERSION     "2.1.1"
 
 #include "config.h"
 
@@ -47,31 +47,6 @@
 
 #define WANT_REGEX	      // About always, we want to use the regex code
 
-/**************
-#ifdef HAVE_LIBRX	      // Personally, I distrust the following stuff.
-   extern "C" {
-	#ifdef HAVE_RX_H
-	    #include <rx.h>
-	#else
-	    #include "rx.h"
-	#endif
-   }
-#else
-   #ifdef HAVE_LIBREGEX
-   extern "C" {
-	#ifdef HAVE_REGEX_H
-	   #include <regex.h>    // You need to have regex already installed
-	#else
-	   #include "regex.h"
-	#endif
-   }
-   #else
-      #ifdef WANT_REGEX
-	#error regex code misconfigured		// see this? Blame geo@ff.cuni.cz
-      #endif
-   #endif
-#endif
-***************/
 
 #ifdef WANT_REGEX
    extern "C" {
@@ -112,7 +87,7 @@ struct unit;
 #include "text.h"
 #include "voice.h"
 #include "interf.h"             //See interf.h and even interf.cc for other headerities
-#include "client.h"
+//#include "client.h"
 #include "parser.h"
 #define PARSER simpleparser
 #include "elements.h"

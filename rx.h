@@ -25,6 +25,10 @@
 #ifndef __REGEXP_LIBRARY_H__
 #define __REGEXP_LIBRARY_H__
 
+#ifndef  __STDC__
+#define  __STDC__  1
+#endif
+
 /* Allow the use in C++ code.  */
 #ifdef __cplusplus
 extern "C" {
