@@ -31,8 +31,8 @@ enum SYNTH_TYPE {
 #define STstr "none:internet:::lpc-float:lpc-int:lpc-vq::ktd::ptd:"
 #define ST_MAX (S_PTD+1)
 
-enum CHANNEL_TYPE {CT_MONO, CT_FIRST, CT_SECOND, CT_BOTH};
-#define CHANNEL_TYPEstr "mono:first:second:both:"
+enum CHANNEL_TYPE {CT_MONO, CT_LEFT, CT_RIGHT, CT_BOTH};
+#define CHANNEL_TYPEstr "mono:left:right:both:"
 
 struct cowabilium
 {
@@ -72,7 +72,7 @@ struct lang : public cowabilium
 
 struct voice : public cowabilium
 {
-   #define CONFIG_INV_DECLARE
+   #define CONFIG_VOICE_DECLARE
    #include "options.lst"
 
    public:

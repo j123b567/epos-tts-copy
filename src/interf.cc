@@ -54,6 +54,8 @@ char *esctab = NULL;
 
 int unused_variable;
 
+void *xmall_ptr_holder;
+
 
 void shriek(int code, const char *s) 
 {	/* Art (c) David Miller */
@@ -144,6 +146,12 @@ char *fmt(const char *s, int t, const char *u)
 	return error_fmt_scratch;
 }
 
+char *fmt(const char *s, int t, const char *u, const char *v)
+{
+	sprintf(error_fmt_scratch, s, t, u, v);
+	return error_fmt_scratch;
+}
+
 void hash_shriek(const char *s1, const char *s2, int i)
 {
 	shriek(812, fmt(s1, s2, i));	//FIXME?
@@ -224,7 +232,10 @@ UNIT str2enum(const char *item, const char *list, int dflt)
 	if (!item)  return (UNIT)dflt;
 	for(; i && *i; j++,i++) {
 		if (!*j && (*i==LIST_DELIM)) return UNIT(k);
-		if (LOWERCASED(*i) != LOWERCASED(*j)) k++, j=item-1, i=strchr(i,LIST_DELIM);
+		if (LOWERCASED(*i) != LOWERCASED(*j)) {
+			k++, j=item-1, i=strchr(i,LIST_DELIM);
+			if (!i) break;
+		}
 //		DEBUG(0,0,fprintf(STDDBG,"str2enum %s %s %d\n",i,j,k);)
 	}
 	if(i && j && !*j) return (UNIT)k;
@@ -239,7 +250,7 @@ char _enum2str_buff[MAX_SYMBOLIC];
 char *enum2str(int item, const char *list)
 {
 	const char *i;
-//	char *b=_enum2str_buff;
+//	char *b = _enum2str_buff;
 	int j = 0;
 	for(i=list; *i && item+1; i++) {
 		if (*i==LIST_DELIM) {
@@ -252,9 +263,16 @@ char *enum2str(int item, const char *list)
 				shriek(461, fmt("Symbolic %.20s... too long", _enum2str_buff));
 		}
 	}
-	if (*i && item>0) shriek(446, fmt("enum2str should stringize %d",item));
-	return _enum2str_buff;
+
+	if (*i)	return _enum2str_buff;
+	if (item == 0) {
+		_enum2str_buff[j] = 0;
+		return _enum2str_buff;
+	}
+	return NULL;	// shriek(446, fmt("enum2str should stringize %d",item));
 }
+
+/*************
 
 hash *str2hash(const char *list, unsigned int max_item_len)
 {
@@ -273,6 +291,8 @@ hash *str2hash(const char *list, unsigned int max_item_len)
 	return h;
 }
 
+***********/
+
 /*
  *  In a sense, str2units is the main routine responsible for the whole
  *  conversion of input text to the textual structure of the text just
@@ -286,7 +306,7 @@ unit *str2units(const char *text)
 
 	if (text && *text) parsie = new parser(text, 1);
 	else parsie = new parser(this_lang->input_file, 0);
-	root=new unit(U_TEXT, parsie);
+	root=new unit(cfg->text_level, parsie);
 	delete parsie;
 	return root;
 }
@@ -297,12 +317,20 @@ char *fntab(const char *s, const char *t)
 {
 	char *tab;
 	int tmp;
-	tab=(char *)malloc(256); for(tmp=0; tmp<256; tmp++) tab[tmp] = (unsigned char)tmp;  //identity mapping
+	tab=(char *)xmalloc(256); for(tmp=0; tmp<256; tmp++) tab[tmp] = (unsigned char)tmp;  //identity mapping
 	if(cfg->paranoid && (tmp=strlen(s)-strlen(t)) && t[1]) 
 		shriek(811, fmt(tmp>0 ? "Not enough (%d) resultant elements"
 					: "Too many (%d) resultant elements",abs(tmp)));
 	if(!t[1]) for (tmp=0; s[tmp]; tmp++) tab[(unsigned char)s[tmp]]=*t;
 	else for (tmp=0;s[tmp]&&t[tmp];tmp++) tab[(unsigned char)(s[tmp])]=t[tmp];
+
+//	int totl=0;
+//	for (int bus=0; bus<256; bus++) if ((unsigned char)(tab[bus])!=bus) {
+//		totl++;
+//		printf("...%c(%d) changes to %c(%d)\n", bus, bus, tab[bus], tab[bus]);
+//	}
+//	printf("Having totl %d\n", totl);
+
 	return(tab);
 }
 
@@ -312,7 +340,7 @@ bool *booltab(const char *s)
 	bool *tab;
 	const char *tmp;
 	bool mode = true;
-	tab = (bool *)calloc(sizeof(bool), 256);         //should always return zero-filled array
+	tab = (bool *)xcalloc(sizeof(bool), 256);         //should always return zero-filled array
 	
 	DEBUG(0,0,fprintf(STDDBG, "gonna booltab out of %s\n", s););
 	if (*s==EXCL) memset(tab, true, 256*sizeof(bool));
@@ -342,7 +370,7 @@ char *compose_pathname(const char *filename, const char *dirname, const char *tr
 
 	if (!filename || !dirname || !treename) return strdup("");
 	if (!*dirname) dirname = ".";
-	pathname = (char *)malloc(strlen(filename) + strlen(dirname) + strlen(treename) + strlen(cfg->base_dir) + 4);
+	pathname = (char *)xmalloc(strlen(filename) + strlen(dirname) + strlen(treename) + strlen(cfg->base_dir) + 4);
 	if (IS_NOT_SLASH(*filename) && (filename[0]!='.' || IS_NOT_SLASH(filename[1]))) {
 		if (IS_NOT_SLASH(*dirname)) {
 			if (IS_NOT_SLASH(*treename)) {
@@ -423,7 +451,7 @@ inline bool reclaim(file *ff, const char *flags, const char *description)
 	ff->timestamp = ts;
 	f = fopen(ff->filename, flags, description);
 	fseek(f, 0, SEEK_END);
-	ff->data = (char *)realloc(ff->data, tmp = ftell(f) + 1);
+	ff->data = (char *)xrealloc(ff->data, tmp = ftell(f) + 1);
 	rewind(f);
 	ff->data[fread(ff->data, 1, tmp, f)] = 0;
 	fclose(f);
@@ -460,7 +488,7 @@ file *claim(const char *filename, const char *dirname, const char *treename, con
 	if (!f && !description) return NULL;
 	if (fseek(f, 0, SEEK_END)) tmp = cfg->dev_txtlen;
 	else tmp = ftell(f) + 1;
-	data = (char *)malloc(tmp);
+	data = (char *)xmalloc(tmp);
 	rewind(f);
 	tmp = fread(data, 1, tmp, f);
 	if (tmp == -1) {
@@ -516,7 +544,7 @@ static inline void release(char **buffer)
 static inline void compile_rules()
 {
 	int tmp = cfg->default_lang;
-	_next_rule_line = (char *)malloc(cfg->max_line+1);
+	_next_rule_line = (char *)xmalloc(cfg->max_line+1);
 	for (int i=0; i<cfg->n_langs; i++) {
 		cfg->default_lang = i;
 		if (cfg->langs[i]->n_voices)
@@ -581,10 +609,10 @@ void epos_init()	 //Some global sanity checks made here
 	if (cfg->stdshriek_file && *cfg->stdshriek_file)
 		cfg->stdshriek = fopen(cfg->stdshriek_file, "w", "error messages");
 		
-	if (!_subst_buff) _subst_buff = (char *)malloc(MAX_GATHER+2);
-	if (!_gather_buff) _gather_buff = (char *)malloc(MAX_GATHER+2);
-	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)malloc(cfg->max_line+1); 
-	if (!scratch) scratch = (char *)malloc(cfg->scratch+1);
+	if (!_subst_buff) _subst_buff = (char *)xmalloc(MAX_GATHER+2);
+	if (!_gather_buff) _gather_buff = (char *)xmalloc(MAX_GATHER+2);
+	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)xmalloc(cfg->max_line+1); 
+	if (!scratch) scratch = (char *)xmalloc(cfg->scratch+1);
 	
 	compile_rules();
 
@@ -706,7 +734,7 @@ void end_of_eternity()
 void *
 operator new(size_t n)
 {
-	void *ret = malloc(n);
+	void *ret = xmalloc(n);
 	return ret;
 }
 
@@ -723,7 +751,7 @@ operator delete(void * cp)
 
 char *strdup(const char*src)
 {
-	return strcpy((char *)malloc(strlen(src)+1), src);
+	return strcpy((char *)xmalloc(strlen(src)+1), src);
 }
 
 #endif   // ifdef HAVE_STRDUP

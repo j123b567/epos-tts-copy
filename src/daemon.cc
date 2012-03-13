@@ -126,7 +126,7 @@ context::context(int std_in, int std_out)
 	config->sd_out = std_out;
 	DEBUG(1,11,fprintf(STDDBG, "new context uses fd %d and %d\n", std_in, std_out);)
 
-	sgets_buff = (char *)malloc(config->max_net_cmd);
+	sgets_buff = (char *)xmalloc(config->max_net_cmd);
 	*sgets_buff = 0;
 }
 
@@ -339,6 +339,9 @@ static void daemonize()
 	master_context = new context(-1, DARK_ERRLOG);
 	accept_conn = new a_accept();
 	qipc_proxy_init();
+
+	data_conns->dupkey = data_conns->dupdata = ctrl_conns->dupkey
+		= ctrl_conns->dupdata = false;
 }
 
 #undef UNIX
@@ -388,17 +391,14 @@ static bool select_socket(bool sleep)
 }
 
 #define SCHED_SATIATED	64
-#define SCHED_WARN	 4
+#define SCHED_WARN	30
 
 bool server_shutting_down = false;
 
-static void server()
+void server()
 {
 	int fd;
 	daemonize();
-	data_conns->dupkey = data_conns->dupdata = ctrl_conns->dupkey
-		= ctrl_conns->dupdata = false;
-
 	while (!server_shutting_down) {
 		while (runnable_agents > SCHED_SATIATED
 					|| runnable_agents && !select_socket(false)) {
@@ -411,9 +411,15 @@ static void server()
 			DEBUG(2,11,fprintf(STDDBG, a ? "Scheduling select(%d)ed agent\n"
 					: "sche sche scheduler\n", fd);)
 			sleep_table[fd] = NULL;
+			bool pushing = FD_ISSET(fd, &push_set);
 			FD_CLR(fd, &block_set);
 			FD_CLR(fd, &push_set);
 			a->timeslice();
+			if (a->dep && sleep_table[fd] == NULL) {
+				sleep_table[fd] = a->dep;
+				FD_SET(fd, pushing ? &push_set : &block_set);
+				a->dep = NULL;
+			}
 		}
 	}
 }

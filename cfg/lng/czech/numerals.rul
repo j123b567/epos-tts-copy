@@ -3,11 +3,16 @@
 # corresponding Czech numerals.
 #
 # This file is full of uglish hacks. Capital X is used
-# for marking the end of the number throughout. We should
+# for marking the end of the number throughout, but don't
+# confuse that with \X.
+#
+# We should
 # not use regress and progress rules, as these don't work
 # consistently with zeroes.
 
 regex	/([0-9])\ ([0-9][0-9][0-9])/\1\2/	colon
+
+regex	/([0-9])\ ([0-9])/\1\X\2/	colon	; FIXME: comment
 
 regex	/^(0*)0/\1nula|/	word
 

@@ -51,7 +51,7 @@ void strip(char *s)
 		switch (*r = *t) {
 			case ';':
 			case '#':
-				if (s != r && !strchr(WHITESPACE, r[-1])) break;
+				if (s != r && !strchr(WHITESPACE, r[-1])) break;	// ??? nothing happens
 			case '\n':
 //				while (r>s && strchr(WHITESPACE, *--r));
 				*r = 0;
@@ -59,7 +59,8 @@ void strip(char *s)
 			case ESCAPE:
 				if (!*++t || *t=='\n') shriek(462, "text.cc still cannot split lines");
 				if (strchr(cfg->token_esc, *t)) *r = esctab[*t];
-				else r++;
+				else t--;
+//				else r++;
 				break;
 			default:;
 		}

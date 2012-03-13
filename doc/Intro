@@ -48,6 +48,7 @@ DOS:	(in UNIX) invoke "make dos" in the src directory (see below), then
 "make dos1250"  ditto, Code Page 1250
 "make dos1252"  ditto, Code Page 1252
 "make dos"	to list the other possible encodings
+"make monolith" to compile "eposm" (the not recommended monolithic linkage)
 
 
 ------------------------------------------------------------------------------ 

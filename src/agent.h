@@ -79,9 +79,12 @@ struct pend_ll
 	pend_ll(void *id, pend_ll *inext) { d = id; next = inext; };
 };
 
+// void server();	// friend decl
+
 class agent
 {
 	friend stream;
+	friend void server();
 
 	virtual void run() = 0;	/* run until out of input			*/
    protected:
@@ -92,6 +95,7 @@ class agent
 	int pendcount;
 	agent *next;
 	agent *prev;
+	agent *dep;
 	virtual bool apply(int size);	/* process <size> data from input to output	*/
 	virtual void finis(bool err);	/* tell the stream apply() has finished	*/
 	void schedule();	/* add this agent to the run queue	*/

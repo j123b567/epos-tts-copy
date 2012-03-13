@@ -74,7 +74,8 @@ struct option
 	OPT_STRUCT structype	BIT_FIELD(2);
 	ACCESS 	readable	BIT_FIELD(2);
 	ACCESS 	writable	BIT_FIELD(2);
-//	int reserved		BIT_FIELD(2);
+	bool action		BIT_FIELD(1);
+	bool per_level		BIT_FIELD(1);
 	short int offset;
 };
 

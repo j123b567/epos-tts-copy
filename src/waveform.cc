@@ -77,6 +77,44 @@ inline void mark_voice(int) {};
 #endif
 
 
+#define HEADER_HEADER_SIZE  8
+#define WAVE_HEADER_SIZE  ((long)(sizeof(wave_header) - HEADER_HEADER_SIZE))
+
+
+struct cue_point
+{
+	long name;
+	long pos;
+	char chunk[4];
+	long chunkstart;
+	long blkstart;
+	long sample_offset;
+};
+
+cue_point cue_point_template = { 0, 0, "data", 0, 0, 0 };
+
+#define ADTL_MAX_ITEM		64
+#define ADTL_INITIAL_BUFF	256	/* must be at least ADTL_MAX_ITEM */
+
+struct ltxt
+{
+	char txt[4];
+	long len;
+	long cp_name;
+	long sample_count;
+	char purpose[4];
+	short country;
+	short language;
+	short dialect;
+	short codepage;
+};
+
+#define USA	 1		// FIXME (etc.)
+#define English  9
+#define American 1
+#define Boring_CodePage	437
+
+ltxt ltxt_template = { "ltxt", 0, 0, 0, "dphl", USA, English, American, Boring_CodePage };
 
 wavefm::wavefm(voice *v)
 {
@@ -95,22 +133,29 @@ wavefm::wavefm(voice *v)
 	hdr.wlenB = samp_size_bytes; hdr.wlenb = v->samp_size;
 	hdr.xnone = 0x010;
 	hdr.written_bytes = 0;
-	hdr.flen = hdr.written_bytes + 0x24;
+	hdr.total_length = hdr.written_bytes - HEADER_HEADER_SIZE;
 //	write(fd, wavh, sizeof(wave_header));         //zapsani prazdne wav hlavicky na zacatek souboru
 
 	fd = -1;
 	written = 0;
 //	buff_size = cfg->buffer_size;
-//	buffer = (char *)malloc(buff_size);
+//	buffer = (char *)xmalloc(buff_size);
 	buff_size = 0;
 	buffer = NULL;
 	buffer_idx = 0;
+
+	current_cp = adtl_offs = 0;
+	cp_buff = NULL;
+	adtl_buff = NULL;
+	last_offset = 0;
 }
 
 wavefm::~wavefm()
 {
 	if (fd != -1) detach();
-	free(buffer);
+	if (buffer) free(buffer);
+	if (cp_buff) free(cp_buff);
+	if (adtl_buff) free(adtl_buff);
 }
 
 
@@ -299,8 +344,7 @@ wavefm::attach(int d)
 	fd = d;
 	hdr.written_bytes = 0;
 	if (ioctlable(fd)) ioctl_attach();			// FIXME
-	if (buff_size) buffer = buffer ? (char *)realloc(buffer, buff_size) : (char *)malloc(buff_size);
-	if (cfg->wav_hdr && !ioctlable(fd)) skip_header();
+	if (buff_size) buffer = buffer ? (char *)xrealloc(buffer, buff_size) : (char *)xmalloc(buff_size);
 	DEBUG(0,9,fprintf(STDDBG,"(attached, now flushing predata)\n");)
 	if (buffer_idx) flush();
 	DEBUG(0,9,fprintf(STDDBG,"(predata flushed)\n");)
@@ -339,8 +383,8 @@ wavefm::detach()
 /*
  *	flush() is called whenever it is desirable to write out some data.
  *	This method can be called even for a detached waveform. The semantics
- *	is to write() out as much data as possible, and to have at least two
- *	bytes of buffer space available upon return.
+ *	is to write() out as much data as possible, and to have at least four
+ *	bytes of buffer space available upon return (two would suffice btw).
  *
  *	This implementation writes out as much data as possible; if that is
  *	zero (detached waveform or out of kernel buffers), the buffer
@@ -358,9 +402,13 @@ wavefm::flush()
 {
 	written = 0;
 
+	if (fd != -1 && hdr.total_length < WAVE_HEADER_SIZE) {
+		if (cfg->wav_hdr && !ioctlable(fd)) skip_header();
+	}
+
 	if (buff_size == 0) {
 		buff_size = cfg->buffer_size;
-		buffer = (char *)malloc(buff_size);
+		buffer = (char *)xmalloc(buff_size);
 		return false;
 	}
 	if (buffer_idx == 0) {
@@ -370,11 +418,10 @@ wavefm::flush()
 	if (fd == -1 || 1 > (written = ywrite(fd, buffer, buffer_idx))) {
 		DEBUG(2,9,fprintf(STDDBG, "Flushing the signal (deferred)\n");)
 		written = 0;
-		if (buffer_idx + 2 <= buff_size)
+		if (buffer_idx + 4 <= buff_size)
 			return true;
 		buff_size <<= 1;
-		buffer = (char *)realloc(buffer, buff_size);
-		if (!buffer) shriek(422, "out of memory");
+		buffer = (char *)xrealloc(buffer, buff_size);
 		return true;
 	}
 	DEBUG(2,9,fprintf(STDDBG, "Flushing the signal to device\n");)
@@ -407,14 +454,18 @@ wavefm::flush()
 void
 wavefm::skip_header()
 {
-	if (lseek(fd, sizeof(wave_header), SEEK_SET) == -1)
-		ywrite(fd, &hdr, sizeof(wave_header));
+	if (lseek(fd, sizeof(wave_header), SEEK_SET) == -1) {
+		int tmp = ywrite(fd, ((char *)&hdr) + hdr.total_length,
+					sizeof(wave_header) - hdr.total_length);
+		if (tmp == -1) shriek(462, "skip_header got error, contact the authors");
+		hdr.total_length += tmp;
+	}
 }
 
 void
 wavefm::write_header()
 {
-	hdr.flen = hdr.written_bytes + 0x24;
+	hdr.total_length = hdr.written_bytes + WAVE_HEADER_SIZE;
 	if (lseek(fd, 0, SEEK_SET) == -1)
 		return;		/* devices incapable of lseek() don't need
 				 *	the length field filled in correctly
@@ -423,17 +474,53 @@ wavefm::write_header()
 }
 
 void
+wavefm::label(char *lbl)
+{
+	if (current_cp) {
+		if (!(current_cp & (current_cp - 1)))
+			cp_buff = (cue_point *)xrealloc(cp_buff, sizeof(cue_point) * current_cp * 2);
+	} else cp_buff = (cue_point *)xmalloc(sizeof(cue_point));
+
+	cp_buff[current_cp] = cue_point_template;
+	cp_buff[current_cp].name = current_cp + 1;	/* numbered starting from 1 */
+	int offs = cp_buff[current_cp].pos = cp_buff[current_cp].sample_offset = offset();
+	current_cp++;
+
+	if (!lbl) return;
+
+	if (adtl_buff) {
+		if (adtl_offs + strlen(lbl) + 2 + sizeof(ltxt) >= (unsigned int)adtl_max) {
+			adtl_max <<= 1;
+			adtl_buff = (char *)xrealloc(adtl_buff, adtl_max);
+		}
+	} else {
+		adtl_max = ADTL_INITIAL_BUFF;
+		adtl_buff = (char *)xmalloc(adtl_max);
+	}
+
+	ltxt *l = (ltxt *)(adtl_buff + adtl_offs);
+	*l = ltxt_template;
+	l->cp_name = current_cp - 1;
+	l->sample_count = offs - last_offset;
+	l->len = sizeof(ltxt) - HEADER_HEADER_SIZE + strlen(lbl) + 1;
+	strcpy((char *)(l+1), lbl);
+	adtl_offs += sizeof(ltxt) + strlen(lbl) + 1;
+
+	last_offset = offs;
+}
+
+void
 wavefm::become(void *b, int size)
 {
 	hdr = *(wave_header *)b;
 	size -= sizeof(wave_header);
 	if (size < 0) shriek(471, "tcpsyn got garbage");
-	buffer = (char *)malloc(size);
+	buffer = (char *)xmalloc(size);
 	memcpy(buffer, (char *)b + sizeof(wave_header), size);
 	buff_size = size;
 	buffer_idx = size;
 	hdr.written_bytes = 0;
-	hdr.flen = 0;
+	hdr.total_length = hdr.written_bytes - HEADER_HEADER_SIZE;
 	channel = hdr.sf2 ? CT_BOTH : CT_MONO;
 	samp_rate = hdr.sf1;
 	samp_size_bytes = hdr.wlenB;

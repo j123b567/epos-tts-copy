@@ -831,3 +831,40 @@ for an exciting story, just skip it.
 	- say.cc fixes (strdup, pseudoconfiguration::paranoid)
 	- NT fix: async_close also attempts closesocket()
 
+2.4.15 from 2.4.14	21.6.99
+	- set of description layers made configurable
+	- option actions (pre-set and post-set)
+	- arrays of options indexed by description levels
+	  (not well documented nor robust)
+	- fixed a bug in enum2str() (trailing colon)
+	- fixed a bug in str2enum() (not found case w/o trailing colon)
+	- added more characters to mathsign.dic:  # `
+	- say now displays the transcription after the rules are applied
+
+2.4.16 from 2.4.15	8.7.99
+	- the configure script respects --prefix=  somewhat more
+	- INV_ prefixes in options.lst changed to VOICE_
+	- fixed a strip() bug in text.cc (multiple escapes on a line)
+	- Czech phone number prosody hack using \X
+	- #localsound output agent
+	- fixed a bug in agent::relax (wrong queue direction)
+	- tcpsyn deadlock avoided with a timeout between connect and TTSCP header
+	- it is possible to specify the language and/or the voice through the
+		"location" option for tcpsyn voices - see docs
+	- agents can now wait for other agents (agent::dep)
+	- {m,c,re}alloc everywhere checked against out-of-memory condition
+	- and other infrastructure fixes
+
+2.4.17 from 2.4.16	19.7.99
+	- changed "first" and "second" (channel identifiers for the --channel
+		option) to "left" and "right"
+	- four bytes of buffer space now guaranteed by flush() instead of two
+	- moved skip_waveform from attach(int) to flush()
+	- partly added diphone labels (except for flush() and become())
+	- using header.total_length for bookkeeping (RIFF chunks completely output)
+	- description layer valued options resurrected
+	- show command now prefixes the option value with a space
+	- --local_only option can provide reasonable privacy for some people
+	- documentation formatting improved (sgml-tools, latex, and babel issues)
+	- obsolete "for (int tmp...)" scoping support in OPTIONARRAY initializers
+

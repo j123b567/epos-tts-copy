@@ -16,6 +16,14 @@
  *	It never gives up memory which it has (meta)allocated.
  */
 
+#ifndef xmalloc
+	#define xmalloc malloc
+#endif
+
+#ifndef xcalloc
+	#define xcalloc calloc
+#endif
+
 class slab_free_list
 {
    public: slab_free_list *n;
@@ -77,7 +85,7 @@ inline void *slab<size>::alloc()
 	void *slot;
 
 	if (!tail) {
-		void *more = malloc(size * fragment_size);
+		void *more = xmalloc(size * fragment_size);
 		for (int i=1; i < fragment_size; i++) this->release(i*size +(char *)more);
 		((slab_free_list *) more)->n = slices;
 		slices = (slab_free_list *) more;

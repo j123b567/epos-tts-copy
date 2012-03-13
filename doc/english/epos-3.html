@@ -60,8 +60,8 @@ references to other information, especially filenames (of language
 dependent transcription rules, voice dependent diphone inventories
 etc.)
 <P>Some language and/or voice specific options may have suitable defaults
-for all but specific languages/voices. Every voice option thus has its
-corresponding language option to default to if unspecified for a given
+for all but specific languages/voices. That's why there is a corresponding language
+option for every voice option to default to if unspecified for a given
 voice. Likewise, there is a global option for every language option
 to default to. Therefore, adding a new language or voice options
 doesn't necessarily imply adding them to each language or voice
@@ -81,7 +81,8 @@ to the current language and voice altogether.)
 <P>
 <P>Whenever the program starts up, it reads a number of configuration
 files, setting up the initial (default) values of the options.
-These are typically located under <CODE>/usr/lib/epos</CODE> (can be overridden
+These are located under <CODE>/usr/lib/epos</CODE> (unless overidden
+at configure/compile time or
 with the <CODE>--base_dir</CODE> option on the command line). By convention,
 configuration file names have the ".ini" suffix.
 <P>Unless overridden, three files in <CODE>/usr/lib/epos/cfg</CODE> will be processed
@@ -361,13 +362,47 @@ clash with each other. However, built-in option names may not be used
 as soft option names.
 <P>
 <P>
-<H2><A NAME="indivopts"></A> <A NAME="ss3.7">3.7 Selected options </A>
+<H2><A NAME="ss3.7">3.7 Level of description dependent options</A>
 </H2>
 
 <P>
-<P>To begin with, this subsection is very completely incomplete and can be expected
-to grow at a moderate pace just now.
-<P>A few individual options will be described in this section.  The rest are either
+<P>Some options, especially pertaining to parsing the input and
+formatting the output, are set separately for every layer of
+the 
+<A HREF="epos-2.html#tsr">TSR</A>, so that each of them is actually
+an array of options, indexed using the commercial at character
+(&commat;) followed by a layer name.  For example,
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+        perm@colon      ":,"
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>defines the permissible colon terminators.  Since the TSR layer names
+are themselves defined by the <CODE>unit_levels</CODE> option, the availability
+of such options is dependent on the current value of some other option. 
+For other options, such as <CODE>default_scope</CODE>, the value is a layer name,
+and is thus meaningful only after the layers are defined; all such options
+can only be set after the <CODE>unit_levels</CODE> option has been set correctly.
+<P>As level description dependent options (the former type) do not yet exist
+upon program startup, the access control in <CODE>allowed.ini</CODE> only works
+for the arrays of options, not individual options:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+        perm    r
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>For these and other reasons, changing the <CODE>unit_levels</CODE> option is not
+recommended after any of both types of level of description dependent
+options has been set.
+<P>
+<P>
+<H2><A NAME="indivopts"></A> <A NAME="ss3.8">3.8 Selected individual options </A>
+</H2>
+
+<P>
+<P>Most individual options will be described in this section.  The rest are either
 straightforward or rarely useful. A complete list of options can be obtained
 through <CODE>epos -H</CODE> or in <CODE>src/options.lst</CODE>.
 <P>The type and the semantic class of the argument is indicated for all individual
@@ -423,19 +458,17 @@ output formatting information necessary for printing text in
 either the ANSI escape sequences (ISO 6429) or the Rich Text
 Format; they use colors to distinguish between symbols of different
 levels of description.
-<DT><B>--pend_max <I>n</I> </B><DD><P>
-<DT><B>The maximum number of subtasks waiting in an input queue for
+<DT><B>--pend_max <I>n</I> </B><DD><P>The maximum number of subtasks waiting in an input queue for
 a single agent.  If this limit is reached, the preceding
 agent stops processing further input until only <CODE>pend_min</CODE>
 subtasks are left in the queue.  Setting this limit higher
 will consume additional memory, as more processing can happen
-in advance, but setting it too low may cause unnecessary delays.</B><DD><P>
-<DT><B>--pend_min <I>n</I> </B><DD><P>
-<DT><B>The minimum desired number of subtasks waiting in an input
+in advance, but setting it too low may cause unnecessary delays.
+<DT><B>--pend_min <I>n</I> </B><DD><P>The minimum desired number of subtasks waiting in an input
 queue for a single agent.  If the queue length decrements
 to this limit and the preceding agent has enough input
 to process, it resumes operation.  This limit should
-be set roughly to half the <CODE>pend_max</CODE> value.</B><DD><P>
+be set roughly to half the <CODE>pend_max</CODE> value.
 <DT><B>--memory_low</B><DD><P>Turn on if you're very low on memory. This mode sacrifices speed
 for a little bit of saved memory. Basically, turning this on
 caused various dictionaries to be discarded whenever the rule
@@ -474,6 +507,16 @@ to be necessary.  Use this option to skip them.
 <DT><B>--verbose</B><DD><P>When the rules are dumped with the <CODE>debug</CODE> rule type and this
 option is set, all of them will be displayed.  Otherwise only the
 current rule is displayed.  That's all.
+<P>
+<DT><B>--unit_levels</B><DD><P>Levels of description.  Must be a colon separated list which includes
+<CODE>segm</CODE> and <CODE>phone</CODE> as the two lowest levels, and <CODE>text</CODE>
+as the highest level of description.  There are reasons why this should not
+be a language dependent option; you can however define this to be the
+union of all levels of description needed by any language.
+<DT><B>--default_scope</B><DD><P>The default scope level of a rule -- one of the levels of description
+defined with the <CODE>unit_levels</CODE> option.
+<DT><B>--default_target</B><DD><P>The default target level of a rule -- one of the levels of description
+defined with the <CODE>unit_levels</CODE> option.
 <P>
 <DT><B>--languages <I>list</I></B><DD><P>Lists initially available languages. The parameter is a colon separated
 list of language names. Every language must have its associated <CODE>.ini</CODE>
@@ -564,20 +607,20 @@ phonetic transcription.
 <DT><B>--footer <I>filename</I></B><DD><P>The value is the file name of a file in the directory specified
 by the <CODE>ini_dir</CODE> option, which is to be printed after any
 phonetic transcription.
-<DT><B>--begin_* <I>string</I></B><DD><P>The asterisk stands for a symbolic name of a linguistic description
+<DT><B>--begin* <I>string</I></B><DD><P>The asterisk stands for a &commat;-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is a string which will be printed before the first unit within this
 unit, for example before the word-initial syllable in case of
-<CODE>begin_word</CODE>).
-<DT><B>--close_* <I>string</I></B><DD><P>The asterisk stands for a symbolic name of a linguistic description
+<CODE>begin@word</CODE>).
+<DT><B>--close* <I>string</I></B><DD><P>The asterisk stands for a &commat;-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is a string which will be printed after the last unit within this
 unit, for example before the word-final syllable in case of
 <CODE>close_word</CODE>).
-<DT><B>--color_* <I>string</I></B><DD><P>The asterisk stands for a symbolic name of a linguistic description
+<DT><B>--color* <I>string</I></B><DD><P>The asterisk stands for a &commat;-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is the string to switch the color for this level of description.
-<DT><B>--separ_* <I>string</I></B><DD><P>The asterisk stands for a symbolic name of a linguistic description
+<DT><B>--separ* <I>string</I></B><DD><P>The asterisk stands for a &commat;-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is a string which will be printed between adjacent units of this
 level of description, for example between words in case of      
@@ -672,6 +715,12 @@ may share a multilingual diphone inventory if desired), every voice dependent
 option is thence language dependent.
 <P>
 <DL>
+<DT><B>--name <I>voicename</I></B><DD><P>This option assigns a name to a newly created language.  If there is no name
+specified, this option defaults to the configuration file name (from the
+last slash to the nearest dot) the configuration has been loaded from.
+The name is then used to refer to the language in TTSCP.  The language name
+must begin with an alphabetical character and consist of alphanumerical
+characters (dashes and underscores are also allowed).
 <DT><B>--voices <I>list</I></B><DD><P>Lists initially available voices. The parameter is a colon separated
 list of voice names. Every voice must have its associated <CODE>.ini</CODE>
 file; the name of the file is obtained by suffixing <CODE>.ini</CODE> to the voice name
@@ -682,7 +731,7 @@ language until switched.
 <DT><B>--soft_options <I>list</I></B><DD><P>Lists available soft options as described in subsection
 <A HREF="#soft-options">soft options</A>.
 <DT><B>--fallback_voice <I>voicename</I></B><DD><P>Not used under normal circumstances.  Epos initialises its
-synthesis type depended specific structures the first time
+synthesis type dependent specific structures the first time
 it uses a voice.  Should such an initialization fail because
 of a network error, the current voice will be switched to
 the voice specified by this option and the initialisation will be
@@ -699,7 +748,7 @@ to serve as a sonority peak if it happens to be word-initial.
 by the individual <CODE>syll</CODE> rule.)
 <DT><B>--rules_file <I>filename</I></B><DD><P>The parameter is a filename. The file contains the transformational
 rules to be applied for this language.
-<DT><B>--perm_* <I>set</I></B><DD><P>The asterisk stands for a symbolic name of a linguistic description
+<DT><B>--perm* <I>set</I></B><DD><P>The asterisk stands for a &commat;-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is a simple sequence of all characters belonging to this level
 of description. For example, <CODE>perm_phones</CODE> will list letters,
@@ -718,7 +767,9 @@ common ambiguities of Latin-based writing systems, like periods.
 <DT><B>--name <I>voicename</I></B><DD><P>This option assigns a name to a newly created voice.  If there is no name
 specified, this option defaults to the configuration file name (from the
 last slash to the nearest dot) the configuration has been loaded from.
-The name is then used to refer to the voice in TTSCP.
+The name is then used to refer to the voice in TTSCP.  The voice name
+must begin with an alphabetical character and consist of alphanumerical
+characters (dashes and underscores are also allowed).
 <DT><B>--type <I>synthtype</I></B><DD><P>The parameter, the speech synthesis type, is one of the following:
 <CENTER><TABLE BORDER><TR><TD>
 <BR>
@@ -734,16 +785,34 @@ The name is then used to refer to the voice in TTSCP.
 
 This option may influence other voice dependent options quite significantly,
 as some of them are speech synthesis type dependent.
-<DT><B>--location <I>hostname[:port]</I> </B><DD><P>If this speech synthesis is of the <CODE>internet</CODE> type,
+<DT><B>--location <I>[[voice][.language]&commat;]hostname[:port]</I> </B><DD><P>If this speech synthesis is of the <CODE>internet</CODE> type,
 this option can be used to set the hostname of the remote
-server.  If the server is listening on a non-standard port number
+server.  If the remote server is listening on a non-standard port number
 (currently the standard port is considered to be 8778), the
 host name may be followed by a colon and the port number
-requested.  For other synthesis types, this is a directory
+requested.  The desired remote voice and language may be optionally specified
+before the host name, separated with a <CODE>&commat;</CODE> character
+from the host name and with a dot from each other.  If a language name
+is specified, while a voice name is not, the language name should be
+preceded with a dot.
+The defaults for voice, language, and port number are
+remote default voice, local current language, and 8778,
+respectively.
+<P>For other synthesis types, this is a directory
 name which holds inventory related files (in the "inv"
 subtree), and is subject to normal file naming conventions,
 as described in 
 <A HREF="#file-naming">file naming</A>.
+<DT><B>--deadlock_timeout <I>n</I></B><DD><P>The value is a time interval in seconds.  This option is meaningless
+for voices of type other then <CODE>internet</CODE>.  For remote voices,
+if the remote server is successfully connected to, but doesn't send
+any TTSCP session header (nor anything else) to the local server
+acting as a TTSCP client, it is either severely misconfigured,
+overloaded, deadlocked (e.g. tries to use itself as a remote
+server for its current voice), or communicating over a congested, unreliable
+or slow network connection.
+A value of <CODE>0</CODE> is actually a very small positive value and negative
+values are not accepted.
 <DT><B>--models <I>filename</I></B><DD><P>The value is a file name. The file contains the diphone inventory
 proper. Its format is speech synthesis type dependent.
 <DT><B>--counts <I>filename</I></B><DD><P>The value is a file name. The file contains the lengths of individual
@@ -766,8 +835,8 @@ and <CODE>init_i</CODE> options are.
 <CENTER><TABLE BORDER><TR><TD>
 <BR>
 <CODE>mono</CODE>       </TD><TD> mono output signal </TD></TR><TR><TD>
-<CODE>first</CODE>      </TD><TD> stereo output signal, second channel is mute</TD></TR><TR><TD>
-<CODE>second</CODE>     </TD><TD> stereo output signal, first channel is mute</TD></TR><TR><TD>
+<CODE>left</CODE>       </TD><TD> stereo output signal, right channel is mute</TD></TR><TR><TD>
+<CODE>right</CODE>      </TD><TD> stereo output signal, left channel is mute</TD></TR><TR><TD>
 <CODE>both</CODE>       </TD><TD> stereo output signal, two identical channels</TD></TR><TR><TD>
 
 </TD></TR></TABLE></CENTER>
@@ -793,7 +862,7 @@ structural units by the rules.  It actually controls the interpretation
 of those adjustments themselves.
 <P>
 <DL>
-<DT><B>--pros_weight_* <I>weight</I></B><DD><P>The asterisk stands for a symbolic name of a linguistic description
+<DT><B>--pros_weight* <I>weight</I></B><DD><P>The asterisk stands for a &commat;-separated symbolic name of a linguistic description
 level, such as <CODE>phone</CODE>, <CODE>syll</CODE> or <CODE>word</CODE>.  The parameter
 is an integer value primarily used for enabling (1) or disabling (0)
 certain levels of description when the total quantities for a diphone
@@ -836,8 +905,21 @@ of it).
 <P>
 <H3><A NAME="file-naming"></A> File naming </H3>
 
-<P>In Epos, most of the files ever opened are located in a single directory tree
-(usually <CODE>/usr/lib/epos</CODE>); the files of the same type -- and related
+<P>In Epos, most of the files ever opened are located in a single directory tree.
+This tree usually starts at <CODE>/usr/lib/epos</CODE>, but it can be changed at
+configure time.  For example, after issuing
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+cd src
+./configure --prefix=/usr/local
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>and after recompiling and reinstalling Epos, the files will be searched under
+<CODE>/usr/local/lib/epos</CODE>.  See <CODE>configure --help</CODE> for more
+details on configuring Epos.  It is also possible to use the command
+line option <CODE>base_dir</CODE> at Epos startup to change the
+tree base without recompilation.  Files of the same type -- and related
 to the same language or voice, if applicable -- are located in the same subdirectory
 by default.  Thus, the path name actually used by Epos consists of the base directory
 path, the subdirectory (or directory for short) and a relative file name.
@@ -848,7 +930,7 @@ If they only occur in the middle of the name, the file name is still
 relative to the directory it would normally
 be located in.  However, if the file name begins with a slash or with <CODE>./</CODE>,
 the file is treated as absolute or relative to the current working directory
-of the Epos process, respectively.  The second case is thus slightly undefined,
+of the Epos process, respectively.  The second case is thus slightly unreliable,
 but the first one allows to place any file in an arbitrary directory. 
 Likewise, if the directory name begins with a slash, it is not considered
 to be relative to the base directory.
@@ -961,6 +1043,10 @@ options.  Its syntax is described
 <DT><B>--listen_port <I>port</I></B><DD><P>The TCP port number where the daemon should be listening for incoming
 TTSCP connections. The daemon will check if no other service is already
 running on that port and refuses to run if the port is already occupied.
+<DT><B>--local_only </B><DD><P>When this option is set, the daemon accepts no new connections on
+network interfaces except the localhost one.  This way, only clients
+running on the same machine can connect to the server.  Normally,
+the daemon listens on all available interfaces.
 </DL>
 <P>
 <P>

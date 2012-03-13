@@ -28,7 +28,7 @@ parser::parser(const char *filename, int mode)
 	if (!filename || !*filename) {
 		register signed char c;
 		int i = 0;
-		text = (unsigned char *)malloc(cfg->dev_txtlen+1);
+		text = (unsigned char *)xmalloc(cfg->dev_txtlen+1);
 		if(!text) shriek(422, "Parser: Out of memory");
 		do text[i++] = c = getchar(); 
 			while(c!=-1 && c!=cfg->eof_char && i<cfg->dev_txtlen);
@@ -68,7 +68,7 @@ parser::init(SYMTABLE symtab)
 		//    It's meant to be altered when we later decide to use
 		//    another Czech char encoding.
 	current = text-1; 
-	do level = chrlev(*++current); while (level > U_PHONE && level < U_TEXT);
+	do level = chrlev(*++current); while (level > cfg->phone_level && level < cfg->text_level);
 		//We had to skip any garbage before the first phone
 
 	gettoken();		// new - hope this works
@@ -146,13 +146,13 @@ parser::gettoken()
 		}
 		level = chrlev(token);
 		f = i = t = 0;
-		if (level == U_TEXT) {
+		if (level == cfg->text_level) {
 			DEBUG(2,7,fprintf(STDDBG,"Parser: end of text reached, changing the policy\n");)
 			initables(ST_EMPTY);
 			*current = NO_CONT;  // return '_' or something instead of quirky '\0'
 		}
 		current++;
-	} while (level <= lastlev && level > U_PHONE);
+	} while (level <= lastlev && level > cfg->phone_level);
 		// (We are skipping any empty units, except for phones.)
 	DEBUG(0,7,fprintf(STDDBG,"Parser: char requested, '%c' (level %u), next: '%c' (level %u)\n", ret, lastlev, *current, level);)
 
@@ -210,20 +210,20 @@ void
 parser::initables(SYMTABLE table)
 {
 	int c;
-	UNIT u = U_PHONE;
+	UNIT u = cfg->phone_level;
 //	if (cfg->relax_input) for (c=1; c<256; c++) TRANSL_INPUT[c] = cfg->dflt_char;
 	for(c=0; c<256; c++) TRANSL_INPUT[c] = (unsigned char)c;
-	for(c=1; c<256; c++) CHRLEV[c] = U_ILL;*CHRLEV = U_TEXT;
+	for(c=1; c<256; c++) CHRLEV[c] = U_ILL; *CHRLEV = cfg->text_level;
 	switch (table) {
 	case ST_ROOT:
 		alias("   ","\n\r\t");
 	case ST_RAW:
-		for (u = U_PHONE; u < U_TEXT; u = (UNIT)(u+1))
+		for (u = cfg->phone_level; u < cfg->text_level; u = (UNIT)(u+1))
 			regist(u, this_lang->perm[u]);
-		regist(U_WORD, " ");
+//		regist(U_WORD, " ");
 		break;
 	case ST_EMPTY:
-		for(c=1; c<256; c++) CHRLEV[c] = U_VOID; *CHRLEV = U_TEXT;
+		for(c=1; c<256; c++) CHRLEV[c] = U_VOID; *CHRLEV = cfg->text_level;
 		break;
 	default: shriek(861, fmt("Garbage passed to parser::initables, %d", table));
 	}

@@ -56,6 +56,7 @@ agent::agent(DATA_TYPE typein, DATA_TYPE typeout)
 	next = prev = NULL, inb = NULL;
 	pendin = pendout = NULL; pendcount = 0;
 	c = NULL;
+	dep = NULL;
 	DEBUG(1,11,fprintf(STDDBG, "Creating a handler, intype %i, outtype %i\n", typein, typeout);)
 }
 
@@ -87,6 +88,7 @@ agent::timeslice()
 			c->leave();
 			return;
 		}
+		DEBUG(2,11,fprintf(STDDBG, "Getting pending task, type %i\n", in);)
 		pend_ll *tmp = pendin;
 		inb = tmp->d;
 		pendin = tmp->next;
@@ -126,7 +128,8 @@ agent::relax()
 {
 	do_relax(inb, in);
 	inb = NULL;
-	for (pend_ll *p = pendout; p != NULL; ) {
+	if (!next) return;
+	for (pend_ll *p = next->pendin; p != NULL; ) {
 		do_relax(p->d, out);
 		pend_ll *n = p->next;
 		next->pendcount--;
@@ -231,7 +234,7 @@ class a_print : public agent
 void
 a_print::run()
 {
-	char * s = (char *)malloc(UGLY_TMP_CONSTANT + 1);
+	char * s = (char *)xmalloc(UGLY_TMP_CONSTANT + 1);
 	*((unit *)inb)->gather(s, s + UGLY_TMP_CONSTANT, true /* (incl. ssegs) */ ) = 0;
 
 	void *r = s;
@@ -254,7 +257,7 @@ class a_diphs : public agent
 void
 a_diphs::run()
 {
-	diphone *d = (diphone *)malloc((cfg->db_size + 1) * sizeof(diphone));
+	diphone *d = (diphone *)xmalloc((cfg->db_size + 1) * sizeof(diphone));
 	int n;
 
 	unit *root = *(unit **)&inb;
@@ -326,7 +329,7 @@ a_join::run()
 	char *b;
 	char *last = (char *)inb;
 	if (heldout) {
-		b = (char *)malloc(strlen(heldout) + strlen(last) + 1);
+		b = (char *)xmalloc(strlen(heldout) + strlen(last) + 1);
 		strcpy(b, heldout);
 		strcat(b, last);
 		free(last);
@@ -385,7 +388,7 @@ class a_label : public agent
 void
 a_label::run()
 {
-	char * s = (char *)malloc(UGLY_TMP_CONSTANT + 1);
+	char * s = (char *)xmalloc(UGLY_TMP_CONSTANT + 1);
 	diphone *d = ((diphone *)inb);
 	int offs = 0;
 	for (int i = 1; i < d->code; i++) {
@@ -422,18 +425,20 @@ class a_io : public agent
    protected:
 	int socket;
 	a_ttscp *dc;
-//	bool close_upon_exit;
+	bool close_upon_exit;
    public:
 	a_io(const char *, DATA_TYPE, DATA_TYPE);
 	virtual ~a_io();
 };
+
+#include "spcio.cc"
 
 a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 {
 //	a_ttscp *tmp;
 	char *filename;
 
-//	close_upon_exit = false;
+	close_upon_exit = false;
 	dc = NULL;
 
 	switch(*par) {
@@ -446,7 +451,9 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 						: O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK);
 			  free(filename);
 			  if (socket == -1) shriek(445, fmt("Cannot open file %s", par));
-//			  else close_upon_exit = true;
+			  else close_upon_exit = true;
+			  break;
+		case '#': socket = special_io(par + 1, in);
 			  break;
 		default:  shriek(462, "unimplemented i/o agent class");
 			/* if ever adding classes, take care of closing/nonclosing
@@ -458,8 +465,7 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 a_io::~a_io()
 {
 	DEBUG(0,11,fprintf(STDDBG, "~a_io\n");)
-//	if (close_upon_exit)
-	if (!dc) async_close(socket);
+	if (close_upon_exit) async_close(socket);
 }
 
 class a_input : public a_io
@@ -484,6 +490,11 @@ void a_input::run()
 {
 	int res;
 	DEBUG(0,11,fprintf(STDDBG, "Entering input agent\n");)
+	if (sleep_table[socket]) {
+		DEBUG(0,11,fprintf(STDDBG, "avoiding a nested input\n");)
+		block(socket);
+		return;
+	}
 	res = yread(socket, (char *)inb + offset, toread - offset);
 	if (res <= 0) {
 		if (!dc) {
@@ -533,7 +544,7 @@ a_input::apply(int size)
 	DEBUG(2,11,fprintf(STDDBG, "%d bytes to be read\n", size);)
 	if (inb) return false;	// busy
 	toread = size;
-	inb = malloc(size + 1);
+	inb = xmalloc(size + 1);
 	offset = 0;
 //	schedule();
 	block(socket);
@@ -558,6 +569,10 @@ class a_output : public a_io
 void
 a_output::run()
 {
+	if (sleep_table[socket]) {
+		push(socket);
+		return;
+	}
 	int size = insize();
 	if (written) {
 		int now_written = ywrite(socket, (char *)inb + written, size - written);
@@ -632,7 +647,7 @@ void
 oa_wavefm::run()
 {
 	wavefm *w = (wavefm *)inb;
-	if (!attached) {
+	if (!attached && !sleep_table[socket]) {
 		report(true, w->written_bytes() + sizeof(wave_header));
 		w->attach(socket);
 		report(false, w->written + sizeof(wave_header));
@@ -667,7 +682,8 @@ oa_wavefm::brk()
 		attached = false;
 		delete w;
 		inb = NULL;
-		reply("401 user break");
+//		w = NULL; relax();
+		reply("402 user break");
 	}
 	finis(true);
 }
@@ -801,6 +817,7 @@ stream::finis(bool err)
 	for (agent *a = head; a != this; a = a->next) {
 		if (a->inb || a->pendin) {
 			DEBUG(2,11,fprintf(STDDBG, "more subtasks are pending\n");)
+			if (err) shriek(869, "Bowm!");
 			return;
 		}
 	}
@@ -826,7 +843,7 @@ class a_disconnector : public agent
 
 a_disconnector::a_disconnector() : agent(T_NONE, T_NONE)
 {
-	to_delete = (a_protocol **)malloc(sizeof(void *));
+	to_delete = (a_protocol **)xmalloc(sizeof(void *));
 	last = 0;
 	max = 1;
 }
@@ -848,8 +865,8 @@ void a_disconnector::disconnect(a_protocol *moriturus)
 {
 	if (last == max && ! (max & max - 1)) {
 		max <<= 1;
-		if (max > 8) shriek(861, "Too many concurrent disconnections"); // FIXME
-		to_delete = (a_protocol **)realloc(to_delete, max * sizeof(void *));
+// 		if (max > 8) shriek(861, "Too many concurrent disconnections"); // FIXME
+		to_delete = (a_protocol **)xrealloc(to_delete, max * sizeof(void *));
 	}
 	to_delete[last++] = moriturus;
 	schedule();
@@ -859,9 +876,9 @@ a_disconnector disconnector;
 
 a_protocol::a_protocol() : agent(T_NONE, T_NONE)
 {
-	sgets_buff = (char *)malloc(cfg->max_net_cmd + 2);
+	sgets_buff = (char *)xmalloc(cfg->max_net_cmd + 2);
 	*sgets_buff = 0;
-	buffer = (char *)malloc(cfg->max_net_cmd + 2);
+	buffer = (char *)xmalloc(cfg->max_net_cmd + 2);
 }
 
 a_protocol::~a_protocol()
@@ -1028,6 +1045,15 @@ a_ttscp::disconnect()
 	disconnector.disconnect(this);
 }
 
+void make_nonblocking(int f)
+{
+#ifdef HAVE_WINSOCK2_H
+	ioctlsocket((unsigned long)f, FIONBIO, (unsigned long *)&make_nonblocking);	// &make_nonblocking is a dummy non-NULL pointer
+#else
+	fcntl(f, F_SETFL, O_NONBLOCK);
+#endif
+}
+
 a_accept::a_accept() : agent(T_NONE, T_NONE)
 {
 //	static socklen_t sia = sizeof(sockaddr);	// __QNX__ wants signed :-(
@@ -1043,12 +1069,13 @@ a_accept::a_accept() : agent(T_NONE, T_NONE)
 	memset(&sa, 0, sizeof(sa));
 	gethostname(scratch, cfg->scratch - 1);
 	sa.sin_family = AF_INET;
-	sa.sin_addr.s_addr = htonl(INADDR_ANY);
+	sa.sin_addr.s_addr = htonl(cfg->local_only ? INADDR_LOOPBACK : INADDR_ANY);
 	sa.sin_port = htons(cfg->listen_port);
 	setsockopt(cfg->sd_in, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
 	DEBUG(2,11,fprintf(STDDBG, "[core] Trying to bind...\n");)
 	if (bind(cfg->sd_in, (sockaddr *)&sa, sizeof (sa))) shriek(871, "Could not bind");
 	if (listen(cfg->sd_in, 64)) shriek(871, "Could not listen");
+	make_nonblocking(cfg->sd_in);
 
 	ia.sin_family = AF_INET;
 	ia.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -1069,12 +1096,13 @@ a_accept::run()
 {
 	static socklen_t sia = sizeof(sockaddr);	// Will __QNX__ complain?
 	int f = accept(cfg->sd_in, (sockaddr *)&ia, &sia);
-	if (f == -1) shriek(871, "Cannot accept() - network problem");
-#ifdef HAVE_WINSOCK2_H
-	ioctlsocket((unsigned long)f, FIONBIO, (unsigned long *)&sia);	// &sia is a dummy non-NULL pointer
-#else
-	fcntl(f, F_SETFL, O_NONBLOCK);
-#endif
+	if (f == -1) {
+//		shriek(871, fmt("Cannot accept() - network problem (errno %d)", errno));
+		DEBUG(3,11,fprintf(STDDBG, "Cannot accept() - errno %d! Madly looping.\n", errno);)
+		if (errno != EWOULDBLOCK) schedule();
+		return;
+	}
+	make_nonblocking(f);
 	DEBUG(2,11,fprintf(STDDBG, "[core] Accepted %d (on %d).\n", f, cfg->sd_in);)
 	c->leave();
 	unuse(new a_ttscp(f, f));
@@ -1117,7 +1145,7 @@ agent *sched_sel()
 	return r;
 }
 
-agent **sleep_table = (agent **)malloc(1);
+agent **sleep_table = (agent **)xmalloc(1);
 fd_set block_set;
 fd_set push_set;
 int select_fd_max = 0;
@@ -1131,14 +1159,23 @@ agent::block(int fd)
 {
 	DEBUG(1,11,fprintf(STDDBG, "Sleeping on %d\n", fd);)
 	if (select_fd_max <= fd) {
-		sleep_table = (agent **)realloc(sleep_table, (fd + 1) * sizeof(agent *));
+		sleep_table = (agent **)xrealloc(sleep_table, (fd + 1) * sizeof(agent *));
 		for ( ; select_fd_max <= fd; select_fd_max++)
 			sleep_table[select_fd_max] = NULL;
 	}
-	if (sleep_table[fd]) shriek(861, fmt("%ssleeping on %d", this == sleep_table[fd]
-			? "Re" : "Cross", fd));
-	sleep_table[fd] = this;
-	FD_SET(fd, &block_set);
+	if (sleep_table[fd]) {
+		agent *a;
+
+		if (this == sleep_table[fd])
+			shriek(861, fmt("Resleeping on %d", fd));
+		if (!FD_ISSET(fd, &block_set))
+			shriek(861, fmt("Countersleeping on %d", fd));
+		for (a = sleep_table[fd]; a->dep; a = a->dep) ;
+		a->dep = this;
+	} else {
+		sleep_table[fd] = this;
+		FD_SET(fd, &block_set);
+	}
 	return;
 }
 
@@ -1147,14 +1184,23 @@ agent::push(int fd)
 {
 	DEBUG(1,11,fprintf(STDDBG, "Pushing on %d\n", fd);)
 	if (select_fd_max <= fd) {
-		sleep_table = (agent **)realloc(sleep_table, (fd + 1) * sizeof(agent *));
+		sleep_table = (agent **)xrealloc(sleep_table, (fd + 1) * sizeof(agent *));
 		for ( ; select_fd_max <= fd; select_fd_max++)
 			sleep_table[select_fd_max] = NULL;
 	}
-	if (sleep_table[fd]) shriek(861, fmt("%ssleeping on %d", this == sleep_table[fd]
-			? "Re" : "Cross", fd));
-	sleep_table[fd] = this;
-	FD_SET(fd, &push_set);
+	if (sleep_table[fd]) {
+		agent *a;
+
+		if (this == sleep_table[fd])
+			shriek(861, fmt("Resleeping on %d", fd));
+		if (!FD_ISSET(fd, &push_set))
+			shriek(861, fmt("Countersleeping on %d", fd));
+		for (a = sleep_table[fd]; a->dep; a = a->dep) ;
+		a->dep = this;
+	} else {
+		sleep_table[fd] = this;
+		FD_SET(fd, &push_set);
+	}
 	return;
 }
 

@@ -27,7 +27,7 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@ff.cuni.cz"
-#define VERSION     "2.4.14"
+#define VERSION     "2.4.17"
 
 #include "config.h"
 
@@ -81,11 +81,19 @@ enum SYMTABLE {ST_ROOT, ST_RAW, ST_EMPTY};
 enum SUBST_METHOD {M_EXACT=0, M_END=1, M_BEGIN=2, M_BEGIN_OR_END=3, M_SUBSTR=4, M_PROPER=7, M_LEFT=8, M_RIGHT=16, M_ONCE=32};
 enum REPARENT {M_DELETE, M_RIGHTWARDS, M_LEFTWARDS};
 enum FIT_IDX {Q_FREQ, Q_INTENS, Q_TIME};
-enum UNIT {U_DIPH, U_PHONE, U_SYLL, U_WORD, U_COLON, U_SENT, U_TEXT, U_INHERIT, U_DEFAULT, U_ILL=255, U_VOID=127};
-#define UNITstr "diphone:phone:syll:word:colon:sent:text:inherit:default:"
-#define BOOLstr "false:true:off:on:no:yes:disabled:enabled:-:+:n:y:0:1:non::"
 #define FITstr	"f:i:t:"
+#define BOOLstr "false:true:off:on:no:yes:disabled:enabled:-:+:n:y:0:1:non::"
 #define LIST_DELIM	 ':'
+
+// enum UNIT {U_DIPH, U_PHONE, U_SYLL, U_WORD, U_COLON, U_SENT, U_TEXT, U_INHERIT, U_DEFAULT, U_ILL=255, U_VOID=127};
+// #define UNITstr "diphone:phone:syll:word:colon:sent:text:inherit:default:"
+typedef char UNIT;
+#define UNIT_MAX 12
+#define U_ILL		127
+#define U_DEFAULT	126
+#define U_INHERIT	125
+#define U_VOID		120
+
 
 // #define unuse(x) if (((1&(int)(x))*(1&(int)(x)))<0) shriek(862, "I'm drunk");
 extern int unused_variable;

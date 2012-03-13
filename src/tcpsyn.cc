@@ -35,10 +35,18 @@
 	#include <netinet/in.h>
 #endif
 
+#ifdef HAVE_SYS_TIME_H
+	#include <sys/time.h>
+#endif
+
 #include <fcntl.h>
 // #include <netdb.h>
 
-#define TCPPORTSEP ':'
+#define LANGNAMESEP	'.'
+#define SERVERNAMESEP	'@'
+#define TCPPORTSEP	':'
+
+#define ZERO_DEADLK_TIMEOUT	100000		// in usec, if 0 seconds is specified
 
 /*
  *	tcpsyn_appl() sends an apply command and blocks until it is processed.
@@ -66,15 +74,15 @@ void *tcpsyn_appl(int bytes, int ctrld, int datad, int *size)
 		if (!strncmp("122 ", scratch, 4)) {
 			sgets(scratch, cfg->scratch, ctrld);
 			sscanf(scratch, " %d", &bytes);
-			if (bs != bytes) rec = rec ? (char *)realloc(rec, bytes)
-						   : (char *)malloc(bytes);
+			if (bs != bytes) rec = rec ? (char *)xrealloc(rec, bytes)
+						   : (char *)xmalloc(bytes);
 		}
 		if (!strncmp("123 ", scratch, 4)) {
 			sgets(scratch, cfg->scratch, ctrld);
 			sscanf(scratch, " %d", &bytes);
 			sum += bytes;
-			if (sum > bs) rec = rec ? (char *)realloc(rec, sum)
-						: (char *)malloc(sum);
+			if (sum > bs) rec = rec ? (char *)xrealloc(rec, sum)
+						: (char *)xmalloc(sum);
 			bytes = yread(datad, rec + offset, sum - offset);
 			if (bytes == -1) {
 				if (errno == EAGAIN || errno == EINTR) bytes = 0;
@@ -107,6 +115,11 @@ static int tcpsyn_connect_socket(unsigned int ipaddr, int port)
 	if (sd == -1) {
 		shriek(473, "Server unreachable\n");
 	}
+
+	fd_set fds; FD_ZERO(&fds); FD_SET(sd, &fds);
+	timeval tv; tv.tv_sec = cfg->deadlk_timeout; tv.tv_usec = ZERO_DEADLK_TIMEOUT;
+	if (select(sd+1, &fds, NULL, NULL, &tv) < 1) shriek(476, "Timed out - tcpsyn deadlock");
+
 	sgets(scratch, cfg->scratch, sd);
 	if (strncmp(scratch, "TTSCP spoken here", 18)) {
 		scratch[15] = 0;
@@ -115,21 +128,45 @@ static int tcpsyn_connect_socket(unsigned int ipaddr, int port)
 	return sd;
 }
 
+static inline void tcpsyn_chk_cmd(int cd, char *tag, char *par)
+{
+	int err = sync_finish_command(cd);
+	if (err) shriek(475, fmt("Remote returned %d for %s %s", err, tag, par));
+}
+
+static inline void tcpsyn_send_cmd(int cd, char *tag, char *par)
+{
+	sputs(tag, cd);
+	sputs(" ", cd);
+	sputs(par, cd);
+	sputs("\r\n", cd);
+	tcpsyn_chk_cmd(cd, tag, par);
+}
+
 tcpsyn::tcpsyn(voice *v)
 {
-//	throw new command_failed (471, "Bus");
 	int port;
+	char *langname;
+	char *voicename;
 	char *remote_server = strdup(v->loc);
-	char *port_id = strchr(remote_server, TCPPORTSEP);
+	if (remote_server[0] != SERVERNAMESEP && remote_server[0] != LANGNAMESEP)
+		voicename = remote_server;
+	else voicename = NULL;
+	char *serv_id = strchr(remote_server, SERVERNAMESEP);
+	if (serv_id) {
+		*serv_id++ = 0;
+		langname = strchr(remote_server, LANGNAMESEP);
+		if (langname) *langname++ = 0;
+		else langname = (char *)this_lang->name;	// const cast
+	} else serv_id = remote_server;
+	char *port_id = strchr(serv_id, TCPPORTSEP);
 	if (port_id) {
 		*port_id++ = 0;
 		sscanf(port_id, "%i", &port);
 	} else port = TTSCP_PORT;
 
-	unsigned int a = getaddrbyname(remote_server);
-	free(remote_server);
+	unsigned int a = getaddrbyname(serv_id);
 	
-//	shriek(472, "bus");
 	cd = tcpsyn_connect_socket(a, port);	/* adjust both, FIXME */
 	dd = tcpsyn_connect_socket(a, port);
 	DEBUG(1,9,fprintf(STDDBG, "tcpsyn uses port %d ctrl fd %d data fd %d\n", port, cd, dd);)
@@ -140,17 +177,20 @@ tcpsyn::tcpsyn(voice *v)
 	sputs("\r\n", dd);
 	free(ctrl_handle);
 	handle = get_handle(dd);
-	int err;
-	err = sync_finish_command(dd);
-	if (err) shriek(475, fmt("Remote returned %d for data", err));
+	tcpsyn_chk_cmd(dd, "data", ctrl_handle);
 
 	sputs("strm $", cd);
 	sputs(handle, cd);
 	sputs(":synth:$", cd);
 	sputs(handle, cd);
 	sputs("\r\n", cd);
-	err = sync_finish_command(cd);
-	if (err) shriek(475, fmt("Remote returned %d for strm", err));
+	tcpsyn_chk_cmd(cd, "strm", "");
+
+	tcpsyn_send_cmd(cd, "setl language", langname);
+
+	if (voicename)
+		tcpsyn_send_cmd(cd, "setl voice", voicename);
+	free(remote_server);
 }
 
 tcpsyn::~tcpsyn()

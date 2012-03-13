@@ -80,15 +80,20 @@ inline void mark_voice(int) {};
 // voice *this_voice = NULL;
 // lang *this_lang = NULL;
 
+#define EO  {NULL, O_INT, OS_LANG, A_PUBLIC, A_PUBLIC, false, false, -1},
+#define TWENTY_EXTRA_OPTIONS EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO
+
 #define CONFIG_LANG_DESCRIBE
 option langoptlist[] = {
 	#include "options.lst"
 
-	{"L:voice" + 2, O_VOICE, OS_LANG, A_PUBLIC, A_PUBLIC, 0},
-	{NULL}
+	{"L:voice" + 2, O_VOICE, OS_LANG, A_PUBLIC, A_PUBLIC, false, false, 0},
+	TWENTY_EXTRA_OPTIONS
+	TWENTY_EXTRA_OPTIONS
+	{NULL, O_INT, OS_LANG, A_PUBLIC, A_PUBLIC, false, false, -2},
 };
 
-#define CONFIG_INV_DESCRIBE
+#define CONFIG_VOICE_DESCRIBE
 option voiceoptlist[] = {
 	#include "options.lst"
 	{NULL}
@@ -143,14 +148,14 @@ lang::~lang()
 void
 lang::add_voice(const char *voice_name)
 {
-	char *filename = (char *)malloc(strlen(voice_name) + 6);
-	char *dirname = (char *)malloc(strlen(name) + strlen(cfg->voice_base_dir) + 6);
+	char *filename = (char *)xmalloc(strlen(voice_name) + 6);
+	char *dirname = (char *)xmalloc(strlen(name) + strlen(cfg->voice_base_dir) + 6);
 	sprintf(filename, "%s.ini", voice_name);
 	sprintf(dirname, "%s%c%s", cfg->voice_base_dir, SLASH, name);
 	if (*voice_name) {
-		if (!voices) voices = (voice **)malloc(8*sizeof (void *));
+		if (!voices) voices = (voice **)xmalloc(8*sizeof (void *));
 		else if (!(n_voices-1 & n_voices) && n_voices > 4)  // if n_voices==8,16,32...
-			voices = (voice **)realloc(voices, n_voices << 1);
+			voices = (voice **)xrealloc(voices, n_voices << 1);
 		voices[n_voices++] = new(this) voice(filename, dirname, this);
 	}
 	free(filename);
@@ -161,7 +166,7 @@ void
 lang::add_voices(const char *voice_names)
 {
 	int i, j;
-	char *tmp = (char *)malloc(strlen(voice_names)+1);
+	char *tmp = (char *)xmalloc(strlen(voice_names)+1);
 
 	for (i=0, j=0; voice_names[i]; ) {
 		if ((tmp[j++] = voice_names[i++]) == ':' ) {
@@ -207,17 +212,17 @@ lang::add_soft_option(const char *optname)
 	if (soft_options) {
 		if (soft_options->translate(optname))
 			shriek(812, fmt("Soft option already exists in lang %s", name));
-		soft_defaults = realloc(soft_defaults,
+		soft_defaults = xrealloc(soft_defaults,
 				(soft_options->items + 2) * sizeof(void *) >> 1);
 	} else {
 		soft_options = new hash_table<char, option>(30);
 		soft_options->dupkey = 0;
-		soft_defaults = malloc(sizeof(void *));
+		soft_defaults = xmalloc(sizeof(void *));
 	}
 
 	o.offset = sizeof(voice) + (soft_options->items * sizeof(void *) >> 1);
 
-	char *tmp = (char *)malloc(strlen(optname) + 3);
+	char *tmp = (char *)xmalloc(strlen(optname) + 3);
 	strcpy(tmp + 2, optname);
 	tmp[0] = 'V';
 	tmp[1] = ':';
@@ -233,7 +238,7 @@ void
 lang::add_soft_opts(const char *names)
 {
 	int i, j;
-	char *tmp = (char *)malloc(strlen(names)+1);
+	char *tmp = (char *)xmalloc(strlen(names)+1);
 
 	for (i=0, j=0; names[i]; ) {
 		if ((tmp[j++] = names[i++]) == ':' ) {
@@ -261,7 +266,7 @@ lang::compile_rules()
 }
 
 
-#define CONFIG_INV_INITIALIZE
+#define CONFIG_VOICE_INITIALIZE
 voice::voice(const char *filename, const char *dirname, lang *parent_lang) : cowabilium()
 {
 	#include "options.lst"
@@ -280,7 +285,7 @@ voice::voice(const char *filename, const char *dirname, lang *parent_lang) : cow
 		if (strrchr(filename, SLASH))
 			filename = strrchr(filename, SLASH) + 1;
 		int l = strcspn(filename, ".");
-		char *nname = (char *)malloc(l + 1);
+		char *nname = (char *)xmalloc(l + 1);
 		nname[l] = 0;
 		strncpy(nname, filename, l);
 		name = nname;
@@ -315,7 +320,7 @@ voice::operator new(size_t size, lang *parent_lang)
 	
 	if (!parent_lang || !parent_lang->soft_options) nso = 0;
 	else nso = parent_lang->soft_options->items >> 1;
-	return malloc(size + nso * sizeof(void *));
+	return xmalloc(size + nso * sizeof(void *));
 }
 
 void

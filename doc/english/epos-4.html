@@ -392,11 +392,13 @@ Any comment on this issue is welcome.
 
 <P>
 <P>Show a configuration parameter value. The parameter is an option
-name. The server may ignore this command with error code 442.
-Subject to change.
+name. The server may reply with the value of the option requested,
+preceded by a single space character, or it may ignore this command
+with error code 442.
 <P><CODE>show languages</CODE> and <CODE>show voices</CODE> may be used for listing
 available languages, as well as available voices for the current
-language.
+language.  The language or voice names are given on separate lines
+each; subject to change.
 <P>
 <H3><A NAME="strm-cmd"></A> <CODE> strm </CODE> </H3>
 
@@ -442,12 +444,19 @@ its semantics may change.
 If the module name begins with a <CODE>$</CODE>, the rest of the name
 is a data connection handle. If it begins with a slash, it is
 an absolute file name.  Such absolute file names however form a name
-space distinct from that of the underlying system.  In Epos, the
+space distinct from that of the underlying operating system.  In Epos, the
 name space is a single directory defined by the <CODE>pseudo_root_dir</CODE>
-option.  It must be impossible to escape from this name space by inserting
+option.  It must be impossible to escape from such name space by inserting
 parent directory references in a file name or otherwise.
 <P>
 <P>
+<P>If the module name begins with a <CODE>#</CODE>, the rest of the name is a special
+input/output module identifier.  The only identifier generally supported is
+<CODE>localsound</CODE>, which can only be used as an output module with the <CODE>waveform</CODE>
+type.  Any waveform passed to this module should be played over using the
+local soundcard.  The <CODE>453</CODE> or <CODE>445</CODE> reply may be issued if the
+user is not allowed to use the soundcard, or no local soundcard exists,
+respectively.
 <P>The output data type of an input module and the input data type of an output
 module are determined by the respective adjacent modules. If input and
 output modules are directly connected, it is assumed that the data is
@@ -478,16 +487,18 @@ synth </TD><TD> diphones </TD><TD> waveform </TD><TD> speech synthesis</TD></TR>
 <CAPTION> Available processing modules </CAPTION>
 </TD></TR></TABLE></CENTER>
 <P>
-<H3><A NAME="chunk-mod"></A> <CODE> chunk </CODE> module </H3>
+<H3><A NAME="chunk-mod"></A> <CODE> chunk </CODE> </H3>
 
+<P>
 <P>The text is split into parts convenient for latter processing.
 These parts usually correspond at least to whole utterances;
 it is correct not to split the text at all, but care must be
 taken not to cause a split which significantly alters the
 final rendering of the text.
 <P>
-<H3><A NAME="join-mod"></A> <CODE> join </CODE> module </H3>
+<H3><A NAME="join-mod"></A> <CODE> join </CODE> </H3>
 
+<P>
 <P>It is customary to use the <CODE>join</CODE> module just after a <CODE>chunk</CODE> module.
 If this module receives two consecutive texts such that the <CODE>chunk</CODE>
 module would not split their concatenation between them, the <CODE>join</CODE> module
@@ -495,8 +506,9 @@ may merge them to a single text, that is, it may silently drop the first
 subtask and prepend the text to the text acquired later.  This delay
 may cross the boundary of an <CODE>appl</CODE> command.
 <P>
-<H3><CODE> raw </CODE> module</H3>
+<H3><CODE> raw </CODE> </H3>
 
+<P>
 <P>The input text is converted in a language dependent way to the TSR,
 assuming it is a plain text without any specific TTS escape sequences
 or other special formatting conventions.  Except for tokenization
@@ -504,20 +516,23 @@ and whitespace reduction the conversion should not try to process
 the text, especially not in a language dependent way; this goal
 doesn't seem to be always feasible.
 <P>
-<H3><CODE> rules </CODE> module</H3>
+<H3><CODE> rules </CODE> </H3>
 
+<P>
 <P>The voice dependent TTS or other rules are applied to a TSR.
 <P>
-<H3><CODE> print </CODE> module</H3>
+<H3><CODE> print </CODE> </H3>
 
+<P>
 <P>The TSR is converted to a plain text representation, suitable as a 
 user-readable output.  The conversion should be as straightforward
 as possible and should not emit any special formatting character
 sequences.  Ideally, the successive application of the <CODE>raw</CODE> and
 <CODE>print</CODE> modules should not significantly alter the text.
 <P>
-<H3><CODE> diphs </CODE> module</H3>
+<H3><CODE> diphs </CODE> </H3>
 
+<P>
 <P>This module extracts the diphone layer from the input TSR into
 the linear diphone stream format; the rest of TSR is discarded.
 <P>There may be an implementation-dependent limit on the size
@@ -526,14 +541,15 @@ the module may emit more subtasks; see the
 <A HREF="#appl-cmd">appl</A> command for discussion concerning subtask reporting.
 t
 <P>
-<H3><CODE> synth </CODE> module</H3>
+<H3><CODE> synth </CODE> </H3>
 
+<P>
 <P>The input diphone stream is synthesised in a voice dependent way.
 <P>
 <P>
 <P>
 <P>
-<H3>Explicit data type specifications</H3>
+<H3>Explicit data type specifiers</H3>
 
 <P>
 <P>Sometimes an ambiguity concerning the type of data passed at a certain point
@@ -554,11 +570,12 @@ type of the preceding module and/or the input data type decides the data
 type at this point. Failing even that, the server will assume plain text
 data.
 <P>The pseudo-module name consists of a single letter enclosed in square
-brackets.  The following letters represent the available data types:
+brackets.  The available data types are indicated by letters listed in
+<A HREF="#typespecs">the table of explicit data type specifiers</A>.
 <P>
 <CENTER><TABLE BORDER><TR><TD>
 <BR>
-name </TD><TD> data format </TD></TR><TR><TD>
+<A NAME="typespecs"></A> name </TD><TD> data format </TD></TR><TR><TD>
 t </TD><TD> plain text </TD></TR><TR><TD>
 s </TD><TD> STML text </TD></TR><TR><TD>
 i </TD><TD> the server-internal text structure representation </TD></TR><TR><TD>
@@ -574,7 +591,7 @@ w </TD><TD> waveform </TD></TR><TR><TD>
 <P>
 <P>
 <P>
-<H2><A NAME="ss4.5">4.5 response codes</A>
+<H2><A NAME="ss4.5">4.5 Response codes</A>
 </H2>
 
 <P>
@@ -594,9 +611,12 @@ may ignore this digit altogether. The third digit is merely used
 for distinguishing between messages of the same class and subclass
 and most clients are likely to ignore it in most situations.
 <P>
-<H3>response classes</H3>
+<H3>Response classes</H3>
 
-<P>The response classes listed below are possible within TTSCP.
+<P>Within TTSCP, nine response classes have been defined.
+Out of these, one is used for in-progress communication,
+four indicate the results of commands, and the remaining
+four are reserved for future extensions.
 <P>
 <CENTER><TABLE BORDER><TR><TD>
 <BR>
@@ -606,9 +626,9 @@ code </TD><TD> error type </TD><TD> suggested action </TD></TR><TR><TD>
 2xx </TD><TD> OK, command completed </TD><TD> transmit another command </TD></TR><TR><TD>
 3xx </TD><TD> reserved </TD><TD> notify user / ignore </TD></TR><TR><TD>
 4xx </TD><TD> command failed </TD><TD> transmit another command </TD></TR><TR><TD>
-5xx </TD><TD> reserved </TD><TD> ignore </TD></TR><TR><TD>
+5xx </TD><TD> reserved </TD><TD> notify user </TD></TR><TR><TD>
 6xx </TD><TD> connection terminated </TD><TD> notify user if unexpected </TD></TR><TR><TD>
-7xx </TD><TD> reserved </TD><TD> </TD></TR><TR><TD>
+7xx </TD><TD> reserved </TD><TD> notify user </TD></TR><TR><TD>
 8xx </TD><TD> server crash or shutdown </TD><TD> notify user </TD></TR><TR><TD>
 
 <CAPTION>       TTSCP response classes</CAPTION>
@@ -618,7 +638,8 @@ a 2xx or a 4xx response, not to send otherwise. The client should
 treat the connection as terminated, whenever it receives any response
 with code 5xx or higher. It may also quit at any time just after
 sending a "done" command to the server; the server will however
-confirm that command with a reply of 600 before disconnecting.
+confirm that command with a reply of 600 before disconnecting,
+and this is the only 6xx response code defined at the moment.
 <P>Replies of 8xx except 800 are reserved for cases of severe server
 misconfiguration, or detected programming bugs. Their meanings
 are very implementation dependent (implementations are encouraged
@@ -632,7 +653,7 @@ messages if on.
 <P>At the moment, some error codes contain letters. Later, all of
 them will consist of digits only and will be space-terminated.
 <P>
-<H3>response subclasses</H3>
+<H3>Response subclasses</H3>
 
 <P>
 <P>The subclass depends on the response class. The most interesting
@@ -659,18 +680,14 @@ code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 <CAPTION>       TTSCP error subclasses</CAPTION>
 </TD></TR></TABLE></CENTER>
 <P>
-<H3>currently defined messages</H3>
+<H3>Currently defined messages</H3>
 
 <P>
-<P>Some of the following message codes are very unlikely
-to get through to the client and may therefore change
-meanings in future TTSCP descriptions. Any comment is welcome.
 <P>
 <CENTER><TABLE BORDER><TR><TD>
 <BR>
 111     </TD><TD> daemon talks</TD></TR><TR><TD>
 112     </TD><TD> apply task started</TD></TR><TR><TD>
-121     </TD><TD> transcription follows</TD></TR><TR><TD>
 122     </TD><TD> apply task total bytes count follows</TD></TR><TR><TD>
 123     </TD><TD> apply task chunk bytes count follows</TD></TR><TR><TD>
 141     </TD><TD> option value follows</TD></TR><TR><TD>
@@ -705,11 +722,12 @@ meanings in future TTSCP descriptions. Any comment is welcome.
 443     </TD><TD> no such language or voice</TD></TR><TR><TD>
 444     </TD><TD> invalid connection handle</TD></TR><TR><TD>
 445     </TD><TD> could not open file</TD></TR><TR><TD>
-446     </TD><TD> out of range</TD></TR><TR><TD>
+446     </TD><TD> out of range (never issued)</TD></TR><TR><TD>
 447     </TD><TD> invalid option value</TD></TR><TR><TD>
 448     </TD><TD> cannot send woven pointery</TD></TR><TR><TD>
 451     </TD><TD> not authorized to do this</TD></TR><TR><TD>
 452     </TD><TD> no such user or bad password</TD></TR><TR><TD>
+453     </TD><TD> not allowed to use localsound</TD></TR><TR><TD>
 461     </TD><TD> input triggered server bug</TD></TR><TR><TD>
 462     </TD><TD> unimplemented feature</TD></TR><TR><TD>
 463     </TD><TD> input triggered configuration bug</TD></TR><TR><TD>
@@ -720,6 +738,18 @@ meanings in future TTSCP descriptions. Any comment is welcome.
 473     </TD><TD> unreachable remote tcpsyn server</TD></TR><TR><TD>
 474     </TD><TD> remote tcpsyn server uses an unknown protocol</TD></TR><TR><TD>
 475     </TD><TD> remote tcpsyn server returned error</TD></TR><TR><TD>
+476     </TD><TD> remote tcpsyn server timed out</TD></TR><TR><TD>
+
+<CAPTION>       TTSCP error codes as issued by Epos</CAPTION>
+</TD></TR></TABLE></CENTER>
+<P>The 8xx class of responses (fatal errors) is still very unsettled
+and many of the codes listed there
+will later be removed or merged together. Applications should not try to decode
+them except possibly for the middle digit. The same goes for all x6x subclasses
+of errors (internal errors).
+<P>
+<CENTER><TABLE BORDER><TR><TD>
+<BR>
 600     </TD><TD> session ended normally</TD></TR><TR><TD>
 800     </TD><TD> server shutting down as requested by client</TD></TR><TR><TD>
 801     </TD><TD> error explicitly reported in config files</TD></TR><TR><TD>
@@ -739,13 +769,8 @@ meanings in future TTSCP descriptions. Any comment is welcome.
 871     </TD><TD> network unreachable</TD></TR><TR><TD>
 872     </TD><TD> server already running</TD></TR><TR><TD>
 
-<CAPTION>       TTSCP error codes as issued by Epos</CAPTION>
+<CAPTION>       TTSCP session termination codes as issued by Epos</CAPTION>
 </TD></TR></TABLE></CENTER>
-<P>The 8xx class of responses (fatal errors) is still very unsettled
-and many of the codes listed there
-will later be removed or merged together. Applications should not try to decode
-them except possibly for the middle digit. The same goes for all x6x subclasses
-of errors (internal errors)
 <P>
 <P>
 <HR>

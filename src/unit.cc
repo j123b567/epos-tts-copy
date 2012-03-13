@@ -107,8 +107,8 @@ unit::write_diphs(diphone *whither, int first, int n)
 	if (!whither) shriek (861, fmt("NULL ptr passed to write_diphs() n=%d", n));
 	scope = true;
 	if (first == ifcache && iucache == this) tmpu=ocache;
-	else for (m = first, tmpu = LeftMost(U_DIPH); m--; tmpu = tmpu->Next(U_DIPH));
-	for (m=0; m<n && tmpu != &EMPTY; m++, tmpu = tmpu->Next(U_DIPH)) {
+	else for (m = first, tmpu = LeftMost(cfg->segm_level); m--; tmpu = tmpu->Next(cfg->segm_level));
+	for (m=0; m<n && tmpu != &EMPTY; m++, tmpu = tmpu->Next(cfg->segm_level)) {
 		tmpu->sanity();
 		whither[m].code = tmpu->cont;
 		whither[m].f = tmpu->effective(Q_FREQ);
@@ -124,7 +124,7 @@ void
 unit::show_phones()
 {
 	unit *tmpu;
-	for (tmpu = LeftMost(U_PHONE); tmpu != &EMPTY; tmpu = tmpu->Next(U_PHONE))
+	for (tmpu = LeftMost(cfg->phone_level); tmpu != &EMPTY; tmpu = tmpu->Next(cfg->phone_level))
 		printf("%c %d %d %d\n", tmpu->cont,
 			tmpu->effective(Q_FREQ),
 			tmpu->effective(Q_INTENS),
@@ -181,7 +181,7 @@ unit::fdump(FILE *handle)        //this one does the real job
 	unit *tmpu;
     
 	sanity();
-	if (depth == U_PHONE) {
+	if (depth == cfg->phone_level) {
 		colorize (depth, handle);
 		if (cont != NO_CONT || !cfg->out_swallow__) fputs(fmtchar(cont), handle);
 		colorize(-1, handle);
@@ -331,11 +331,11 @@ unit::gather(char *buffer_now, char *buffer_end, bool suprasegm)
 		buffer_now = tmpu->gather(buffer_now, buffer_end, suprasegm);
 		if (!buffer_now) return NULL;	// FIXME: slow and ugly
 	}
-	if (cont != NO_CONT && (depth == U_PHONE || suprasegm)) {
+	if (cont != NO_CONT && (depth == cfg->phone_level || suprasegm)) {
 		if(buffer_now >= buffer_end) 
 			if (cfg->paranoid) shriek(461, "unit::gather buffer overflow");
 			else return NULL;
-		if (depth < U_PHONE) 	// FIXME CHECKME!
+		if (depth < cfg->phone_level) 	// FIXME CHECKME!
 			// shriek(811, "Cannot gather diphonized units (reorder rules)");
 			return buffer_now;	// FIXME
 		*(buffer_now++)=(char)cont; 
@@ -488,7 +488,7 @@ unit::subst(hash *table, SUBST_METHOD method)
 bool
 unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 {
-	if (target == U_PHONE) return subst(table, method);
+	if (target == cfg->phone_level) return subst(table, method);
 
 	char	*r;
 	unit	*u;
@@ -908,13 +908,13 @@ unit::raise(bool *whattab, bool*whentab, UNIT whither, UNIT whence)
 
 char _d_descr[4];       //this buffer is an implicit parameter to diph()
 
-void 
+inline void 
 unit::diph(hash *dinven)   //_d_descr should contain a diphone name
 {
 	int n;
 	for (n=dinven->translate_int(_d_descr);n>=0;n-=OMEGA) {
 		DEBUG(1,5,fprintf(STDDBG,"Diphone number %d born\n", n%OMEGA);)
-		insert_end(new unit(U_DIPH, n%OMEGA),NULL);
+		insert_end(new unit(cfg->segm_level, n%OMEGA),NULL);
 		sanity();
 		DEBUG(1,5,fprintf(STDDBG,"...born and inserted\n");)
 	}
@@ -1157,9 +1157,9 @@ unit::sanity()
 {
 	if (cfg->trusted) return;    
 	if (this == NULL)			  EMPTY.insane ("this non-NULL");
-//	if (!firstborn && depth > U_PHONE)		insane ("having content");
+//	if (!firstborn && depth > cfg->phone_level)	insane ("having content");
 	if (this == _unit_just_unlinked)		return;
-	if (depth > U_TEXT && this != &EMPTY)		insane("depth");
+	if (depth > cfg->text_level && this != &EMPTY)	insane("depth");
 	if ((firstborn && 1) != (lastborn && 1))	insane("first == last");
 	if (firstborn && firstborn->depth+1 != depth)	insane("firstborn->depth");
 	if (lastborn && lastborn->depth+1 != depth)	insane("lastborn->depth");
@@ -1167,8 +1167,8 @@ unit::sanity()
 	if (lastborn && lastborn->next)			insane("lastborn->next");
 	if (prev && prev->next != this)			insane("prev->next");
 	if (next && next->prev != this)			insane("next->prev");
-	if (depth==U_TEXT && father)			insane("TEXT.father");
-	if (cont < 0 || cont > 255 && depth > U_DIPH)	insane("content"); 
+	if (depth==cfg->text_level && father)		insane("TEXT.father");
+	if (cont < 0 || cont > 255 && depth > cfg->segm_level)	insane("content"); 
 
         if (cfg->allpointers) return;
 	if (prev && (unsigned long int) prev<0x8000000) insane("prev");

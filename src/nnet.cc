@@ -15,7 +15,16 @@
  *	These procedures provide the input to the MATLAB-implemented 
  *	neural networks by Jana Tuckova. Their corresponding header
  *	file is unit.h and this file gets included by unit.cc.
+ *
+ *
+ *	This file is extremely ugly and non-generic.  Shall go away
+ *	sooner or later.
  */
+
+inline UNIT get_level (const char *levname)
+{
+	return str2enum(levname, cfg->unit_levels, U_DEFAULT);
+}
 
 #define NN_VOCAL	'A' 
 #define NN_DIPHT	'U' 
@@ -59,23 +68,25 @@ void
 unit::nnet_dump(FILE *handle)        //this one does the real job
 {
 	unit *tmpu;
+
+	UNIT phone = cfg->phone_level;
     
-	for(tmpu=LeftMost(U_PHONE);tmpu!=&EMPTY;tmpu=tmpu->Next(U_PHONE)) {
+	for(tmpu=LeftMost(phone);tmpu!=&EMPTY;tmpu=tmpu->Next(phone)) {
 			//lastlong=1, iff vocalic(cont) && next->cont!=':'
 		fprintf(handle, "%d %d %d %.2f %.2f 2.5   %.1f %.1f %.1f %.1f %.1f %.1f %.1f\n",
-			tmpu->Next(U_PHONE)->cont!=NN_LONG && tmpu->cont==NN_VOCAL,
-			tmpu->index(U_PHONE, U_WORD)==0,
-			tmpu->index(U_SYLL, U_WORD)==0,
-			tmpu->ancestor(U_WORD)->count(U_SYLL)
-				/ (float)tmpu->ancestor(U_COLON)->count(U_SYLL),
-			(tmpu->index(U_SYLL, U_COLON)+1)/(float)tmpu->ancestor(U_COLON)->count(U_SYLL),
-			tmpu->Prev(U_PHONE)->Prev(U_PHONE)->Prev(U_PHONE)->nnet_type(),
-			tmpu->Prev(U_PHONE)->Prev(U_PHONE)->nnet_type(),
-			tmpu->Prev(U_PHONE)->nnet_type(),
+			tmpu->Next(phone)->cont!=NN_LONG && tmpu->cont==NN_VOCAL,
+			tmpu->index(phone, get_level("word"))==0,
+			tmpu->index(get_level("syll"), get_level("word"))==0,
+			tmpu->ancestor(get_level("word"))->count(get_level("syll"))
+				/ (float)tmpu->ancestor(get_level("colon"))->count(get_level("syll")),
+			(tmpu->index(get_level("syll"), get_level("colon"))+1)/(float)tmpu->ancestor(get_level("colon"))->count(get_level("syll")),
+			tmpu->Prev(phone)->Prev(phone)->Prev(phone)->nnet_type(),
+			tmpu->Prev(phone)->Prev(phone)->nnet_type(),
+			tmpu->Prev(phone)->nnet_type(),
 			tmpu->nnet_type(),
-			tmpu->Next(U_PHONE)->nnet_type(),
-			tmpu->Next(U_PHONE)->Next(U_PHONE)->nnet_type(),
-			tmpu->Next(U_PHONE)->Next(U_PHONE)->Next(U_PHONE)->nnet_type()
+			tmpu->Next(phone)->nnet_type(),
+			tmpu->Next(phone)->Next(phone)->nnet_type(),
+			tmpu->Next(phone)->Next(phone)->Next(phone)->nnet_type()
 		);
 	}
 }

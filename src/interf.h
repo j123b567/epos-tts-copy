@@ -55,6 +55,7 @@ char *fmt(const char *s, const char *t, const char *u);
 char *fmt(const char *s, const char *t, const char *u, int userval);
 char *fmt(const char *s, const char *t, const char *u, const char *v);
 char *fmt(const char *s, int userval, const char *u);
+char *fmt(const char *s, int userval, const char *u, const char *v);
 
 void user_pause();
 
@@ -65,7 +66,19 @@ void shriek(int code, const char *msg)
 					;
 
 char *split_string(char *string);	// 0-terminate the first word, return the rest
+
 FILE *fopen(const char *filename, const char *flags, const char *reason);
+
+extern void *xmall_ptr_holder;
+#define OOM_HANDLER	(shriek(422, "Out of memory"), NULL)
+#define xmalloc(x)	(((xmall_ptr_holder = malloc((x)))) ? xmall_ptr_holder : OOM_HANDLER)
+#define xrealloc(x,y)	(((xmall_ptr_holder = realloc((x),(y)))) ? xmall_ptr_holder : OOM_HANDLER)
+#define xcalloc(x,y)	(((xmall_ptr_holder = calloc((x),(y)))) ? xmall_ptr_holder : OOM_HANDLER)
+
+// void *xmalloc(size_t);
+// void *xcalloc(size_t, size_t);
+// void *xrealloc(void *, size_t);
+
 
 #ifndef HAVE_STRDUP
 char *strdup(const char *src);   //Ultrix lacks it. Otherwise, we're just superfluous.
@@ -76,7 +89,7 @@ extern char *scratch;
 FIT_IDX fit(char c);		 // converts 'f', 'i' or 't' to 0, 1 or 2, respectively
 UNIT str2enum(const char *item, const char *list, int dflt);
 char *enum2str(int item, const char *list);
-hash *str2hash(const char *list, unsigned int max_item_len);
+// hash *str2hash(const char *list, unsigned int max_item_len);
 unit *str2units(const char *text);
 char *fntab(const char *s, const char *t); //will calloc and return 256 bytes not freeing s,t
                                        //if len(s)!=len(t), ignore the rest if not cfg.paranoid

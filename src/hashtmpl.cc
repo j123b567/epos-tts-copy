@@ -34,7 +34,7 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
 
 #ifndef HASH_CANNOT_READ_FILES
 	#define HASH_CAN_READ_FILES
-	#include "defaults.h"         //Comment out if doesn't exist
+	#include "defaults.h"         // Comment out if doesn't exist
 #endif
 
 #include "hash.h"
@@ -51,8 +51,8 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
 #define key_t  hash_key_t
 #define data_t hash_data_t
 
-//#define DEBUG_HASH          // Quite detailed debugging printouts
-//#define PROF_HASH           // Useless profiling (maximum tree depth printed on delete)
+// #define DEBUG_HASH          // Quite detailed debugging printouts
+// #define PROF_HASH           // Useless profiling (maximum tree depth printed on delete)
 
 #define DOWNSIZE_HESITATE 8 // Downsizing should be less frequent for very small tables
 
@@ -110,9 +110,9 @@ void shutdown_hashing()
 
 #else
 
-inline void * tree_alloc()	/* build some slab here */
+inline void * tree_alloc()
 {
-	return malloc(sizeof (hsearchtree<char, char>));
+	return xmalloc(sizeof (hsearchtree<char, char>));
 }
 
 inline void tree_delete(void *tree) 
@@ -245,7 +245,7 @@ printf("hash::hash: sized %d\n", size);
 	perc_optimal=60;        // i.e. not memory-hungry speed
 	cfg_rehash(0,400,5);	// keep the table full ratio 0% - 400%
 				// i.e. never downsize, upsize rarely
-	ht=(hsearchtree<key_t, data_t> **)calloc(capacity,
+	ht=(hsearchtree<key_t, data_t> **)xcalloc(capacity,
 				sizeof(hsearchtree<key_t, data_t>*));
 #ifdef DEBUG_HASH
 printf("eoc\n");
@@ -263,7 +263,7 @@ hash_table<key_t, data_t>::hash_table(hash_table *parent)
 
 	dupkey = dupdata = true;
 	capacity = parent->capacity;
-	ht = (hsearchtree<key_t, data_t> **)calloc(capacity,
+	ht = (hsearchtree<key_t, data_t> **)xcalloc(capacity,
 				sizeof(hsearchtree<key_t, data_t> *));
 	maxdep = longest = items = 0;
 	perc_optimal = parent->perc_optimal;
@@ -315,7 +315,7 @@ hash::hash(const char *filename,
 	free(ht);
 
 	dupkey = dupdata = true;
-	buff=(char *)malloc(hash_max_line);
+	buff=(char *)xmalloc(hash_max_line);
 
 #ifdef DEBUG_HASH
 printf("hash::hash: using file %s\n", filename);
@@ -326,7 +326,7 @@ printf("hash::hash: using file %s\n", filename);
 	perc_optimal = perc_full;
 	
 	if((hashfile=fopen(filename, "rt"))==NULL) {
-		ht = (hsearchtree<char, char> **)calloc(sizeof(int *), 1);
+		ht = (hsearchtree<char, char> **)xcalloc(sizeof(int *), 1);
 		capacity = 0;
 		if (not_found == ANYWAY) {
 			items = -1;
@@ -337,7 +337,7 @@ printf("hash::hash: using file %s\n", filename);
 	while (fgets(buff, hash_max_line, hashfile)) if (!strspn(buff+strspn(buff,WHITESPACE),COMMENT_LINES)) l++;
 	capacity = l*100/perc_full | 1;
 	cfg_rehash(perc_downsize, perc_upsize, max_tree_depth);
-	ht = (hsearchtree<char, char> **)calloc(capacity,sizeof(hsearchtree<char, char>*));
+	ht = (hsearchtree<char, char> **)xcalloc(capacity,sizeof(hsearchtree<char, char>*));
 	rewind(hashfile);
 	l = 0;
 	while (l++, fgets(buff, hash_max_line, hashfile)) {
@@ -398,7 +398,7 @@ hash::write(char *filename, bool keep_backup)
 {
 	FILE *old = fopen(filename, "rt");
 	FILE *outfile;
-	char *buff = (char *)malloc(hash_max_line);
+	char *buff = (char *)xmalloc(hash_max_line);
 	char *backup;
 	int result;
 	
@@ -443,7 +443,7 @@ hash::update(char *filename, bool keep_backup, bool remove_removed)
 {
 	FILE *old = fopen(filename, "rt");
 	FILE *outfile;
-	char *buff = (char *)malloc(hash_max_line);
+	char *buff = (char *)xmalloc(hash_max_line);
 	char *backup;
 
 	char *tmp;
@@ -780,7 +780,7 @@ printf("hash::rehash Gonna rehash from %d to %d for %d items\n", capold, new_cap
 	if (new_capacity & hash_fn_mask) hash_shriek("Not a power of two %d","",new_capacity);   // :-(
 #endif
 	capacity=new_capacity;
-	ht=(hsearchtree<key_t, data_t> **)calloc(capacity, sizeof(hsearchtree<key_t, data_t> *));
+	ht=(hsearchtree<key_t, data_t> **)xcalloc(capacity, sizeof(hsearchtree<key_t, data_t> *));
 	cfg_rehash(0, ((unsigned)-1)/2-1,_HASH_DEPTH); //infinity (no rehash()ing in rehash(), please)
 	longest=items=maxdep=0;
 	

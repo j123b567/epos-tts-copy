@@ -30,7 +30,7 @@
 const char *COMMENT_LINES = "#;\r\n";
 const char *WHITESPACE = " \t";
 
-const char *output_file = "/dev/dsp";
+const char *output_file = "#localsound";
 
 #define STDIN_BUFF_SIZE  550000
 
@@ -116,6 +116,21 @@ void trans_data()
 	sputs("\r\n", ctrld);
 	sputs(data, datad);
 	get_result(ctrld);
+
+	while (sgets(scratch, SCRATCH_SPACE, ctrld)) {
+		scratch[SCRATCH_SPACE] = 0;
+		if (*scratch > '1') return;	// guessing
+		if (!strncmp(scratch, "122 ", 4)) {
+			int count;
+			sgets(scratch, SCRATCH_SPACE, ctrld);
+			scratch[SCRATCH_SPACE] = 0;
+			sscanf(scratch, "%d", &count);
+			char *b=(char *)malloc(count+1);
+			b[read(datad, b, count)] = 0;
+			printf("%s\n", b);
+		}
+	}
+
 	get_result(ctrld);
 }
 

@@ -6,7 +6,7 @@ encoding=$1
 
 echo
 rm -r ../dos/* 2>/dev/null
-mkdir -p ../dos/cfg ../dos/doc
+mkdir ../dos ../dos/cfg ../dos/doc
 echo -n Preparing source files...
 for i in $2 ; do cat $i |todos >../dos/$i 
 	echo -n "$i "  

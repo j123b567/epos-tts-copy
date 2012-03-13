@@ -9,7 +9,7 @@ if [ -d $dir ]; then
 fi
 mkdir -p $dir
 
-srcopts=`cat ../src/options.lst | grep '^OPTION\|^LNG_OPTION\|^INV_OPTION' | awk -F\" '{ printf("%s ", $2); }' `
+srcopts=`cat ../src/options.lst | grep '^.OPTION\|^OPTION\|^LNG_OPTION\|^VOICE_OPTION' | awk -F\" '{ printf("%s ", $2); }' `
 for i in $srcopts; do
 	echo -n > $dir/$i
 #	ls $dir/$i
@@ -21,7 +21,9 @@ for i in $docopts; do
 	if rm $dir/$i 2>/dev/null; then 
 		echo -n >/dev/null
 	else
-		echo Phantom documented: $i
+		if [ $i != "name" ]; then
+			echo Phantom documented: $i
+		fi
 	fi
 done
 

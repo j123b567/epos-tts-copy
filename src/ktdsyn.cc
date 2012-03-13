@@ -72,7 +72,7 @@ void ktdsyn::syndiph(voice *v, diphone d, wavefm *w)
 	if (v->samp_size != 8) shriek(813, "ktd synth still supports only 8bit channels, sorry\n");
 
 	unsigned char *s_psl = new unsigned char[6000];
-	char *m_sub = (char *)malloc(MAX_PATHNAME);
+	char *m_sub = (char *)xmalloc(MAX_PATHNAME);
 
 	strcpy (m_sub, cfg->base_dir);
 	strcat (m_sub, "/");

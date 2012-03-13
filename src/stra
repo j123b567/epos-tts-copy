@@ -1,0 +1,2444 @@
+execve("./epos", ["epos", "-fD"], [/* 26 vars */]) = 0
+brk(0)                                  = 0x80912dc
+open("/etc/ld.so.preload", O_RDONLY)    = -1 ENOENT (No such file or directory)
+open("/mnt/lib/libstdc++.so.2.7.2", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY)      = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+mmap(0, 10427, PROT_READ, MAP_PRIVATE, 3, 0) = 0x4000b000
+close(3)                                = 0
+open("/usr/lib/libstdc++.so.2.7.2", O_RDONLY) = 3
+mmap(0, 4096, PROT_READ, MAP_PRIVATE, 3, 0) = 0x4000e000
+munmap(0x4000e000, 4096)                = 0
+mmap(0, 234228, PROT_READ|PROT_EXEC, MAP_PRIVATE, 3, 0) = 0x4000e000
+mprotect(0x4003f000, 33524, PROT_NONE)  = 0
+mmap(0x4003f000, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED, 3, 0x30000) = 0x4003f000
+mmap(0x40046000, 4852, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x40046000
+close(3)                                = 0
+open("/mnt/lib/libm.so.6", O_RDONLY)    = -1 ENOENT (No such file or directory)
+open("/lib/libm.so.6", O_RDONLY)        = 3
+mmap(0, 4096, PROT_READ, MAP_PRIVATE, 3, 0) = 0x40048000
+munmap(0x40048000, 4096)                = 0
+mmap(0, 99888, PROT_READ|PROT_EXEC, MAP_PRIVATE, 3, 0) = 0x40048000
+mprotect(0x40060000, 1584, PROT_NONE)   = 0
+mmap(0x40060000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED, 3, 0x17000) = 0x40060000
+close(3)                                = 0
+open("/mnt/lib/libc.so.6", O_RDONLY)    = -1 ENOENT (No such file or directory)
+open("/lib/libc.so.6", O_RDONLY)        = 3
+mmap(0, 4096, PROT_READ, MAP_PRIVATE, 3, 0) = 0x40061000
+munmap(0x40061000, 4096)                = 0
+mmap(0, 648136, PROT_READ|PROT_EXEC, MAP_PRIVATE, 3, 0) = 0x40061000
+mprotect(0x400ef000, 66504, PROT_NONE)  = 0
+mmap(0x400ef000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED, 3, 0x8d000) = 0x400ef000
+mmap(0x400f4000, 46024, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x400f4000
+close(3)                                = 0
+mprotect(0x40061000, 581632, PROT_READ|PROT_WRITE) = 0
+mprotect(0x40061000, 581632, PROT_READ|PROT_EXEC) = 0
+mprotect(0x40048000, 98304, PROT_READ|PROT_WRITE) = 0
+mprotect(0x40048000, 98304, PROT_READ|PROT_EXEC) = 0
+mprotect(0x4000e000, 200704, PROT_READ|PROT_WRITE) = 0
+mprotect(0x4000e000, 200704, PROT_READ|PROT_EXEC) = 0
+personality(0 /* PER_??? */)            = 0
+getpid()                                = 530
+brk(0)                                  = 0x80912dc
+brk(0x8091304)                          = 0x8091304
+brk(0x8092000)                          = 0x8092000
+time(NULL)                              = 931298867
+mmap(0, 167936, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x40100000
+open("/usr/lib/epos/cfg/allowed.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+brk(0x8094000)                          = 0x8094000
+read(3, "# This file controls what parame"..., 4096) = 1025
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "# This file controls what parame"..., 4096) = 1025
+read(3, "", 4096)                       = 0
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+fstat(1, {st_mode=0, st_size=0, ...})   = 0
+write(1, "Base directory is /usr/lib/epos\n"..., 32Base directory is /usr/lib/epos
+) = 32
+write(1, "Loading config from fixed.ini\n", 30Loading config from fixed.ini
+) = 30
+open("/usr/lib/epos/cfg/fixed.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "# Toto je konfigura\350n\355 sou"..., 4096) = 1576
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "# Toto je konfigura\350n\355 sou"..., 4096) = 1576
+brk(0x8095000)                          = 0x8095000
+open("/usr/lib/epos/cfg/epos.ini", O_RDONLY) = 4
+fstat(4, {st_mode=0, st_size=0, ...})   = 0
+brk(0x8097000)                          = 0x8097000
+read(4, "# Toto je konfigura\350n\355 sou"..., 4096) = 927
+lseek(4, 0, SEEK_SET)                   = 0
+read(4, "# Toto je konfigura\350n\355 sou"..., 4096) = 927
+read(4, "", 4096)                       = 0
+close(4)                                = 0
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+open("/usr/lib/epos/./version", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "2.4.16\n", 4096)               = 7
+lseek(3, 0, SEEK_SET)                   = 0
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "2.4.16\n", 7)                  = 7
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+stat("/usr/lib/epos/./version", {st_mode=0, st_size=0, ...}) = 0
+write(1, "Loading config from ansi.ini\n", 29Loading config from ansi.ini
+) = 29
+open("/usr/lib/epos/cfg/ansi.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "\n#\tForm\341tov\341n\355 v\375s"..., 4096) = 422
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "\n#\tForm\341tov\341n\355 v\375s"..., 4096) = 422
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Loading config from epos.ini\n", 29Loading config from epos.ini
+) = 29
+open("/usr/lib/epos/cfg/epos.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "# Toto je konfigura\350n\355 sou"..., 4096) = 927
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "# Toto je konfigura\350n\355 sou"..., 4096) = 927
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Adding language czech\n", 22Adding language czech
+) = 22
+write(1, "Loading language from czech.ini\n"..., 32Loading language from czech.ini
+) = 32
+open("/usr/lib/epos/lng/czech/czech.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "\n# P\370ed na\350ten\355m tohot"..., 4096) = 914
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "\n# P\370ed na\350ten\355m tohot"..., 4096) = 914
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Loading voice from rvq.ini\n", 27Loading voice from rvq.ini
+) = 27
+open("/usr/lib/epos/voice/czech/rvq.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "# kubec-vq over TCP\n\nname\t\tr"..., 4096) = 257
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "# kubec-vq over TCP\n\nname\t\tr"..., 4096) = 257
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Loading voice from vichova.ini\n"..., 31Loading voice from vichova.ini
+) = 31
+open("/usr/lib/epos/voice/czech/vichova.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "name\t\t\tvichova\n\ncounts\t\t\t"..., 4096) = 196
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "name\t\t\tvichova\n\ncounts\t\t\t"..., 4096) = 196
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Loading voice from kubec-f.ini\n"..., 31Loading voice from kubec-f.ini
+) = 31
+open("/usr/lib/epos/voice/czech/kubec-f.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "name\t\t\"kubec-float\"\n\ncount"..., 4096) = 207
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "name\t\t\"kubec-float\"\n\ncount"..., 4096) = 207
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Loading voice from rvq.ini\n", 27Loading voice from rvq.ini
+) = 27
+open("/usr/lib/epos/voice/czech/rvq.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "# kubec-vq over TCP\n\nname\t\tr"..., 4096) = 257
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "# kubec-vq over TCP\n\nname\t\tr"..., 4096) = 257
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Loading voice from kadlec.ini\n", 30Loading voice from kadlec.ini
+) = 30
+open("/usr/lib/epos/voice/czech/kadlec.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "name \"kadlec\"\ncounts\t\"\"\nm"..., 4096) = 204
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "name \"kadlec\"\ncounts\t\"\"\nm"..., 4096) = 204
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Loading voice from kubec-vq.ini\n"..., 32Loading voice from kubec-vq.ini
+) = 32
+open("/usr/lib/epos/voice/czech/kubec-vq.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "name\t\tkubec-vq\n\ncounts\t\t\""..., 4096) = 192
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "name\t\tkubec-vq\n\ncounts\t\t\""..., 4096) = 192
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Loading voice from kubec.ini\n", 29Loading voice from kubec.ini
+) = 29
+open("/usr/lib/epos/voice/czech/kubec.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "name\t\"kubec-int\"\ncounts\t\"l"..., 4096) = 197
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "name\t\"kubec-int\"\ncounts\t\"l"..., 4096) = 197
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Adding language slovak\n", 23Adding language slovak
+) = 23
+write(1, "Loading language from slovak.ini"..., 33Loading language from slovak.ini
+) = 33
+open("/usr/lib/epos/lng/slovak/slovak.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "\n# P\370ed na\350ten\355m tohot"..., 4096) = 925
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "\n# P\370ed na\350ten\355m tohot"..., 4096) = 925
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Loading voice from petriska.ini\n"..., 32Loading voice from petriska.ini
+) = 32
+open("/usr/lib/epos/voice/slovak/petriska.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "name \"petriska\"\ncounts\t\"\"\n"..., 4096) = 181
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "name \"petriska\"\ncounts\t\"\"\n"..., 4096) = 181
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Loading voice from kadlec.ini\n", 30Loading voice from kadlec.ini
+) = 30
+open("/usr/lib/epos/voice/slovak/kadlec.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "name\t\t\"kadlec\"\ncounts\t\t\""..., 4096) = 209
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "name\t\t\"kadlec\"\ncounts\t\t\""..., 4096) = 209
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Adding language german\n", 23Adding language german
+) = 23
+write(1, "Loading language from german.ini"..., 33Loading language from german.ini
+) = 33
+open("/usr/lib/epos/lng/german/german.ini", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "\n# P\370ed na\350ten\355m tohot"..., 4096) = 634
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, "\n# P\370ed na\350ten\355m tohot"..., 4096) = 634
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+brk(0x809c000)                          = 0x809c000
+brk(0x80a1000)                          = 0x80a1000
+write(1, "Compiling czech language rules, "..., 47Compiling czech language rules, hash dir czech
+) = 47
+write(1, "Text preprocessor opening /usr/l"..., 60Text preprocessor opening /usr/lib/epos/lng/czech/czech.rul
+) = 60
+open("/usr/lib/epos/lng/czech/czech.rul", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "#\n#\tprosodick\341 pravidla Fon"..., 4096) = 1998
+lseek(3, 0, SEEK_SET)                   = 0
+write(1, "Rules shall be taken from czech."..., 36Rules shall be taken from czech.rul
+) = 36
+read(3, "#\n#\tprosodick\341 pravidla Fon"..., 4096) = 1998
+write(1, "Text preprocessor opening /usr/l"..., 60Text preprocessor opening /usr/lib/epos/lng/czech/trans.rul
+) = 60
+open("/usr/lib/epos/lng/czech/trans.rul", O_RDONLY) = 4
+fstat(4, {st_mode=0, st_size=0, ...})   = 0
+read(4, "#\n#\t(c) Jirka Hanika <geo@ff.c"..., 4096) = 4096
+lseek(4, 0, SEEK_SET)                   = 0
+read(4, "#\n#\t(c) Jirka Hanika <geo@ff.c"..., 4096) = 4096
+brk(0x80a2000)                          = 0x80a2000
+write(1, "Text preprocessor opening /usr/l"..., 63Text preprocessor opening /usr/lib/epos/lng/czech/numerals.rul
+) = 63
+open("/usr/lib/epos/lng/czech/numerals.rul", O_RDONLY) = 5
+fstat(5, {st_mode=0, st_size=0, ...})   = 0
+brk(0x80a4000)                          = 0x80a4000
+read(5, "\n# These rules should eventuall"..., 4096) = 3328
+lseek(5, 0, SEEK_SET)                   = 0
+read(5, "\n# These rules should eventuall"..., 4096) = 3328
+brk(0x80a5000)                          = 0x80a5000
+brk(0x80a6000)                          = 0x80a6000
+brk(0x80a7000)                          = 0x80a7000
+brk(0x80a8000)                          = 0x80a8000
+read(5, "", 4096)                       = 0
+close(5)                                = 0
+brk(0x80a9000)                          = 0x80a9000
+brk(0x80aa000)                          = 0x80aa000
+brk(0x80ab000)                          = 0x80ab000
+brk(0x80ac000)                          = 0x80ac000
+brk(0x80ad000)                          = 0x80ad000
+brk(0x80ae000)                          = 0x80ae000
+brk(0x80af000)                          = 0x80af000
+brk(0x80b0000)                          = 0x80b0000
+brk(0x80b1000)                          = 0x80b1000
+read(4, "\370ij\355t do invent\341\370e ("..., 4096) = 1085
+brk(0x80b2000)                          = 0x80b2000
+brk(0x80b3000)                          = 0x80b3000
+brk(0x80b4000)                          = 0x80b4000
+read(4, "", 4096)                       = 0
+close(4)                                = 0
+write(1, "Text preprocessor opening /usr/l"..., 60Text preprocessor opening /usr/lib/epos/lng/czech/naive.rul
+) = 60
+open("/usr/lib/epos/lng/czech/naive.rul", O_RDONLY) = 4
+fstat(4, {st_mode=0, st_size=0, ...})   = 0
+brk(0x80b6000)                          = 0x80b6000
+read(4, "#\n#\t(c) Jirka Hanika <geo@ff.c"..., 4096) = 1723
+lseek(4, 0, SEEK_SET)                   = 0
+read(4, "#\n#\t(c) Jirka Hanika <geo@ff.c"..., 4096) = 1723
+brk(0x80b7000)                          = 0x80b7000
+brk(0x80b8000)                          = 0x80b8000
+read(4, "", 4096)                       = 0
+close(4)                                = 0
+write(1, "Text preprocessor opening /usr/l"..., 62Text preprocessor opening /usr/lib/epos/lng/czech/prosody.rul
+) = 62
+open("/usr/lib/epos/lng/czech/prosody.rul", O_RDONLY) = 4
+fstat(4, {st_mode=0, st_size=0, ...})   = 0
+read(4, "#\n#\tprosodick\341 pravidla Fon"..., 4096) = 4096
+lseek(4, 0, SEEK_SET)                   = 0
+read(4, "#\n#\tprosodick\341 pravidla Fon"..., 4096) = 4096
+brk(0x80b9000)                          = 0x80b9000
+brk(0x80ba000)                          = 0x80ba000
+brk(0x80bb000)                          = 0x80bb000
+brk(0x80bc000)                          = 0x80bc000
+brk(0x80bd000)                          = 0x80bd000
+read(4, "ss  0>a(a_!)\tsyll   phone\n\t\t"..., 4096) = 4096
+brk(0x80be000)                          = 0x80be000
+brk(0x80bf000)                          = 0x80bf000
+brk(0x80c0000)                          = 0x80c0000
+read(4, "14\tword   syll\n\t\t\t;\tcontou"..., 4096) = 2634
+brk(0x80c1000)                          = 0x80c1000
+brk(0x80c2000)                          = 0x80c2000
+read(4, "", 4096)                       = 0
+close(4)                                = 0
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Rules parsed OK\n", 16Rules parsed OK
+)       = 16
+write(1, "Compiling slovak language rules,"..., 49Compiling slovak language rules, hash dir slovak
+) = 49
+write(1, "Text preprocessor opening /usr/l"..., 63Text preprocessor opening /usr/lib/epos/lng/slovak/palkova.rul
+) = 63
+open("/usr/lib/epos/lng/slovak/palkova.rul", O_RDONLY) = 3
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+read(3, "#\n#\tprosodick\341 pravidla Fon"..., 4096) = 4096
+lseek(3, 0, SEEK_SET)                   = 0
+write(1, "Rules shall be taken from palkov"..., 38Rules shall be taken from palkova.rul
+) = 38
+read(3, "#\n#\tprosodick\341 pravidla Fon"..., 4096) = 4096
+brk(0x80c3000)                          = 0x80c3000
+brk(0x80c4000)                          = 0x80c4000
+brk(0x80c5000)                          = 0x80c5000
+brk(0x80c6000)                          = 0x80c6000
+brk(0x80c7000)                          = 0x80c7000
+read(3, "   \"IM,IB  BM,BA  AM,AC  CM,CB\""..., 4096) = 4096
+brk(0x80c8000)                          = 0x80c8000
+brk(0x80c9000)                          = 0x80c9000
+brk(0x80ca000)                          = 0x80ca000
+brk(0x80cb000)                          = 0x80cb000
+read(3, "14:-16\tword   syll\n\t\t\tconto"..., 4096) = 2373
+brk(0x80cc000)                          = 0x80cc000
+brk(0x80cd000)                          = 0x80cd000
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+write(1, "Rules parsed OK\n", 16Rules parsed OK
+)       = 16
+socket(PF_INET, SOCK_STREAM, IPPROTO_TCP) = 3
+uname({sys="Linux", node="gargamel", ...}) = 0
+open("/etc/nsswitch.conf", O_RDONLY)    = 4
+fstat(4, {st_mode=0, st_size=0, ...})   = 0
+brk(0x80cf000)                          = 0x80cf000
+read(4, "#\n# /etc/nsswitch.conf\n#\n# An"..., 4096) = 966
+read(4, "", 4096)                       = 0
+close(4)                                = 0
+open("/mnt/lib/libnss_files.so.1", O_RDONLY) = -1 ENOENT (No such file or directory)
+open("/lib/libnss_files.so.1", O_RDONLY) = 4
+mmap(0, 4096, PROT_READ, MAP_PRIVATE, 4, 0) = 0x40129000
+munmap(0x40129000, 4096)                = 0
+mmap(0, 31492, PROT_READ|PROT_EXEC, MAP_PRIVATE, 4, 0) = 0x40129000
+mprotect(0x40130000, 2820, PROT_NONE)   = 0
+mmap(0x40130000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED, 4, 0x6000) = 0x40130000
+close(4)                                = 0
+mprotect(0x40129000, 28672, PROT_READ|PROT_WRITE) = 0
+mprotect(0x40129000, 28672, PROT_READ|PROT_EXEC) = 0
+gettimeofday({931298867, 370351}, NULL) = 0
+getpid()                                = 530
+open("/etc/resolv.conf", O_RDONLY)      = 4
+fstat(4, {st_mode=0, st_size=0, ...})   = 0
+read(4, "search \n", 4096)              = 8
+read(4, "", 4096)                       = 0
+close(4)                                = 0
+uname({sys="Linux", node="gargamel", ...}) = 0
+open("/etc/hosts", O_RDONLY)            = 4
+fcntl(4, F_GETFD)                       = 0
+fcntl(4, F_SETFD, FD_CLOEXEC)           = 0
+fstat(4, {st_mode=0, st_size=0, ...})   = 0
+read(4, "127.0.0.1\t\tlocalhost localhost"..., 4096) = 76
+close(4)                                = 0
+connect(3, {sin_family=AF_INET, sin_port=htons(8778), sin_addr=inet_addr("127.0.0.1")}, 16) = -1 ECONNREFUSED (Connection refused)
+close(3)                                = 0
+sigaction(SIGPIPE, {SIG_IGN}, {SIG_DFL}) = 0
+sigaction(SIGCHLD, {SIG_IGN}, {SIG_DFL}) = 0
+open("/var/run/epos.pwd", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3
+chmod("/var/run/epos.pwd", 0400)        = 0
+fstat(3, {st_mode=0, st_size=0, ...})   = 0
+write(3, "ToUwhpttXHR9jf\n", 15)        = 15
+close(3)                                = 0
+write(1, "master context OK\n", 18master context OK
+)     = 18
+brk(0x80d4000)                          = 0x80d4000
+brk(0x80d9000)                          = 0x80d9000
+socket(PF_INET, SOCK_STREAM, IPPROTO_TCP) = 3
+uname({sys="Linux", node="gargamel", ...}) = 0
+setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [-265215], 4) = 0
+write(1, "[core] Trying to bind...\n", 25[core] Trying to bind...
+) = 25
+bind(3, {sin_family=AF_INET, sin_port=htons(8778), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
+listen(3, 64)                           = 0
+select(4, [3], [], NULL, {0, 0})        = 0 (Timeout)
+select(4, [3], [], NULL, NULL)          = 1 (in [3])
+write(1, "Scheduling select(3)ed agent\n", 29Scheduling select(3)ed agent
+) = 29
+accept(3, {sin_family=AF_INET, sin_port=htons(2016), sin_addr=inet_addr("127.0.0.1")}, [16]) = 4
+fcntl(4, F_SETFL, O_RDONLY|O_NONBLOCK)  = 0
+write(1, "[core] Accepted 4 (on 3).\n", 26[core] Accepted 4 (on 3).
+) = 26
+brk(0x80de000)                          = 0x80de000
+brk(0x80e3000)                          = 0x80e3000
+write(4, "TTSCP spoken here\r\nprotocol: 0"..., 84) = 84
+write(4, "QmC", 3)                      = 3
+write(4, "\r\n", 2)                     = 2
+write(4, "", 0)                         = 0
+write(4, "\r\n", 2)                     = 2
+select(5, [3 4], [], NULL, {0, 0})      = 0 (Timeout)
+select(5, [3 4], [], NULL, NULL)        = 1 (in [3])
+write(1, "Scheduling select(3)ed agent\n", 29Scheduling select(3)ed agent
+) = 29
+accept(3, {sin_family=AF_INET, sin_port=htons(2047), sin_addr=inet_addr("127.0.0.1")}, [16]) = 5
+fcntl(5, F_SETFL, O_RDONLY|O_NONBLOCK)  = 0
+write(1, "[core] Accepted 5 (on 3).\n", 26[core] Accepted 5 (on 3).
+) = 26
+brk(0x80e8000)                          = 0x80e8000
+brk(0x80ed000)                          = 0x80ed000
+write(5, "TTSCP spoken here\r\nprotocol: 0"..., 84) = 84
+write(5, "Z71", 3)                      = 3
+write(5, "\r\n", 2)                     = 2
+write(5, "", 0)                         = 0
+write(5, "\r\n", 2)                     = 2
+select(6, [3 4 5], [], NULL, {0, 0})    = 0 (Timeout)
+select(6, [3 4 5], [], NULL, NULL)      = 1 (in [3])
+write(1, "Scheduling select(3)ed agent\n", 29Scheduling select(3)ed agent
+) = 29
+accept(3, {sin_family=AF_INET, sin_port=htons(2048), sin_addr=inet_addr("127.0.0.1")}, [16]) = 6
+fcntl(6, F_SETFL, O_RDONLY|O_NONBLOCK)  = 0
+write(1, "[core] Accepted 6 (on 3).\n", 26[core] Accepted 6 (on 3).
+) = 26
+brk(0x80f2000)                          = 0x80f2000
+brk(0x80f7000)                          = 0x80f7000
+brk(0x80fc000)                          = 0x80fc000
+write(6, "TTSCP spoken here\r\nprotocol: 0"..., 84) = 84
+write(6, "RM-", 3)                      = 3
+write(6, "\r\n", 2)                     = 2
+write(6, "", 0)                         = 0
+write(6, "\r\n", 2)                     = 2
+select(7, [3 4 5 6], [], NULL, {0, 0})  = 0 (Timeout)
+select(7, [3 4 5 6], [], NULL, NULL)    = 1 (in [6])
+write(1, "Scheduling select(6)ed agent\n", 29Scheduling select(6)ed agent
+) = 29
+read(6, "data ", 16384)                 = 5
+write(1, "[core] partial line read: data \n"..., 32[core] partial line read: data 
+) = 32
+select(7, [3 4 5 6], [], NULL, {0, 0})  = 0 (Timeout)
+select(7, [3 4 5 6], [], NULL, NULL)    = 1 (in [6])
+write(1, "Scheduling select(6)ed agent\n", 29Scheduling select(6)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(6, "QmC", 16379)                   = 3
+write(1, "[core] partial line read: data Q"..., 35[core] partial line read: data QmC
+) = 35
+select(7, [3 4 5 6], [], NULL, {0, 0})  = 0 (Timeout)
+select(7, [3 4 5 6], [], NULL, NULL)    = 1 (in [3])
+write(1, "Scheduling select(3)ed agent\n", 29Scheduling select(3)ed agent
+) = 29
+accept(3, {sin_family=AF_INET, sin_port=htons(2049), sin_addr=inet_addr("127.0.0.1")}, [16]) = 7
+fcntl(7, F_SETFL, O_RDONLY|O_NONBLOCK)  = 0
+write(1, "[core] Accepted 7 (on 3).\n", 26[core] Accepted 7 (on 3).
+) = 26
+brk(0x8101000)                          = 0x8101000
+brk(0x8106000)                          = 0x8106000
+write(7, "TTSCP spoken here\r\nprotocol: 0"..., 84) = 84
+write(7, "tfD", 3)                      = 3
+write(7, "\r\n", 2)                     = 2
+write(7, "", 0)                         = 0
+write(7, "\r\n", 2)                     = 2
+select(8, [3 4 5 6 7], [], NULL, {0, 0}) = 0 (Timeout)
+select(8, [3 4 5 6 7], [], NULL, NULL)  = 1 (in [7])
+write(1, "Scheduling select(7)ed agent\n", 29Scheduling select(7)ed agent
+) = 29
+read(7, "data ", 16384)                 = 5
+write(1, "[core] partial line read: data \n"..., 32[core] partial line read: data 
+) = 32
+select(8, [3 4 5 6 7], [], NULL, {0, 0}) = 0 (Timeout)
+select(8, [3 4 5 6 7], [], NULL, NULL)  = 1 (in [7])
+write(1, "Scheduling select(7)ed agent\n", 29Scheduling select(7)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(7, "Z71", 16379)                   = 3
+write(1, "[core] partial line read: data Z"..., 35[core] partial line read: data Z71
+) = 35
+select(8, [3 4 5 6 7], [], NULL, {0, 0}) = 0 (Timeout)
+select(8, [3 4 5 6 7], [], NULL, NULL)  = 1 (in [6])
+write(1, "Scheduling select(6)ed agent\n", 29Scheduling select(6)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(6, "\r\n", 16376)                  = 2
+write(1, "[ cmd] data QmC\n", 16[ cmd] data QmC
+)       = 16
+write(6, "200 OK", 6)                   = 6
+write(6, "\r\n", 2)                     = 2
+select(8, [3 4 5 7], [], NULL, {0, 0})  = 0 (Timeout)
+select(8, [3 4 5 7], [], NULL, NULL)    = 1 (in [3])
+write(1, "Scheduling select(3)ed agent\n", 29Scheduling select(3)ed agent
+) = 29
+accept(3, {sin_family=AF_INET, sin_port=htons(2050), sin_addr=inet_addr("127.0.0.1")}, [16]) = 8
+fcntl(8, F_SETFL, O_RDONLY|O_NONBLOCK)  = 0
+write(1, "[core] Accepted 8 (on 3).\n", 26[core] Accepted 8 (on 3).
+) = 26
+brk(0x810b000)                          = 0x810b000
+brk(0x8110000)                          = 0x8110000
+brk(0x8115000)                          = 0x8115000
+write(8, "TTSCP spoken here\r\nprotocol: 0"..., 84) = 84
+write(8, "MD5", 3)                      = 3
+write(8, "\r\n", 2)                     = 2
+write(8, "", 0)                         = 0
+write(8, "\r\n", 2)                     = 2
+select(9, [3 4 5 7 8], [], NULL, {0, 0}) = 1 (in [7], left {0, 0})
+write(1, "Scheduling select(7)ed agent\n", 29Scheduling select(7)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(7, "\r\n", 16376)                  = 2
+write(1, "[ cmd] data Z71\n", 16[ cmd] data Z71
+)       = 16
+write(7, "200 OK", 6)                   = 6
+write(7, "\r\n", 2)                     = 2
+select(9, [3 4 5 8], [], NULL, {0, 0})  = 0 (Timeout)
+select(9, [3 4 5 8], [], NULL, NULL)    = 1 (in [4])
+write(1, "Scheduling select(4)ed agent\n", 29Scheduling select(4)ed agent
+) = 29
+read(4, "setl ", 16384)                 = 5
+write(1, "[core] partial line read: setl \n"..., 32[core] partial line read: setl 
+) = 32
+select(9, [3 4 5 8], [], NULL, {0, 0})  = 0 (Timeout)
+select(9, [3 4 5 8], [], NULL, NULL)    = 1 (in [3])
+write(1, "Scheduling select(3)ed agent\n", 29Scheduling select(3)ed agent
+) = 29
+accept(3, {sin_family=AF_INET, sin_port=htons(2051), sin_addr=inet_addr("127.0.0.1")}, [16]) = 9
+fcntl(9, F_SETFL, O_RDONLY|O_NONBLOCK)  = 0
+write(1, "[core] Accepted 9 (on 3).\n", 26[core] Accepted 9 (on 3).
+) = 26
+brk(0x811a000)                          = 0x811a000
+brk(0x811f000)                          = 0x811f000
+write(9, "TTSCP spoken here\r\nprotocol: 0"..., 84) = 84
+write(9, "wWN", 3)                      = 3
+write(9, "\r\n", 2)                     = 2
+write(9, "", 0)                         = 0
+write(9, "\r\n", 2)                     = 2
+select(10, [3 4 5 8 9], [], NULL, {0, 0}) = 0 (Timeout)
+select(10, [3 4 5 8 9], [], NULL, NULL) = 1 (in [9])
+write(1, "Scheduling select(9)ed agent\n", 29Scheduling select(9)ed agent
+) = 29
+read(9, "data ", 16384)                 = 5
+write(1, "[core] partial line read: data \n"..., 32[core] partial line read: data 
+) = 32
+select(10, [3 4 5 8 9], [], NULL, {0, 0}) = 0 (Timeout)
+select(10, [3 4 5 8 9], [], NULL, NULL) = 1 (in [9])
+write(1, "Scheduling select(9)ed agent\n", 29Scheduling select(9)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(9, "MD5", 16379)                   = 3
+write(1, "[core] partial line read: data M"..., 35[core] partial line read: data MD5
+) = 35
+select(10, [3 4 5 8 9], [], NULL, {0, 0}) = 0 (Timeout)
+select(10, [3 4 5 8 9], [], NULL, NULL) = 1 (in [5])
+write(1, "Scheduling select(5)ed agent\n", 29Scheduling select(5)ed agent
+) = 29
+read(5, "setl ", 16384)                 = 5
+write(1, "[core] partial line read: setl \n"..., 32[core] partial line read: setl 
+) = 32
+select(10, [3 4 5 8 9], [], NULL, {0, 0}) = 0 (Timeout)
+select(10, [3 4 5 8 9], [], NULL, NULL) = 2 (in [4 9])
+write(1, "Scheduling select(4)ed agent\n", 29Scheduling select(4)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(4, "voice vichova\r\n", 16379)     = 15
+write(1, "[ cmd] setl voice vichova\n", 26[ cmd] setl voice vichova
+) = 26
+write(4, "200 OK", 6)                   = 6
+write(4, "\r\n", 2)                     = 2
+write(1, "Scheduling select(9)ed agent\n", 29Scheduling select(9)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(9, "\r\n", 16376)                  = 2
+write(1, "[ cmd] data MD5\n", 16[ cmd] data MD5
+)       = 16
+write(9, "200 OK", 6)                   = 6
+write(9, "\r\n", 2)                     = 2
+select(10, [3 4 5 8], [], NULL, {0, 0}) = 0 (Timeout)
+select(10, [3 4 5 8], [], NULL, NULL)   = 1 (in [5])
+write(1, "Scheduling select(5)ed agent\n", 29Scheduling select(5)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(5, "voice kubec-float\r\n", 16379) = 19
+write(1, "[ cmd] setl voice kubec-float\n", 30[ cmd] setl voice kubec-float
+) = 30
+write(5, "200 OK", 6)                   = 6
+write(5, "\r\n", 2)                     = 2
+select(10, [3 4 5 8], [], NULL, {0, 0}) = 0 (Timeout)
+select(10, [3 4 5 8], [], NULL, NULL)   = 1 (in [4])
+write(1, "Scheduling select(4)ed agent\n", 29Scheduling select(4)ed agent
+) = 29
+read(4, "strm $", 16384)                = 6
+write(1, "[core] partial line read: strm $"..., 33[core] partial line read: strm $
+) = 33
+select(10, [3 4 5 8], [], NULL, {0, 0}) = 0 (Timeout)
+select(10, [3 4 5 8], [], NULL, NULL)   = 1 (in [8])
+write(1, "Scheduling select(8)ed agent\n", 29Scheduling select(8)ed agent
+) = 29
+read(8, "setl ", 16384)                 = 5
+write(1, "[core] partial line read: setl \n"..., 32[core] partial line read: setl 
+) = 32
+select(10, [3 4 5 8], [], NULL, {0, 0}) = 0 (Timeout)
+select(10, [3 4 5 8], [], NULL, NULL)   = 1 (in [5])
+write(1, "Scheduling select(5)ed agent\n", 29Scheduling select(5)ed agent
+) = 29
+read(5, "strm $", 16384)                = 6
+write(1, "[core] partial line read: strm $"..., 33[core] partial line read: strm $
+) = 33
+select(10, [3 4 5 8], [], NULL, {0, 0}) = 0 (Timeout)
+select(10, [3 4 5 8], [], NULL, NULL)   = 2 (in [4 8])
+write(1, "Scheduling select(4)ed agent\n", 29Scheduling select(4)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(4, "RM-:chunk:raw:rules:diphs:synth:"..., 16378) = 55
+write(1, "[ cmd] strm $RM-:chunk:raw:rules"..., 57[ cmd] strm $RM-:chunk:raw:rules:diphs:synth:#localsound
+) = 57
+open("/dev/dsp", O_WRONLY|O_NONBLOCK)   = 10
+write(4, "200 OK", 6)                   = 6
+write(4, "\r\n", 2)                     = 2
+write(1, "Scheduling select(8)ed agent\n", 29Scheduling select(8)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(8, "voice kadlec\r\n", 16379)      = 14
+write(1, "[ cmd] setl voice kadlec\n", 25[ cmd] setl voice kadlec
+) = 25
+write(8, "200 OK", 6)                   = 6
+write(8, "\r\n", 2)                     = 2
+select(10, [3 5 8], [], NULL, {0, 0})   = 0 (Timeout)
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+write(1, "[ cmd] appl 211\n", 16[ cmd] appl 211
+)       = 16
+write(1, "cmd_apply calls 0x811dec0\n", 26cmd_apply calls 0x811dec0
+) = 26
+write(1, "In stream::apply 0x811def8 0x809"..., 41In stream::apply 0x811def8 0x809de10 211
+) = 41
+write(1, "211 bytes to be read\n", 21211 bytes to be read
+)  = 21
+write(4, "112 started", 11)             = 11
+write(4, "\r\n", 2)                     = 2
+select(10, [3 5 6 8], [], NULL, {0, 0}) = 1 (in [6], left {0, 0})
+write(1, "Scheduling select(6)ed agent\n", 29Scheduling select(6)ed agent
+) = 29
+read(6, "Poloop pak verandu svou v svitu "..., 211) = 211
+write(1, "Read and about to process Poloop"..., 238Read and about to process Poloop pak verandu svou v svitu mìsíèním ti¹e likér polykaje zrakem svým opièím obhlí¾e jak¾ i kostelníci mramorovou svou popelnicí vøesk noèní ti¹e lapí a zmíraje v ospalé bludy pak temnot stín ve studnu vhodí.
+) = 238
+select(10, [3 5 8], [], NULL, {0, 0})   = 0 (Timeout)
+select(10, [3 5 8], [], NULL, {0, 0})   = 0 (Timeout)
+write(1, "Allocated 211 bytes for the main"..., 40Allocated 211 bytes for the main parser
+) = 40
+brk(0x812b000)                          = 0x812b000
+write(1, "Parser: end of text reached, cha"..., 49Parser: end of text reached, changing the policy
+) = 49
+select(10, [3 5 8], [], NULL, {0, 0})   = 0 (Timeout)
+write(1, "[czech.rul:25] Parser: end of te"..., 64[czech.rul:25] Parser: end of text reached, changing the policy
+) = 64
+open("/usr/lib/epos/lng/czech/abbrevs.dic", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "A\t|\341~\n\301\tdlouh\351|\341~"..., 4096) = 356
+read(11, "", 4096)                      = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "A\t|\341~\n\301\tdlouh\351|\341~"..., 4096) = 356
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/lng/czech/mathsign.dic", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+brk(0x812d000)                          = 0x812d000
+read(11, "\n# p\370\355klad \370e\271en\355"..., 4096) = 394
+read(11, "", 4096)                      = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "\n# p\370\355klad \370e\271en\355"..., 4096) = 394
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/lng/czech/numsimple.dic", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "1 jedna\n2 dva\n3 t\370i\n4 \350"..., 4096) = 270
+read(11, "", 4096)                      = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "1 jedna\n2 dva\n3 t\370i\n4 \350"..., 4096) = 270
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/lng/czech/main.dic", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "^nikl nykl\n^dia  dya\n^dis  dys"..., 4096) = 193
+read(11, "", 4096)                      = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "^nikl nykl\n^dia  dya\n^dis  dys"..., 4096) = 193
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/lng/czech/wh.dic", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "# dosti ne\372pln\375 seznam slo"..., 4096) = 1442
+read(11, "", 4096)                      = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "# dosti ne\372pln\375 seznam slo"..., 4096) = 1442
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/lng/czech/syll.dic", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+brk(0x812f000)                          = 0x812f000
+read(11, "# Vynechal jsem au, ou, eu jako\276"..., 4096) = 814
+read(11, "", 4096)                      = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "# Vynechal jsem au, ou, eu jako\276"..., 4096) = 814
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+write(1, "[trans.rul:75] Parser: end of te"..., 64[trans.rul:75] Parser: end of text reached, changing the policy
+) = 64
+open("/usr/lib/epos/lng/czech/preps.dic", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "# zde nesm\355 b\375t uvedeno \""..., 4096) = 126
+read(11, "", 4096)                      = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "# zde nesm\355 b\375t uvedeno \""..., 4096) = 126
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+write(1, "[trans.rul:81] Parser: end of te"..., 64[trans.rul:81] Parser: end of text reached, changing the policy
+) = 64
+write(1, "[trans.rul:81] Parser: end of te"..., 64[trans.rul:81] Parser: end of text reached, changing the policy
+) = 64
+write(1, "[trans.rul:81] Parser: end of te"..., 64[trans.rul:81] Parser: end of text reached, changing the policy
+) = 64
+open("/usr/lib/epos/lng/czech/preps.dic", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "# zde nesm\355 b\375t uvedeno \""..., 4096) = 126
+read(11, "", 4096)                      = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "# zde nesm\355 b\375t uvedeno \""..., 4096) = 126
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+write(1, "[trans.rul:101] Parser: end of t"..., 65[trans.rul:101] Parser: end of text reached, changing the policy
+) = 65
+write(1, "[trans.rul:101] Parser: end of t"..., 65[trans.rul:101] Parser: end of text reached, changing the policy
+) = 65
+write(1, "[trans.rul:101] Parser: end of t"..., 65[trans.rul:101] Parser: end of text reached, changing the policy
+) = 65
+open("/usr/lib/epos/lng/czech/nonsyl.dic", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "v\ns\nz\nk\n", 4096)          = 8
+read(11, "", 4096)                      = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "v\ns\nz\nk\n", 4096)          = 8
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+write(1, "[trans.rul:105] Parser: end of t"..., 65[trans.rul:105] Parser: end of text reached, changing the policy
+) = 65
+write(1, "[trans.rul:105] Parser: end of t"..., 65[trans.rul:105] Parser: end of text reached, changing the policy
+) = 65
+write(1, "[prosody.rul:179] Randomly chose"..., 78[prosody.rul:179] Randomly chose rule [prosody.rul:175] contour f/-2:-2:-5:-5
+) = 78
+write(1, "[prosody.rul:162] Randomly chose"..., 72[prosody.rul:162] Randomly chose rule [prosody.rul:159] contour f/+2:-3
+) = 72
+write(1, "[prosody.rul:162] Randomly chose"..., 72[prosody.rul:162] Randomly chose rule [prosody.rul:160] contour f/+4:-4
+) = 72
+write(1, "[prosody.rul:172] Randomly chose"..., 75[prosody.rul:172] Randomly chose rule [prosody.rul:166] contour f/+4:+0:-4
+) = 75
+write(1, "[prosody.rul:184] Randomly chose"..., 81[prosody.rul:184] Randomly chose rule [prosody.rul:182] contour f/-3:+0:+0:+0:-3
+) = 81
+write(1, "[prosody.rul:162] Randomly chose"..., 72[prosody.rul:162] Randomly chose rule [prosody.rul:160] contour f/+4:-4
+) = 72
+write(1, "[prosody.rul:172] Randomly chose"..., 75[prosody.rul:172] Randomly chose rule [prosody.rul:164] contour f/+2:+0:-4
+) = 75
+write(1, "[prosody.rul:172] Randomly chose"..., 75[prosody.rul:172] Randomly chose rule [prosody.rul:167] contour f/-2:-2:-6
+) = 75
+write(1, "[prosody.rul:200] Randomly chose"..., 72[prosody.rul:200] Randomly chose rule [prosody.rul:199] contour f/-3:-3
+) = 72
+write(1, "[prosody.rul:250] Randomly chose"..., 78[prosody.rul:250] Randomly chose rule [prosody.rul:249] contour f/+0:-3:+0:+2
+) = 78
+write(1, "[prosody.rul:245] Randomly chose"..., 75[prosody.rul:245] Randomly chose rule [prosody.rul:241] contour f/-1:+3:+5
+) = 75
+write(1, "[prosody.rul:236] Randomly chose"..., 72[prosody.rul:236] Randomly chose rule [prosody.rul:233] contour f/-4:+2
+) = 72
+write(1, "[prosody.rul:250] Randomly chose"..., 78[prosody.rul:250] Randomly chose rule [prosody.rul:247] contour f/+0:-3:-2:+0
+) = 78
+write(1, "[prosody.rul:245] Randomly chose"..., 75[prosody.rul:245] Randomly chose rule [prosody.rul:240] contour f/-6:-2:+0
+) = 75
+write(1, "[prosody.rul:255] Randomly chose"..., 81[prosody.rul:255] Randomly chose rule [prosody.rul:253] contour f/+1:-1:-1:-1:+1
+) = 81
+write(1, "[prosody.rul:250] Randomly chose"..., 78[prosody.rul:250] Randomly chose rule [prosody.rul:247] contour f/+0:-3:-2:+0
+) = 78
+write(1, "[prosody.rul:255] Randomly chose"..., 81[prosody.rul:255] Randomly chose rule [prosody.rul:254] contour f/-2:-2:+0:+2:+2
+) = 81
+write(1, "[prosody.rul:236] Randomly chose"..., 72[prosody.rul:236] Randomly chose rule [prosody.rul:235] contour f/-3:+4
+) = 72
+write(1, "[prosody.rul:245] Randomly chose"..., 75[prosody.rul:245] Randomly chose rule [prosody.rul:244] contour f/-4:+2:+4
+) = 75
+write(1, "[prosody.rul:245] Randomly chose"..., 75[prosody.rul:245] Randomly chose rule [prosody.rul:243] contour f/-6:+4:+0
+) = 75
+write(1, "[prosody.rul:245] Randomly chose"..., 75[prosody.rul:245] Randomly chose rule [prosody.rul:238] contour f/+0:-4:+0
+) = 75
+write(1, "[prosody.rul:286] Randomly chose"..., 72[prosody.rul:286] Randomly chose rule [prosody.rul:284] contour f/+4:-4
+) = 72
+write(1, "[prosody.rul:339] Randomly chose"..., 73[prosody.rul:339] Randomly chose rule [prosody.rul:335] contour f/-6:-16
+) = 73
+open("/usr/lib/epos/lng/czech/traditnl.dph", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+brk(0x8131000)                          = 0x8131000
+read(11, "?#? 63\t\t# pausa\n\nbb? 0\n0b? "..., 4096) = 4096
+read(11, "\n\370\370? 20\ns\370? 20\n\271\370"..., 4096) = 4096
+read(11, "?g\256 40\n?g\330 40\n?gN 40\n?g"..., 4096) = 4096
+read(11, "\276\350 61\n?\276d 61\n?\276\357"..., 4096) = 4096
+read(11, "it 321\n?\355t 321\n?i\273 322\n"..., 4096) = 4096
+read(11, "p\330? 20\nr\330? 20\n\330\330? "..., 4096) = 2675
+read(11, "", 4096)                      = 0
+brk(0x8139000)                          = 0x8139000
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "?#? 63\t\t# pausa\n\nbb? 0\n0b? "..., 4096) = 4096
+brk(0x813a000)                          = 0x813a000
+brk(0x813b000)                          = 0x813b000
+brk(0x813c000)                          = 0x813c000
+read(11, "\n\370\370? 20\ns\370? 20\n\271\370"..., 4096) = 4096
+brk(0x813d000)                          = 0x813d000
+brk(0x813e000)                          = 0x813e000
+brk(0x813f000)                          = 0x813f000
+brk(0x8140000)                          = 0x8140000
+brk(0x8141000)                          = 0x8141000
+read(11, "?g\256 40\n?g\330 40\n?gN 40\n?g"..., 4096) = 4096
+brk(0x8142000)                          = 0x8142000
+brk(0x8143000)                          = 0x8143000
+brk(0x8144000)                          = 0x8144000
+brk(0x8145000)                          = 0x8145000
+read(11, "\276\350 61\n?\276d 61\n?\276\357"..., 4096) = 4096
+brk(0x8146000)                          = 0x8146000
+brk(0x8147000)                          = 0x8147000
+brk(0x8148000)                          = 0x8148000
+brk(0x8149000)                          = 0x8149000
+brk(0x814a000)                          = 0x814a000
+read(11, "it 321\n?\355t 321\n?i\273 322\n"..., 4096) = 4096
+brk(0x814b000)                          = 0x814b000
+brk(0x814c000)                          = 0x814c000
+read(11, "p\330? 20\nr\330? 20\n\330\330? "..., 4096) = 2675
+brk(0x814d000)                          = 0x814d000
+brk(0x8154000)                          = 0x8154000
+brk(0x815b000)                          = 0x815b000
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+select(10, [3 5 8], [], NULL, {0, 0})   = 2 (in [5 8], left {0, 0})
+select(10, [3 5 8], [], NULL, {0, 0})   = 2 (in [5 8], left {0, 0})
+write(1, "Scheduling select(5)ed agent\n", 29Scheduling select(5)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(5, "tfD:chunk:raw:rules:diphs:synth:"..., 16378) = 53
+write(1, "[ cmd] strm $tfD:chunk:raw:rules"..., 57[ cmd] strm $tfD:chunk:raw:rules:diphs:synth:#localsound
+) = 57
+write(5, "200 OK", 6)                   = 6
+write(5, "\r\n", 2)                     = 2
+write(1, "Scheduling select(8)ed agent\n", 29Scheduling select(8)ed agent
+) = 29
+read(8, "strm $wWN:chunk:raw:rules:diphs:"..., 16384) = 60
+write(1, "[ cmd] strm $wWN:chunk:raw:rules"..., 57[ cmd] strm $wWN:chunk:raw:rules:diphs:synth:#localsound
+) = 57
+write(8, "200 OK", 6)                   = 6
+write(8, "\r\n", 2)                     = 2
+select(10, [3], [], NULL, {0, 0})       = 0 (Timeout)
+select(10, [3], [], NULL, {0, 0})       = 0 (Timeout)
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+write(1, "[ cmd] appl 8\n", 14[ cmd] appl 8
+)         = 14
+write(1, "cmd_apply calls 0x8130718\n", 26cmd_apply calls 0x8130718
+) = 26
+write(1, "In stream::apply 0x8130750 0x809"..., 39In stream::apply 0x8130750 0x809e198 8
+) = 39
+write(1, "8 bytes to be read\n", 198 bytes to be read
+)    = 19
+write(5, "112 started", 11)             = 11
+write(5, "\r\n", 2)                     = 2
+select(10, [3 7], [], NULL, {0, 0})     = 1 (in [7], left {0, 0})
+select(10, [3 7], [], NULL, {0, 0})     = 1 (in [7], left {0, 0})
+write(1, "Scheduling select(7)ed agent\n", 29Scheduling select(7)ed agent
+) = 29
+read(7, "Nesmysl.", 8)                  = 8
+write(1, "Read and about to process Nesmys"..., 35Read and about to process Nesmysl.
+) = 35
+select(10, [3], [], NULL, {0, 0})       = 0 (Timeout)
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+write(1, "[ cmd] appl 15\n", 15[ cmd] appl 15
+)        = 15
+write(1, "cmd_apply calls 0x81308f0\n", 26cmd_apply calls 0x81308f0
+) = 26
+write(1, "In stream::apply 0x8130928 0x809"..., 40In stream::apply 0x8130928 0x809e3c8 15
+) = 40
+write(1, "15 bytes to be read\n", 2015 bytes to be read
+)   = 20
+write(8, "112 started", 11)             = 11
+write(8, "\r\n", 2)                     = 2
+select(10, [3 9], [], NULL, {0, 0})     = 1 (in [9], left {0, 0})
+select(10, [3 9], [], NULL, {0, 0})     = 1 (in [9], left {0, 0})
+write(1, "Scheduling select(9)ed agent\n", 29Scheduling select(9)ed agent
+) = 29
+read(9, "Dejte mi pokoj.", 15)          = 15
+write(1, "Read and about to process Dejte "..., 42Read and about to process Dejte mi pokoj.
+) = 42
+select(10, [3], [], NULL, {0, 0})       = 0 (Timeout)
+open("/usr/lib/epos/inv/lpc/lvichova.dat", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\7\6\t\7\7\7\t\7\10\5\3\t\3\0\0\1"..., 4096) = 441
+lseek(11, 0, SEEK_SET)                  = 0
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "\7\6\t\7\7\7\t\7\10\5\3\t\3\0\0\1"..., 441) = 441
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+stat("/usr/lib/epos/inv/lpc/lvichova.dat", {st_mode=0, st_size=0, ...}) = 0
+open("/usr/lib/epos/inv/lpc/mvichova.int", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "p\273\365\366\247\303\16#O\335\v"..., 4096) = 4096
+lseek(11, 0, SEEK_SET)                  = 0
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+lseek(11, 65536, SEEK_SET)              = 65536
+read(11, ">\1\0\0f\226\36)y\nI_\217\317l\301"..., 1384) = 1384
+brk(0x816c000)                          = 0x816c000
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "p\273\365\366\247\303\16#O\335\v"..., 4096) = 4096
+read(11, "\4\2\347\3\3372\265S\307\10\'H\21"..., 4096) = 4096
+read(11, "^\23`\352M\4\4\0\316\10.\"i\375\266"..., 4096) = 4096
+read(11, "\256\34y%`#m4\236\1\347\3)Frb\277"..., 4096) = 4096
+read(11, "<Vj9\20.\300\0^\374~\375\25\5\347"..., 4096) = 4096
+read(11, "\360Yz?\2000\357\v\350\32\253\32"..., 4096) = 4096
+read(11, "\240\0\347\3j\234\345u\1771\357\23"..., 4096) = 4096
+read(11, "\0\0\0\0\0\0\347\3\0\0\0\0\0\0\0"..., 4096) = 4096
+read(11, "\0\0\0\0\0\0\0\0\0\0\347\3\0\0\0"..., 4096) = 4096
+read(11, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\347"..., 4096) = 4096
+read(11, "\34\370\226:\265\356,\36G\314\306"..., 4096) = 4096
+read(11, "\232\0\4\0006\263~\300\273\316\277"..., 4096) = 4096
+read(11, "g(\330\'\276\3\0\0%\"R\30F\263\265"..., 4096) = 4096
+read(11, "\372\311|\336\3524^\3746\3\0\0\322"..., 4096) = 4096
+read(11, "5\351\225\"\272\314\265Q\231\33\317"..., 4096) = 4096
+read(11, "\262\266j\26\21\3\251HU\257\224\6"..., 4096) = 4096
+read(11, ">\1\0\0f\226\36)y\nI_\217\317l\301"..., 4096) = 1384
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+stat("/usr/lib/epos/inv/lpc/mvichova.int", {st_mode=0, st_size=0, ...}) = 0
+open("/usr/lib/epos/inv/lpc/traditnl.dpt", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, " /B\n /C\n /c\n /[\n /{\n /D\n /"..., 4096) = 1763
+lseek(11, 0, SEEK_SET)                  = 0
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, " /B\n /C\n /c\n /[\n /{\n /D\n /"..., 1763) = 1763
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+stat("/usr/lib/epos/inv/lpc/traditnl.dpt", {st_mode=0, st_size=0, ...}) = 0
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+brk(0x817d000)                          = 0x817d000
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+mmap(0, 135168, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x40131000
+write(1, "Unknown diphone 19, in range\n", 29Unknown diphone 19, in range
+) = 29
+write(1, "Unknown diphone 30, in range\n", 29Unknown diphone 30, in range
+) = 29
+write(1, "Unknown diphone 30, in range\n", 29Unknown diphone 30, in range
+) = 29
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+mremap(0x40131000, 0x21000, 0x41000, 0x1, 0x41000) = 1074991104
+write(1, "Unknown diphone 30, in range\n", 29Unknown diphone 30, in range
+) = 29
+write(1, "Unknown diphone 19, in range\n", 29Unknown diphone 19, in range
+) = 29
+write(1, "Unknown diphone 30, in range\n", 29Unknown diphone 30, in range
+) = 29
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+mremap(0x40131000, 0x41000, 0x81000, 0x1, 0x81000) = 1074991104
+select(10, [3], [], NULL, {0, 0})       = 0 (Timeout)
+select(10, [3], [], NULL, {0, 0})       = 0 (Timeout)
+select(10, [3], [], NULL, {0, 0})       = 0 (Timeout)
+write(4, "122 total bytes", 15)         = 15
+write(4, "\r\n", 2)                     = 2
+write(4, " 318590", 7)                  = 7
+write(4, "\r\n", 2)                     = 2
+write(1, "Attaching waveform \n", 20Attaching waveform 
+)   = 20
+ioctl(1, KDGETLED, 0xbffffb94)          = -1 ENOTTY (Inappropriate ioctl for device)
+ioctl(1, KDSETLED, 0x1)                 = -1 ENOTTY (Inappropriate ioctl for device)
+ioctl(10, SNDCTL_DSP_GETBLKSIZE, 0xbffffb90) = 0
+ioctl(10, SOUND_PCM_WRITE_CHANNELS, 0xbffffb90) = 0
+ioctl(10, SNDCTL_DSP_SPEED, 0xbffffb88) = 0
+ioctl(10, SNDCTL_DSP_SETFMT, 0xbffffb80) = 0
+ioctl(10, SNDCTL_DSP_NONBLOCK, 0x8133278) = 0
+mremap(0x40131000, 0x81000, 0x81000, 0x1, 0x81000) = 1075519488
+ioctl(10, SNDCTL_DSP_GETBLKSIZE, 0xbffffb94) = 0
+write(10, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 318546) = 65536
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 65580", 6)                   = 6
+write(4, "\r\n", 2)                     = 2
+write(10, "u\5\270\n\330\7\240\7J\33\203\v\256"..., 253010) = 0
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+write(1, "Allocated 8 bytes for the main p"..., 38Allocated 8 bytes for the main parser
+) = 38
+write(1, "Parser: end of text reached, cha"..., 49Parser: end of text reached, changing the policy
+) = 49
+write(1, "Parser: end of text reached, cha"..., 49Parser: end of text reached, changing the policy
+) = 49
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+write(1, "Allocated 15 bytes for the main "..., 39Allocated 15 bytes for the main parser
+) = 39
+write(1, "Parser: end of text reached, cha"..., 49Parser: end of text reached, changing the policy
+) = 49
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+write(1, "[prosody.rul:345] Randomly chose"..., 76[prosody.rul:345] Randomly chose rule [prosody.rul:342] contour f/-4:-6:-14
+) = 76
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+write(1, "[czech.rul:41] Parser: end of te"..., 64[czech.rul:41] Parser: end of text reached, changing the policy
+) = 64
+write(1, "[prosody.rul:172] Randomly chose"..., 75[prosody.rul:172] Randomly chose rule [prosody.rul:171] contour f/-2:-3:-3
+) = 75
+write(1, "[prosody.rul:339] Randomly chose"..., 73[prosody.rul:339] Randomly chose rule [prosody.rul:335] contour f/-6:-16
+) = 73
+open("/usr/lib/epos/lng/czech/kadlec.dph", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "bb? 0\n0b? 0\ncb? 0\n\350b? 0\nd"..., 4096) = 4096
+read(11, "22\n\256\271? 22\nZ\271? 22\n\330"..., 4096) = 4096
+read(11, "7\n?m\273 47\n?mv 47\n?mz 47\n?m"..., 4096) = 4096
+read(11, "60\n?co 161\n?c\363 161\n?\350o "..., 4096) = 4096
+read(11, "6\n\351\'u 297\n\355\'a 330\n\355"..., 4096) = 4096
+read(11, "k 383\n?Al 384\n?A\265 385\n?Am "..., 4096) = 258
+read(11, "", 4096)                      = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "bb? 0\n0b? 0\ncb? 0\n\350b? 0\nd"..., 4096) = 4096
+read(11, "22\n\256\271? 22\nZ\271? 22\n\330"..., 4096) = 4096
+read(11, "7\n?m\273 47\n?mv 47\n?mz 47\n?m"..., 4096) = 4096
+brk(0x8182000)                          = 0x8182000
+brk(0x8187000)                          = 0x8187000
+read(11, "60\n?co 161\n?c\363 161\n?\350o "..., 4096) = 4096
+read(11, "6\n\351\'u 297\n\355\'a 330\n\355"..., 4096) = 4096
+brk(0x818d000)                          = 0x818d000
+brk(0x8194000)                          = 0x8194000
+brk(0x819b000)                          = 0x819b000
+read(11, "k 383\n?Al 384\n?A\265 385\n?Am "..., 4096) = 258
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+select(11, [3], [10], NULL, {0, 0})     = 1 (out [10], left {0, 0})
+select(11, [3], [10], NULL, {0, 0})     = 1 (out [10], left {0, 0})
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "u\5\270\n\330\7\240\7J\33\203\v\256"..., 253010) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+open("/usr/lib/epos/inv/lpc/lkubec.dat", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\10\6\4\0\0\5\5\7\6\5\5\7\3\7\n\2"..., 4096) = 441
+lseek(11, 0, SEEK_SET)                  = 0
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "\10\6\4\0\0\5\5\7\6\5\5\7\3\7\n\2"..., 441) = 441
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+stat("/usr/lib/epos/inv/lpc/lkubec.dat", {st_mode=0, st_size=0, ...}) = 0
+open("/usr/lib/epos/inv/lpc/mkubec.syn", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\371\306o\277h1Y=\261k\222>\3319"..., 4096) = 4096
+lseek(11, 0, SEEK_SET)                  = 0
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+lseek(11, 135168, SEEK_SET)             = 135168
+read(11, "\215\305~>BY??l5\224\276\317\372"..., 512) = 512
+mmap(0, 139264, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x40131000
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, "\371\306o\277h1Y=\261k\222>\3319"..., 4096) = 4096
+read(11, "f\267\253>\212~\320>\214\325?\275"..., 4096) = 4096
+read(11, "\331\261\\=\0\0\0\0Cw\237>\265d&"..., 4096) = 4096
+read(11, "\235\235J\276\321\372\22>\206\245"..., 4096) = 4096
+read(11, "?\365\267<\233\325z\275E\356\367"..., 4096) = 4096
+read(11, "\322\206K\277\255O!>\341 \252=bH"..., 4096) = 4096
+read(11, "(Ky>\267\0(?\351\331Q>\304}\260>"..., 4096) = 4096
+read(11, "\216\336\17<\3\0\0\0\1.\f\277\217"..., 4096) = 4096
+read(11, "\347\335\r\277J@\211\276\223#\236"..., 4096) = 4096
+read(11, "s\371i>[\253\331>#A\306<\377\377"..., 4096) = 4096
+read(11, "\224\235\22\277\327\324\v?\224\25"..., 4096) = 4096
+read(11, "9\322\233\275\267a!>\267J2\276\225"..., 4096) = 4096
+read(11, "f\331\4<\376\377\377\377\305Zk\277"..., 4096) = 4096
+read(11, "\341\206\263\276\22\364N=\244\366"..., 4096) = 4096
+read(11, "\242P\345\276\265\5F<\320\303\16"..., 4096) = 4096
+read(11, "\205\220\6\277@\347\351\275YCh\274"..., 4096) = 4096
+read(11, "e\227X\276%2\275>-\260\257>\r\343"..., 4096) = 4096
+read(11, "\201H\4<\0\0\0\0$\207\330\276\321"..., 4096) = 4096
+read(11, "\0\0\0\200\0\0\0\200\0\0\0\200\0"..., 4096) = 4096
+read(11, "\247\344D>W\n\0?\2104\236=\1\0\0"..., 4096) = 4096
+read(11, "\0\0\0\200\0\0\0\200\0\0\0\200\0"..., 4096) = 4096
+read(11, "m?\370;\37\310\200>@\242\26?\355"..., 4096) = 4096
+read(11, "[\256\230<\375\377\377\377\267(D"..., 4096) = 4096
+read(11, "%,\4\277\345\224\326\276g\252\233"..., 4096) = 4096
+read(11, "1(\224>\25)\365>o7\247<\375\377\377"..., 4096) = 4096
+read(11, "\0\0\0\200\0\0\0\200\0\0\0\200\0"..., 4096) = 4096
+read(11, "\351\32\212=\277\v\233=\323x\21="..., 4096) = 4096
+read(11, "\345\230\207:\17\0\0\0W\3703\277"..., 4096) = 4096
+read(11, "6\f%\276W\302\20?\350\347\255\276"..., 4096) = 4096
+read(11, "\363Nn\276\373\203,?\3321\270<\0"..., 4096) = 4096
+read(11, "c\0177\277\322;\31?~\377\265>\354"..., 4096) = 4096
+read(11, "\332\2709\275#\232\307>O\27\336>"..., 4096) = 4096
+read(11, "\257\f&=\2\0\0\0xg\236\276!\223\206"..., 4096) = 4096
+read(11, "\215\305~>BY??l5\224\276\317\372"..., 4096) = 512
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+stat("/usr/lib/epos/inv/lpc/mkubec.syn", {st_mode=0, st_size=0, ...}) = 0
+stat("/usr/lib/epos/inv/lpc/traditnl.dpt", {st_mode=0, st_size=0, ...}) = 0
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+open("/usr/lib/epos/inv/ktd/trad/useky.dat", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "/B 7 91\n/C 6 77\n/c 8 96\n/[ 0 "..., 4096) = 4096
+read(11, "\nLV 8 105\nm\\ 12 149\nMC 21 26"..., 4096) = 502
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+write(1, "Time Domain synth OK\n", 21Time Domain synth OK
+)  = 21
+open("/usr/lib/epos/inv/ktd/trad/traditnl.dpt", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, " /B\n /C\n /c\n /[\n /{\n /D\n /"..., 4096) = 1763
+lseek(11, 0, SEEK_SET)                  = 0
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+lseek(11, 0, SEEK_SET)                  = 0
+read(11, " /B\n /C\n /c\n /[\n /{\n /D\n /"..., 1763) = 1763
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+stat("/usr/lib/epos/inv/ktd/trad/traditnl.dpt", {st_mode=0, st_size=0, ...}) = 0
+open("/usr/lib/epos/inv/ktd/trad/-D.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\200\200\200\200\200\205\205\205"..., 4096) = 500
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/inv/ktd/trad/DE.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\201\201\201\201\201\201\201\201"..., 4096) = 900
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/inv/ktd/trad/EJ.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\200\200\200\205\206\206\206\207"..., 4096) = 700
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/inv/ktd/trad/JE~.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\177\177\200\201\202\203\205\206"..., 4096) = 500
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/inv/ktd/trad/-T.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\200\200\200\200\200\200\200\200"..., 4096) = 600
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/inv/ktd/trad/TE.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\200\200\200\200\200\200\200\200"..., 4096) = 700
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/inv/ktd/trad/EM.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\204\204\203\204\205\206\206\206"..., 4096) = 900
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/inv/ktd/trad/MI.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\201\201\202\203\204\205\206\207"..., 4096) = 1000
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/inv/ktd/trad/IP.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\200\200\200\200\200\200\205\205"..., 4096) = 1800
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/inv/ktd/trad/PO.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\200\200\200\200\200\200\200\200"..., 4096) = 600
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/inv/ktd/trad/OK.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\200\200\205\206\206\207\207\207"..., 4096) = 1000
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/inv/ktd/trad/KO.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\200\200\200\200\200\200\200\200"..., 4096) = 800
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+open("/usr/lib/epos/inv/ktd/trad/OJ.PSL", O_RDONLY) = 11
+fstat(11, {st_mode=0, st_size=0, ...})  = 0
+read(11, "\200\200\200\207\210\210\207\207"..., 4096) = 1100
+read(11, "", 4096)                      = 0
+close(11)                               = 0
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+write(5, "122 total bytes", 15)         = 15
+write(5, "\r\n", 2)                     = 2
+write(5, " 13592", 6)                   = 6
+write(5, "\r\n", 2)                     = 2
+write(1, "Attaching waveform \n", 20Attaching waveform 
+)   = 20
+ioctl(1, KDGETLED, 0xbffffb94)          = -1 ENOTTY (Inappropriate ioctl for device)
+ioctl(1, KDSETLED, 0x1)                 = -1 ENOTTY (Inappropriate ioctl for device)
+ioctl(10, SNDCTL_DSP_GETBLKSIZE, 0xbffffb90) = 0
+ioctl(10, SOUND_PCM_WRITE_CHANNELS, 0xbffffb90) = 0
+ioctl(10, SNDCTL_DSP_SPEED, 0xbffffb88) = 0
+ioctl(10, SNDCTL_DSP_SETFMT, 0xbffffb80) = 0
+ioctl(10, SNDCTL_DSP_NONBLOCK, 0x8175c20) = 0
+ioctl(10, SNDCTL_DSP_GETBLKSIZE, 0xbffffb94) = 0
+write(10, "=\0X\0\202\0\267\0)\1{\1\260\2\205"..., 13548) = 0
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+write(5, "123 written bytes", 17)       = 17
+write(5, "\r\n", 2)                     = 2
+write(5, " 44", 3)                      = 3
+write(5, "\r\n", 2)                     = 2
+write(10, "=\0X\0\202\0\267\0)\1{\1\260\2\205"..., 13548) = 0
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+write(8, "122 total bytes", 15)         = 15
+write(8, "\r\n", 2)                     = 2
+write(8, " 3983", 5)                    = 5
+write(8, "\r\n", 2)                     = 2
+write(1, "Attaching waveform \n", 20Attaching waveform 
+)   = 20
+ioctl(1, KDGETLED, 0xbffffb94)          = -1 ENOTTY (Inappropriate ioctl for device)
+ioctl(1, KDSETLED, 0x1)                 = -1 ENOTTY (Inappropriate ioctl for device)
+ioctl(10, SNDCTL_DSP_GETBLKSIZE, 0xbffffb90) = 0
+ioctl(10, SOUND_PCM_WRITE_CHANNELS, 0xbffffb90) = 0
+ioctl(10, SNDCTL_DSP_SPEED, 0xbffffb88) = 0
+ioctl(10, SNDCTL_DSP_SETFMT, 0xbffffb80) = 0
+ioctl(10, SNDCTL_DSP_NONBLOCK, 0x8175c70) = 0
+ioctl(10, SNDCTL_DSP_GETBLKSIZE, 0xbffffb94) = 0
+write(10, "\205\204\204\202\201\200}{ywusqp"..., 3939) = 0
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+write(8, "123 written bytes", 17)       = 17
+write(8, "\r\n", 2)                     = 2
+write(8, " 44", 3)                      = 3
+write(8, "\r\n", 2)                     = 2
+write(10, "\205\204\204\202\201\200}{ywusqp"..., 3939) = 0
+write(1, "Flushing the signal (deferred)\n"..., 31Flushing the signal (deferred)
+) = 31
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\207\370E\4\314\373\356\7f\6\10\377"..., 248914) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\3\0\'\0\337\377\350\377\16\0\373"..., 244818) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\333\22>\22m\3\323\5\27\3c\2\\\376"..., 240722) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 236626) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\331\1\303\1e\377\222\1\34\2\207"..., 232530) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "2\4\225\0\f\4\273\4\322\5\326\4<"..., 228434) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\341\0021\3^\10\207\t\214\4Y\1\216"..., 224338) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\314\377\314\377\314\377\314\377"..., 220242) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\334\3r\5\235\3o\3\342\1t\376\253"..., 216146) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "8\2k\4\374\5x\0042\3\36\0\327\375"..., 212050) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\36\3\335\2O\2\355\2P\2k\1\222\1"..., 207954) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\355\1B\375\253\376\305\1o\377\365"..., 203858) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "z\ta\370\304\2\212\377\276\376\31"..., 199762) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\35\375\353\373\n\373\30\370\23\371"..., 195666) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\211\365\237\355\27\347\217\354\303"..., 191570) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\232\367\357\372/\0\371\374\311\376"..., 187474) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "U\2\32\377\340\6\270\5i\3\6\5\221"..., 183378) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\10\0-\0\342\377\320\377\306\377"..., 179282) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "I\1\372\377\347\375\223\2K\377&\376"..., 175186) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\25\377\353\377\5\377o\0/\4\344\6"..., 171090) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\346\377\346\377\346\377\346\377"..., 166994) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "5\376j\377Q\0\'\1\340\1N\2\203\2"..., 162898) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "b\377\224\377@\377\307\377\266\377"..., 158802) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\373\3\177\1\t\2&\3]\377\6\0026\2"..., 154706) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\33\1\315\0\16\1\270\0\245\0\251"..., 150610) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "*\6D\6\277\t\246\5\323\5D\31\35\27"..., 146514) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\37\10\252\376\251\361\367\3450\337"..., 142418) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\376\0\205\3\232\2\374\376h\0@\377"..., 138322) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 134226) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "/\376\326\376\327\0~\0x\377a\377"..., 130130) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\35\4\334\1\205\1l\1\23\377~\376"..., 126034) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\220\365+\366e\5(\3\20\377\331\2"..., 121938) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\261\0\320\0002\1\311\0\27\0\353"..., 117842) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "u\377C\0\204\377T\1\201\0\214\0h"..., 113746) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, ";\0\30\0\304\2k\2\217\0023\3\21\005"..., 109650) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "T\2\232\373\'\2\f\375\323\4\275\377"..., 105554) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\23\0035\2]\5\342\5\210\3\244\4\262"..., 101458) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\353\356\213\362\323\373\357\371"..., 97362) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "]\4\222\3\204\7\347\6&\22:\22\375"..., 93266) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\'\0004\0h\0W\0\227\1\314\1\255\377"..., 89170) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\303\373\326\376\20\3.\371i\367\356"..., 85074) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\365\376\306\374a\373X\373L\376\371"..., 80978) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\31\0\326\0\315\3\363\1\\\r\234\4"..., 76882) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "Z\370\315\366\250\1\n\r/\21\372\n"..., 72786) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\345\375\253\1?\1b\3756\2 \1\273"..., 68690) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\16\0\301\377\227\0\277\376\204\376"..., 64594) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\324\371\246\372\300\2\23\f\224\r"..., 60498) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "_\375W\374=\3747\3746\374\323\374"..., 56402) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "?\375\34\3D\0064\v_\r\r\r\313\16"..., 52306) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\277\377\277\377\277\377\277\377"..., 48210) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\346\377\346\377\346\377\346\377"..., 44114) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\231\372s\6\200\17\210\1\246\366"..., 40018) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "7\10)\7q\10>\n\236\26P\30O\1\35\355"..., 35922) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "o\377\331\377D\377\311\0^\0\312\377"..., 31826) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, ";\364\233\366\354\372p\365\367\371"..., 27730) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "t\0\247\0\274\0\372\0\0\1\17\2\217"..., 23634) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\354\377\246\376\235\1\325\377\25"..., 19538) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "E\375)\373\323\371\255\3679\366\377"..., 15442) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\337\375\240\375\261\375\376\375"..., 11346) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\33\356\346\377\361\0\202\7\v\v\255"..., 7250) = 4096
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 4096", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3], [10], NULL, NULL)       = 1 (out [10])
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "_\375\'\375\234\375\305\374\275\373"..., 3154) = 3154
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 3154", 5)                    = 5
+write(4, "\r\n", 2)                     = 2
+write(1, "Detaching waveform \n", 20Detaching waveform 
+)   = 20
+ioctl(10, SNDCTL_DSP_GETBLKSIZE, 0xbffffb98) = 0
+ioctl(10, SNDCTL_DSP_SYNC, 0x8133278)   = 0
+ioctl(10, SNDCTL_DSP_GETBLKSIZE, 0xbffffba8) = 0
+ioctl(1, KDGETLED, 0xbffffba8)          = -1 ENOTTY (Inappropriate ioctl for device)
+ioctl(1, KDSETLED, 0x1)                 = -1 ENOTTY (Inappropriate ioctl for device)
+munmap(0x401b2000, 528384)              = 0
+write(1, "submitted a subtask\n", 20submitted a subtask
+)   = 20
+write(1, "this has been the last subtask\n"..., 31this has been the last subtask
+) = 31
+write(4, "200 output OK", 13)           = 13
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 1 (out [10], left {0, 0})
+select(11, [3], [10], NULL, {0, 0})     = 1 (out [10], left {0, 0})
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "=\0X\0\202\0\267\0)\1{\1\260\2\205"..., 13548) = 13548
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(5, "123 written bytes", 17)       = 17
+write(5, "\r\n", 2)                     = 2
+write(5, " 13548", 6)                   = 6
+write(5, "\r\n", 2)                     = 2
+write(1, "Detaching waveform \n", 20Detaching waveform 
+)   = 20
+ioctl(10, SNDCTL_DSP_GETBLKSIZE, 0xbffffb98) = 0
+ioctl(10, SNDCTL_DSP_SYNC, 0x8175c20)   = 0
+ioctl(10, SNDCTL_DSP_GETBLKSIZE, 0xbffffba8) = 0
+ioctl(1, KDGETLED, 0xbffffba8)          = -1 ENOTTY (Inappropriate ioctl for device)
+ioctl(1, KDSETLED, 0x1)                 = -1 ENOTTY (Inappropriate ioctl for device)
+write(1, "submitted a subtask\n", 20submitted a subtask
+)   = 20
+write(1, "this has been the last subtask\n"..., 31this has been the last subtask
+) = 31
+write(5, "200 output OK", 13)           = 13
+write(5, "\r\n", 2)                     = 2
+select(11, [3], [10], NULL, {0, 0})     = 1 (out [10], left {0, 0})
+select(11, [3], [10], NULL, {0, 0})     = 1 (out [10], left {0, 0})
+write(1, "Scheduling select(10)ed agent\n", 30Scheduling select(10)ed agent
+) = 30
+write(10, "\205\204\204\202\201\200}{ywusqp"..., 3939) = 3939
+write(1, "Flushing the signal to device\n", 30Flushing the signal to device
+) = 30
+write(8, "123 written bytes", 17)       = 17
+write(8, "\r\n", 2)                     = 2
+write(8, " 3939", 5)                    = 5
+write(8, "\r\n", 2)                     = 2
+write(1, "Detaching waveform \n", 20Detaching waveform 
+)   = 20
+ioctl(10, SNDCTL_DSP_GETBLKSIZE, 0xbffffb98) = 0
+ioctl(10, SNDCTL_DSP_SYNC, 0x8175c70)   = 0
+ioctl(10, SNDCTL_DSP_GETBLKSIZE, 0xbffffba8) = 0
+ioctl(1, KDGETLED, 0xbffffba8)          = -1 ENOTTY (Inappropriate ioctl for device)
+ioctl(1, KDSETLED, 0)                   = -1 ENOTTY (Inappropriate ioctl for device)
+write(1, "submitted a subtask\n", 20submitted a subtask
+)   = 20
+write(1, "this has been the last subtask\n"..., 31this has been the last subtask
+) = 31
+write(8, "200 output OK", 13)           = 13
+write(8, "\r\n", 2)                     = 2
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+read(4, "strm $RM-:raw:rules:print:$RM-\r"..., 16384) = 42
+write(1, "[ cmd] strm $RM-:raw:rules:print"..., 38[ cmd] strm $RM-:raw:rules:print:$RM-
+) = 38
+write(4, "200 OK", 6)                   = 6
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+read(5, "strm $tfD:raw:rules:print:$tfD\r"..., 16384) = 40
+write(1, "[ cmd] strm $tfD:raw:rules:print"..., 38[ cmd] strm $tfD:raw:rules:print:$tfD
+) = 38
+write(5, "200 OK", 6)                   = 6
+write(5, "\r\n", 2)                     = 2
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+read(8, 0x8109600, 16384)               = -1 EAGAIN (Resource temporarily unavailable)
+write(1, "Nothing to do: 8\n", 17Nothing to do: 8
+)      = 17
+select(11, [3 8], [], NULL, {0, 0})     = 0 (Timeout)
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+write(1, "[ cmd] appl 211\n", 16[ cmd] appl 211
+)       = 16
+write(1, "cmd_apply calls 0x8175cf0\n", 26cmd_apply calls 0x8175cf0
+) = 26
+write(1, "In stream::apply 0x8133278 0x809"..., 41In stream::apply 0x8133278 0x809de10 211
+) = 41
+write(1, "211 bytes to be read\n", 21211 bytes to be read
+)  = 21
+write(4, "112 started", 11)             = 11
+write(4, "\r\n", 2)                     = 2
+select(11, [3 6 8], [], NULL, {0, 0})   = 1 (in [6], left {0, 0})
+select(11, [3 6 8], [], NULL, {0, 0})   = 1 (in [6], left {0, 0})
+write(1, "Scheduling select(6)ed agent\n", 29Scheduling select(6)ed agent
+) = 29
+read(6, "Poloop pak verandu svou v svitu "..., 211) = 211
+write(1, "Read and about to process Poloop"..., 238Read and about to process Poloop pak verandu svou v svitu mìsíèním ti¹e likér polykaje zrakem svým opièím obhlí¾e jak¾ i kostelníci mramorovou svou popelnicí vøesk noèní ti¹e lapí a zmíraje v ospalé bludy pak temnot stín ve studnu vhodí.
+) = 238
+select(11, [3 8], [], NULL, {0, 0})     = 0 (Timeout)
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+write(1, "[ cmd] appl 8\n", 14[ cmd] appl 8
+)         = 14
+write(1, "cmd_apply calls 0x816b938\n", 26cmd_apply calls 0x816b938
+) = 26
+write(1, "In stream::apply 0x816b970 0x809"..., 39In stream::apply 0x816b970 0x809e198 8
+) = 39
+write(1, "8 bytes to be read\n", 198 bytes to be read
+)    = 19
+write(5, "112 started", 11)             = 11
+write(5, "\r\n", 2)                     = 2
+select(11, [3 7 8], [], NULL, {0, 0})   = 1 (in [7], left {0, 0})
+select(11, [3 7 8], [], NULL, {0, 0})   = 1 (in [7], left {0, 0})
+write(1, "Scheduling select(7)ed agent\n", 29Scheduling select(7)ed agent
+) = 29
+read(7, "Nesmysl.", 8)                  = 8
+write(1, "Read and about to process Nesmys"..., 35Read and about to process Nesmysl.
+) = 35
+select(11, [3 8], [], NULL, {0, 0})     = 0 (Timeout)
+write(1, "Allocated 211 bytes for the main"..., 40Allocated 211 bytes for the main parser
+) = 40
+write(1, "Parser: end of text reached, cha"..., 49Parser: end of text reached, changing the policy
+) = 49
+select(11, [3 8], [], NULL, {0, 0})     = 0 (Timeout)
+write(1, "Allocated 8 bytes for the main p"..., 38Allocated 8 bytes for the main parser
+) = 38
+write(1, "Parser: end of text reached, cha"..., 49Parser: end of text reached, changing the policy
+) = 49
+select(11, [3 8], [], NULL, {0, 0})     = 0 (Timeout)
+write(1, "[czech.rul:25] Parser: end of te"..., 64[czech.rul:25] Parser: end of text reached, changing the policy
+) = 64
+write(1, "[trans.rul:75] Parser: end of te"..., 64[trans.rul:75] Parser: end of text reached, changing the policy
+) = 64
+write(1, "[trans.rul:81] Parser: end of te"..., 64[trans.rul:81] Parser: end of text reached, changing the policy
+) = 64
+write(1, "[trans.rul:81] Parser: end of te"..., 64[trans.rul:81] Parser: end of text reached, changing the policy
+) = 64
+write(1, "[trans.rul:81] Parser: end of te"..., 64[trans.rul:81] Parser: end of text reached, changing the policy
+) = 64
+write(1, "[trans.rul:101] Parser: end of t"..., 65[trans.rul:101] Parser: end of text reached, changing the policy
+) = 65
+write(1, "[trans.rul:101] Parser: end of t"..., 65[trans.rul:101] Parser: end of text reached, changing the policy
+) = 65
+write(1, "[trans.rul:101] Parser: end of t"..., 65[trans.rul:101] Parser: end of text reached, changing the policy
+) = 65
+write(1, "[trans.rul:105] Parser: end of t"..., 65[trans.rul:105] Parser: end of text reached, changing the policy
+) = 65
+write(1, "[trans.rul:105] Parser: end of t"..., 65[trans.rul:105] Parser: end of text reached, changing the policy
+) = 65
+write(1, "[prosody.rul:179] Randomly chose"..., 78[prosody.rul:179] Randomly chose rule [prosody.rul:175] contour f/-2:-2:-5:-5
+) = 78
+write(1, "[prosody.rul:162] Randomly chose"..., 72[prosody.rul:162] Randomly chose rule [prosody.rul:159] contour f/+2:-3
+) = 72
+write(1, "[prosody.rul:162] Randomly chose"..., 72[prosody.rul:162] Randomly chose rule [prosody.rul:160] contour f/+4:-4
+) = 72
+write(1, "[prosody.rul:172] Randomly chose"..., 75[prosody.rul:172] Randomly chose rule [prosody.rul:168] contour f/+0:-4:-4
+) = 75
+write(1, "[prosody.rul:184] Randomly chose"..., 81[prosody.rul:184] Randomly chose rule [prosody.rul:181] contour f/-2:+0:-2:-3:-3
+) = 81
+write(1, "[prosody.rul:162] Randomly chose"..., 72[prosody.rul:162] Randomly chose rule [prosody.rul:159] contour f/+2:-3
+) = 72
+write(1, "[prosody.rul:172] Randomly chose"..., 75[prosody.rul:172] Randomly chose rule [prosody.rul:170] contour f/-4:+0:-4
+) = 75
+write(1, "[prosody.rul:172] Randomly chose"..., 75[prosody.rul:172] Randomly chose rule [prosody.rul:167] contour f/-2:-2:-6
+) = 75
+write(1, "[prosody.rul:200] Randomly chose"..., 72[prosody.rul:200] Randomly chose rule [prosody.rul:199] contour f/-3:-3
+) = 72
+write(1, "[prosody.rul:250] Randomly chose"..., 78[prosody.rul:250] Randomly chose rule [prosody.rul:247] contour f/+0:-3:-2:+0
+) = 78
+write(1, "[prosody.rul:245] Randomly chose"..., 75[prosody.rul:245] Randomly chose rule [prosody.rul:240] contour f/-6:-2:+0
+) = 75
+write(1, "[prosody.rul:236] Randomly chose"..., 72[prosody.rul:236] Randomly chose rule [prosody.rul:234] contour f/-5:-1
+) = 72
+write(1, "[prosody.rul:250] Randomly chose"..., 78[prosody.rul:250] Randomly chose rule [prosody.rul:249] contour f/+0:-3:+0:+2
+) = 78
+write(1, "[prosody.rul:245] Randomly chose"..., 75[prosody.rul:245] Randomly chose rule [prosody.rul:244] contour f/-4:+2:+4
+) = 75
+write(1, "[prosody.rul:255] Randomly chose"..., 81[prosody.rul:255] Randomly chose rule [prosody.rul:252] contour f/+0:-3:-2:+0:+1
+) = 81
+write(1, "[prosody.rul:250] Randomly chose"..., 78[prosody.rul:250] Randomly chose rule [prosody.rul:248] contour f/-4:-4:-2:+2
+) = 78
+write(1, "[prosody.rul:255] Randomly chose"..., 81[prosody.rul:255] Randomly chose rule [prosody.rul:252] contour f/+0:-3:-2:+0:+1
+) = 81
+write(1, "[prosody.rul:236] Randomly chose"..., 72[prosody.rul:236] Randomly chose rule [prosody.rul:233] contour f/-4:+2
+) = 72
+write(1, "[prosody.rul:245] Randomly chose"..., 75[prosody.rul:245] Randomly chose rule [prosody.rul:243] contour f/-6:+4:+0
+) = 75
+write(1, "[prosody.rul:245] Randomly chose"..., 75[prosody.rul:245] Randomly chose rule [prosody.rul:243] contour f/-6:+4:+0
+) = 75
+write(1, "[prosody.rul:245] Randomly chose"..., 75[prosody.rul:245] Randomly chose rule [prosody.rul:243] contour f/-6:+4:+0
+) = 75
+write(1, "[prosody.rul:286] Randomly chose"..., 72[prosody.rul:286] Randomly chose rule [prosody.rul:282] contour f/-5:-1
+) = 72
+write(1, "[prosody.rul:339] Randomly chose"..., 73[prosody.rul:339] Randomly chose rule [prosody.rul:336] contour f/-4:-14
+) = 73
+select(11, [3 8], [], NULL, {0, 0})     = 1 (in [8], left {0, 0})
+select(11, [3 8], [], NULL, {0, 0})     = 1 (in [8], left {0, 0})
+write(1, "Scheduling select(8)ed agent\n", 29Scheduling select(8)ed agent
+) = 29
+read(8, "strm $wWN:raw:rules:print:$wWN\r"..., 16384) = 41
+write(1, "[ cmd] strm $wWN:raw:rules:print"..., 38[ cmd] strm $wWN:raw:rules:print:$wWN
+) = 38
+write(8, "200 OK", 6)                   = 6
+write(8, "\r\n", 2)                     = 2
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+write(1, "[prosody.rul:345] Randomly chose"..., 77[prosody.rul:345] Randomly chose rule [prosody.rul:344] contour f/-6:-16:-18
+) = 77
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+mmap(0, 6553600, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x40153000
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+write(1, "[ cmd] appl 15\n", 15[ cmd] appl 15
+)        = 15
+write(1, "cmd_apply calls 0x8133308\n", 26cmd_apply calls 0x8133308
+) = 26
+write(1, "In stream::apply 0x81641a0 0x809"..., 40In stream::apply 0x81641a0 0x809e3c8 15
+) = 40
+write(1, "15 bytes to be read\n", 2015 bytes to be read
+)   = 20
+write(8, "112 started", 11)             = 11
+write(8, "\r\n", 2)                     = 2
+select(11, [3 9], [], NULL, {0, 0})     = 1 (in [9], left {0, 0})
+select(11, [3 9], [], NULL, {0, 0})     = 1 (in [9], left {0, 0})
+write(1, "Scheduling select(9)ed agent\n", 29Scheduling select(9)ed agent
+) = 29
+read(9, "Dejte mi pokoj.", 15)          = 15
+write(1, "Read and about to process Dejte "..., 42Read and about to process Dejte mi pokoj.
+) = 42
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+mmap(0, 6553600, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x40793000
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+write(6, "po~lo~\'oppakIve~randu~svO~Bfsvi"..., 262) = 262
+write(4, "122 total bytes", 15)         = 15
+write(4, "\r\n", 2)                     = 2
+write(4, " 262", 4)                     = 4
+write(4, "\r\n", 2)                     = 2
+write(4, "123 written bytes", 17)       = 17
+write(4, "\r\n", 2)                     = 2
+write(4, " 262", 4)                     = 4
+write(4, "\r\n", 2)                     = 2
+munmap(0x40153000, 6553600)             = 0
+write(1, "submitted a subtask\n", 20submitted a subtask
+)   = 20
+write(1, "this has been the last subtask\n"..., 31this has been the last subtask
+) = 31
+write(4, "200 output OK", 13)           = 13
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+write(1, "Allocated 15 bytes for the main "..., 39Allocated 15 bytes for the main parser
+) = 39
+write(1, "Parser: end of text reached, cha"..., 49Parser: end of text reached, changing the policy
+) = 49
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+write(7, "ne~smi~sl######~T.", 18)      = 18
+write(5, "122 total bytes", 15)         = 15
+write(5, "\r\n", 2)                     = 2
+write(5, " 18", 3)                      = 3
+write(5, "\r\n", 2)                     = 2
+write(5, "123 written bytes", 17)       = 17
+write(5, "\r\n", 2)                     = 2
+write(5, " 18", 3)                      = 3
+write(5, "\r\n", 2)                     = 2
+munmap(0x40793000, 6553600)             = 0
+write(1, "submitted a subtask\n", 20submitted a subtask
+)   = 20
+write(1, "this has been the last subtask\n"..., 31this has been the last subtask
+) = 31
+write(5, "200 output OK", 13)           = 13
+write(5, "\r\n", 2)                     = 2
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+read(4, 0x80d8cd0, 16384)               = -1 EAGAIN (Resource temporarily unavailable)
+write(1, "Nothing to do: 4\n", 17Nothing to do: 4
+)      = 17
+select(11, [3 4], [], NULL, {0, 0})     = 0 (Timeout)
+write(1, "[czech.rul:41] Parser: end of te"..., 64[czech.rul:41] Parser: end of text reached, changing the policy
+) = 64
+write(1, "[prosody.rul:172] Randomly chose"..., 75[prosody.rul:172] Randomly chose rule [prosody.rul:167] contour f/-2:-2:-6
+) = 75
+write(1, "[prosody.rul:339] Randomly chose"..., 73[prosody.rul:339] Randomly chose rule [prosody.rul:337] contour f/-2:-14
+) = 73
+select(11, [3 4], [], NULL, {0, 0})     = 1 (in [4], left {0, 0})
+select(11, [3 4], [], NULL, {0, 0})     = 1 (in [4], left {0, 0})
+write(1, "Scheduling select(4)ed agent\n", 29Scheduling select(4)ed agent
+) = 29
+read(4, "delh ", 16384)                 = 5
+write(1, "[core] partial line read: delh \n"..., 32[core] partial line read: delh 
+) = 32
+select(11, [3 4], [], NULL, {0, 0})     = 0 (Timeout)
+read(5, 0x80e4ce8, 16384)               = -1 EAGAIN (Resource temporarily unavailable)
+write(1, "Nothing to do: 5\n", 17Nothing to do: 5
+)      = 17
+select(11, [3 4 5], [], NULL, {0, 0})   = 0 (Timeout)
+mmap(0, 6553600, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x40153000
+select(11, [3 4 5], [], NULL, {0, 0})   = 0 (Timeout)
+write(9, "dejte~mi~Ipo~koj######T.", 24) = 24
+write(8, "122 total bytes", 15)         = 15
+write(8, "\r\n", 2)                     = 2
+write(8, " 24", 3)                      = 3
+write(8, "\r\n", 2)                     = 2
+write(8, "123 written bytes", 17)       = 17
+write(8, "\r\n", 2)                     = 2
+write(8, " 24", 3)                      = 3
+write(8, "\r\n", 2)                     = 2
+munmap(0x40153000, 6553600)             = 0
+write(1, "submitted a subtask\n", 20submitted a subtask
+)   = 20
+write(1, "this has been the last subtask\n"..., 31this has been the last subtask
+) = 31
+write(8, "200 output OK", 13)           = 13
+write(8, "\r\n", 2)                     = 2
+select(11, [3 4 5], [], NULL, {0, 0})   = 1 (in [5], left {0, 0})
+select(11, [3 4 5], [], NULL, {0, 0})   = 1 (in [5], left {0, 0})
+write(1, "Scheduling select(5)ed agent\n", 29Scheduling select(5)ed agent
+) = 29
+read(5, "delh ", 16384)                 = 5
+write(1, "[core] partial line read: delh \n"..., 32[core] partial line read: delh 
+) = 32
+select(11, [3 4 5], [], NULL, {0, 0})   = 0 (Timeout)
+read(8, 0x8109600, 16384)               = -1 EAGAIN (Resource temporarily unavailable)
+write(1, "Nothing to do: 8\n", 17Nothing to do: 8
+)      = 17
+select(11, [3 4 5 8], [], NULL, {0, 0}) = 0 (Timeout)
+select(11, [3 4 5 8], [], NULL, NULL)   = 1 (in [4])
+write(1, "Scheduling select(4)ed agent\n", 29Scheduling select(4)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(4, "RM-\r\ndone\r\n", 16379)       = 11
+write(1, "[ cmd] delh RM-\n", 16[ cmd] delh RM-
+)       = 16
+write(1, "deleted context closes fd 6 and "..., 34deleted context closes fd 6 and 6
+) = 34
+close(6)                                = 0
+write(4, "200 OK", 6)                   = 6
+write(4, "\r\n", 2)                     = 2
+select(11, [3 5 8], [], NULL, {0, 0})   = 0 (Timeout)
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+write(1, "[ cmd] done\n", 12[ cmd] done
+)           = 12
+write(4, "600 OK", 6)                   = 6
+write(4, "\r\n", 2)                     = 2
+write(1, "ctrl conn 4 lost\n", 17ctrl conn 4 lost
+)      = 17
+select(11, [3 5 8], [], NULL, {0, 0})   = 0 (Timeout)
+write(1, "(nothing to enter!)\n", 20(nothing to enter!)
+)   = 20
+write(1, "deleted context closes fd 4 and "..., 34deleted context closes fd 4 and 4
+) = 34
+close(4)                                = 0
+write(1, "(nothing to leave!)\n", 20(nothing to leave!)
+)   = 20
+select(11, [3 5 8], [], NULL, {0, 0})   = 0 (Timeout)
+select(11, [3 5 8], [], NULL, NULL)     = 2 (in [5 8])
+write(1, "Scheduling select(5)ed agent\n", 29Scheduling select(5)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(5, "tfD\r\ndone\r\n", 16379)       = 11
+write(1, "[ cmd] delh tfD\n", 16[ cmd] delh tfD
+)       = 16
+write(1, "deleted context closes fd 7 and "..., 34deleted context closes fd 7 and 7
+) = 34
+close(7)                                = 0
+write(5, "200 OK", 6)                   = 6
+write(5, "\r\n", 2)                     = 2
+write(1, "Scheduling select(8)ed agent\n", 29Scheduling select(8)ed agent
+) = 29
+read(8, "delh ", 16384)                 = 5
+write(1, "[core] partial line read: delh \n"..., 32[core] partial line read: delh 
+) = 32
+select(11, [3 8], [], NULL, {0, 0})     = 0 (Timeout)
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+write(1, "[ cmd] done\n", 12[ cmd] done
+)           = 12
+write(5, "600 OK", 6)                   = 6
+write(5, "\r\n", 2)                     = 2
+write(1, "ctrl conn 5 lost\n", 17ctrl conn 5 lost
+)      = 17
+select(11, [3 8], [], NULL, {0, 0})     = 0 (Timeout)
+write(1, "(nothing to enter!)\n", 20(nothing to enter!)
+)   = 20
+write(1, "deleted context closes fd 5 and "..., 34deleted context closes fd 5 and 5
+) = 34
+close(5)                                = 0
+write(1, "(nothing to leave!)\n", 20(nothing to leave!)
+)   = 20
+select(11, [3 8], [], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3 8], [], NULL, NULL)       = 1 (in [8])
+write(1, "Scheduling select(8)ed agent\n", 29Scheduling select(8)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(8, "wWN\r\ndone\r\n", 16379)       = 11
+write(1, "[ cmd] delh wWN\n", 16[ cmd] delh wWN
+)       = 16
+write(1, "deleted context closes fd 9 and "..., 34deleted context closes fd 9 and 9
+) = 34
+close(9)                                = 0
+write(8, "200 OK", 6)                   = 6
+write(8, "\r\n", 2)                     = 2
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+write(1, "[ cmd] done\n", 12[ cmd] done
+)           = 12
+write(8, "600 OK", 6)                   = 6
+write(8, "\r\n", 2)                     = 2
+write(1, "ctrl conn 8 lost\n", 17ctrl conn 8 lost
+)      = 17
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+write(1, "(nothing to enter!)\n", 20(nothing to enter!)
+)   = 20
+write(1, "deleted context closes fd 8 and "..., 34deleted context closes fd 8 and 8
+) = 34
+close(8)                                = 0
+write(1, "(nothing to leave!)\n", 20(nothing to leave!)
+)   = 20
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+select(11, [3], [], NULL, NULL)         = 1 (in [3])
+write(1, "Scheduling select(3)ed agent\n", 29Scheduling select(3)ed agent
+) = 29
+accept(3, {sin_family=AF_INET, sin_port=htons(2052), sin_addr=inet_addr("127.0.0.1")}, [16]) = 4
+fcntl(4, F_SETFL, O_RDONLY|O_NONBLOCK)  = 0
+write(1, "[core] Accepted 4 (on 3).\n", 26[core] Accepted 4 (on 3).
+) = 26
+write(4, "TTSCP spoken here\r\nprotocol: 0"..., 84) = 84
+write(4, "2jr", 3)                      = 3
+write(4, "\r\n", 2)                     = 2
+write(4, "", 0)                         = 0
+write(4, "\r\n", 2)                     = 2
+select(11, [3 4], [], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3 4], [], NULL, NULL)       = 1 (in [3])
+write(1, "Scheduling select(3)ed agent\n", 29Scheduling select(3)ed agent
+) = 29
+accept(3, {sin_family=AF_INET, sin_port=htons(2054), sin_addr=inet_addr("127.0.0.1")}, [16]) = 5
+fcntl(5, F_SETFL, O_RDONLY|O_NONBLOCK)  = 0
+write(1, "[core] Accepted 5 (on 3).\n", 26[core] Accepted 5 (on 3).
+) = 26
+write(5, "TTSCP spoken here\r\nprotocol: 0"..., 84) = 84
+write(5, "m0h", 3)                      = 3
+write(5, "\r\n", 2)                     = 2
+write(5, "", 0)                         = 0
+write(5, "\r\n", 2)                     = 2
+select(11, [3 4 5], [], NULL, {0, 0})   = 1 (in [5], left {0, 0})
+write(1, "Scheduling select(5)ed agent\n", 29Scheduling select(5)ed agent
+) = 29
+read(5, "data 2jr\r\n", 16384)          = 10
+write(1, "[ cmd] data 2jr\n", 16[ cmd] data 2jr
+)       = 16
+write(5, "200 OK", 6)                   = 6
+write(5, "\r\n", 2)                     = 2
+select(11, [3 4], [], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3 4], [], NULL, NULL)       = 1 (in [4])
+write(1, "Scheduling select(4)ed agent\n", 29Scheduling select(4)ed agent
+) = 29
+read(4, "pass ", 16384)                 = 5
+write(1, "[core] partial line read: pass \n"..., 32[core] partial line read: pass 
+) = 32
+select(11, [3 4], [], NULL, {0, 0})     = 0 (Timeout)
+select(11, [3 4], [], NULL, NULL)       = 1 (in [4])
+write(1, "Scheduling select(4)ed agent\n", 29Scheduling select(4)ed agent
+) = 29
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+read(4, "ToUwhpttXHR9jf\ndown\r\n", 16379) = 21
+write(1, "[ cmd] pass ToUwhpttXHR9jf\n", 27[ cmd] pass ToUwhpttXHR9jf
+) = 27
+write(1, "[core] It\'s me\n", 15[core] It's me
+)       = 15
+write(4, "200 OK", 6)                   = 6
+write(4, "\r\n", 2)                     = 2
+select(11, [3], [], NULL, {0, 0})       = 0 (Timeout)
+write(1, "[core] Appending.\n", 18[core] Appending.
+)     = 18
+write(1, "[ cmd] down\n", 12[ cmd] down
+)           = 12
+write(4, "800 shutdown OK", 15)         = 15
+write(4, "\r\n", 2)                     = 2
+rmdir("/var/run/epos.pwd")              = -1 ENOTDIR (Not a directory)
+unlink("/var/run/epos.pwd")             = 0
+write(1, "deleted context closes fd 4 and "..., 34deleted context closes fd 4 and 4
+) = 34
+write(1, "deleted context closes fd 5 and "..., 34deleted context closes fd 5 and 5
+) = 34
+close(5)                                = 0
+close(4)                                = 0
+close(-1)                               = -1 EBADF (Bad file descriptor)
+write(1, "Deleting rules\n", 15Deleting rules
+)        = 15
+brk(0x8176000)                          = 0x8176000
+write(1, "Deleting rules\n", 15Deleting rules
+)        = 15
+munmap(0x40131000, 139264)              = 0
+brk(0x8134000)                          = 0x8134000
+munmap(0x40100000, 167936)              = 0
+brk(0x80ca000)                          = 0x80ca000
+_exit(0)                                = ?

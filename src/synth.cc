@@ -114,11 +114,18 @@ synth::syndiph(voice *, diphone, wavefm *)
 	shriek(861, "synth::syndiph is abstract\n");
 }
 
+#define NO_HACKS
+
 void
 synth::syndiphs(voice *v, diphone *d, int n, wavefm *w)
 {
 	diphone x;
 #ifndef NO_HACKS		// FIXME
+	v->claim_diphone_names();
+#else
+	if (cfg->show_labels) {
+		w->label(NULL);
+	}
 	v->claim_diphone_names();
 #endif
 	for (int i=0; i<n; i++) {
@@ -133,6 +140,14 @@ synth::syndiphs(voice *v, diphone *d, int n, wavefm *w)
 #ifndef NO_HACKS
 		if (cfg->show_labels) fprintf(STDDBG, "%d %d %.3s\n", hackint, w->offset() - 1,
 			(((char(*)[4])v->diphone_names->data)[d[i].code]));
+#else
+		if (cfg->show_labels) {
+			char tmp[5];
+			*tmp = 'd';
+			strncpy(tmp + 1, ((char(*)[4])v->diphone_names->data)[d[i].code], 3);
+			tmp[4] = 0;
+			w->label(tmp);
+		}
 #endif
 	}
 }

@@ -2,8 +2,8 @@
 #	(c) Jirka Hanika <geo@ff.cuni.cz>
 #
 
-$voiced    = bdïgvz¾ïZ®hø
-$voiceless = pt»kfs¹»cèxØ
+$voiced    = bdïgvz¾Z®hø
+$voiceless = pt»kfs¹cèxØ
 $fric      = sz¹¾fvhx
 $afric     = cZè®
 $stop      = pt»kbdïg

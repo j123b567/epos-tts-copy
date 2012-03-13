@@ -293,13 +293,15 @@ TTSCP clients.
 <P>The <CODE>tcpsyn</CODE> virtual synthesizer also embeds a TTSCP client; it is
 wise to check its proper functioning after making changes to the TTSCP
 server implementation.
-<P>A standalone test suite is compiled under the name <CODE>verify</CODE>.  It is currently
+<P>A standalone test suite is compiled under the name <CODE>vrfy</CODE>.  It is currently
 only trying a few standard tricks to crash the server and is far from being
 a rigorous test suite.  However, it manages to catch much more programming
 errors than <CODE>say</CODE> and we recommend to run it after making any changes to
 the source code of Epos.  This test suite assumes Epos has been configured
-correctly and is listening at the standard TTSCP port.
-<P>No part of the <CODE>verify</CODE> TTSCP client should be mimicked by other software
+correctly and is listening at the standard TTSCP port.  Don't be surprised
+if a bug found by <CODE>vrfy</CODE> turns out to be a false alarm because of a bug
+in <CODE>vrfy</CODE> itself.
+<P>No part of the <CODE>vrfy</CODE> TTSCP client should be mimicked by other software
 or be used as a study material. This client tries to be as ugly as possible
 and to crash any crashable server.  Adding some ugly tests to this piece of
 code might raise the average code quality of Epos significantly.

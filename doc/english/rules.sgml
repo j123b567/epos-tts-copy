@@ -14,14 +14,15 @@ name="soft options">.
 
 The text being processed by Epos is internally stored in a format
 suitable for the application of transformational rules.  Every phonetic
-unit (or an approximation of it) is represented by a single node in the
+unit (or an approximation of one) is represented by a single node in the
 structure. The nodes are organized into layers corresponding to linguistic
 levels of description, such that a unit of level <tt/n/ can list its
 immediate constituents, that is units of level <tt/n-1/. Every layer
 also has a symbolic name, which is used to refer to it in the rules.
 
 The number and symbolic names of individual levels can be specified
-on compile time and they're currently these:
+with the <tt/unit_levels/ option before the languages are defined.
+An example can be given:
 
 <label id="tsr-levels">
 
@@ -40,7 +41,7 @@ Level name | written TSR semantics | spoken TSR semantics @
 <hline>
 </tabular>
 <caption>
-	Available Text Structure Representation layers
+	Available Text Structure Representation layers (an example)
 </caption>
 </table>
 
@@ -85,12 +86,12 @@ by scope and target specification, if the defaults (usually word
 and phone, respectively) are not suitable.
 
 The scope and the target can be one of the <ref id="tsr-levels"
-name="available levels of linguistic description">
+name="available levels of linguistic description"> as defined
+with the <tt/unit_levels/ option.  If target or even scope
+for a rule is not specified, the <tt/default_target/ or
+<tt/default_scope/ option value, respectively, will be used.
+The typical defaults are <tt/phone/ and <tt/word/, respectively.
 
-"diphone", "phone", "syll", "word", "colon",
-"sent", and "text".
-
-  Other levels of description may be added later.
 Every rule is evaluated within certain unit, and the scope specifies,
 what kind of unit it should be.  
 The meaning of the target is somewhat opcode specific,
@@ -290,7 +291,8 @@ the same is true here.
 It is possible to repeat a diphone a few times.  This effect
 can be controlled by adding 10000 times the number of extra
 repetitions to the diphone number.  Therefore, 
-<tscreen><verb>?e?	20241
+<tscreen><verb>
+?e?	20241
 </verb></tscreen>
 generates three identical diphones number 241 for the stationary
 part of the specified vowel.

@@ -35,8 +35,8 @@ extern char * _rules_buff;
 
 
 
-#define DEFAULT_SCOPE    U_WORD
-#define DEFAULT_TARGET   U_PHONE
+// #define DEFAULT_SCOPE    U_WORD
+// #define DEFAULT_TARGET   U_PHONE
 
 /*
  * Syntax of an assimilation rule proper: "ptk>bdg(aeiou_aeiou)" is defined here
@@ -111,8 +111,8 @@ rule::~rule()
 void
 rule::set_level(UNIT scp, UNIT trg)
 {
-	scope =  scp == U_DEFAULT ? DEFAULT_SCOPE : scp;
-	target = trg == U_DEFAULT ? DEFAULT_TARGET : trg;
+	scope =  scp == U_DEFAULT ? cfg->default_scope  : scp;
+	target = trg == U_DEFAULT ? cfg->default_target : trg;
 	if (scope < target) shriek (811, fmt("Scope must not be more narrow than target%s", debug_tag()));
 			// was scope <= target -  consider returning back
 }
@@ -150,7 +150,7 @@ rule::check_children()
 const char *
 rule::debug_tag()
 {
-	char *wholetag=(char *)FOREVER(malloc(cfg->max_line));
+	char *wholetag=(char *)FOREVER(xmalloc(cfg->max_line));
 
 #ifdef DEBUGGING
 	char *tmp;
@@ -240,8 +240,8 @@ void
 rule::debug()
 {
 	fprintf(STDDBG," rule: '%s' ",enum2str(code(),OPCODEstr));
-	fprintf(STDDBG,"par %s scope '%s' ", raw, enum2str(scope,UNITstr));
-	fprintf(STDDBG,"target '%s'\n", enum2str(target,UNITstr));
+	fprintf(STDDBG,"par %s scope '%s' ", raw, enum2str(scope, cfg->unit_levels));
+	fprintf(STDDBG,"target '%s'\n", enum2str(target, cfg->unit_levels));
 }
 
 
@@ -435,7 +435,7 @@ r_contour::r_contour(char *param) : rule(param)
 	char *p;
 	short int tmp=0, sgn=1;
 	
-	contour = (int *)malloc(strlen(param)*sizeof(int));
+	contour = (int *)xmalloc(strlen(param)*sizeof(int));
 	contour[0] = l = 0;
 	padd_start = -1;
 	for (p=param+1+(param[1]=='/'); *p; p++) {
@@ -494,7 +494,7 @@ r_smooth::r_smooth(char *param) : rule(param)
 	char *p;
 	short int tmp=0, sgn=1, total=0, max;
 	
-	list=(int *)malloc(strlen(param)*sizeof(int));
+	list=(int *)xmalloc(strlen(param)*sizeof(int));
 	list[0]=n=l=0;
 	for (p=param+1+(param[1]=='/'); *p; p++) {
 		switch (*p) {
@@ -633,7 +633,7 @@ class r_syll: public rule
    public:
 		r_syll(char *param);
 	virtual ~r_syll();
-	virtual void set_level(UNIT scope, UNIT target);
+//	virtual void set_level(UNIT scope, UNIT target);
 	virtual void apply(unit *root);
 };
 
@@ -646,7 +646,7 @@ r_syll::r_syll(char *param) : rule(param)
 	char *tmp;
 	int i;
 
-	son=(char *) malloc(256);
+	son=(char *) xmalloc(256);
 	for (i = 0; i < 256; i++) son[i] = NO_SONORITY;
 	for (tmp = param; *tmp && lv; tmp++) {
 		if (*tmp==LESS_THAN) lv++;
@@ -661,12 +661,12 @@ r_syll::~r_syll()
 	free(son);
 }
 
-void
-r_syll::set_level(UNIT scp, UNIT trg)
-{
-	if (scp == U_DEFAULT) scp = U_SYLL;
-	rule::set_level(scp, trg);
-}	
+//void
+//r_syll::set_level(UNIT scp, UNIT trg)
+//{
+//	if (scp == U__DEFAULT) scp = U__SYLL;
+//	rule::set_level(scp, trg);
+//}	
 
 
 /********************************************************
@@ -767,7 +767,7 @@ r_regex::r_regex(char *param) : rule(param)
 	
 	param = strdup(scratch);
 
-	matchbuff = (regmatch_t *)malloc((parens+2)*sizeof(regmatch_t));
+	matchbuff = (regmatch_t *)xmalloc((parens+2)*sizeof(regmatch_t));
 	DEBUG(1,1,fprintf(STDDBG, "Compiling regex %s\n", param);)
 	result = regcomp(&regex, param, 0);
 	DEBUG(0,1,fprintf(STDDBG, "...hm...\n");)

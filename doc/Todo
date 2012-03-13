@@ -1,11 +1,13 @@
 Bugs
-- stddbg can't handle file sharing, may leak memory
 - better prosody modelling for monosyllaba
 - we should free some option value strings (for the master context and monolith)
 - very long colons crash in occasional colon-wide substitution rules
+- vrfy fails (401 for delh) when the processing is slow (race condition)
+- with intr, the 123s do not sum up to 122, because partials are counted twice,
+  whereas wave_header never!
 - make cmd line options for epos, say and eposm consistent: -n, --input_file...
   and document the result
-- asyncing - 445 cannot open /dev/dsp  asyncing off - break does not work imm
+- set_option can fail, but set the option to a nonsense value
 
 Features
 - parsing rules (e.g. for angle/square brackets,
@@ -16,13 +18,16 @@ Features
 - STML parser
 - language dependent options on the command line
 - asynchronous, more robust tcpsyn
-- voice selection in tcpsyn
+- tcpsyn - explicit voice options of local server should be used by the remote
 - mbrola
 - esd
 - Seela database (sp.? German morphology)
 - pause/resume in TTSCP
 - t i adjustment option
-- arbitrary option side effect handlers
+- TCP wrappers & auth config & /etc/epos.users
+- unicode
+- waveform cue-points
+- reasonable logging
 
 Inventory omissions
 - unknown diphone - no. 19 (consonant---r)
@@ -34,6 +39,7 @@ Inventory omissions
 - check whether ptacek97 handles diphtongs correctly
 
 Optimisations
+- UGLY - huge allocs for a_print
 - ptdsyn and ktdsyn should not access the filesystem during normal operation
 
 Miscelannea

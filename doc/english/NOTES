@@ -5,6 +5,8 @@ Necessary changes to the sgml-tools:
 (ii)  /usr/lib/sgml-tools/dist/fmt_latex2e.pl must not escape
       | at every context. This would break the <tabular ca="...">
       tag.
+(iii) had to \input english.sty (from babel) somewhere, e.g. in linuxdoc.sty
+      to avoid "undefined language" errors
 
 
 (maybe maybe not)

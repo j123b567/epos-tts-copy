@@ -21,13 +21,15 @@ int yread(int, void *, int size);
 struct wave_header
 {
 	char string1[4];
-	long flen;
+	long total_length;
 	char string2[8];
 	long xnone;
 	short int  datform, numchan, sf1, sf2, avr1, avr2, wlenB, wlenb;
 	char string3[4];
 	long written_bytes;
 };			// .wav file header
+
+struct cue_point;
 
 class wavefm
 {
@@ -40,6 +42,13 @@ class wavefm
 	int samp_rate;
 	CHANNEL_TYPE channel;
 	int fd;
+
+	int current_cp;
+	int last_offset;
+	cue_point *cp_buff;
+	char *adtl_buff;
+	int adtl_offs;
+	int adtl_max;
    public:
 	wavefm(voice *);
 	~wavefm();
@@ -78,11 +87,13 @@ class wavefm
 		switch(channel)
 		{
 			case CT_MONO:	put_sample(sample); break;
-			case CT_FIRST:	put_sample(sample); put_sample(0); break;
-			case CT_SECOND:	put_sample(0); put_sample(sample); break;
+			case CT_LEFT:	put_sample(sample); put_sample(0); break;
+			case CT_RIGHT:	put_sample(0); put_sample(sample); break;
 			case CT_BOTH:	put_sample(sample); put_sample(sample); break;
 		}
 	}
+
+	void label(char *s);
 
 	void become(void *buffer, int size);
 

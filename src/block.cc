@@ -113,14 +113,14 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 	int   began_at = file->current_line;
 
 	l = cfg->rules;
-	rulist = (rule **)malloc(sizeof(rule *) * l);
+	rulist = (rule **)xmalloc(sizeof(rule *) * l);
 	n_rules = 0; again = 1;
 	while((rulist[n_rules] = --again ? rulist[n_rules-1]
 					 : next_rule(file, vars, &again)) > END_OF_RULES) {
 //		rulist[n_rules]->set_dbg_tag(file);
 		if (++n_rules == l) {
 			l+=cfg->rules;
-			rulist = (rule **)realloc(rulist, sizeof(rule *) * l);
+			rulist = (rule **)xrealloc(rulist, sizeof(rule *) * l);
 		}
 	}
 	if (again > 1) diatax("Badly placed count");
@@ -134,7 +134,7 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 		default: shriek(861, "next_rule() gone mad");
 	}
 	free(began_in);
-	if (n_rules) rulist = (rule **)realloc(rulist, sizeof(rule *) * n_rules);
+	if (n_rules) rulist = (rule **)xrealloc(rulist, sizeof(rule *) * n_rules);
 	else free(rulist), rulist = NULL;
 	delete vars;
 }
@@ -297,8 +297,8 @@ rules::rules(const char *filename, const char *dirname)
 	DEBUG(3,1,fprintf(STDDBG,"Rules shall be taken from %s\n",filename);)
 	
 	body = new r_block(file, vars);
-	body->scope = U_TEXT;
-	body->target = U_PHONE;
+	body->scope = cfg->text_level;
+	body->target = cfg->phone_level;
 #ifdef DEBUGGING
 	body->dbg_tag = strdup("root block");
 #endif
@@ -411,7 +411,7 @@ rule *
 next_rule(text *file, hash *vars, int *count)
 {
 	int param = 0;
-	static char **word=(char **)FOREVER(malloc(sizeof(char *) * MAX_WORDS_PER_LINE));
+	static char **word=(char **)FOREVER(xmalloc(sizeof(char *) * MAX_WORDS_PER_LINE));
 	int idx, weight;
 	char *tmp;
 	UNIT scope, target;
@@ -464,8 +464,8 @@ next_rule(text *file, hash *vars, int *count)
 			 else 		diatax("Extra stuff follows rule");
 	}
 		
-	scope= str2enum(word[param+1], UNITstr,U_DEFAULT);	/* no later */
-	target=str2enum(word[param+2], UNITstr,U_DEFAULT);
+	scope = str2enum(word[param+1], cfg->unit_levels, U_DEFAULT);	/* no later */
+	target = str2enum(word[param+2], cfg->unit_levels, U_DEFAULT);
 
 	if (word[param] && strchr(word[param], PSEUDOSPACE))
 		for (char *p = word[param]; *p; p++)

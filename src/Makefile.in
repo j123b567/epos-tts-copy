@@ -25,9 +25,14 @@ FLAGS=$(DMALLOC_STATUS) $(HOMEMADE_STRDUP) $(CFLAGS)
 # SS     = ss
 
 prefix = @prefix@
-LIBDIR = @prefix@/lib/epos
+exec_prefix = $(prefix)
+bindir = @bindir@
+sbindir = @sbindir@
+libdir = @libdir@
+LIBDIR = $(libdir)/epos
 # LIBNAME = libepos.so.$(shell ../aux/makever)
 CFGDIR = $(LIBDIR)/cfg
+eposversionfile = $(LIBDIR)/version
 
 SHELL = /bin/sh
 
@@ -50,7 +55,7 @@ MAKEFILE=Makefile
 all: $(TARGETS)
 
 install : all $(SHELL) ../arch/unix/makeinst
-	@$(SHELL) ../arch/unix/makeinst /usr/lib $(LIBDIR) ../cfg
+	@$(SHELL) ../arch/unix/makeinst $(libdir) $(LIBDIR) ../cfg
 #	install -m 0755 -o bin -g bin $(TARGETS) $(EXEDIR)
 #	install -m 0644 -o bin -g bin $(LIBRARY) $(LIBDIR)
 
@@ -105,7 +110,7 @@ epos:	Makefile $(HEADERS) $(MODULES) hash.o daemon.o agent.o ttscp.o client.o
 	$(LNK) -o $@ daemon.o agent.o ttscp.o client.o hash.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
 #	@../arch/unix/rerunepos
 
-tgz: distclean $(SHELL) ../arch/unix/maketgz /usr/lib/epos/version cfgsync
+tgz: distclean $(SHELL) ../arch/unix/maketgz $(eposversionfile) cfgsync
 	@echo Building a .tgz package...
 	@$(SHELL) ../arch/unix/maketgz
 
@@ -151,12 +156,12 @@ $(CFGDIR)/fixed.ini:
 	#@cp -f $(CFGDIR)/fixed.ini $(CFGDIR)/fixed.old.ini 2>/dev/null
 	#cp -f cfg/fixed.ini $(CFGDIR)
 
-okay: /usr/lib/epos/version
+okay: $(eposversionfile)
 	@echo Version stamp is okay.
 
-/usr/lib/epos/version: common.h
+$(eposversionfile): common.h
 	@echo Updating version stamp.
-	@cat common.h | grep '#define.*VERSION' | cut -f 2 -d\" > /usr/lib/epos/version
+	@cat common.h | grep '#define.*VERSION' | cut -f 2 -d\" > $(eposversionfile)
 
 
 config.h: config.h.in configure
@@ -188,7 +193,7 @@ interf.o: common.h interf.h options.h voice.h interf.cc exc.cc options.lst $(MAK
 	$(CC) $(FLAGS) -c -o $@ interf.cc
 
 options.o: common.h interf.h options.h voice.h options.cc exc.cc options.lst $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ options.cc
+	$(CC) $(FLAGS) -c -o $@ options.cc  -DBASE_DIR=$(LIBDIR)
 
 hash.o: hash.h hash.cc hashtmpl.cc defaults.h slab.h $(MAKEFILE) $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ hash.cc

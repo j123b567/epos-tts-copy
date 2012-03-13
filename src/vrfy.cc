@@ -38,7 +38,7 @@
 const char *COMMENT_LINES = "#;\n\r";
 const char *WHITESPACE = " \t";
 
-const char *output_file = "/dev/dsp";
+// const char *output_file = "/dev/dsp";
 
 int ctrld[10];
 int datad[10];		/* file descriptors for the control and data connections */
@@ -88,7 +88,7 @@ int get_result(int c)
 
 	while (sgets(scratch, SCRATCH_SPACE, ctrld[c])) {
 		scratch[SCRATCH_SPACE] = 0;
-//		printf("Received: %s\n", scratch);
+		printf("Received on %d: %s\n", c, scratch);
 		mess = scratch+strspn(scratch, "0123456789x ");
 		switch(*scratch) {
 			case '1': continue;
@@ -118,7 +118,7 @@ void spk_strm(int c, int d)
 {
 	sputs("strm $", ctrld[c]);
 	sputs(dhandle[d], ctrld[c]);
-	sputs(":raw:rules:diphs:synth:/dev/dsp", ctrld[c]);
+	sputs(":raw:rules:diphs:synth:#localsound", ctrld[c]);
 	sputs("\r\n", ctrld[c]);
 }
 
@@ -153,7 +153,60 @@ void intr_test()
 {
 	testname="intr test";
 	spk_strm(0,0);
-	spk_appl(0,0, "Jenom jednu sekundu mohu breptat. Brejk je asi rozbitej. Nechce brejkovat tento text.");
+	spk_appl(0,0, "Jenom jednu sekundu mohu breptat. Touto dobou jest nastati tichu. Jen omyl by mohl stanovit jinak. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Brejk je asi rozbitej. 
+Nechce brejkovat tento text.");
 	if (get_result(0) > 2) shriek("Could not set up a stream");
 	sleep(1);
 	spk_intr(1, 0);

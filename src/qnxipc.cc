@@ -68,7 +68,7 @@ void qipc_proxy_setup(int commands, int cmd_back, int data, int data_back)
 	sputs(scratch, data);
 	sync_finish_command(data_back, "data cmd");
 
-	sprintf(scratch, "strm $%s:raw:rules:diphs:synth:/dev/dsp\n", datah);
+	sprintf(scratch, "strm $%s:raw:rules:diphs:synth:#localsound\n", datah);
 	sputs(scratch, commands);
 	sync_finish_command(cmd_back, "strm cmd");
 

@@ -291,6 +291,8 @@ void cmd_reap(char *param, a_ttscp *)
  */
 }
 
+#define SHOW_SPACE " "
+
 int do_show(char *param)
 {
 	int i;
@@ -298,6 +300,7 @@ int do_show(char *param)
 
 	if (o) {
 		if (access_level(this_context->uid) >= o->readable) {
+			sputs(SHOW_SPACE, cfg->sd_out);
 			reply(format_option(o));
 			reply("200 OK");
 		} else reply("451 Access denied");
@@ -316,7 +319,7 @@ int do_show(char *param)
 		if (!strcmp("languages", param)) {
 			int bufflen = 0;
 			for (i=0; i < cfg->n_langs; i++) bufflen += strlen(cfg->langs[i]->name) + strlen(cfg->comma);
-			char *result = (char *)malloc(bufflen + 1);
+			char *result = (char *)xmalloc(bufflen + 1);
 			strcpy(result, cfg->n_langs ? cfg->langs[0]->name : "(empty list)");
 			for (i=1; i < cfg->n_langs; i++) {
 				strcat(result, cfg->comma);
@@ -331,7 +334,7 @@ int do_show(char *param)
 			int bufflen = 0;
 			for (i=0; i < this_lang->n_voices; i++)
 				bufflen += strlen(this_lang->voices[i]->name) + strlen(cfg->comma);
-			char *result = (char *)malloc(bufflen + 1);
+			char *result = (char *)xmalloc(bufflen + 1);
 			strcpy(result, this_lang->n_voices ? this_lang->voices[0]->name : "(empty list)");
 			for (i=1; i < this_lang->n_voices; i++) {
 				strcat(result, cfg->comma);

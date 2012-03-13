@@ -118,7 +118,7 @@ int ptdsyn::analyza(DIFON *dfn, sample_type *waveout, int *tas, voice *v)
  else {
 
  unsigned char *buf;
- buf=(unsigned char*)calloc(50,1);
+ buf=(unsigned char*)xcalloc(50,1);
  fread(buf,1,44,fil); // WAVE head
  if(buf)free(buf);
  int count3=0;
@@ -207,7 +207,7 @@ ptdsyn::ptdsyn(voice *v)
   f=fopen(filename,"rb");
   if (!f) ;//shriek(499, fmt("ptdsyn cannot find labels at %s", filename));
   else {
-	char *buf=(char *)calloc(50,1);
+	char *buf=(char *)xcalloc(50,1);
 	fscanf(f,"%s",buf);
 	if(!strcmp(buf,"Labels"))
 	{	 
