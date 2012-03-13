@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.6">
+ <TITLE>               The Epos Speech System: Source Code Documentation</TITLE>
+ <LINK HREF="epos-4.html" REL=previous>
+ <LINK HREF="epos.html#toc5" REL=contents>
+</HEAD>
+<BODY>
+Next
+<A HREF="epos-4.html">Previous</A>
+<A HREF="epos.html#toc5">Contents</A>
+<HR>
+<H2><A NAME="s5">5. Source Code Documentation</A></H2>
+
+<P>
+<P>This section is of little use for anyone except for programmers willing to contribute
+to the development of Epos or going to modify its source code. It is also not
+trying to become a beginner's guide to Epos. Anyway, if you are personally missing
+something here or elsewhere, tell me and I may add it; that will become almost the only
+source of progress in this section of documentation. The section may also slowly
+become outdated due to lack of interest.
+<P>
+<H2><A NAME="ss5.1">5.1 Design goals</A>
+</H2>
+
+<P>
+<P>Overall coding priorities, approximately in order of decreasing precedence:
+<UL>
+<LI> language independence and generality</LI>
+<LI> no undocumented or implicit "features"</LI>
+<LI> portability</LI>
+<LI> maintainability, clean decomposition</LI>
+<LI> clean (intuitive) protocols and programming interfaces</LI>
+<LI> scalability</LI>
+<LI> intuitive configuration</LI>
+<LI> fault tolerance</LI>
+<LI> simple algorithms</LI>
+<LI> code readability</LI>
+<LI> speed</LI>
+<LI> space</LI>
+<LI> possible paralelizability</LI>
+</UL>
+<P>
+<H2><A NAME="ss5.2">5.2 Isolated classes</A>
+</H2>
+
+<P>
+<P><CODE>class parser, unit, rules, text</CODE> and maybe a few others are isolated classes
+that take no advantage from inheritance. The reason for the class-oriented design
+is just a matter of code readability and decomposition in this case.
+<P>
+<H3>Class <CODE>simpleparser</CODE></H3>
+
+<P>
+<P>This class takes some input (such as a plain ASCII or STML text) and then can be
+used in conjunction with the <CODE>class unit</CODE> constructor to build the
+<A HREF="epos-2.html#tsr">text structure representation</A>. Its purpose is to
+identify the Latin text tokens (usually ASCII characters, but some traditional
+tokens like "..." would be difficult to identify later, as well as numerous other
+context dependent uses of "."). The parser also identifies the level of description
+which corresponds to the token and this is the information needed by the <CODE>class
+unit</CODE> constructor to correctly build the 
+<A HREF="epos-2.html#tsr">TSR</A>. In this process,
+the parser skips over any empty units, that is, units that contain no phones
+(simple letters) at all.
+<P>Note that it is unnecessary and counterproductive to distinguish between homographic
+tokens used at the same level of description here; such intelligence can be handled
+more flexibly by the language dependent rules. In fact, they tend to be usually
+language dependent. The parser only avoids losing information (through empty unit
+deletion) by the minimum necessary tokenization.
+<P>The STML parser is still unimplemented.
+<P>
+<H3>Class <CODE>unit</CODE></H3>
+
+<P>
+<P>This class is the fundamental element of the 
+<A HREF="epos-2.html#tsr">text structure representation</A>. Its methods are listed in
+<CODE>elements.h</CODE>.  Every object of this type represents a single
+text unit.  Every unit includes pointers to its immediate
+container, and to its contents. The contents are organized in a
+bidirectional linked list; pointers to the head and tail units
+of this lists are stored in the unit. These links, i.e. <CODE>prev</CODE>
+and <CODE>next</CODE>, also serve to locate the neighboring units; they may be
+<CODE>NULL</CODE>, indicating that this is the first/last unit in the
+immediate container.  For most uses, these pointers are not suitable
+to be used directly; the <CODE>Prev</CODE> and <CODE>Next</CODE> methods find the
+neighbor, even if a higher level boundary lies in between. It is also
+possible to mark a unit as a <CODE>scope</CODE> one. In this case, the <CODE>Next</CODE>
+and <CODE>Prev</CODE> methods will be unable to cross its boundary from inside
+out (they will return <CODE>NULL</CODE> if this is attempted).  If you need to
+modify the TSR directly, you will benefit from calling <CODE>unit::sanity</CODE>
+occasionally. This method checks the TSR structure near the unit which has
+called it and will report a severe error, if an invariant is violated,
+thus saving you from misguided error messages or crashes later.
+<P>To extract the prosodic information from a TSR, call the <CODE>effective</CODE>
+method.  It will combine the prosodic adjustments present at all the levels
+of description above the current unit.
+<P>
+<H3>Class <CODE>text</CODE></H3>
+
+<P>
+<P>This class represents a logical line-oriented text file. It handles things
+like the 
+<A HREF="epos-3.html#include-directive">#include directive</A>,
+<A HREF="epos-3.html#escaping">backslash-escaped special characters</A>,
+initial whitespace and comment stripping. It is used for the 
+<A HREF="epos-2.html#rules">rule files</A> and 
+<A HREF="epos-3.html#cfg-files">configuration files</A>,
+but <EM>not</EM> for the 
+<A HREF="epos-2.html#dictionary">dictionaries</A>.
+<P>
+<H3>Class <CODE>file</CODE></H3>
+
+<P>
+<P>This class represents a physical data file.  Its main purpose is to cache and
+share files repeatedly needed by Epos.  The <CODE>claim</CODE> function (to be found in
+<CODE>interf.cc</CODE>) should be used for opening the file (or only sharing an existing
+copy if the file is already open) and reading the data out of the file. The
+<CODE>unclaim</CODE> function is called separately for every <CODE>claim</CODE> call whenever
+the file is no more needed.
+<P>Any code which uses this class should never extract the data member out of it and
+use it independently, even if the class itself remains claimed. This is because
+if the content of the file has changed, the data in memory will be reallocated and
+re-read upon the next call to <CODE>claim</CODE> or possibly even sooner. This may cause
+invalidation of the original <CODE>data</CODE> member at any point of a control switch
+to another Epos agent.  It is possible to call <CODE>reclaim</CODE> at any time to force
+re-reading any file if its time stamp has changed.
+<P>
+<H3>Class <CODE>hash</CODE></H3>
+
+<P>
+<P><CODE>class hash</CODE> is derived from <CODE>class hash_table&lt;char,char&gt;</CODE>.
+The <CODE>hash_table</CODE> template is a generic hash table, keys and associated
+data items being its class parameters. This implementation uses balanced (AVL)
+trees to resolve collisions and is able to adjust (rehash) itself 
+when it gets too full or too sparse. It is a very robust and fast
+implementation and it is independent of the rest of Epos, so you
+may use it in other projects if you want to (subject to GPL).
+If you want to have the hash table keep a copy of its contents,
+the key and/or data may only be of a fixed size type, or a C-style
+string. Alternatively, the hash table will only store pointers
+to these items. These approaches can be mixed in any reasonable
+sense of "mixing".
+<P>The hash tables are used frequently in Epos in various type combinations
+(see <CODE>hash.cc</CODE> for a list. They're also used for parsing the 
+<A HREF="epos-2.html#dictionary">dictionary files</A>.
+<P>
+<H3>Class <CODE>rules</CODE></H3>
+
+<P>
+<P>Note the difference between <CODE>class rules</CODE> and <CODE>class rule</CODE>.
+Every set of rules in Epos (there is one per language) is a <CODE>class
+rules</CODE>, which contains a single <CODE>r_block</CODE>, which in turn
+contains the individual rules.
+The <CODE>class rules</CODE> serves as the only communication interface
+between the <CODE>rule</CODE> hierarchy and the rest of Epos, but there
+is no inheritance relation between them.
+<P>
+<P>
+<P>
+<H2><A NAME="ss5.3">5.3 Class hierarchies</A>
+</H2>
+
+<H3>Class <CODE>rule</CODE></H3>
+
+<P>
+<P>Each <CODE>rule</CODE> object represents a rule to be applied to 
+a structure of units. The class hierarchy:
+<P>rule
+<UL>
+<LI> r_regress
+<UL>
+<LI> r_progress</LI>
+</UL>
+</LI>
+<LI> r_raise</LI>
+<LI> r_syll</LI>
+<LI> r_contour</LI>
+<LI> r_smooth</LI>
+<LI> r_regex</LI>
+<LI> r_debug</LI>
+<LI> hashing_rule
+<UL>
+<LI> r_subst
+<UL>
+<LI> r_prep</LI>
+<LI> r_postp</LI>
+</UL>
+</LI>
+<LI> r_diph</LI>
+<LI> r_prosody</LI>
+</UL>
+</LI>
+<LI> cond_rule
+<UL>
+<LI> r_inside</LI>
+<LI> r_if</LI>
+<LI> r_with</LI>
+</UL>
+</LI>
+<LI> block_rule
+<UL>
+<LI> r_block</LI>
+<LI> r_choice</LI>
+<LI> r_switch</LI>
+</UL>
+</LI>
+</UL>
+<P>Classes not beginning in <CODE>r_</CODE> can be considered abstract.
+<P>
+<H3>Class <CODE>agent</CODE></H3>
+
+<P>
+<P>Epos can be configured to support multiple simultaneous TTSCP connections
+and excepting bugs, no single unauthorized connection should be able to
+create a Denial of Service situation, such as long delays in processing
+other connections.  To achieve this, Epos uses a simple cooperative multitasking
+facility called <EM>agents</EM>. An agent (process) is an entity, which is responsible
+for carrying out some task, such as reading a few bytes from a file descriptor.
+At any moment (except for the startup and the very moments of a transfer of
+control), exactly one agent is active (Epos doesn't support SMP to avoid
+the unnecessary overhead and complexity in the typical case).  If an agent has to wait
+for some event before its job is finished, for example, when the sound card reaches
+full buffers or not enough data has arrived through a network connection, the agent
+calls the <CODE>block</CODE> method with the offending file descriptor.  It is impossible
+to wait for anything except a file descriptor status change.  If an agents wants
+to have another agent running, it can call the <CODE>schedule</CODE> method to add it
+to the queue of runnable processes. The scheduled agents always acquire control
+through the <CODE>run</CODE> method; when this method returns, another agent is chosen.
+If there are no more runnable agents, Epos will wait until an agent becomes runnable
+through a status change of the file descriptor the agent is <CODE>block</CODE>ing for.
+<P>Most agents get their data input through the <CODE>inb</CODE> data member and place their output
+into the <CODE>outb</CODE> data member. Whenever the agent has completed a stand-alone chunk
+of output, the agent calls the <CODE>pass</CODE> method to pass it to its successor and
+to schedule it for processing. The output agent never calls <CODE>pass</CODE> (it has actually
+no successor and it is responsible for writing the data somewhere outside Epos),
+but it calls <CODE>finis</CODE> when the data has been successfully written.
+<P>Most agents are organized into streams of interconnected agents. See the
+<A HREF="epos-4.html#strm-cmd">strm command</A> for the semantics of that.
+Other agents are responsible for individual TTSCP connections, for accepting new
+connections and other tasks. A special agent is used for deleting other
+agents when they need to delete themselves.
+<P>The current agents are:
+<P>agent
+<UL>
+<LI> stream</LI>
+<LI> a_accept</LI>
+<LI> a_protocol
+<UL>
+<LI> a_ttscp</LI>
+</UL>
+</LI>
+<LI> a_disconnector</LI>
+<LI> a_ascii</LI>
+<LI> a_stml</LI>
+<LI> a_rules</LI>
+<LI> a_print</LI>
+<LI> a_diphs</LI>
+<LI> a_synth</LI>
+<LI> a_io
+<UL>
+<LI> a_input</LI>
+<LI> a_output
+<UL>
+<LI> oa_ascii</LI>
+<LI> oa_stml</LI>
+<LI> oa_diph</LI>
+<LI> oa_wavefm</LI>
+</UL>
+</LI>
+</UL>
+</LI>
+</UL>
+<P>
+<H2><A NAME="ss5.4">5.4 More information</A>
+</H2>
+
+<P>
+<P>The header files mostly define basic interfaces for individual Epos components.
+Reading the ones related to a specific piece of code may often clarify things.
+Lots of global data declarations live in <CODE>common.h</CODE>; others (especially
+small, library-like functions) can be found in <CODE>interf.h</CODE>.
+<P>If you have any code or development related question about Epos, send
+it to the Epos development mailing list 
+<A HREF="mailto:epos@braille.mff.cuni.cz">epos@braille.mff.cuni.cz</A>. Please spend a few seconds by trying to look up
+the answer in the documentation first.
+<HR>
+Next
+<A HREF="epos-4.html">Previous</A>
+<A HREF="epos.html#toc5">Contents</A>
+</BODY>
+</HTML>

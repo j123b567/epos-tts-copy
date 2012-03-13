@@ -1,21 +1,21 @@
 
 Tento soubor je urèen pouze tìm, kdo mají v úmyslu modifikovat nebo
-ve vlastních programech využívat zdrojové texty ss. Je zatím velmi
-málo použitelný a nemusí vždy odpovídat nejnovìjší versi.
+ve vlastních programech vyu¾ívat zdrojové texty Eposu. Je zatím velmi
+málo pou¾itelný a nemusí v¾dy odpovídat nejnovìj¹í versi.
 
 Tøídová hierarchie:
 -------------------
 
 simpleparser, unit, rules, text, jsou samostatné tøídy,
-které nijak nepoužívají mechanismy dìdiènosti. Slouží pouze
-k jasnìjšímu pøiøazení funkcí k datovým strukturám.
+které nijak nepou¾ívají mechanismy dìdiènosti. Slou¾í pouze
+k jasnìj¹ímu pøiøazení funkcí k datovým strukturám.
 
 Tøída hash je potomkem tøídy hash_table<char,char>, to jest
-hash_table je template, hash nikoli. Bližší informace lze
-nalézt v doc/hash.doc, pokud zrovna není zastaralý.
+hash_table je template, hash nikoli. Bli¾¹í informace lze
+nalézt v doc/czech/hash.doc, pokud zrovna není zastaralý.
 
 Skuteènou hierarchii tvoøí tøída "rule", která reprezentuje
-vždy jedno pravidlo:
+v¾dy jedno pravidlo:
 
  rule ---- hashing_rule ---- r_subst ---- r_prep
        |		 |	      `-- r_postp
@@ -41,39 +41,41 @@ vždy jedno pravidlo:
        `-- block_rule ------ r_block
        			|
        			`--- r_choice
+			|
+			`--- r_switch
        
-pøièemž tøídy rule, hashing_rule, cond_rule lze vnímat jako
-abstraktní. Polymorfismus tìchto tøíd využívá tøída block,
+pøièem¾ tøídy rule, hashing_rule, cond_rule lze vnímat jako
+abstraktní. Polymorfismus tìchto tøíd vyu¾ívá tøída block,
 která obsahuje pole pointerù na tyto objekty (rule **rulist).
 
-Tato komplikovanost mì nijak netìší, ale starý design tøídy
+Tato komplikovanost mì nijak netì¹í, ale starý design tøídy
 rules mìl zásadní nedostatky pøi pøechodu k podmínìným
-pravidlùm, a navíc vedl k duplikování kódu ve všech funkcích
+pravidlùm, a navíc vedl k duplikování kódu ve v¹ech funkcích
 tøídy unit, které byly z pravidel volány a staraly se napø.
-o rozsah aplikace (scope); o to se nyní mùže starat
-multi_rule::apply(), aniž by se musel neustále rozebírat parametr
-pravidla a aniž by pravidlo obsahovalo promìnlivì typované
-hodnoty pøedžvýkaného parametru.
+o rozsah aplikace (scope); o to se nyní mù¾e starat
+block_rule::apply(), ani¾ by se musel neustále rozebírat parametr
+pravidla a ani¾ by pravidlo obsahovalo promìnlivì typované
+hodnoty pøed¾výkaného parametru.
 
 
 Tøídy strukturující jiná pravidla
 ---------------------------------
 
-Tøída r_block representuje posloupnost pøíkazù. Využívá se
+Tøída r_block representuje posloupnost pøíkazù. Vyu¾ívá se
 podobnì jako v C k implementaci podmínìných pravidel,
 lokálních promìnných a podobných zádrhelù. Pravidla jako
-celek jsou rovnìž organizována ve tøídì block, která je
-ještì "obalena" tøídou rules, komunikujíc skrze ni se svìtem.
-Objekt r_block samozøejmì mùže obsahovat i jiné r_blocky.
+celek jsou rovnì¾ organizována ve tøídì r_block, která je
+je¹tì "obalena" tøídou rules, komunikujíc skrze ni se svìtem.
+Objekt r_block samozøejmì mù¾e obsahovat i jiné r_blocky.
 
 Tøída r_choice representuje nedeterministicky vybírané
-pravidlo. Její chování je stejné jako u tøídy r_block až na to,
-že musí obsahovat nejménì jedno pravidlo, a že pøi uplatnìní
-tohoto pravidla se náhodnì zvolí jedno z obsažených pravidel,
+pravidlo. Její chování je stejné jako u tøídy r_block a¾ na to,
+¾e musí obsahovat nejménì jedno pravidlo, a ¾e pøi uplatnìní
+tohoto pravidla se náhodnì zvolí jedno z obsa¾ených pravidel,
 a to se provede.
 
-Tøídy r_inside, r_if slouží k realisaci podmínìného pøíkazu.
-Jejich hlavní datovou položkou je jeden pøíkaz, který se má
-provést, je-li splnìna žádaná podmínka. Ten bývá obvykle
+Tøídy r_inside, r_if slou¾í k realisaci podmínìného pøíkazu.
+Jejich hlavní datovou polo¾kou je jeden pøíkaz, který se má
+provést, je-li splnìna ¾ádaná podmínka. Ten bývá obvykle
 typu block.
 

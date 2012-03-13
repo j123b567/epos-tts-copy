@@ -1,0 +1,46 @@
+#! /bin/sh
+
+# The floppy must be mounted at its fstab mount point (if at all mounted).
+# This fstab mount point must exist.
+
+ver=`../arch/unix/makever dos`
+filename=ep$ver
+dir=`pwd|awk -F/ '{printf $(NF-1)}'`
+floppy=/dev/fd0
+
+echo
+echo "This is Epos version $ver (last modified `bash ../arch/unix/makedate`)"
+
+cd ../..
+
+rm -f `find $dir/cfg -name \*.local` `find $dir/cfg -name \*.old` 
+
+
+tar -cf ${filename}.tar $dir
+gzip ${filename}.tar
+mv ${filename}.tar.gz ${filename}.tgz
+
+echo File `pwd`/${filename}.tgz successfully created.
+
+fdmount=`cat /etc/fstab|awk '/\/dev\/fd0/ {print $2}'|head -n1`
+
+setterm -msg off
+if head -c 0 ${floppy} &>/dev/null; then 
+	if [ -d $fdmount ] ; then
+		if mount |grep "^${floppy}" >/dev/null ; then 
+			echo 'A copy to the diskette is being made. (Already mounted.)'
+			cp ${filename}.tgz $fdmount
+		else
+			mount $fdmount &>/dev/null
+			if mount|grep "^${floppy}" &>/dev/null ; then
+				echo 'A copy to the diskette is being made. (Temporary mount.)'
+				cp ${filename}.tgz $fdmount
+			else echo Diskette can not be mounted or it is empty
+			fi
+			umount $fdmount 2>/dev/null
+		fi
+	else echo Diskette found, but cannot be mounted at $fdmount
+	fi
+else echo No copy to the diskette will be made.
+fi
+setterm -msg on

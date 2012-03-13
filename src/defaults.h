@@ -1,5 +1,5 @@
 /*
- *	ss/src/defaults.h
+ *	epos/src/defaults.h
  *	(c) geo@ff.cuni.cz
  *
  *	This file is the sole thing that hash.* need to include. 
@@ -9,7 +9,7 @@
  *	this header file at all.
  */
 
-void shriek (const char *err_mess, const char * filename, int line_number);
+void hash_shriek (const char *err_mess, const char * filename, int line_number);
 
 #define MAX_WORD_SIZE   256       // in the input or dictionaries (not reported if larger)
 

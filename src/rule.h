@@ -1,5 +1,5 @@
 /*
- *	ss/src/rules.h
+ *	epos/src/rules.h
  *	(c) geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -13,6 +13,13 @@
     GNU General Public License in doc/COPYING for more details.
  *
  *	This file defines how a rules file should be parsed. 
+ *
+ *	Note that you may receive quite random behavior if
+ *	you call rules::apply() for any other rule set than that
+ *	of this_lang->rules. this_voice must be set to a voice
+ *	of the same language as well. This is because r_if may
+ *	refer to a soft option and the set of available soft options
+ *	is language dependent.
  */
 
 #define DIPH_BUFF_SIZE  1000 //unimportant

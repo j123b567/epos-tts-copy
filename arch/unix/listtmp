@@ -1,0 +1,20 @@
+#! /bin/sh
+
+libdir=$1
+targets=$2
+
+echo tmp>tmp~
+echo tmp~
+
+for i in *.o *.a *~ *.bak *.wav $targets core a.out gmon.out matlab.in tmp.0* DEADJOE dmalloc hackfile libepos.so.* say epos eposmh; do
+	if [ -f $i ]; then
+		echo $i
+	fi
+done
+
+if [ -d $libdir ]; then
+	find $libdir -name \*.old
+	find $libdir -name \*.local
+	find $libdir -name \*~
+fi
+find .. -name \*~

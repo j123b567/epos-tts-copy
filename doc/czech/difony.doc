@@ -1,16 +1,16 @@
 Soubor s difony se zpracovává stejnì jako slovníky (viz dict.txt).
-Kadı øádek obsahuje právì dvì slova, první z nich je tøíznakovı název 
+Ka¾dı øádek obsahuje právì dvì slova, první z nich je tøíznakovı název 
 difonu, druhı z nich je lidsky (decimálnì) zapsané èíslo difonu.
-Je-li pro tı název více èísel, platí poslední uvedené; je-li 
-více názvù pro toté èíslo, platí všechny.
+Je-li pro tı¾ název více èísel, platí poslední uvedené; je-li 
+více názvù pro toté¾ èíslo, platí v¹echny.
 
 Struktura názvu difonu
 ----------------------
 
 Prostøední znak oznaèuje hlásku, pod kterou bude vıslednı difon
-zaøazen; krajní znak mùe bıt buï otazník, nebo mùe dále zúit
-vıskyt difonu jen na pøíslušného levého èi pravého souseda.
-Pod kadou hlásku jsou zleva doprava zavìšeny postupnì difony
+zaøazen; krajní znak mù¾e bıt buï otazník, nebo mù¾e dále zú¾it
+vıskyt difonu jen na pøíslu¹ného levého èi pravého souseda.
+Pod ka¾dou hlásku jsou zleva doprava zavì¹eny postupnì difony
 typu   lt? ?t? ?tr ltr, pokud je inventáø zahrnuje.
 
 Pøíklad, Dubìdùv inventáø:
@@ -23,21 +23,21 @@ nebo tradièní inventáø:
     p       l       o       u       t       e       f
  0p? ?pl  pl? ?lo   ?o? ou?  ?u?    ut? ?te  ?e?    ef? ?f0
  
-(v tomto pøípadì by napø. symbolické difony ?pl, ?pt mìly toté èíslo,
+(v tomto pøípadì by napø. symbolické difony ?pl, ?pt mìly toté¾ èíslo,
 které by korespondovalo s pozicí difonu p@ v tradièním inventáøi)   
   
-Tı inventáø však mùe bıt reprezentován i jinak; pro kadı
+Tı¾ inventáø v¹ak mù¾e bıt reprezentován i jinak; pro ka¾dı
 typ difonu v daném inventáøi je nutno rozhodnout, zda bude
 bydlet ve své vıchozí nebo ve své koncové hlásce.
 
 S pseudodifony odvozenımi od diakritiky zatím nepoèítám,
-protoe jsem je ještì nepochopil.
+proto¾e jsem je je¹tì nepochopil.
 
 Opakování difonù
 ----------------
 
-Uívá se napø. pro støedy dlouhıch vokálù v traditnl.dph. 
-K èíslu difonu je tøeba pøièíst pøíslušnı násobek 10000.
-Pøíklad:   ?á? 20241   by znamenalo, e vyskytne-li se kdekoli
+U¾ívá se napø. pro støedy dlouhıch vokálù v traditnl.dph. 
+K èíslu difonu je tøeba pøièíst pøíslu¹nı násobek 10000.
+Pøíklad:   ?á? 20241   by znamenalo, ¾e vyskytne-li se kdekoli
 hláska 'á', budou jí podøízeny celkem tøi exempláøe difonu
 èíslo 241.

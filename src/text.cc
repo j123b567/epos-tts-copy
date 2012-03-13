@@ -1,5 +1,5 @@
 /*
- *	ss/src/text.cc
+ *	epos/src/text.cc
  *	(c) 1997 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ void strip(char *s)
 				*r = 0;
 				return;
 			case ESCAPE:
-				if (!*++t || *t=='\n') shriek("text.cc still cannot split lines");
+				if (!*++t || *t=='\n') shriek(462, "text.cc still cannot split lines");
 				if (strchr(cfg->token_esc, *t))	*r = esctab[*t];
 				else t--;	/* insert self */
 				break;
@@ -88,12 +88,12 @@ text::subfile(const char *filename)
 
 	parent=current;
 	current=new textlink;
-	if (!current) shriek("text::subfile out of memory");
+	if (!current) shriek(664, "text::subfile out of memory");
 	if (!filename || !*filename) {
 		current->f=stdin;
 	} else { 
 		char *pathname=compose_pathname(filename, dir);
-		DEBUG(1,1,fprintf(stddbg,"Text preprocessor opening %s\n", pathname);)
+		DEBUG(2,1,fprintf(STDDBG,"Text preprocessor opening %s\n", pathname);)
 		current->f=fopen(pathname, "r", tag);
 		free(pathname);
 	}
@@ -102,7 +102,7 @@ text::subfile(const char *filename)
 	current->line=current_line;
 	current_file=strdup(filename);
 	current_line=0;
-	if (++embed>MAX_INCL_EMBED) shriek("infinite #include cycle");
+	if (++embed>MAX_INCL_EMBED) shriek(812, "infinite #include cycle");
 }
 
 void
@@ -144,31 +144,32 @@ text::getline(char *buffer)
 		global_current_line = current_line;
 		global_current_file = current_file;
 		
-		DEBUG(1,1,fprintf(stddbg,"text::getline processing %s",buffer);)
+		DEBUG(1,1,fprintf(STDDBG,"text::getline processing %s",buffer);)
 		*(int *)wordbuff = 0; sscanf(buffer,"%16s",wordbuff);
 		strip(buffer);
 //		buffer[strcspn(buffer, COMMENT_LINES)]=0;
 		switch(_directive_prefices->translate_int(wordbuff)) {
 			case DI_INCL:
 				tmp1=strchr(buffer+1, DQUOT);
-				if (!tmp1) shriek ("Forgotten quotes in file %s line %d", current_file, current_line);
+				if (!tmp1) shriek (812, fmt("Forgotten quotes in file %s line %d", current_file, current_line));
 				tmp2=strchr(++tmp1,DQUOT);
-				if (!tmp2) shriek ("Forgotten quotes in file %s line %d", current_file, current_line);
+				if (!tmp2) shriek (812, fmt("Forgotten quotes in file %s line %d", current_file, current_line));
 				*tmp2=0;
 				subfile(tmp1);
 				continue;
 			case DI_WARN:
-				if (warn) fprintf(stdwarn,"%s\n",buffer+1+strcspn(buffer+1, WHITESPACE));
+				if (warn) fprintf(cfg->stdshriek,
+					"%s\n",buffer+1+strcspn(buffer+1, WHITESPACE));
 				continue;
 			case DI_ERROR:
 				tmp1=strchr(buffer+1, DQUOT);
-				if (!tmp1) shriek ("Forgotten quotes in file %s line %d", current_file, current_line);
+				if (!tmp1) shriek (812, fmt("Forgotten quotes in file %s line %d", current_file, current_line));
 				tmp2=strchr(++tmp1,DQUOT);
-				if (!tmp2) shriek ("Forgotten quotes in file %s line %d", current_file, current_line);
+				if (!tmp2) shriek (812, fmt("Forgotten quotes in file %s line %d", current_file, current_line));
 				*tmp2=0;
-				shriek(tmp1);
+				shriek(801, tmp1);
 			default:
-				DEBUG(1,1,fprintf(stddbg,"text::getline default is %s\n",buffer);)
+				DEBUG(0,1,fprintf(STDDBG,"text::getline default is %s\n",buffer);)
 				if (!buffer[strspn(buffer,WHITESPACE)]) continue;
 				return true;
 		}
@@ -199,5 +200,5 @@ text::~text()
 void
 text::done()
 {
-	if (current && exists()) shriek("File %s was left prematurely at line %d", base, current_line);
+	if (current && exists()) shriek(812, fmt("File %s was left prematurely at line %d", base, current_line));
 }

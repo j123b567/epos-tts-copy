@@ -1,0 +1,11 @@
+#! /bin/sh
+# adds its parameters to the CFLAGS used in the compilation (e.g. -ggdb, -pg, ...)
+
+cp Makefile Makefile~
+sed "/^CFLAGS=/ s/ -$*//g" <Makefile | sed "/^CFLAGS=/ s/\$/ -$*/g" >Makefile.clean
+
+if diff Makefile.clean Makefile >/dev/null ; then
+	rm Makefile.clean
+else
+	mv -f Makefile.clean Makefile
+fi

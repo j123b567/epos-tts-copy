@@ -1,0 +1,28 @@
+This is TeX, Version 3.14159 (Web2C 7.2) (format=cslatex 1998.7.17)  22 NOV 1998 14:54
+encTeX v.Sep.1997, the reencoding enabled
+**/usr/lib/sgml-tools/linuxdoc-sgml.sty epos.tex
+(/usr/lib/sgml-tools/linuxdoc-sgml.sty
+LaTeX2e <1998/06/01>
+Loading CZ hyphenation patterns: Pavel Sevecek, v3, 1995
+Loading SK hyphenation patterns: Jana Chlebikova, 1992
+
+LaTeX Warning: You have requested package `',
+               but the package provides `linuxdoc-sgml'.
+
+Package: linuxdoc-sgml 
+! Undefined control sequence.
+<argument> \undefinedpagestyle 
+                               
+l.84 \pagestyle{headings}
+                         
+? x
+ 
+Here is how much of TeX's memory you used:
+ 18 strings out of 10780
+ 172 string characters out of 70864
+ 44532 words of memory out of 263001
+ 3149 multiletter control sequences out of 10000+0
+ 3640 words of font info for 14 fonts, out of 200000 for 1000
+ 19 hyphenation exceptions out of 1000
+ 7i,0n,7p,119b,9s stack positions out of 300i,100n,500p,30000b,4000s
+No pages of output.

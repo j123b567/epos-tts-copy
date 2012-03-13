@@ -1,8 +1,8 @@
 
-# pøíklad øešení jednoduchých znaèek
+# pøíklad øe¹ení jednoduchých znaèek
 
 +	~plus~
-\-	~až~
+\-	~a¾~
 \m	~mínus~
 =	~rovná~se~
 /	~lomeno~
@@ -13,13 +13,13 @@ $$	~dolar~
 )	~závorku~uzavøít~
 [	~hranatá~závorka~
 ]	~hranatou~uzavøít~
-{	~složená~závorka~
-}	~složenou~uzavøít~
+{	~slo¾ená~závorka~
+}	~slo¾enou~uzavøít~
 &	~et~
 *	~hvìzdièka~
-^^	~støíška~
+^^	~støí¹ka~
 %	~procent~
-_	~podtržítko~
+_	~podtr¾ítko~
 '	~apostrof~
 "	~uvozovky~
 `	~zpìtný~apostrof~

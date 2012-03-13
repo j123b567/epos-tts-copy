@@ -1,5 +1,5 @@
 /*
- *	ss/src/common.h
+ *	epos/src/common.h
  *	(c) Jirka Hanika, geo@ff.cuni.cz
  *	(c) Petr Horak, horak@ure.cas.cz
 
@@ -22,18 +22,27 @@
  */
 
 
-#ifndef SS_COMMON_H
-#define SS_COMMON_H
+#ifndef EPOS_COMMON_H
+#define EPOS_COMMON_H
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@ff.cuni.cz"
-#define VERSION     "2.2.1"
+#define VERSION     "2.3.12"
 
 #include "config.h"
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>           // just exit() in shriek(), malloc &co...
+
+#ifdef HAVE_STRING_H
+	#include <string.h>
+#else
+   #ifdef HAVE_STRINGS_H
+	#include <strings.h>
+   #else
+	#error String library misconfigured. No.
+   #endif
+#endif	
 
 #ifndef HAVE_STRCASECMP
 #ifdef  HAVE_STRICMP
@@ -45,7 +54,9 @@
 	#include <dmalloc.h>  // Unimportant debugging hack. Throw it out.
 #endif			      // new and delete are replaced in interf.cc !
 
-#define WANT_REGEX	      // About always, we want to use the regex code
+#ifndef  IGNORE_REGEX_RULES
+	#define WANT_REGEX    // About always, we want to use the regex code
+#endif
 
 
 #ifdef WANT_REGEX
@@ -62,7 +73,7 @@
    }
 #endif
 
-#define SSD_TCP_PORT	8778
+#define EPOS_TCP_PORT	8778
 
 
 enum SYMTABLE {ST_ROOT, ST_RAW, ST_EMPTY};
@@ -75,11 +86,15 @@ enum UNIT {U_DIPH, U_PHONE, U_SYLL, U_WORD, U_COLON, U_SENT, U_TEXT, U_INHERIT, 
 #define FITstr	"f:i:t:"
 #define LIST_DELIM	 ':'
 
-#define unuse(x) if (((1&(int)(x))*(1&(int)(x)))<0) shriek("I'm drunk");
+// #define unuse(x) if (((1&(int)(x))*(1&(int)(x)))<0) shriek(862, "I'm drunk");
+extern int unused_variable;
+#define unuse(x) (unused_variable = (int)(x));
 
 struct file;
 struct option;
-struct unit;
+class  unit;
+
+class stream;
 
 #include "defaults.h"
 #include "exc.h"
@@ -92,6 +107,7 @@ struct unit;
 #include "parser.h"
 #include "elements.h"
 #include "rule.h"              //See rules.h for additional #defines and enums
+#include "waveform.h"
 #include "synth.h"
 
 #define MAX_PATHNAME       256	  // only load_language uses this
@@ -117,7 +133,7 @@ struct unit;
 #endif
 
 
-#endif   //#ifndef SS_COMMON_H
+#endif   //#ifndef EPOS_COMMON_H
 
 
 

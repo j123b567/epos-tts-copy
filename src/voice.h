@@ -1,5 +1,5 @@
 /*
- *	ss/src/voice.h
+ *	epos/src/voice.h
  *	(c) geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -27,15 +27,21 @@ enum SYNTH_TYPE {
 	S_KTD = 8,
 };
 
-#define STstr "none:tcpip:::lpc-float:lpc-int:lpc-vq::ktd:"
+#define STstr "none:internet:::lpc-float:lpc-int:lpc-vq::ktd:"
 #define ST_MAX (S_KTD+1)
 
 enum CHANNEL_TYPE {CT_MONO, CT_FIRST, CT_SECOND, CT_BOTH};
 #define CHANNEL_TYPEstr "mono:first:second:both:"
 
+struct cowabilium
+{
+	void *cow;
+	cowabilium() {cow = NULL; };
+};
+
 struct voice;
 
-struct lang
+struct lang : public cowabilium
 {
    #define CONFIG_LANG_DECLARE
    #include "options.cc"
@@ -59,22 +65,22 @@ struct lang
 };
 
 
-struct voice
+struct voice : public cowabilium
 {
    #define CONFIG_INV_DECLARE
    #include "options.cc"
 
-	int samp_size_bytes;
-	int buffer_idx;
-	int written_bytes;
-	char *buffer;
-	int fd;		/* This is a file descriptor to write the samples to.
-			 * Can also be an open device or a socket.
+//	int samp_size_bytes;
+//	int buffer_idx;
+//	int written_bytes;
+//	char *buffer;
+//	int fd;		/* This is a file descriptor to write the samples to.
+			/* Can also be an open device or a socket.
 			 * -1 means "busy, don't use" (daemon code sets this)
 			 */
 
-	void skip_header();	// for writing into .wav files
-	void write_header();
+//	void skip_header();	// for writing into .wav files
+//	void write_header();
 
    public:
 //   	char diphone_names[441][4];
@@ -86,10 +92,10 @@ struct voice
 	voice(const char *filename, const char *dirname, lang *parent_lang);
 	~voice();
 
-	void attach();
-	void detach();
-	void flush();
-	inline void put_sample(unsigned int sample)
+//	void attach();
+//	void detach();
+//	void flush();
+/*	inline void put_sample(unsigned int sample)
 	{
 		switch (samp_size_bytes)
 		{
@@ -109,9 +115,9 @@ struct voice
 			case CT_SECOND:	put_sample(0); put_sample(sample); break;
 			case CT_BOTH:	put_sample(sample); put_sample(sample); break;
 		}
-	}
-
-	void *operator new(const int);
+//	}
+*/
+	void *operator new(size_t);
 	void  operator delete(void *);
 };
 

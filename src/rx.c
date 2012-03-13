@@ -7,7 +7,7 @@
  *   This file was without functional modification taken out of the GNU C Library,
  *   where it has been distributed under the LGPL version 2 license as regex.c.
  *   Then this file was placed under the GNU General Public License using
- *   Section 3 of the GNU Library Public License and incorporated into ss.
+ *   Section 3 of the GNU Library Public License and incorporated into Epos.
  *
  *   rx.c is (C) 1993, 1994, 1995, 1996, 1997 Free Software Foundation, Inc.
  *
@@ -23,6 +23,8 @@
  *
  */
 
+#define REGEX_MALLOC
+
 /* AIX requires this to be the first thing in the file. */
 #if defined (_AIX) && !defined (REGEX_MALLOC)
   #pragma alloca
@@ -31,9 +33,7 @@
 #undef	_GNU_SOURCE
 #define _GNU_SOURCE
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
 
 #ifndef  __STDC__
 #define  __STDC__  1

@@ -1,0 +1,2495 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  us/call  us/call  name    
+ 12.50      0.02     0.02   202030     0.10     0.10  <hicore>
+ 12.50      0.04     0.02    65897     0.30     0.30  hash_table<char, char>::fn(char const *)
+ 12.50      0.06     0.02     2360     8.47     8.47  str2enum(char const *, char const *, int)
+ 12.50      0.08     0.02      224    89.29    89.29  fntab(char const *, char const *)
+  6.25      0.09     0.01   155684     0.06     0.06  hash_table<char, char>::dissolvetree(hsearchtree<char, char> *)
+  6.25      0.10     0.01    63413     0.16     0.46  hash_table<char, char>::add(char const *, char const *)
+  6.25      0.11     0.01     2484     4.03     4.33  hash_table<char, char>::translate(char const *)
+  6.25      0.12     0.01     1947     5.14     9.47  hash::translate_int(char const *)
+  6.25      0.13     0.01      839    11.92    11.92  get_words(char *, char **, int)
+  6.25      0.14     0.01      813    12.30    12.30  hash_table<char, option>::fn(char const *)
+  6.25      0.15     0.01      767    13.04    93.82  next_rule(text *, hash *, int *)
+  6.25      0.16     0.01      387    25.84    38.14  hash_table<char, option>::translate(char const *)
+  0.00      0.16     0.00   140950     0.00     0.00  hash_table<char, char>::rehash_tree(hsearchtree<char, char> *)
+  0.00      0.16     0.00    35351     0.00     0.00  debug_wanted(int, int)
+  0.00      0.16     0.00     9234     0.00     0.00  unit::sanity(void)
+  0.00      0.16     0.00     1825     0.00     0.00  strip(char *)
+  0.00      0.16     0.00     1306     0.00     0.00  unit::Next(UNIT)
+  0.00      0.16     0.00     1189     0.00    14.53  text::getline(char *)
+  0.00      0.16     0.00     1084     0.00     0.00  unit::LeftMost(UNIT)
+  0.00      0.16     0.00      687     0.00     0.00  rule::check_child(rule *)
+  0.00      0.16     0.00      679     0.00     0.00  rule::~rule(void)
+  0.00      0.16     0.00      679     0.00     0.00  rule::rule(char *)
+  0.00      0.16     0.00      675     0.00     0.00  rule::set_dbg_tag(text *)
+  0.00      0.16     0.00      675     0.00     0.00  rule::set_level(UNIT, UNIT)
+  0.00      0.16     0.00      574     0.00     0.00  unit::Prev(UNIT)
+  0.00      0.16     0.00      544     0.00     0.00  rule::check_children(void)
+  0.00      0.16     0.00      498     0.00     0.00  booltab(char const *)
+  0.00      0.16     0.00      422     0.00    12.30  hash_table<char, option>::add(char const *, option const *)
+  0.00      0.16     0.00      418     0.00     0.00  unit::RightMost(UNIT)
+  0.00      0.16     0.00      370     0.00    38.97  block_rule::apply_current(unit *)
+  0.00      0.16     0.00      360     0.00     0.00  hash_table<char, option>::dissolvetree(hsearchtree<char, option> *)
+  0.00      0.16     0.00      333     0.00     0.00  split_string(char *)
+  0.00      0.16     0.00      312     0.00    40.71  option_struct(char const *, hash_table<char, option> *)
+  0.00      0.16     0.00      286     0.00     1.69  set_option(option *, char *, void *)
+  0.00      0.16     0.00      278     0.00    42.40  set_option(char *, char *, void *, hash_table<char, option> *)
+  0.00      0.16     0.00      223     0.00     0.00  r_regress::~r_regress(void)
+  0.00      0.16     0.00      223     0.00    89.29  r_regress::r_regress(char *)
+  0.00      0.16     0.00      200     0.00     0.00  r_regress::apply(unit *)
+  0.00      0.16     0.00      200     0.00     0.00  unit::assim(UNIT, bool, char *, bool *, bool *)
+  0.00      0.16     0.00      186     0.00     0.00  hash_table<char, char>::cfg_rehash(int, int, int)
+  0.00      0.16     0.00      142     0.00     0.00  parse_cfg_str(char *, char const *)
+  0.00      0.16     0.00      120     0.00     0.00  fit(char)
+  0.00      0.16     0.00      116     0.00     0.00  hash_table<char, char>::~hash_table(void)
+  0.00      0.16     0.00      111     0.00     0.00  r_contour::~r_contour(void)
+  0.00      0.16     0.00      111     0.00     0.00  r_contour::r_contour(char *)
+  0.00      0.16     0.00      110     0.00     0.00  unit::gather(char *, char *, bool)
+  0.00      0.16     0.00      102     0.00     0.00  r_regex::~r_regex(void)
+  0.00      0.16     0.00      102     0.00     0.00  r_regex::r_regex(char *)
+  0.00      0.16     0.00       97     0.00     0.00  compose_pathname(char const *, char const *)
+  0.00      0.16     0.00       92     0.00     0.97  block_rule::~block_rule(void)
+  0.00      0.16     0.00       92     0.00     0.00  block_rule::block_rule(void)
+  0.00      0.16     0.00       92     0.00     0.00  hash_table<char, char>::hash_table(hash_table<char, char> *)
+  0.00      0.16     0.00       92     0.00     0.00  block_rule::load_rules(rule *, text *, hash *)
+  0.00      0.16     0.00       90     0.00     0.00  sputs(char const *, int)
+  0.00      0.16     0.00       88     0.00     0.00  block_rule::set_level(UNIT, UNIT)
+  0.00      0.16     0.00       86     0.00     0.00  r_regex::apply(unit *)
+  0.00      0.16     0.00       86     0.00     0.00  unit::regex(re_pattern_buffer *, int, regmatch_t *, char const *)
+  0.00      0.16     0.00       80     0.00     9.47  unit::diph(hash *)
+  0.00      0.16     0.00       79     0.00    89.29  r_progress::r_progress(char *)
+  0.00      0.16     0.00       76     0.00     0.00  unit::operator delete(void *)
+  0.00      0.16     0.00       76     0.00     0.00  unit::operator new(int)
+  0.00      0.16     0.00       74     0.00     0.00  context::enter(void)
+  0.00      0.16     0.00       73     0.00     0.00  context::leave(void)
+  0.00      0.16     0.00       66     0.00     0.00  unit::set_father(unit *)
+  0.00      0.16     0.00       64     0.00     0.00  unit::insert_end(unit *, unit *)
+  0.00      0.16     0.00       61     0.00     0.00  select_socket(bool)
+  0.00      0.16     0.00       61     0.00   243.33  agent::timeslice(void)
+  0.00      0.16     0.00       58     0.00     0.00  hashing_rule::~hashing_rule(void)
+  0.00      0.16     0.00       58     0.00     0.00  hashing_rule::hashing_rule(char *)
+  0.00      0.16     0.00       57     0.00     0.00  r_block::~r_block(void)
+  0.00      0.16     0.00       57     0.00     0.00  r_block::r_block(text *, hash *)
+  0.00      0.16     0.00       55     0.00     0.15  cond_rule::~cond_rule(void)
+  0.00      0.16     0.00       55     0.00     0.00  cond_rule::cond_rule(char *, text *, hash *)
+  0.00      0.16     0.00       55     0.00     0.00  block_rule::check_children(void)
+  0.00      0.16     0.00       55     0.00     0.00  cond_rule::check_children(void)
+  0.00      0.16     0.00       45     0.00     0.00  lpcvq::frobmod(int, diphone, model *, int &, int &)
+  0.00      0.16     0.00       45     0.00     0.00  reply(char const *)
+  0.00      0.16     0.00       45     0.00     0.00  lpcsyn::synmod(model, wavefm *)
+  0.00      0.16     0.00       42     0.00     0.00  unit::effective(FIT_IDX)
+  0.00      0.16     0.00       42     0.00     0.00  unit::insert(UNIT, bool, char, bool *, bool *)
+  0.00      0.16     0.00       34     0.00     0.00  unit::unit(UNIT, int)
+  0.00      0.16     0.00       34     0.00     0.00  agent::agent(DATA_TYPE, DATA_TYPE)
+  0.00      0.16     0.00       33     0.00     0.00  agent::block(int)
+  0.00      0.16     0.00       33     0.00     0.00  parser::chrlev(unsigned char)
+  0.00      0.16     0.00       32     0.00     0.00  r_subst::~r_subst(void)
+  0.00      0.16     0.00       32     0.00     0.00  r_inside::~r_inside(void)
+  0.00      0.16     0.00       32     0.00     0.00  r_subst::r_subst(char *)
+  0.00      0.16     0.00       32     0.00     0.00  r_inside::r_inside(char *, text *, hash *)
+  0.00      0.16     0.00       32     0.00     0.00  fopen(char const *, char const *, char const *)
+  0.00      0.16     0.00       32     0.00     0.00  r_subst::set_level(UNIT, UNIT)
+  0.00      0.16     0.00       32     0.00     0.00  unit::subst(hash *, SUBST_METHOD)
+  0.00      0.16     0.00       30     0.00     0.00  hash_table<char, file>::dissolvetree(hsearchtree<char, file> *)
+  0.00      0.16     0.00       30     0.00     0.00  hash_table<char, int>::dissolvetree(hsearchtree<char, int> *)
+  0.00      0.16     0.00       30     0.00     0.00  hash_table<char, file>::fortree(hsearchtree<char, file> *, void (*)(char *, file *))
+  0.00      0.16     0.00       29     0.00     0.00  sched_sel(void)
+  0.00      0.16     0.00       29     0.00     0.00  agent::schedule(void)
+  0.00      0.16     0.00       28     0.00   368.36  r_subst::apply(unit *)
+  0.00      0.16     0.00       28     0.00     0.00  parser::gettoken(void)
+  0.00      0.16     0.00       28     0.00     0.00  unit::relabel(hash *, SUBST_METHOD, UNIT)
+  0.00      0.16     0.00       28     0.00    15.10  a_protocol::run(void)
+  0.00      0.16     0.00       28     0.00     0.00  sgets(char *, int, int, char *)
+  0.00      0.16     0.00       27     0.00     0.00  text::subfile(char const *)
+  0.00      0.16     0.00       27     0.00     0.00  text::superfile(void)
+  0.00      0.16     0.00       26     0.00     0.00  hash_table<char, char>::rehash(void)
+  0.00      0.16     0.00       26     0.00     0.00  hash_table<char, char>::rehash(int)
+  0.00      0.16     0.00       24     0.00     0.00  r_choice::~r_choice(void)
+  0.00      0.16     0.00       24     0.00     0.00  r_choice::r_choice(text *, hash *)
+  0.00      0.16     0.00       24     0.00     0.00  hash_table<char, char>::hash_table(int)
+  0.00      0.16     0.00       24     0.00     0.00  parser::regist(UNIT, char const *)
+  0.00      0.16     0.00       23     0.00     0.00  hash_table<char, file>::fn(char const *)
+  0.00      0.16     0.00       22     0.00     0.00  text::~text(void)
+  0.00      0.16     0.00       22     0.00     0.28  text::text(char const *, char const *, char const *, bool)
+  0.00      0.16     0.00       22     0.00     0.00  text::done(void)
+  0.00      0.16     0.00       22     0.00     0.00  doneprefices(void)
+  0.00      0.16     0.00       22     0.00     5.39  make_agent(char *, agent *)
+  0.00      0.16     0.00       21     0.00    20.13  a_ttscp::run_command(char *)
+  0.00      0.16     0.00       20     0.00     0.00  agent::~agent(void)
+  0.00      0.16     0.00       20     0.00     2.07  r_prosody::~r_prosody(void)
+  0.00      0.16     0.00       20     0.00     0.00  r_prosody::r_prosody(char *)
+  0.00      0.16     0.00       20     0.00     0.00  r_inside::apply(unit *)
+  0.00      0.16     0.00       18     0.00   736.73  hash::hash(char const *, int, int, int, int, char const *, bool, char const *, char *)
+  0.00      0.16     0.00       18     0.00    61.96  r_if::apply(unit *)
+  0.00      0.16     0.00       18     0.00     0.00  agent::pass(void)
+  0.00      0.16     0.00       18     0.00     0.00  unit::syllabify(char *)
+  0.00      0.16     0.00       17     0.00     0.00  r_if::~r_if(void)
+  0.00      0.16     0.00       17     0.00    40.71  r_if::r_if(char *, text *, hash *)
+  0.00      0.16     0.00       17     0.00   945.69  load_config(char const *, char const *, char const *, OPT_STRUCT, void *, lang *)
+  0.00      0.16     0.00       17     0.00   736.73  hashing_rule::load_hash(void)
+  0.00      0.16     0.00       17     0.00     0.00  r_if::set_level(UNIT, UNIT)
+  0.00      0.16     0.00       14     0.00     0.00  r_raise::apply(unit *)
+  0.00      0.16     0.00       14     0.00     0.00  hash_table<char, int>::fn(char const *)
+  0.00      0.16     0.00       14     0.00     0.00  unit::raise(bool *, bool *, UNIT, UNIT)
+  0.00      0.16     0.00       13     0.00     0.79  claim(char const *, char const *, char const *, char const *)
+  0.00      0.16     0.00       13     0.00     0.00  cow(cowabilium **, int)
+  0.00      0.16     0.00       13     0.00     0.00  get_timestamp(char *)
+  0.00      0.16     0.00       13     0.00     0.00  hash_table<char, file>::translate(char const *)
+  0.00      0.16     0.00       13     0.00     0.00  unclaim(file *)
+  0.00      0.16     0.00       12     0.00     0.00  context::context(int, int)
+  0.00      0.16     0.00       12     0.00    33.13  unit::sseg(hash *, char, int *)
+  0.00      0.16     0.00       11     0.00     0.00  unit::~unit(void)
+  0.00      0.16     0.00       11     0.00     0.00  r_switch::~r_switch(void)
+  0.00      0.16     0.00       11     0.00     0.00  r_switch::r_switch(text *, hash *)
+  0.00      0.16     0.00       10     0.00     0.00  voice::~voice(void)
+  0.00      0.16     0.00       10     0.00     0.00  r_raise::~r_raise(void)
+  0.00      0.16     0.00       10     0.00   946.49  voice::voice(char const *, char const *, lang *)
+  0.00      0.16     0.00       10     0.00     0.00  r_raise::r_raise(char *)
+  0.00      0.16     0.00       10     0.00     0.00  voice::operator delete(void *)
+  0.00      0.16     0.00       10     0.00     0.00  voice::operator new(unsigned int)
+  0.00      0.16     0.00       10     0.00   946.49  lang::add_voice(char const *)
+  0.00      0.16     0.00        9     0.00     0.00  r_smooth::~r_smooth(void)
+  0.00      0.16     0.00        9     0.00     0.00  r_prep::r_prep(char *)
+  0.00      0.16     0.00        9     0.00     0.00  r_smooth::r_smooth(char *)
+  0.00      0.16     0.00        9     0.00     0.00  parser::initables(SYMTABLE)
+  0.00      0.16     0.00        9     0.00     0.00  hash_table<char, int>::translate(char const *)
+  0.00      0.16     0.00        8     0.00     0.00  a_io::a_io(char const *, DATA_TYPE, DATA_TYPE)
+  0.00      0.16     0.00        8     0.00     0.00  ktdsyn::dif2psl(char *, char *)
+  0.00      0.16     0.00        8     0.00     0.00  ktdsyn::op_psl(char *, unsigned char *)
+  0.00      0.16     0.00        8     0.00     0.00  ktdsyn::syndiph(voice *, diphone, wavefm *)
+  0.00      0.16     0.00        7     0.00     0.00  context::~context(void)
+  0.00      0.16     0.00        7     0.00     0.00  cow_claim(void *)
+  0.00      0.16     0.00        7     0.00     0.00  wavefm::flush(void)
+  0.00      0.16     0.00        6     0.00     2.07  r_diph::~r_diph(void)
+  0.00      0.16     0.00        6     0.00     0.00  r_with::~r_with(void)
+  0.00      0.16     0.00        6     0.00     0.00  a_protocol::a_protocol(void)
+  0.00      0.16     0.00        6     0.00     0.00  r_diph::r_diph(char *)
+  0.00      0.16     0.00        6     0.00     0.00  r_with::r_with(char *, text *, hash *)
+  0.00      0.16     0.00        6     0.00     0.00  a_ttscp::a_ttscp(int, int)
+  0.00      0.16     0.00        6     0.00    92.42  lang::add_soft_option(char const *)
+  0.00      0.16     0.00        6     0.00    40.71  get_named_cfg(char const *)
+  0.00      0.16     0.00        6     0.00     0.00  a_accept::run(void)
+  0.00      0.16     0.00        6     0.00     0.00  lpcsyn::syndiph(voice *, diphone, wavefm *)
+  0.00      0.16     0.00        6     0.00     0.00  unit::unlink(REPARENT)
+  0.00      0.16     0.00        5     0.00     0.00  a_protocol::~a_protocol(void)
+  0.00      0.16     0.00        5     0.00     0.00  file::~file(void)
+  0.00      0.16     0.00        5     0.00     0.00  r_syll::~r_syll(void)
+  0.00      0.16     0.00        5     0.00     0.00  a_ttscp::~a_ttscp(void)
+  0.00      0.16     0.00        5     0.00     0.00  r_syll::r_syll(char *)
+  0.00      0.16     0.00        5     0.00     0.00  hash_table<char, file>::add(char const *, file const *)
+  0.00      0.16     0.00        5     0.00    41.38  cmd_set(char *, agent *)
+  0.00      0.16     0.00        5     0.00     0.00  a_disconnector::disconnect(a_protocol *)
+  0.00      0.16     0.00        5     0.00     0.00  hash_table<char, file>::remove(char const *)
+  0.00      0.16     0.00        5     0.00     0.00  a_disconnector::run(void)
+  0.00      0.16     0.00        5     0.00     0.00  r_syll::set_level(UNIT, UNIT)
+  0.00      0.16     0.00        5     0.00     0.00  uncache_file(char *, file *)
+  0.00      0.16     0.00        4     0.00     0.00  a_io::~a_io(void)
+  0.00      0.16     0.00        4     0.00    24.28  lang::~lang(void)
+  0.00      0.16     0.00        4     0.00    24.28  rules::~rules(void)
+  0.00      0.16     0.00        4     0.00     0.00  parser::~parser(void)
+  0.00      0.16     0.00        4     0.00  3450.54  lang::lang(char const *, char const *)
+  0.00      0.16     0.00        4     0.00     0.00  unit::unit(UNIT, parser *)
+  0.00      0.16     0.00        4     0.00 18162.73  rules::rules(char const *, char const *)
+  0.00      0.16     0.00        4     0.00     0.00  parser::parser(char const *, int)
+  0.00      0.16     0.00        4     0.00    29.66  stream::stream(char *)
+  0.00      0.16     0.00        4     0.00     0.00  a_ascii::a_ascii(void)
+  0.00      0.16     0.00        4     0.00     0.00  a_input::a_input(char const *)
+  0.00      0.16     0.00        4     0.00     0.00  a_rules::a_rules(void)
+  0.00      0.16     0.00        4     0.00     0.00  a_output::a_output(char const *, DATA_TYPE)
+  0.00      0.16     0.00        4     0.00  3450.54  add_language(char const *)
+  0.00      0.16     0.00        4     0.00   138.63  lang::add_soft_opts(char const *)
+  0.00      0.16     0.00        4     0.00  2366.22  lang::add_voices(char const *)
+  0.00      0.16     0.00        4     0.00     0.00  parser::alias(char const *, char const *)
+  0.00      0.16     0.00        4     0.00  3604.49  rules::apply(unit *)
+  0.00      0.16     0.00        4     0.00   557.67  r_diph::apply(unit *)
+  0.00      0.16     0.00        4     0.00     0.00  r_syll::apply(unit *)
+  0.00      0.16     0.00        4     0.00   184.70  r_with::apply(unit *)
+  0.00      0.16     0.00        4     0.00     0.00  stream::apply(agent *, int)
+  0.00      0.16     0.00        4     0.00     0.00  a_input::apply(int)
+  0.00      0.16     0.00        4     0.00  3604.49  r_block::apply(unit *)
+  0.00      0.16     0.00        4     0.00     0.00  cmd_apply(char *, agent *)
+  0.00      0.16     0.00        4     0.00    29.66  cmd_stream(char *, agent *)
+  0.00      0.16     0.00        4     0.00 18162.73  lang::compile_rules(void)
+  0.00      0.16     0.00        4     0.00   189.31  unit::diphs(UNIT, hash *)
+  0.00      0.16     0.00        4     0.00     0.00  agent::finis(void)
+  0.00      0.16     0.00        4     0.00     0.00  stream::finis(void)
+  0.00      0.16     0.00        4     0.00     0.00  stream::foreground(void)
+  0.00      0.16     0.00        4     0.00     0.00  a_output::foreground(void)
+  0.00      0.16     0.00        4     0.00     0.00  parser::init(SYMTABLE)
+  0.00      0.16     0.00        4     0.00     0.00  make_rnd_passwd(char *, int)
+  0.00      0.16     0.00        4     0.00     0.00  parse_cmd_line(void)
+  0.00      0.16     0.00        4     0.00    12.30  hash_table<char, option>::remove(char const *)
+  0.00      0.16     0.00        4     0.00     0.00  a_output::report(int)
+  0.00      0.16     0.00        4     0.00     0.00  a_ascii::run(void)
+  0.00      0.16     0.00        4     0.00     0.00  a_input::run(void)
+  0.00      0.16     0.00        4     0.00  3604.49  a_rules::run(void)
+  0.00      0.16     0.00        4     0.00     0.00  str2units(char *)
+  0.00      0.16     0.00        4     0.00     0.00  unit::syllabify(UNIT, char *)
+  0.00      0.16     0.00        3     0.00     0.00  hash_table<char, option>::~hash_table(void)
+  0.00      0.16     0.00        3     0.00     0.00  hash_table<char, option>::hash_table(int)
+  0.00      0.16     0.00        3     0.00     0.00  hash_table<char, int>::add(char const *, int const *)
+  0.00      0.16     0.00        3     0.00     2.07  hash::add_int(char const *, int)
+  0.00      0.16     0.00        3     0.00     0.00  hash_table<char, option>::cfg_rehash(int, int, int)
+  0.00      0.16     0.00        3     0.00     0.00  cmd_data(char *, agent *)
+  0.00      0.16     0.00        3     0.00     0.00  enum2str(int, char const *)
+  0.00      0.16     0.00        3     0.00   945.69  load_config(char const *)
+  0.00      0.16     0.00        3     0.00     0.00  release(char **)
+  0.00      0.16     0.00        2     0.00     0.00  synth::~synth(void)
+  0.00      0.16     0.00        2     0.00     0.00  stream::~stream(void)
+  0.00      0.16     0.00        2     0.00     0.00  a_ascii::~a_ascii(void)
+  0.00      0.16     0.00        2     0.00     0.00  a_diphs::~a_diphs(void)
+  0.00      0.16     0.00        2     0.00     0.00  a_input::~a_input(void)
+  0.00      0.16     0.00        2     0.00     0.00  a_rules::~a_rules(void)
+  0.00      0.16     0.00        2     0.00     0.00  a_synth::~a_synth(void)
+  0.00      0.16     0.00        2     0.00     0.00  a_output::~a_output(void)
+  0.00      0.16     0.00        2     0.00     0.00  oa_wavefm::~oa_wavefm(void)
+  0.00      0.16     0.00        2     0.00     0.00  synth::synth(void)
+  0.00      0.16     0.00        2     0.00     0.00  wavefm::wavefm(voice *)
+  0.00      0.16     0.00        2     0.00     0.00  a_diphs::a_diphs(void)
+  0.00      0.16     0.00        2     0.00     0.00  a_print::a_print(void)
+  0.00      0.16     0.00        2     0.00     0.00  a_synth::a_synth(void)
+  0.00      0.16     0.00        2     0.00     0.00  r_postp::r_postp(char *)
+  0.00      0.16     0.00        2     0.00     0.00  oa_wavefm::oa_wavefm(char const *)
+  0.00      0.16     0.00        2     0.00   567.14  r_prosody::apply(unit *)
+  0.00      0.16     0.00        2     0.00     0.00  wavefm::attach(int)
+  0.00      0.16     0.00        2     0.00     0.00  cmd_delhandle(char *, agent *)
+  0.00      0.16     0.00        2     0.00     0.00  cmd_done(char *, agent *)
+  0.00      0.16     0.00        2     0.00     0.00  wavefm::detach(int)
+  0.00      0.16     0.00        2     0.00     0.00  getaddrbyname(char const *)
+  0.00      0.16     0.00        2     0.00     0.00  wavefm::ioctl_attach(void)
+  0.00      0.16     0.00        2     0.00     0.00  ioctlable(int)
+  0.00      0.16     0.00        2     0.00     0.00  limit_pathname(char const *, char const *)
+  0.00      0.16     0.00        2     0.00     0.00  hash_table<char, int>::remove(char const *)
+  0.00      0.16     0.00        2     0.00     0.00  a_diphs::run(void)
+  0.00      0.16     0.00        2     0.00     0.00  a_print::run(void)
+  0.00      0.16     0.00        2     0.00     1.19  a_synth::run(void)
+  0.00      0.16     0.00        2     0.00     0.00  a_output::run(void)
+  0.00      0.16     0.00        2     0.00     0.00  oa_wavefm::run(void)
+  0.00      0.16     0.00        2     0.00     1.69  set_option(option *, char *)
+  0.00      0.16     0.00        2     0.00     1.19  setup_synth(voice *)
+  0.00      0.16     0.00        2     0.00     0.00  unit::split(unit *)
+  0.00      0.16     0.00        2     0.00   198.77  unit::sseg(UNIT, hash *)
+  0.00      0.16     0.00        2     0.00     0.00  unit::syll_break(char *, unit *)
+  0.00      0.16     0.00        2     0.00     0.00  synth::syndiphs(voice *, diphone *, int, wavefm *)
+  0.00      0.16     0.00        2     0.00     0.00  voice_switch(char const *)
+  0.00      0.16     0.00        2     0.00     0.00  unit::write_diphs(diphone *, int, int)
+  0.00      0.16     0.00        1     0.00     0.00  a_disconnector::~a_disconnector(void)
+  0.00      0.16     0.00        1     0.00     0.00  lpcvq::~lpcvq(void)
+  0.00      0.16     0.00        1     0.00     0.00  ktdsyn::~ktdsyn(void)
+  0.00      0.16     0.00        1     0.00     0.00  lpcsyn::~lpcsyn(void)
+  0.00      0.16     0.00        1     0.00     0.00  hash_table<char, file>::~hash_table(void)
+  0.00      0.16     0.00        1     0.00     0.00  hash_table<char, int>::~hash_table(void)
+  0.00      0.16     0.00        1     0.00     0.00  global destructors keyed to unit::unit(UNIT, parser *)
+  0.00      0.16     0.00        1     0.00     0.00  global destructors keyed to agent::agent(DATA_TYPE, DATA_TYPE)
+  0.00      0.16     0.00        1     0.00     0.00  global constructors keyed to command_failed::command_failed(void)
+  0.00      0.16     0.00        1     0.00     0.00  global constructors keyed to unit::unit(UNIT, parser *)
+  0.00      0.16     0.00        1     0.00     0.00  global constructors keyed to agent::agent(DATA_TYPE, DATA_TYPE)
+  0.00      0.16     0.00        1     0.00     0.00  global constructors keyed to reply(char const *)
+  0.00      0.16     0.00        1     0.00     0.00  a_disconnector::a_disconnector(void)
+  0.00      0.16     0.00        1     0.00     0.00  unit::unit(void)
+  0.00      0.16     0.00        1     0.00     2.38  lpcvq::lpcvq(voice *)
+  0.00      0.16     0.00        1     0.00     0.00  ktdsyn::ktdsyn(voice *)
+  0.00      0.16     0.00        1     0.00     1.59  lpcsyn::lpcsyn(voice *)
+  0.00      0.16     0.00        1     0.00     0.00  a_accept::a_accept(void)
+  0.00      0.16     0.00        1     0.00     0.00  hash_table<char, file>::hash_table(int)
+  0.00      0.16     0.00        1     0.00     0.00  hash_table<char, int>::hash_table(int)
+  0.00      0.16     0.00        1     0.00     0.00  hash_table<char, file>::cfg_rehash(int, int, int)
+  0.00      0.16     0.00        1     0.00     0.00  hash_table<char, int>::cfg_rehash(int, int, int)
+  0.00      0.16     0.00        1     0.00    97.13  cmd_shutdown(char *, agent *)
+  0.00      0.16     0.00        1     0.00     0.00  daemonize(void)
+  0.00      0.16     0.00        1     0.00     0.00  detach(void)
+  0.00      0.16     0.00        1     0.00    97.13  epos_catharsis(void)
+  0.00      0.16     0.00        1     0.00    97.13  epos_done(void)
+  0.00      0.16     0.00        1     0.00 97119.96  epos_init(int, char **)
+  0.00      0.16     0.00        1     0.00 97119.96  epos_init(void)
+  0.00      0.16     0.00        1     0.00     0.00  text::exists(void)
+  0.00      0.16     0.00        1     0.00     0.00  hash_table<char, file>::forall(void (*)(char *, file *))
+  0.00      0.16     0.00        1     0.00     0.00  just_connect_socket(unsigned int, int)
+  0.00      0.16     0.00        1     0.00     0.00  lang_switch(char const *)
+  0.00      0.16     0.00        1     0.00     2.07  literal_hash(char *)
+  0.00      0.16     0.00        1     0.00 13802.18  load_languages(char const *)
+  0.00      0.16     0.00        1     0.00 111963.01  main
+  0.00      0.16     0.00        1     0.00  7740.48  make_option_set(void)
+  0.00      0.16     0.00        1     0.00 14843.05  server(void)
+  0.00      0.16     0.00        1     0.00    97.13  configuration::shutdown(void)
+  0.00      0.16     0.00        1     0.00     0.00  shutdown_file_cache(void)
+  0.00      0.16     0.00        1     0.00     0.00  shutdown_hashing(void)
+  0.00      0.16     0.00        1     0.00     0.00  shutdown_units(void)
+  0.00      0.16     0.00        1     0.00     6.20  str2hash(char const *, unsigned int)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+ 
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this 
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 7.26% of 0.14 seconds
+
+index % time    self  children    called     name
+                0.00    0.11       1/1           _start [2]
+[1]     81.3    0.00    0.11       1         main [1]
+                0.00    0.10       1/1           epos_init(int, char **) [3]
+                0.00    0.01       1/1           server(void) [19]
+                0.00    0.00       1/1           just_connect_socket(unsigned int, int) [220]
+                0.00    0.00       1/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       1/1           detach(void) [217]
+-----------------------------------------------
+                                                 <spontaneous>
+[2]     81.3    0.00    0.11                 _start [2]
+                0.00    0.11       1/1           main [1]
+-----------------------------------------------
+                0.00    0.10       1/1           main [1]
+[3]     70.5    0.00    0.10       1         epos_init(int, char **) [3]
+                0.00    0.10       1/1           epos_init(void) [4]
+-----------------------------------------------
+                0.00    0.10       1/1           epos_init(int, char **) [3]
+[4]     70.5    0.00    0.10       1         epos_init(void) [4]
+                0.00    0.07       4/4           lang::compile_rules(void) [5]
+                0.00    0.01       1/1           load_languages(char const *) [26]
+                0.00    0.01       1/1           make_option_set(void) [40]
+                0.00    0.00       3/3           load_config(char const *) [43]
+                0.00    0.00       1/224         fntab(char const *, char const *) [12]
+                0.00    0.00       4/4           parse_cmd_line(void) [185]
+                0.00    0.00       4/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.07       4/4           epos_init(void) [4]
+[5]     52.8    0.00    0.07       4         lang::compile_rules(void) [5]
+                0.00    0.07       4/4           rules::rules(char const *, char const *) [6]
+                0.00    0.00       4/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.07       4/4           lang::compile_rules(void) [5]
+[6]     52.8    0.00    0.07       4         rules::rules(char const *, char const *) [6]
+                0.01    0.06       4/4           r_block::r_block(text *, hash *) <cycle 2> [388]
+                0.00    0.00       4/22          text::text(char const *, char const *, char const *, bool) [78]
+                0.00    0.00      16/35351       debug_wanted(int, int) [88]
+                0.00    0.00       8/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       4/4           block_rule::check_children(void) <cycle 1> [119]
+                0.00    0.00       4/22          text::~text(void) [399]
+-----------------------------------------------
+[7]     52.8    0.01    0.06       4+1057    <cycle 2 as a whole> [7]
+                0.01    0.06     767             next_rule(text *, hash *, int *) <cycle 2> [8]
+                0.00    0.00      92             block_rule::load_rules(rule *, text *, hash *) <cycle 2> [109]
+                0.00    0.00      57             r_block::r_block(text *, hash *) <cycle 2> [388]
+                0.00    0.00      55             cond_rule::cond_rule(char *, text *, hash *) <cycle 2> [389]
+                0.00    0.00      32             r_inside::r_inside(char *, text *, hash *) <cycle 2> [395]
+                0.00    0.00      24             r_choice::r_choice(text *, hash *) <cycle 2> [397]
+                0.00    0.00      11             r_switch::r_switch(text *, hash *) <cycle 2> [406]
+                0.00    0.00       6             r_with::r_with(char *, text *, hash *) <cycle 2> [420]
+-----------------------------------------------
+                                  55             cond_rule::cond_rule(char *, text *, hash *) <cycle 2> [389]
+                                 712             block_rule::load_rules(rule *, text *, hash *) <cycle 2> [109]
+[8]     52.3    0.01    0.06     767         next_rule(text *, hash *, int *) <cycle 2> [8]
+                0.02    0.00    2289/2360        str2enum(char const *, char const *, int) [11]
+                0.00    0.01     144/223         r_regress::r_regress(char *) [13]
+                0.00    0.01     843/1189        text::getline(char *) [16]
+                0.01    0.00     839/839         get_words(char *, char **, int) [34]
+                0.00    0.01      79/79          r_progress::r_progress(char *) [41]
+                0.00    0.00       6/6           get_named_cfg(char const *) [58]
+                0.00    0.00      76/18991       hash_table<char, char>::add(char const *, char const *) <cycle 4> [10]
+                0.00    0.00    2277/35351       debug_wanted(int, int) [88]
+                0.00    0.00     917/18991       <hicore> <cycle 4> (86)
+                0.00    0.00     675/675         rule::set_dbg_tag(text *) [94]
+                0.00    0.00     533/675         rule::set_level(UNIT, UNIT) [95]
+                0.00    0.00     111/111         r_contour::r_contour(char *) [378]
+                0.00    0.00     102/102         r_regex::r_regex(char *) [380]
+                0.00    0.00      88/88          block_rule::set_level(UNIT, UNIT) [111]
+                0.00    0.00      32/32          r_subst::set_level(UNIT, UNIT) [129]
+                0.00    0.00      21/32          r_subst::r_subst(char *) [394]
+                0.00    0.00      20/20          r_prosody::r_prosody(char *) [401]
+                0.00    0.00      17/17          r_if::set_level(UNIT, UNIT) [150]
+                0.00    0.00      10/10          r_raise::r_raise(char *) [409]
+                0.00    0.00       9/9           r_prep::r_prep(char *) [413]
+                0.00    0.00       9/9           r_smooth::r_smooth(char *) [414]
+                0.00    0.00       6/6           r_diph::r_diph(char *) [419]
+                0.00    0.00       5/5           r_syll::r_syll(char *) [426]
+                0.00    0.00       5/5           r_syll::set_level(UNIT, UNIT) [172]
+                0.00    0.00       2/2           r_postp::r_postp(char *) [451]
+                                  53             r_block::r_block(text *, hash *) <cycle 2> [388]
+                                  32             r_inside::r_inside(char *, text *, hash *) <cycle 2> [395]
+                                  24             r_choice::r_choice(text *, hash *) <cycle 2> [397]
+                                  17             r_if::r_if(char *, text *, hash *) <cycle 2> [50]
+                                  11             r_switch::r_switch(text *, hash *) <cycle 2> [406]
+                                   6             r_with::r_with(char *, text *, hash *) <cycle 2> [420]
+-----------------------------------------------
+[9]     28.5    0.02    0.02   18991+543449  <cycle 4 as a whole> [9]
+                0.01    0.02   63413             hash_table<char, char>::add(char const *, char const *) <cycle 4> [10]
+                0.01    0.00  155684+126372      hash_table<char, char>::dissolvetree(hsearchtree<char, char> *) <cycle 4> [33]
+                0.00    0.00  202030+151704      <hicore> <cycle 4> (86)
+                0.00    0.00  140950+113832      hash_table<char, char>::rehash_tree(hsearchtree<char, char> *) <cycle 4> [87]
+                0.00    0.00     116             hash_table<char, char>::~hash_table(void) <cycle 4> [376]
+                0.00    0.00      92             hash_table<char, char>::hash_table(hash_table<char, char> *) <cycle 4> [382]
+                0.00    0.00      32             r_subst::~r_subst(void) <cycle 4> [392]
+                0.00    0.00      26             hash_table<char, char>::rehash(void) <cycle 4> [141]
+                0.00    0.00      26             hash_table<char, char>::rehash(int) <cycle 4> [142]
+                0.00    0.00      13             get_timestamp(char *) <cycle 4> [155]
+-----------------------------------------------
+                               56916             hash_table<char, char>::rehash_tree(hsearchtree<char, char> *) <cycle 4> [87]
+                0.00    0.00       1/18991       literal_hash(char *) [83]
+                0.00    0.00       3/18991       hash::add_int(char const *, int) [76]
+                0.00    0.00      76/18991       next_rule(text *, hash *, int *) <cycle 2> [8]
+                0.01    0.01    6417/18991       hash::hash(char const *, int, int, int, int, char const *, bool, char const *, char *) [28]
+[10]    21.2    0.01    0.02   63413         hash_table<char, char>::add(char const *, char const *) <cycle 4> [10]
+                0.02    0.00   63413/65897       hash_table<char, char>::fn(char const *) [14]
+                              126372             <hicore> <cycle 4> (86)
+                                  26             hash_table<char, char>::rehash(void) <cycle 4> [141]
+-----------------------------------------------
+                0.00    0.00      14/2360        make_agent(char *, agent *) [60]
+                0.00    0.00      57/2360        set_option(option *, char *, void *) [53]
+                0.02    0.00    2289/2360        next_rule(text *, hash *, int *) <cycle 2> [8]
+[11]    14.5    0.02    0.00    2360         str2enum(char const *, char const *, int) [11]
+                0.00    0.00   17910/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       1/224         epos_init(void) [4]
+                0.02    0.00     223/224         r_regress::r_regress(char *) [13]
+[12]    14.5    0.02    0.00     224         fntab(char const *, char const *) [12]
+-----------------------------------------------
+                0.00    0.01      79/223         r_progress::r_progress(char *) [41]
+                0.00    0.01     144/223         next_rule(text *, hash *, int *) <cycle 2> [8]
+[13]    14.5    0.00    0.02     223         r_regress::r_regress(char *) [13]
+                0.02    0.00     223/224         fntab(char const *, char const *) [12]
+                0.00    0.00     446/498         booltab(char const *) [98]
+                0.00    0.00     223/679         rule::rule(char *) [374]
+                0.00    0.00     223/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00    2484/65897       hash_table<char, char>::translate(char const *) [39]
+                0.02    0.00   63413/65897       hash_table<char, char>::add(char const *, char const *) <cycle 4> [10]
+[14]    14.4    0.02    0.00   65897         hash_table<char, char>::fn(char const *) [14]
+-----------------------------------------------
+                0.00    0.00      42/1947        unit::sseg(hash *, char, int *) [56]
+                0.00    0.00      80/1947        unit::diph(hash *) [47]
+                0.01    0.01    1825/1947        text::getline(char *) [16]
+[15]    13.4    0.01    0.01    1947         hash::translate_int(char const *) [15]
+                0.01    0.00    1947/2484        hash_table<char, char>::translate(char const *) [39]
+-----------------------------------------------
+                0.00    0.00      51/1189        make_option_set(void) [40]
+                0.00    0.00     295/1189        load_config(char const *, char const *, char const *, OPT_STRUCT, void *, lang *) [17]
+                0.00    0.01     843/1189        next_rule(text *, hash *, int *) <cycle 2> [8]
+[16]    12.5    0.00    0.02    1189         text::getline(char *) [16]
+                0.01    0.01    1825/1947        hash::translate_int(char const *) [15]
+                0.00    0.00    3645/35351       debug_wanted(int, int) [88]
+                0.00    0.00    1825/1825        strip(char *) [90]
+                0.00    0.00      27/27          text::superfile(void) [140]
+                0.00    0.00       5/27          text::subfile(char const *) [139]
+-----------------------------------------------
+                0.00    0.00       3/17          load_config(char const *) [43]
+                0.00    0.00       4/17          lang::lang(char const *, char const *) [27]
+                0.00    0.01      10/17          voice::voice(char const *, char const *, lang *) [38]
+[17]    11.7    0.00    0.02      17         load_config(char const *, char const *, char const *, OPT_STRUCT, void *, lang *) [17]
+                0.00    0.01     278/278         set_option(char *, char *, void *, hash_table<char, option> *) [31]
+                0.00    0.00     295/1189        text::getline(char *) [16]
+                0.00    0.00      17/22          text::text(char const *, char const *, char const *, bool) [78]
+                0.00    0.00     278/333         split_string(char *) [101]
+                0.00    0.00      17/35351       debug_wanted(int, int) [88]
+                0.00    0.00      17/22          text::~text(void) [399]
+-----------------------------------------------
+                0.00    0.01      61/61          server(void) [19]
+[18]    10.8    0.00    0.01      61         agent::timeslice(void) [18]
+                0.00    0.01       4/4           a_rules::run(void) [24]
+                0.00    0.00      28/28          a_protocol::run(void) [54]
+                0.00    0.00       2/2           a_synth::run(void) [80]
+                0.00    0.00      61/74          context::enter(void) [114]
+                0.00    0.00      60/73          context::leave(void) [115]
+                0.00    0.00       6/6           a_accept::run(void) [165]
+                0.00    0.00       5/5           a_disconnector::run(void) [171]
+                0.00    0.00       4/4           a_ascii::run(void) [187]
+                0.00    0.00       4/4           a_input::run(void) [188]
+                0.00    0.00       2/2           a_output::run(void) [207]
+                0.00    0.00       2/2           a_print::run(void) [206]
+                0.00    0.00       2/2           oa_wavefm::run(void) [208]
+                0.00    0.00       2/2           a_diphs::run(void) [205]
+-----------------------------------------------
+                0.00    0.01       1/1           main [1]
+[19]    10.8    0.00    0.01       1         server(void) [19]
+                0.00    0.01      61/61          agent::timeslice(void) [18]
+                0.00    0.00      61/61          select_socket(bool) [118]
+                0.00    0.00      61/35351       debug_wanted(int, int) [88]
+                0.00    0.00      29/29          sched_sel(void) [134]
+                0.00    0.00       1/1           daemonize(void) [216]
+-----------------------------------------------
+                0.00    0.00       4/387         lang::add_soft_option(char const *) [51]
+                0.00    0.00      50/387         make_option_set(void) [40]
+                0.01    0.00     333/387         option_struct(char const *, hash_table<char, option> *) [29]
+[20]    10.7    0.01    0.00     387         hash_table<char, option>::translate(char const *) [20]
+                0.00    0.00     387/813         hash_table<char, option>::fn(char const *) [35]
+-----------------------------------------------
+                0.00    0.01     370/370         r_block::apply(unit *) [23]
+[21]    10.5    0.00    0.01     370         block_rule::apply_current(unit *) [21]
+                0.00    0.01      28/28          r_subst::apply(unit *) [32]
+                0.00    0.00       2/2           r_prosody::apply(unit *) [45]
+                0.00    0.00      18/18          r_if::apply(unit *) [46]
+                0.00    0.00       2/4           r_diph::apply(unit *) [44]
+                0.00    0.00       4/4           r_with::apply(unit *) [49]
+                0.00    0.00    1118/35351       debug_wanted(int, int) [88]
+                0.00    0.00     378/1306        unit::Next(UNIT) [91]
+                0.00    0.00     370/1084        unit::LeftMost(UNIT) [92]
+                0.00    0.00     200/200         r_regress::apply(unit *) [102]
+                0.00    0.00      86/86          r_regex::apply(unit *) [112]
+                0.00    0.00      20/20          r_inside::apply(unit *) [147]
+                0.00    0.00      14/14          r_raise::apply(unit *) [151]
+                0.00    0.00       4/4           r_syll::apply(unit *) [175]
+-----------------------------------------------
+                0.00    0.01       4/4           a_rules::run(void) [24]
+[22]    10.5    0.00    0.01       4         rules::apply(unit *) [22]
+                0.00    0.01       4/4           r_block::apply(unit *) [23]
+-----------------------------------------------
+                0.00    0.01       4/4           rules::apply(unit *) [22]
+[23]    10.5    0.00    0.01       4         r_block::apply(unit *) [23]
+                0.00    0.01     370/370         block_rule::apply_current(unit *) [21]
+-----------------------------------------------
+                0.00    0.01       4/4           agent::timeslice(void) [18]
+[24]    10.5    0.00    0.01       4         a_rules::run(void) [24]
+                0.00    0.01       4/4           rules::apply(unit *) [22]
+                0.00    0.00       4/18          agent::pass(void) [148]
+-----------------------------------------------
+                0.00    0.01       4/4           load_languages(char const *) [26]
+[25]    10.0    0.00    0.01       4         add_language(char const *) [25]
+                0.00    0.01       4/4           lang::lang(char const *, char const *) [27]
+                0.00    0.00       4/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.01       1/1           epos_init(void) [4]
+[26]    10.0    0.00    0.01       1         load_languages(char const *) [26]
+                0.00    0.01       4/4           add_language(char const *) [25]
+-----------------------------------------------
+                0.00    0.01       4/4           add_language(char const *) [25]
+[27]    10.0    0.00    0.01       4         lang::lang(char const *, char const *) [27]
+                0.00    0.01       4/4           lang::add_voices(char const *) [37]
+                0.00    0.00       4/17          load_config(char const *, char const *, char const *, OPT_STRUCT, void *, lang *) [17]
+                0.00    0.00       4/4           lang::add_soft_opts(char const *) [52]
+                0.00    0.00       4/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       1/18          r_with::apply(unit *) [49]
+                0.00    0.01      17/18          hashing_rule::load_hash(void) [30]
+[28]     9.6    0.00    0.01      18         hash::hash(char const *, int, int, int, int, char const *, bool, char const *, char *) [28]
+                0.01    0.01    6417/18991       hash_table<char, char>::add(char const *, char const *) <cycle 4> [10]
+                0.00    0.00      18/24          hash_table<char, char>::hash_table(int) [398]
+                0.00    0.00      18/186         hash_table<char, char>::cfg_rehash(int, int, int) [104]
+-----------------------------------------------
+                0.00    0.00       5/312         cmd_set(char *, agent *) [59]
+                0.00    0.00       6/312         get_named_cfg(char const *) [58]
+                0.00    0.00       6/312         lang::add_soft_option(char const *) [51]
+                0.00    0.00      17/312         r_if::r_if(char *, text *, hash *) <cycle 2> [50]
+                0.00    0.01     278/312         set_option(char *, char *, void *, hash_table<char, option> *) [31]
+[29]     9.2    0.00    0.01     312         option_struct(char const *, hash_table<char, option> *) [29]
+                0.01    0.00     333/387         hash_table<char, option>::translate(char const *) [20]
+-----------------------------------------------
+                0.00    0.00       1/17          r_prosody::apply(unit *) [45]
+                0.00    0.00       2/17          r_diph::apply(unit *) [44]
+                0.00    0.01      14/17          r_subst::apply(unit *) [32]
+[30]     9.1    0.00    0.01      17         hashing_rule::load_hash(void) [30]
+                0.00    0.01      17/18          hash::hash(char const *, int, int, int, int, char const *, bool, char const *, char *) [28]
+-----------------------------------------------
+                0.00    0.01     278/278         load_config(char const *, char const *, char const *, OPT_STRUCT, void *, lang *) [17]
+[31]     8.6    0.00    0.01     278         set_option(char *, char *, void *, hash_table<char, option> *) [31]
+                0.00    0.01     278/312         option_struct(char const *, hash_table<char, option> *) [29]
+                0.00    0.00     278/286         set_option(option *, char *, void *) [53]
+-----------------------------------------------
+                0.00    0.01      28/28          block_rule::apply_current(unit *) [21]
+[32]     7.5    0.00    0.01      28         r_subst::apply(unit *) [32]
+                0.00    0.01      14/17          hashing_rule::load_hash(void) [30]
+                0.00    0.00      28/28          unit::relabel(hash *, SUBST_METHOD, UNIT) [137]
+-----------------------------------------------
+                              126372             hash_table<char, char>::dissolvetree(hsearchtree<char, char> *) <cycle 4> [33]
+                               16850             hash_table<char, char>::~hash_table(void) <cycle 4> [376]
+                              138834             hash_table<char, char>::rehash(int) <cycle 4> [142]
+[33]     7.3    0.01    0.00  155684+126372  hash_table<char, char>::dissolvetree(hsearchtree<char, char> *) <cycle 4> [33]
+                               63186             <hicore> <cycle 4> (86)
+                              126372             hash_table<char, char>::dissolvetree(hsearchtree<char, char> *) <cycle 4> [33]
+-----------------------------------------------
+                0.01    0.00     839/839         next_rule(text *, hash *, int *) <cycle 2> [8]
+[34]     7.3    0.01    0.00     839         get_words(char *, char **, int) [34]
+-----------------------------------------------
+                0.00    0.00       4/813         hash_table<char, option>::remove(char const *) [71]
+                0.00    0.00     387/813         hash_table<char, option>::translate(char const *) [20]
+                0.01    0.00     422/813         hash_table<char, option>::add(char const *, option const *) [42]
+[35]     7.3    0.01    0.00     813         hash_table<char, option>::fn(char const *) [35]
+-----------------------------------------------
+                0.00    0.01      10/10          lang::add_voices(char const *) [37]
+[36]     6.9    0.00    0.01      10         lang::add_voice(char const *) [36]
+                0.00    0.01      10/10          voice::voice(char const *, char const *, lang *) [38]
+                0.00    0.00      10/10          voice::operator new(unsigned int) [411]
+-----------------------------------------------
+                0.00    0.01       4/4           lang::lang(char const *, char const *) [27]
+[37]     6.9    0.00    0.01       4         lang::add_voices(char const *) [37]
+                0.00    0.01      10/10          lang::add_voice(char const *) [36]
+-----------------------------------------------
+                0.00    0.01      10/10          lang::add_voice(char const *) [36]
+[38]     6.9    0.00    0.01      10         voice::voice(char const *, char const *, lang *) [38]
+                0.00    0.01      10/17          load_config(char const *, char const *, char const *, OPT_STRUCT, void *, lang *) [17]
+                0.00    0.00      10/13          claim(char const *, char const *, char const *, char const *) [74]
+                0.00    0.00      10/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00     537/2484        <hicore> <cycle 4> (86)
+                0.01    0.00    1947/2484        hash::translate_int(char const *) [15]
+[39]     6.1    0.01    0.00    2484         hash_table<char, char>::translate(char const *) [39]
+                0.00    0.00    2484/65897       hash_table<char, char>::fn(char const *) [14]
+-----------------------------------------------
+                0.00    0.01       1/1           epos_init(void) [4]
+[40]     5.6    0.00    0.01       1         make_option_set(void) [40]
+                0.00    0.01     410/422         hash_table<char, option>::add(char const *, option const *) [42]
+                0.00    0.00      50/387         hash_table<char, option>::translate(char const *) [20]
+                0.00    0.00      51/1189        text::getline(char *) [16]
+                0.00    0.00       4/4           hash_table<char, option>::remove(char const *) [71]
+                0.00    0.00       1/22          text::text(char const *, char const *, char const *, bool) [78]
+                0.00    0.00      50/333         split_string(char *) [101]
+                0.00    0.00       1/3           hash_table<char, option>::hash_table(int) [436]
+                0.00    0.00       1/1           text::exists(void) [218]
+                0.00    0.00       1/22          text::~text(void) [399]
+-----------------------------------------------
+                0.00    0.01      79/79          next_rule(text *, hash *, int *) <cycle 2> [8]
+[41]     5.1    0.00    0.01      79         r_progress::r_progress(char *) [41]
+                0.00    0.01      79/223         r_regress::r_regress(char *) [13]
+-----------------------------------------------
+                0.00    0.00      12/422         lang::add_soft_option(char const *) [51]
+                0.00    0.01     410/422         make_option_set(void) [40]
+[42]     3.8    0.00    0.01     422         hash_table<char, option>::add(char const *, option const *) [42]
+                0.01    0.00     422/813         hash_table<char, option>::fn(char const *) [35]
+                0.00    0.00     708/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       3/3           epos_init(void) [4]
+[43]     2.1    0.00    0.00       3         load_config(char const *) [43]
+                0.00    0.00       3/17          load_config(char const *, char const *, char const *, OPT_STRUCT, void *, lang *) [17]
+-----------------------------------------------
+                0.00    0.00       2/4           r_if::apply(unit *) [46]
+                0.00    0.00       2/4           block_rule::apply_current(unit *) [21]
+[44]     1.6    0.00    0.00       4         r_diph::apply(unit *) [44]
+                0.00    0.00       2/17          hashing_rule::load_hash(void) [30]
+                0.00    0.00       4/4           unit::diphs(UNIT, hash *) [48]
+                0.00    0.00       4/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       2/2           block_rule::apply_current(unit *) [21]
+[45]     0.8    0.00    0.00       2         r_prosody::apply(unit *) [45]
+                0.00    0.00       1/17          hashing_rule::load_hash(void) [30]
+                0.00    0.00       2/2           unit::sseg(UNIT, hash *) [57]
+                0.00    0.00       2/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00      18/18          block_rule::apply_current(unit *) [21]
+[46]     0.8    0.00    0.00      18         r_if::apply(unit *) [46]
+                0.00    0.00       2/4           r_diph::apply(unit *) [44]
+-----------------------------------------------
+                0.00    0.00      80/80          unit::diphs(UNIT, hash *) [48]
+[47]     0.6    0.00    0.00      80         unit::diph(hash *) [47]
+                0.00    0.00      80/1947        hash::translate_int(char const *) [15]
+                0.00    0.00      56/35351       debug_wanted(int, int) [88]
+                0.00    0.00      28/76          unit::operator new(int) [384]
+                0.00    0.00      28/34          unit::unit(UNIT, int) [390]
+                0.00    0.00      28/64          unit::insert_end(unit *, unit *) [117]
+                0.00    0.00      28/9234        unit::sanity(void) [89]
+-----------------------------------------------
+                                  34             unit::diphs(UNIT, hash *) [48]
+                0.00    0.00       4/4           r_diph::apply(unit *) [44]
+[48]     0.6    0.00    0.00       4+34      unit::diphs(UNIT, hash *) [48]
+                0.00    0.00      80/80          unit::diph(hash *) [47]
+                0.00    0.00     116/35351       debug_wanted(int, int) [88]
+                0.00    0.00      80/18991       <hicore> <cycle 4> (86)
+                0.00    0.00      76/9234        unit::sanity(void) [89]
+                0.00    0.00      40/574         unit::Prev(UNIT) [96]
+                0.00    0.00      20/1306        unit::Next(UNIT) [91]
+                                  34             unit::diphs(UNIT, hash *) [48]
+-----------------------------------------------
+                0.00    0.00       4/4           block_rule::apply_current(unit *) [21]
+[49]     0.5    0.00    0.00       4         r_with::apply(unit *) [49]
+                0.00    0.00       1/18          hash::hash(char const *, int, int, int, int, char const *, bool, char const *, char *) [28]
+                0.00    0.00       1/1           literal_hash(char *) [83]
+                0.00    0.00       4/32          unit::subst(hash *, SUBST_METHOD) [130]
+-----------------------------------------------
+                                  17             next_rule(text *, hash *, int *) <cycle 2> [8]
+[50]     0.5    0.00    0.00      17         r_if::r_if(char *, text *, hash *) <cycle 2> [50]
+                0.00    0.00      17/312         option_struct(char const *, hash_table<char, option> *) [29]
+                                  17             cond_rule::cond_rule(char *, text *, hash *) <cycle 2> [389]
+-----------------------------------------------
+                0.00    0.00       6/6           lang::add_soft_opts(char const *) [52]
+[51]     0.4    0.00    0.00       6         lang::add_soft_option(char const *) [51]
+                0.00    0.00       6/312         option_struct(char const *, hash_table<char, option> *) [29]
+                0.00    0.00       4/387         hash_table<char, option>::translate(char const *) [20]
+                0.00    0.00      12/422         hash_table<char, option>::add(char const *, option const *) [42]
+                0.00    0.00       6/286         set_option(option *, char *, void *) [53]
+                0.00    0.00       2/3           hash_table<char, option>::hash_table(int) [436]
+-----------------------------------------------
+                0.00    0.00       4/4           lang::lang(char const *, char const *) [27]
+[52]     0.4    0.00    0.00       4         lang::add_soft_opts(char const *) [52]
+                0.00    0.00       6/6           lang::add_soft_option(char const *) [51]
+-----------------------------------------------
+                0.00    0.00       2/286         set_option(option *, char *) [79]
+                0.00    0.00       6/286         lang::add_soft_option(char const *) [51]
+                0.00    0.00     278/286         set_option(char *, char *, void *, hash_table<char, option> *) [31]
+[53]     0.4    0.00    0.00     286         set_option(option *, char *, void *) [53]
+                0.00    0.00      57/2360        str2enum(char const *, char const *, int) [11]
+                0.00    0.00     144/35351       debug_wanted(int, int) [88]
+                0.00    0.00     142/142         parse_cfg_str(char *, char const *) [105]
+-----------------------------------------------
+                0.00    0.00      28/28          agent::timeslice(void) [18]
+[54]     0.3    0.00    0.00      28         a_protocol::run(void) [54]
+                0.00    0.00      21/21          a_ttscp::run_command(char *) [55]
+                0.00    0.00      28/28          sgets(char *, int, int, char *) [138]
+                0.00    0.00      20/35351       debug_wanted(int, int) [88]
+                0.00    0.00      12/33          agent::block(int) [126]
+                0.00    0.00       6/29          agent::schedule(void) [135]
+                0.00    0.00       5/5           a_disconnector::disconnect(a_protocol *) [169]
+-----------------------------------------------
+                0.00    0.00      21/21          a_protocol::run(void) [54]
+[55]     0.3    0.00    0.00      21         a_ttscp::run_command(char *) [55]
+                0.00    0.00       5/5           cmd_set(char *, agent *) [59]
+                0.00    0.00       4/4           cmd_stream(char *, agent *) [61]
+                0.00    0.00       1/1           cmd_shutdown(char *, agent *) [64]
+                0.00    0.00      21/35351       debug_wanted(int, int) [88]
+                0.00    0.00       4/4           cmd_apply(char *, agent *) [178]
+                0.00    0.00       3/3           cmd_data(char *, agent *) [193]
+                0.00    0.00       2/2           cmd_done(char *, agent *) [198]
+                0.00    0.00       2/2           cmd_delhandle(char *, agent *) [197]
+-----------------------------------------------
+                0.00    0.00      12/12          unit::sseg(UNIT, hash *) [57]
+[56]     0.3    0.00    0.00      12         unit::sseg(hash *, char, int *) [56]
+                0.00    0.00      42/1947        hash::translate_int(char const *) [15]
+                0.00    0.00       6/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       2/2           r_prosody::apply(unit *) [45]
+[57]     0.3    0.00    0.00       2         unit::sseg(UNIT, hash *) [57]
+                0.00    0.00      12/12          unit::sseg(hash *, char, int *) [56]
+                0.00    0.00       8/574         unit::Prev(UNIT) [96]
+                0.00    0.00       6/35351       debug_wanted(int, int) [88]
+                0.00    0.00       4/418         unit::RightMost(UNIT) [99]
+-----------------------------------------------
+                0.00    0.00       6/6           next_rule(text *, hash *, int *) <cycle 2> [8]
+[58]     0.2    0.00    0.00       6         get_named_cfg(char const *) [58]
+                0.00    0.00       6/312         option_struct(char const *, hash_table<char, option> *) [29]
+-----------------------------------------------
+                0.00    0.00       5/5           a_ttscp::run_command(char *) [55]
+[59]     0.2    0.00    0.00       5         cmd_set(char *, agent *) [59]
+                0.00    0.00       5/312         option_struct(char const *, hash_table<char, option> *) [29]
+                0.00    0.00       2/2           set_option(option *, char *) [79]
+                0.00    0.00       5/333         split_string(char *) [101]
+                0.00    0.00       5/45          reply(char const *) [122]
+                0.00    0.00       2/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       2/2           voice_switch(char const *) [212]
+                0.00    0.00       1/1           lang_switch(char const *) [221]
+-----------------------------------------------
+                0.00    0.00      22/22          stream::stream(char *) [62]
+[60]     0.1    0.00    0.00      22         make_agent(char *, agent *) [60]
+                0.00    0.00      14/2360        str2enum(char const *, char const *, int) [11]
+                0.00    0.00       4/4           a_input::a_input(char const *) [432]
+                0.00    0.00       4/4           a_ascii::a_ascii(void) [431]
+                0.00    0.00       4/4           a_rules::a_rules(void) [433]
+                0.00    0.00       2/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       2/2           oa_wavefm::oa_wavefm(char const *) [452]
+                0.00    0.00       2/2           a_diphs::a_diphs(void) [448]
+                0.00    0.00       2/2           a_print::a_print(void) [449]
+                0.00    0.00       2/2           a_synth::a_synth(void) [450]
+-----------------------------------------------
+                0.00    0.00       4/4           a_ttscp::run_command(char *) [55]
+[61]     0.1    0.00    0.00       4         cmd_stream(char *, agent *) [61]
+                0.00    0.00       4/4           stream::stream(char *) [62]
+                0.00    0.00       4/35351       debug_wanted(int, int) [88]
+                0.00    0.00       4/45          reply(char const *) [122]
+                0.00    0.00       2/2           stream::~stream(void) [438]
+-----------------------------------------------
+                0.00    0.00       4/4           cmd_stream(char *, agent *) [61]
+[62]     0.1    0.00    0.00       4         stream::stream(char *) [62]
+                0.00    0.00      22/22          make_agent(char *, agent *) [60]
+                0.00    0.00      18/35351       debug_wanted(int, int) [88]
+                0.00    0.00      12/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       4/34          agent::agent(DATA_TYPE, DATA_TYPE) [391]
+                0.00    0.00       4/12          context::context(int, int) [403]
+-----------------------------------------------
+[63]     0.1    0.00    0.00       4+290     <cycle 3 as a whole> [63]
+                0.00    0.00      92             block_rule::~block_rule(void) <cycle 3> [70]
+                0.00    0.00      55             cond_rule::~cond_rule(void) <cycle 3> [75]
+                0.00    0.00      57             r_block::~r_block(void) <cycle 3> [387]
+                0.00    0.00      32             r_inside::~r_inside(void) <cycle 3> [393]
+                0.00    0.00      24             r_choice::~r_choice(void) <cycle 3> [396]
+                0.00    0.00      11             r_switch::~r_switch(void) <cycle 3> [405]
+                0.00    0.00       6             r_with::~r_with(void) <cycle 3> [417]
+-----------------------------------------------
+                0.00    0.00       1/1           a_ttscp::run_command(char *) [55]
+[64]     0.1    0.00    0.00       1         cmd_shutdown(char *, agent *) [64]
+                0.00    0.00       1/1           epos_done(void) [66]
+                0.00    0.00       1/45          reply(char const *) [122]
+                0.00    0.00       1/1           hash_table<char, int>::~hash_table(void) [458]
+-----------------------------------------------
+                0.00    0.00       1/1           epos_done(void) [66]
+[65]     0.1    0.00    0.00       1         epos_catharsis(void) [65]
+                0.00    0.00       1/1           configuration::shutdown(void) [67]
+                0.00    0.00       1/11          unit::~unit(void) [404]
+                0.00    0.00       1/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       1/1           shutdown_file_cache(void) [222]
+                0.00    0.00       1/3           hash_table<char, option>::~hash_table(void) [435]
+-----------------------------------------------
+                0.00    0.00       1/1           cmd_shutdown(char *, agent *) [64]
+[66]     0.1    0.00    0.00       1         epos_done(void) [66]
+                0.00    0.00       1/1           epos_catharsis(void) [65]
+                0.00    0.00       3/3           release(char **) [195]
+                0.00    0.00       1/1           shutdown_hashing(void) [223]
+                0.00    0.00       1/1           shutdown_units(void) [224]
+-----------------------------------------------
+                0.00    0.00       1/1           epos_catharsis(void) [65]
+[67]     0.1    0.00    0.00       1         configuration::shutdown(void) [67]
+                0.00    0.00       4/4           lang::~lang(void) [68]
+-----------------------------------------------
+                0.00    0.00       4/4           configuration::shutdown(void) [67]
+[68]     0.1    0.00    0.00       4         lang::~lang(void) [68]
+                0.00    0.00       4/4           rules::~rules(void) [69]
+                0.00    0.00      10/10          voice::~voice(void) [407]
+                0.00    0.00       2/3           hash_table<char, option>::~hash_table(void) [435]
+-----------------------------------------------
+                0.00    0.00       4/4           lang::~lang(void) [68]
+[69]     0.1    0.00    0.00       4         rules::~rules(void) [69]
+                0.00    0.00       4/4           r_block::~r_block(void) <cycle 3> [387]
+                0.00    0.00       8/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                                  11             r_switch::~r_switch(void) <cycle 3> [405]
+                                  24             r_choice::~r_choice(void) <cycle 3> [396]
+                                  57             r_block::~r_block(void) <cycle 3> [387]
+[70]     0.1    0.00    0.00      92         block_rule::~block_rule(void) <cycle 3> [70]
+                0.00    0.00      21/18991       r_subst::~r_subst(void) <cycle 4> [392]
+                0.00    0.00      20/20          r_prosody::~r_prosody(void) [72]
+                0.00    0.00       2/6           r_diph::~r_diph(void) [73]
+                0.00    0.00     144/223         r_regress::~r_regress(void) [375]
+                0.00    0.00     111/111         r_contour::~r_contour(void) [377]
+                0.00    0.00     104/18991       <hicore> <cycle 4> (86)
+                0.00    0.00     102/102         r_regex::~r_regex(void) [379]
+                0.00    0.00      92/679         rule::~rule(void) [373]
+                0.00    0.00      10/10          r_raise::~r_raise(void) [408]
+                0.00    0.00       9/9           r_smooth::~r_smooth(void) [412]
+                0.00    0.00       5/5           r_syll::~r_syll(void) [424]
+                                  32             r_inside::~r_inside(void) <cycle 3> [393]
+                                  24             r_choice::~r_choice(void) <cycle 3> [396]
+                                  17             r_if::~r_if(void) <cycle 3> [402]
+                                  11             r_switch::~r_switch(void) <cycle 3> [405]
+                                   6             r_with::~r_with(void) <cycle 3> [417]
+                                   2             r_block::~r_block(void) <cycle 3> [387]
+-----------------------------------------------
+                0.00    0.00       4/4           make_option_set(void) [40]
+[71]     0.0    0.00    0.00       4         hash_table<char, option>::remove(char const *) [71]
+                0.00    0.00       4/813         hash_table<char, option>::fn(char const *) [35]
+                0.00    0.00       2/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00      20/20          block_rule::~block_rule(void) <cycle 3> [70]
+[72]     0.0    0.00    0.00      20         r_prosody::~r_prosody(void) [72]
+                0.00    0.00      20/18991       hashing_rule::~hashing_rule(void) <cycle 4> [385]
+-----------------------------------------------
+                0.00    0.00       2/6           block_rule::~block_rule(void) <cycle 3> [70]
+                0.00    0.00       4/6           cond_rule::~cond_rule(void) <cycle 3> [75]
+[73]     0.0    0.00    0.00       6         r_diph::~r_diph(void) [73]
+                0.00    0.00       6/18991       hashing_rule::~hashing_rule(void) <cycle 4> [385]
+-----------------------------------------------
+                0.00    0.00       1/13          lpcvq::lpcvq(voice *) [82]
+                0.00    0.00       2/13          lpcsyn::lpcsyn(voice *) [84]
+                0.00    0.00      10/13          voice::voice(char const *, char const *, lang *) [38]
+[74]     0.0    0.00    0.00      13         claim(char const *, char const *, char const *, char const *) [74]
+                0.00    0.00       5/18991       get_timestamp(char *) <cycle 4> [155]
+                0.00    0.00      13/97          compose_pathname(char const *, char const *) [108]
+                0.00    0.00      13/13          hash_table<char, file>::translate(char const *) [156]
+                0.00    0.00      13/35351       debug_wanted(int, int) [88]
+                0.00    0.00       8/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       5/32          fopen(char const *, char const *, char const *) [128]
+                0.00    0.00       5/5           hash_table<char, file>::add(char const *, file const *) [168]
+                0.00    0.00       1/1           hash_table<char, file>::hash_table(int) [469]
+-----------------------------------------------
+                                   6             r_with::~r_with(void) <cycle 3> [417]
+                                  17             r_if::~r_if(void) <cycle 3> [402]
+                                  32             r_inside::~r_inside(void) <cycle 3> [393]
+[75]     0.0    0.00    0.00      55         cond_rule::~cond_rule(void) <cycle 3> [75]
+                0.00    0.00       4/6           r_diph::~r_diph(void) [73]
+                0.00    0.00      55/679         rule::~rule(void) [373]
+                                  51             r_block::~r_block(void) <cycle 3> [387]
+-----------------------------------------------
+                0.00    0.00       3/3           str2hash(char const *, unsigned int) [77]
+[76]     0.0    0.00    0.00       3         hash::add_int(char const *, int) [76]
+                0.00    0.00       3/18991       hash_table<char, char>::add(char const *, char const *) <cycle 4> [10]
+-----------------------------------------------
+                0.00    0.00       1/1           text::text(char const *, char const *, char const *, bool) [78]
+[77]     0.0    0.00    0.00       1         str2hash(char const *, unsigned int) [77]
+                0.00    0.00       3/3           hash::add_int(char const *, int) [76]
+                0.00    0.00       3/3           enum2str(int, char const *) [194]
+                0.00    0.00       1/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       1/22          make_option_set(void) [40]
+                0.00    0.00       4/22          rules::rules(char const *, char const *) [6]
+                0.00    0.00      17/22          load_config(char const *, char const *, char const *, OPT_STRUCT, void *, lang *) [17]
+[78]     0.0    0.00    0.00      22         text::text(char const *, char const *, char const *, bool) [78]
+                0.00    0.00       1/1           str2hash(char const *, unsigned int) [77]
+                0.00    0.00      22/27          text::subfile(char const *) [139]
+-----------------------------------------------
+                0.00    0.00       2/2           cmd_set(char *, agent *) [59]
+[79]     0.0    0.00    0.00       2         set_option(option *, char *) [79]
+                0.00    0.00       2/286         set_option(option *, char *, void *) [53]
+                0.00    0.00       2/13          cow(cowabilium **, int) [154]
+-----------------------------------------------
+                0.00    0.00       2/2           agent::timeslice(void) [18]
+[80]     0.0    0.00    0.00       2         a_synth::run(void) [80]
+                0.00    0.00       2/2           setup_synth(voice *) [81]
+                0.00    0.00       2/2           wavefm::wavefm(voice *) [447]
+                0.00    0.00       2/2           synth::syndiphs(voice *, diphone *, int, wavefm *) [211]
+                0.00    0.00       2/35351       debug_wanted(int, int) [88]
+                0.00    0.00       2/18          agent::pass(void) [148]
+-----------------------------------------------
+                0.00    0.00       2/2           a_synth::run(void) [80]
+[81]     0.0    0.00    0.00       2         setup_synth(voice *) [81]
+                0.00    0.00       1/1           lpcvq::lpcvq(voice *) [82]
+                0.00    0.00       1/1           ktdsyn::ktdsyn(voice *) [467]
+-----------------------------------------------
+                0.00    0.00       1/1           setup_synth(voice *) [81]
+[82]     0.0    0.00    0.00       1         lpcvq::lpcvq(voice *) [82]
+                0.00    0.00       1/1           lpcsyn::lpcsyn(voice *) [84]
+                0.00    0.00       1/13          claim(char const *, char const *, char const *, char const *) [74]
+-----------------------------------------------
+                0.00    0.00       1/1           r_with::apply(unit *) [49]
+[83]     0.0    0.00    0.00       1         literal_hash(char *) [83]
+                0.00    0.00       1/18991       hash_table<char, char>::add(char const *, char const *) <cycle 4> [10]
+                0.00    0.00       1/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       1/1           lpcvq::lpcvq(voice *) [82]
+[84]     0.0    0.00    0.00       1         lpcsyn::lpcsyn(voice *) [84]
+                0.00    0.00       2/13          claim(char const *, char const *, char const *, char const *) [74]
+                0.00    0.00       1/2           synth::synth(void) [446]
+-----------------------------------------------
+[85]     0.0    0.00    0.00       4+106     <cycle 1 as a whole> [85]
+                0.00    0.00      55+37          block_rule::check_children(void) <cycle 1> [119]
+-----------------------------------------------
+                              113832             hash_table<char, char>::rehash_tree(hsearchtree<char, char> *) <cycle 4> [87]
+                                2116             hash_table<char, char>::hash_table(hash_table<char, char> *) <cycle 4> [382]
+                              138834             hash_table<char, char>::rehash(int) <cycle 4> [142]
+[87]     0.0    0.00    0.00  140950+113832  hash_table<char, char>::rehash_tree(hsearchtree<char, char> *) <cycle 4> [87]
+                               56916             hash_table<char, char>::add(char const *, char const *) <cycle 4> [10]
+                              113832             hash_table<char, char>::rehash_tree(hsearchtree<char, char> *) <cycle 4> [87]
+-----------------------------------------------
+                0.00    0.00       1/35351       detach(void) [217]
+                0.00    0.00       1/35351       daemonize(void) [216]
+                0.00    0.00       1/35351       a_accept::a_accept(void) [468]
+                0.00    0.00       1/35351       ktdsyn::ktdsyn(voice *) [467]
+                0.00    0.00       2/35351       a_diphs::run(void) [205]
+                0.00    0.00       2/35351       a_synth::run(void) [80]
+                0.00    0.00       2/35351       oa_wavefm::run(void) [208]
+                0.00    0.00       2/35351       r_prosody::apply(unit *) [45]
+                0.00    0.00       2/35351       wavefm::ioctl_attach(void) [201]
+                0.00    0.00       2/35351       wavefm::attach(int) [196]
+                0.00    0.00       2/35351       wavefm::detach(int) [199]
+                0.00    0.00       4/35351       a_io::~a_io(void) [427]
+                0.00    0.00       4/35351       stream::apply(agent *, int) [176]
+                0.00    0.00       4/35351       cmd_stream(char *, agent *) [61]
+                0.00    0.00       4/35351       cmd_apply(char *, agent *) [178]
+                0.00    0.00       4/35351       parser::parser(char const *, int) [430]
+                0.00    0.00       4/35351       unit::split(unit *) [209]
+                0.00    0.00       4/35351       unit::syllabify(UNIT, char *) [190]
+                0.00    0.00       4/35351       r_diph::apply(unit *) [44]
+                0.00    0.00       4/35351       epos_init(void) [4]
+                0.00    0.00       4/35351       add_language(char const *) [25]
+                0.00    0.00       4/35351       lang::compile_rules(void) [5]
+                0.00    0.00       5/35351       a_ttscp::~a_ttscp(void) [425]
+                0.00    0.00       5/35351       wavefm::flush(void) [164]
+                0.00    0.00       6/35351       a_accept::run(void) [165]
+                0.00    0.00       6/35351       unit::sseg(hash *, char, int *) [56]
+                0.00    0.00       6/35351       unit::sseg(UNIT, hash *) [57]
+                0.00    0.00       8/35351       a_io::a_io(char const *, DATA_TYPE, DATA_TYPE) [415]
+                0.00    0.00       8/35351       a_input::run(void) [188]
+                0.00    0.00       8/35351       a_input::apply(int) [177]
+                0.00    0.00       8/35351       parser::init(SYMTABLE) [183]
+                0.00    0.00       8/35351       rules::~rules(void) [69]
+                0.00    0.00       8/35351       ktdsyn::syndiph(voice *, diphone, wavefm *) [162]
+                0.00    0.00      13/35351       context::context(int, int) [403]
+                0.00    0.00      13/35351       claim(char const *, char const *, char const *, char const *) [74]
+                0.00    0.00      16/35351       rules::rules(char const *, char const *) [6]
+                0.00    0.00      17/35351       load_config(char const *, char const *, char const *, OPT_STRUCT, void *, lang *) [17]
+                0.00    0.00      18/35351       stream::stream(char *) [62]
+                0.00    0.00      18/35351       unit::unlink(REPARENT) [167]
+                0.00    0.00      20/35351       sgets(char *, int, int, char *) [138]
+                0.00    0.00      20/35351       agent::~agent(void) [400]
+                0.00    0.00      20/35351       a_protocol::run(void) [54]
+                0.00    0.00      21/35351       a_ttscp::run_command(char *) [55]
+                0.00    0.00      22/35351       unit::subst(hash *, SUBST_METHOD) [130]
+                0.00    0.00      27/35351       text::subfile(char const *) [139]
+                0.00    0.00      29/35351       sched_sel(void) [134]
+                0.00    0.00      30/35351       unit::raise(bool *, bool *, UNIT, UNIT) [153]
+                0.00    0.00      33/35351       agent::block(int) [126]
+                0.00    0.00      33/35351       parser::gettoken(void) [136]
+                0.00    0.00      34/35351       agent::agent(DATA_TYPE, DATA_TYPE) [391]
+                0.00    0.00      34/35351       unit::unit(UNIT, int) [390]
+                0.00    0.00      42/35351       unit::effective(FIT_IDX) [124]
+                0.00    0.00      45/35351       lpcvq::frobmod(int, diphone, model *, int &, int &) [121]
+                0.00    0.00      51/35351       lpcsyn::syndiph(voice *, diphone, wavefm *) [166]
+                0.00    0.00      56/35351       unit::diph(hash *) [47]
+                0.00    0.00      61/35351       server(void) [19]
+                0.00    0.00      73/35351       context::leave(void) [115]
+                0.00    0.00      77/35351       unit::~unit(void) [404]
+                0.00    0.00      79/35351       context::enter(void) [114]
+                0.00    0.00      80/35351       unit::unit(UNIT, parser *) [429]
+                0.00    0.00      86/35351       unit::regex(re_pattern_buffer *, int, regmatch_t *, char const *) [113]
+                0.00    0.00     116/35351       unit::diphs(UNIT, hash *) [48]
+                0.00    0.00     142/35351       parse_cfg_str(char *, char const *) [105]
+                0.00    0.00     144/35351       set_option(option *, char *, void *) [53]
+                0.00    0.00     221/35351       r_syll::r_syll(char *) [426]
+                0.00    0.00     223/35351       r_regress::r_regress(char *) [13]
+                0.00    0.00     306/35351       r_regex::r_regex(char *) [380]
+                0.00    0.00     498/35351       booltab(char const *) [98]
+                0.00    0.00     516/35351       unit::insert(UNIT, bool, char, bool *, bool *) [125]
+                0.00    0.00     675/35351       rule::set_dbg_tag(text *) [94]
+                0.00    0.00     679/35351       rule::~rule(void) [373]
+                0.00    0.00    1118/35351       block_rule::apply_current(unit *) [21]
+                0.00    0.00    1820/35351       unit::assim(UNIT, bool, char *, bool *, bool *) [103]
+                0.00    0.00    2277/35351       next_rule(text *, hash *, int *) <cycle 2> [8]
+                0.00    0.00    3645/35351       text::getline(char *) [16]
+                0.00    0.00    3855/35351       <hicore> <cycle 4> (86)
+                0.00    0.00   17910/35351       str2enum(char const *, char const *, int) [11]
+[88]     0.0    0.00    0.00   35351         debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       2/9234        unit::split(unit *) [209]
+                0.00    0.00       6/9234        unit::unlink(REPARENT) [167]
+                0.00    0.00      14/9234        unit::write_diphs(diphone *, int, int) [213]
+                0.00    0.00      28/9234        unit::diph(hash *) [47]
+                0.00    0.00      54/9234        unit::subst(hash *, SUBST_METHOD) [130]
+                0.00    0.00      76/9234        unit::diphs(UNIT, hash *) [48]
+                0.00    0.00      86/9234        unit::regex(re_pattern_buffer *, int, regmatch_t *, char const *) [113]
+                0.00    0.00     128/9234        unit::insert_end(unit *, unit *) [117]
+                0.00    0.00     434/9234        unit::RightMost(UNIT) [99]
+                0.00    0.00     868/9234        unit::Prev(UNIT) [96]
+                0.00    0.00    1126/9234        unit::assim(UNIT, bool, char *, bool *, bool *) [103]
+                0.00    0.00    1712/9234        <hicore> <cycle 4> (86)
+                0.00    0.00    2039/9234        unit::LeftMost(UNIT) [92]
+                0.00    0.00    2661/9234        unit::Next(UNIT) [91]
+[89]     0.0    0.00    0.00    9234         unit::sanity(void) [89]
+-----------------------------------------------
+                0.00    0.00    1825/1825        text::getline(char *) [16]
+[90]     0.0    0.00    0.00    1825         strip(char *) [90]
+-----------------------------------------------
+                                1355             unit::Next(UNIT) [91]
+                0.00    0.00      14/1306        unit::write_diphs(diphone *, int, int) [213]
+                0.00    0.00      18/1306        unit::syllabify(char *) [149]
+                0.00    0.00      20/1306        unit::diphs(UNIT, hash *) [48]
+                0.00    0.00      52/1306        unit::raise(bool *, bool *, UNIT, UNIT) [153]
+                0.00    0.00      54/1306        unit::insert(UNIT, bool, char, bool *, bool *) [125]
+                0.00    0.00     378/1306        block_rule::apply_current(unit *) [21]
+                0.00    0.00     770/1306        unit::assim(UNIT, bool, char *, bool *, bool *) [103]
+[91]     0.0    0.00    0.00    1306+1355    unit::Next(UNIT) [91]
+                0.00    0.00    2661/9234        unit::sanity(void) [89]
+                0.00    0.00     688/1084        unit::LeftMost(UNIT) [92]
+                                1355             unit::Next(UNIT) [91]
+-----------------------------------------------
+                                 955             unit::LeftMost(UNIT) [92]
+                0.00    0.00       2/1084        unit::write_diphs(diphone *, int, int) [213]
+                0.00    0.00      24/1084        unit::raise(bool *, bool *, UNIT, UNIT) [153]
+                0.00    0.00     370/1084        block_rule::apply_current(unit *) [21]
+                0.00    0.00     688/1084        unit::Next(UNIT) [91]
+[92]     0.0    0.00    0.00    1084+955     unit::LeftMost(UNIT) [92]
+                0.00    0.00    2039/9234        unit::sanity(void) [89]
+                                 955             unit::LeftMost(UNIT) [92]
+-----------------------------------------------
+                0.00    0.00      55/687         cond_rule::check_children(void) <cycle 1> [120]
+                0.00    0.00     632/687         block_rule::check_children(void) <cycle 1> [119]
+[93]     0.0    0.00    0.00     687         rule::check_child(rule *) [93]
+-----------------------------------------------
+                0.00    0.00     675/675         next_rule(text *, hash *, int *) <cycle 2> [8]
+[94]     0.0    0.00    0.00     675         rule::set_dbg_tag(text *) [94]
+                0.00    0.00     675/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       5/675         r_syll::set_level(UNIT, UNIT) [172]
+                0.00    0.00      17/675         r_if::set_level(UNIT, UNIT) [150]
+                0.00    0.00      32/675         r_subst::set_level(UNIT, UNIT) [129]
+                0.00    0.00      88/675         block_rule::set_level(UNIT, UNIT) [111]
+                0.00    0.00     533/675         next_rule(text *, hash *, int *) <cycle 2> [8]
+[95]     0.0    0.00    0.00     675         rule::set_level(UNIT, UNIT) [95]
+-----------------------------------------------
+                                 294             unit::Prev(UNIT) [96]
+                0.00    0.00       8/574         unit::sseg(UNIT, hash *) [57]
+                0.00    0.00      14/574         unit::syllabify(char *) [149]
+                0.00    0.00      16/574         unit::insert(UNIT, bool, char, bool *, bool *) [125]
+                0.00    0.00      18/574         unit::syllabify(UNIT, char *) [190]
+                0.00    0.00      40/574         unit::diphs(UNIT, hash *) [48]
+                0.00    0.00     478/574         unit::assim(UNIT, bool, char *, bool *, bool *) [103]
+[96]     0.0    0.00    0.00     574+294     unit::Prev(UNIT) [96]
+                0.00    0.00     868/9234        unit::sanity(void) [89]
+                0.00    0.00     410/418         unit::RightMost(UNIT) [99]
+                                 294             unit::Prev(UNIT) [96]
+-----------------------------------------------
+                0.00    0.00       4/544         cond_rule::check_children(void) <cycle 1> [120]
+                0.00    0.00     540/544         block_rule::check_children(void) <cycle 1> [119]
+[97]     0.0    0.00    0.00     544         rule::check_children(void) [97]
+-----------------------------------------------
+                0.00    0.00      20/498         r_raise::r_raise(char *) [409]
+                0.00    0.00      32/498         r_inside::r_inside(char *, text *, hash *) <cycle 2> [395]
+                0.00    0.00     446/498         r_regress::r_regress(char *) [13]
+[98]     0.0    0.00    0.00     498         booltab(char const *) [98]
+                0.00    0.00     498/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                                  16             unit::RightMost(UNIT) [99]
+                0.00    0.00       4/418         unit::syllabify(UNIT, char *) [190]
+                0.00    0.00       4/418         unit::sseg(UNIT, hash *) [57]
+                0.00    0.00     410/418         unit::Prev(UNIT) [96]
+[99]     0.0    0.00    0.00     418+16      unit::RightMost(UNIT) [99]
+                0.00    0.00     434/9234        unit::sanity(void) [89]
+                                  16             unit::RightMost(UNIT) [99]
+-----------------------------------------------
+                                 704             hash_table<char, option>::dissolvetree(hsearchtree<char, option> *) [100]
+                0.00    0.00     360/360         hash_table<char, option>::~hash_table(void) [435]
+[100]    0.0    0.00    0.00     360+704     hash_table<char, option>::dissolvetree(hsearchtree<char, option> *) [100]
+                0.00    0.00     352/18991       <hicore> <cycle 4> (86)
+                                 704             hash_table<char, option>::dissolvetree(hsearchtree<char, option> *) [100]
+-----------------------------------------------
+                0.00    0.00       5/333         cmd_set(char *, agent *) [59]
+                0.00    0.00      50/333         make_option_set(void) [40]
+                0.00    0.00     278/333         load_config(char const *, char const *, char const *, OPT_STRUCT, void *, lang *) [17]
+[101]    0.0    0.00    0.00     333         split_string(char *) [101]
+-----------------------------------------------
+                0.00    0.00     200/200         block_rule::apply_current(unit *) [21]
+[102]    0.0    0.00    0.00     200         r_regress::apply(unit *) [102]
+                0.00    0.00     200/200         unit::assim(UNIT, bool, char *, bool *, bool *) [103]
+                0.00    0.00      42/42          unit::insert(UNIT, bool, char, bool *, bool *) [125]
+-----------------------------------------------
+                                 926             unit::assim(UNIT, bool, char *, bool *, bool *) [103]
+                0.00    0.00     200/200         r_regress::apply(unit *) [102]
+[103]    0.0    0.00    0.00     200+926     unit::assim(UNIT, bool, char *, bool *, bool *) [103]
+                0.00    0.00    1820/35351       debug_wanted(int, int) [88]
+                0.00    0.00    1248/18991       <hicore> <cycle 4> (86)
+                0.00    0.00    1126/9234        unit::sanity(void) [89]
+                0.00    0.00     770/1306        unit::Next(UNIT) [91]
+                0.00    0.00     478/574         unit::Prev(UNIT) [96]
+                0.00    0.00       6/6           unit::unlink(REPARENT) [167]
+                                 926             unit::assim(UNIT, bool, char *, bool *, bool *) [103]
+-----------------------------------------------
+                0.00    0.00      18/186         hash::hash(char const *, int, int, int, int, char const *, bool, char const *, char *) [28]
+                0.00    0.00      24/186         hash_table<char, char>::hash_table(int) [398]
+                0.00    0.00      52/186         hash_table<char, char>::rehash(int) <cycle 4> [142]
+                0.00    0.00      92/186         hash_table<char, char>::hash_table(hash_table<char, char> *) <cycle 4> [382]
+[104]    0.0    0.00    0.00     186         hash_table<char, char>::cfg_rehash(int, int, int) [104]
+-----------------------------------------------
+                0.00    0.00     142/142         set_option(option *, char *, void *) [53]
+[105]    0.0    0.00    0.00     142         parse_cfg_str(char *, char const *) [105]
+                0.00    0.00     142/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       9/120         r_smooth::r_smooth(char *) [414]
+                0.00    0.00     111/120         r_contour::r_contour(char *) [378]
+[106]    0.0    0.00    0.00     120         fit(char) [106]
+-----------------------------------------------
+                                 577             unit::gather(char *, char *, bool) [107]
+                0.00    0.00       2/110         a_print::run(void) [206]
+                0.00    0.00      22/110         unit::subst(hash *, SUBST_METHOD) [130]
+                0.00    0.00      86/110         unit::regex(re_pattern_buffer *, int, regmatch_t *, char const *) [113]
+[107]    0.0    0.00    0.00     110+577     unit::gather(char *, char *, bool) [107]
+                                 577             unit::gather(char *, char *, bool) [107]
+-----------------------------------------------
+                0.00    0.00       1/97          ktdsyn::ktdsyn(voice *) [467]
+                0.00    0.00       2/97          r_with::r_with(char *, text *, hash *) <cycle 2> [420]
+                0.00    0.00       2/97          limit_pathname(char const *, char const *) [203]
+                0.00    0.00      13/97          claim(char const *, char const *, char const *, char const *) [74]
+                0.00    0.00      27/97          text::subfile(char const *) [139]
+                0.00    0.00      52/97          hashing_rule::hashing_rule(char *) [386]
+[108]    0.0    0.00    0.00      97         compose_pathname(char const *, char const *) [108]
+-----------------------------------------------
+                                  11             r_switch::r_switch(text *, hash *) <cycle 2> [406]
+                                  24             r_choice::r_choice(text *, hash *) <cycle 2> [397]
+                                  57             r_block::r_block(text *, hash *) <cycle 2> [388]
+[109]    0.0    0.00    0.00      92         block_rule::load_rules(rule *, text *, hash *) <cycle 2> [109]
+                0.00    0.00     184/18991       <hicore> <cycle 4> (86)
+                                 712             next_rule(text *, hash *, int *) <cycle 2> [8]
+-----------------------------------------------
+                0.00    0.00      90/90          reply(char const *) [122]
+[110]    0.0    0.00    0.00      90         sputs(char const *, int) [110]
+-----------------------------------------------
+                0.00    0.00      88/88          next_rule(text *, hash *, int *) <cycle 2> [8]
+[111]    0.0    0.00    0.00      88         block_rule::set_level(UNIT, UNIT) [111]
+                0.00    0.00      88/675         rule::set_level(UNIT, UNIT) [95]
+-----------------------------------------------
+                0.00    0.00      86/86          block_rule::apply_current(unit *) [21]
+[112]    0.0    0.00    0.00      86         r_regex::apply(unit *) [112]
+                0.00    0.00      86/86          unit::regex(re_pattern_buffer *, int, regmatch_t *, char const *) [113]
+-----------------------------------------------
+                0.00    0.00      86/86          r_regex::apply(unit *) [112]
+[113]    0.0    0.00    0.00      86         unit::regex(re_pattern_buffer *, int, regmatch_t *, char const *) [113]
+                0.00    0.00      86/9234        unit::sanity(void) [89]
+                0.00    0.00      86/110         unit::gather(char *, char *, bool) [107]
+                0.00    0.00      86/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       1/74          a_accept::a_accept(void) [468]
+                0.00    0.00       6/74          a_ttscp::a_ttscp(int, int) [421]
+                0.00    0.00       6/74          a_accept::run(void) [165]
+                0.00    0.00      61/74          agent::timeslice(void) [18]
+[114]    0.0    0.00    0.00      74         context::enter(void) [114]
+                0.00    0.00      79/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       1/73          a_accept::a_accept(void) [468]
+                0.00    0.00       6/73          a_ttscp::a_ttscp(int, int) [421]
+                0.00    0.00       6/73          a_accept::run(void) [165]
+                0.00    0.00      60/73          agent::timeslice(void) [18]
+[115]    0.0    0.00    0.00      73         context::leave(void) [115]
+                0.00    0.00      73/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                                   4             unit::set_father(unit *) [116]
+                0.00    0.00       2/66          unit::split(unit *) [209]
+                0.00    0.00      64/66          unit::insert_end(unit *, unit *) [117]
+[116]    0.0    0.00    0.00      66+4       unit::set_father(unit *) [116]
+                                   4             unit::set_father(unit *) [116]
+-----------------------------------------------
+                0.00    0.00      28/64          unit::diph(hash *) [47]
+                0.00    0.00      36/64          unit::unit(UNIT, parser *) [429]
+[117]    0.0    0.00    0.00      64         unit::insert_end(unit *, unit *) [117]
+                0.00    0.00     128/9234        unit::sanity(void) [89]
+                0.00    0.00      64/66          unit::set_father(unit *) [116]
+-----------------------------------------------
+                0.00    0.00      61/61          server(void) [19]
+[118]    0.0    0.00    0.00      61         select_socket(bool) [118]
+-----------------------------------------------
+                                  37             block_rule::check_children(void) <cycle 1> [119]
+                                  51             cond_rule::check_children(void) <cycle 1> [120]
+                0.00    0.00       4/4           rules::rules(char const *, char const *) [6]
+[119]    0.0    0.00    0.00      55+37      block_rule::check_children(void) <cycle 1> [119]
+                0.00    0.00     632/687         rule::check_child(rule *) [93]
+                0.00    0.00     540/544         rule::check_children(void) [97]
+                                  55             cond_rule::check_children(void) <cycle 1> [120]
+                                  37             block_rule::check_children(void) <cycle 1> [119]
+-----------------------------------------------
+                                  55             block_rule::check_children(void) <cycle 1> [119]
+[120]    0.0    0.00    0.00      55         cond_rule::check_children(void) <cycle 1> [120]
+                0.00    0.00      55/687         rule::check_child(rule *) [93]
+                0.00    0.00       4/544         rule::check_children(void) [97]
+                                  51             block_rule::check_children(void) <cycle 1> [119]
+-----------------------------------------------
+                0.00    0.00      45/45          lpcsyn::syndiph(voice *, diphone, wavefm *) [166]
+[121]    0.0    0.00    0.00      45         lpcvq::frobmod(int, diphone, model *, int &, int &) [121]
+                0.00    0.00      45/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       1/45          cmd_shutdown(char *, agent *) [64]
+                0.00    0.00       2/45          cmd_done(char *, agent *) [198]
+                0.00    0.00       2/45          cmd_delhandle(char *, agent *) [197]
+                0.00    0.00       4/45          cmd_stream(char *, agent *) [61]
+                0.00    0.00       4/45          cmd_apply(char *, agent *) [178]
+                0.00    0.00       5/45          cmd_set(char *, agent *) [59]
+                0.00    0.00       6/45          a_ttscp::a_ttscp(int, int) [421]
+                0.00    0.00       9/45          cmd_data(char *, agent *) [193]
+                0.00    0.00      12/45          a_output::report(int) [186]
+[122]    0.0    0.00    0.00      45         reply(char const *) [122]
+                0.00    0.00      90/90          sputs(char const *, int) [110]
+-----------------------------------------------
+                0.00    0.00      45/45          lpcsyn::syndiph(voice *, diphone, wavefm *) [166]
+[123]    0.0    0.00    0.00      45         lpcsyn::synmod(model, wavefm *) [123]
+                0.00    0.00    4950/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00      42/42          unit::write_diphs(diphone *, int, int) [213]
+[124]    0.0    0.00    0.00      42         unit::effective(FIT_IDX) [124]
+                0.00    0.00      42/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                                 210             unit::insert(UNIT, bool, char, bool *, bool *) [125]
+                0.00    0.00      42/42          r_regress::apply(unit *) [102]
+[125]    0.0    0.00    0.00      42+210     unit::insert(UNIT, bool, char, bool *, bool *) [125]
+                0.00    0.00     516/35351       debug_wanted(int, int) [88]
+                0.00    0.00      54/1306        unit::Next(UNIT) [91]
+                0.00    0.00      16/574         unit::Prev(UNIT) [96]
+                0.00    0.00       6/76          unit::operator new(int) [384]
+                0.00    0.00       6/34          unit::unit(UNIT, int) [390]
+                                 210             unit::insert(UNIT, bool, char, bool *, bool *) [125]
+-----------------------------------------------
+                0.00    0.00       1/33          a_accept::a_accept(void) [468]
+                0.00    0.00       4/33          a_input::apply(int) [177]
+                0.00    0.00       4/33          stream::finis(void) [180]
+                0.00    0.00       6/33          a_ttscp::a_ttscp(int, int) [421]
+                0.00    0.00       6/33          a_accept::run(void) [165]
+                0.00    0.00      12/33          a_protocol::run(void) [54]
+[126]    0.0    0.00    0.00      33         agent::block(int) [126]
+                0.00    0.00      33/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       4/33          parser::init(SYMTABLE) [183]
+                0.00    0.00      29/33          parser::gettoken(void) [136]
+[127]    0.0    0.00    0.00      33         parser::chrlev(unsigned char) [127]
+-----------------------------------------------
+                0.00    0.00       5/32          claim(char const *, char const *, char const *, char const *) [74]
+                0.00    0.00      27/32          text::subfile(char const *) [139]
+[128]    0.0    0.00    0.00      32         fopen(char const *, char const *, char const *) [128]
+-----------------------------------------------
+                0.00    0.00      32/32          next_rule(text *, hash *, int *) <cycle 2> [8]
+[129]    0.0    0.00    0.00      32         r_subst::set_level(UNIT, UNIT) [129]
+                0.00    0.00      32/675         rule::set_level(UNIT, UNIT) [95]
+-----------------------------------------------
+                0.00    0.00       4/32          r_with::apply(unit *) [49]
+                0.00    0.00      28/32          unit::relabel(hash *, SUBST_METHOD, UNIT) [137]
+[130]    0.0    0.00    0.00      32         unit::subst(hash *, SUBST_METHOD) [130]
+                0.00    0.00     320/18991       <hicore> <cycle 4> (86)
+                0.00    0.00      54/9234        unit::sanity(void) [89]
+                0.00    0.00      22/110         unit::gather(char *, char *, bool) [107]
+                0.00    0.00      22/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00      30/30          hash_table<char, file>::~hash_table(void) [457]
+[131]    0.0    0.00    0.00      30         hash_table<char, file>::dissolvetree(hsearchtree<char, file> *) [131]
+-----------------------------------------------
+                                   2             hash_table<char, int>::dissolvetree(hsearchtree<char, int> *) [132]
+                0.00    0.00      30/30          hash_table<char, int>::~hash_table(void) [458]
+[132]    0.0    0.00    0.00      30+2       hash_table<char, int>::dissolvetree(hsearchtree<char, int> *) [132]
+                0.00    0.00       1/18991       <hicore> <cycle 4> (86)
+                                   2             hash_table<char, int>::dissolvetree(hsearchtree<char, int> *) [132]
+-----------------------------------------------
+                                  10             hash_table<char, file>::fortree(hsearchtree<char, file> *, void (*)(char *, file *)) [133]
+                0.00    0.00      30/30          hash_table<char, file>::forall(void (*)(char *, file *)) [219]
+[133]    0.0    0.00    0.00      30+10      hash_table<char, file>::fortree(hsearchtree<char, file> *, void (*)(char *, file *)) [133]
+                0.00    0.00       5/5           uncache_file(char *, file *) [173]
+                                  10             hash_table<char, file>::fortree(hsearchtree<char, file> *, void (*)(char *, file *)) [133]
+-----------------------------------------------
+                0.00    0.00      29/29          server(void) [19]
+[134]    0.0    0.00    0.00      29         sched_sel(void) [134]
+                0.00    0.00      29/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       5/29          a_disconnector::disconnect(a_protocol *) [169]
+                0.00    0.00       6/29          a_protocol::run(void) [54]
+                0.00    0.00      18/29          agent::pass(void) [148]
+[135]    0.0    0.00    0.00      29         agent::schedule(void) [135]
+-----------------------------------------------
+                0.00    0.00       4/28          parser::init(SYMTABLE) [183]
+                0.00    0.00      24/28          unit::unit(UNIT, parser *) [429]
+[136]    0.0    0.00    0.00      28         parser::gettoken(void) [136]
+                0.00    0.00      33/35351       debug_wanted(int, int) [88]
+                0.00    0.00      29/33          parser::chrlev(unsigned char) [127]
+                0.00    0.00       5/9           parser::initables(SYMTABLE) [158]
+-----------------------------------------------
+                0.00    0.00      28/28          r_subst::apply(unit *) [32]
+[137]    0.0    0.00    0.00      28         unit::relabel(hash *, SUBST_METHOD, UNIT) [137]
+                0.00    0.00      28/32          unit::subst(hash *, SUBST_METHOD) [130]
+-----------------------------------------------
+                0.00    0.00      28/28          a_protocol::run(void) [54]
+[138]    0.0    0.00    0.00      28         sgets(char *, int, int, char *) [138]
+                0.00    0.00      20/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       5/27          text::getline(char *) [16]
+                0.00    0.00      22/27          text::text(char const *, char const *, char const *, bool) [78]
+[139]    0.0    0.00    0.00      27         text::subfile(char const *) [139]
+                0.00    0.00      27/97          compose_pathname(char const *, char const *) [108]
+                0.00    0.00      27/35351       debug_wanted(int, int) [88]
+                0.00    0.00      27/32          fopen(char const *, char const *, char const *) [128]
+-----------------------------------------------
+                0.00    0.00      27/27          text::getline(char *) [16]
+[140]    0.0    0.00    0.00      27         text::superfile(void) [140]
+-----------------------------------------------
+                                  26             hash_table<char, char>::add(char const *, char const *) <cycle 4> [10]
+[141]    0.0    0.00    0.00      26         hash_table<char, char>::rehash(void) <cycle 4> [141]
+                                  26             hash_table<char, char>::rehash(int) <cycle 4> [142]
+-----------------------------------------------
+                                  26             hash_table<char, char>::rehash(void) <cycle 4> [141]
+[142]    0.0    0.00    0.00      26         hash_table<char, char>::rehash(int) <cycle 4> [142]
+                0.00    0.00      52/186         hash_table<char, char>::cfg_rehash(int, int, int) [104]
+                              138834             hash_table<char, char>::rehash_tree(hsearchtree<char, char> *) <cycle 4> [87]
+                              138834             hash_table<char, char>::dissolvetree(hsearchtree<char, char> *) <cycle 4> [33]
+-----------------------------------------------
+                0.00    0.00      24/24          parser::initables(SYMTABLE) [158]
+[143]    0.0    0.00    0.00      24         parser::regist(UNIT, char const *) [143]
+-----------------------------------------------
+                0.00    0.00       5/23          hash_table<char, file>::add(char const *, file const *) [168]
+                0.00    0.00       5/23          hash_table<char, file>::remove(char const *) [170]
+                0.00    0.00      13/23          hash_table<char, file>::translate(char const *) [156]
+[144]    0.0    0.00    0.00      23         hash_table<char, file>::fn(char const *) [144]
+-----------------------------------------------
+                0.00    0.00      22/22          text::~text(void) [399]
+[145]    0.0    0.00    0.00      22         text::done(void) [145]
+-----------------------------------------------
+                0.00    0.00      22/22          text::~text(void) [399]
+[146]    0.0    0.00    0.00      22         doneprefices(void) [146]
+-----------------------------------------------
+                0.00    0.00      20/20          block_rule::apply_current(unit *) [21]
+[147]    0.0    0.00    0.00      20         r_inside::apply(unit *) [147]
+-----------------------------------------------
+                0.00    0.00       2/18          a_print::run(void) [206]
+                0.00    0.00       2/18          a_diphs::run(void) [205]
+                0.00    0.00       2/18          a_synth::run(void) [80]
+                0.00    0.00       4/18          a_ascii::run(void) [187]
+                0.00    0.00       4/18          a_rules::run(void) [24]
+                0.00    0.00       4/18          a_input::run(void) [188]
+[148]    0.0    0.00    0.00      18         agent::pass(void) [148]
+                0.00    0.00      18/29          agent::schedule(void) [135]
+-----------------------------------------------
+                0.00    0.00      18/18          unit::syllabify(UNIT, char *) [190]
+[149]    0.0    0.00    0.00      18         unit::syllabify(char *) [149]
+                0.00    0.00      64/18991       <hicore> <cycle 4> (86)
+                0.00    0.00      18/1306        unit::Next(UNIT) [91]
+                0.00    0.00      14/574         unit::Prev(UNIT) [96]
+                0.00    0.00       2/2           unit::syll_break(char *, unit *) [210]
+-----------------------------------------------
+                0.00    0.00      17/17          next_rule(text *, hash *, int *) <cycle 2> [8]
+[150]    0.0    0.00    0.00      17         r_if::set_level(UNIT, UNIT) [150]
+                0.00    0.00      17/675         rule::set_level(UNIT, UNIT) [95]
+-----------------------------------------------
+                0.00    0.00      14/14          block_rule::apply_current(unit *) [21]
+[151]    0.0    0.00    0.00      14         r_raise::apply(unit *) [151]
+                0.00    0.00      14/14          unit::raise(bool *, bool *, UNIT, UNIT) [153]
+-----------------------------------------------
+                0.00    0.00       2/14          hash_table<char, int>::remove(char const *) [204]
+                0.00    0.00       3/14          hash_table<char, int>::add(char const *, int const *) [191]
+                0.00    0.00       9/14          hash_table<char, int>::translate(char const *) [159]
+[152]    0.0    0.00    0.00      14         hash_table<char, int>::fn(char const *) [152]
+-----------------------------------------------
+                0.00    0.00      14/14          r_raise::apply(unit *) [151]
+[153]    0.0    0.00    0.00      14         unit::raise(bool *, bool *, UNIT, UNIT) [153]
+                0.00    0.00      52/1306        unit::Next(UNIT) [91]
+                0.00    0.00      30/35351       debug_wanted(int, int) [88]
+                0.00    0.00      24/1084        unit::LeftMost(UNIT) [92]
+-----------------------------------------------
+                0.00    0.00       2/13          set_option(option *, char *) [79]
+                0.00    0.00      11/13          context::context(int, int) [403]
+[154]    0.0    0.00    0.00      13         cow(cowabilium **, int) [154]
+-----------------------------------------------
+                                   8             <hicore> <cycle 4> (86)
+                0.00    0.00       5/18991       claim(char const *, char const *, char const *, char const *) [74]
+[155]    0.0    0.00    0.00      13         get_timestamp(char *) <cycle 4> [155]
+                                  13             <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00      13/13          claim(char const *, char const *, char const *, char const *) [74]
+[156]    0.0    0.00    0.00      13         hash_table<char, file>::translate(char const *) [156]
+                0.00    0.00      13/23          hash_table<char, file>::fn(char const *) [144]
+-----------------------------------------------
+                0.00    0.00       1/13          lpcvq::~lpcvq(void) [454]
+                0.00    0.00       2/13          lpcsyn::~lpcsyn(void) [456]
+                0.00    0.00      10/13          voice::~voice(void) [407]
+[157]    0.0    0.00    0.00      13         unclaim(file *) [157]
+-----------------------------------------------
+                0.00    0.00       4/9           parser::init(SYMTABLE) [183]
+                0.00    0.00       5/9           parser::gettoken(void) [136]
+[158]    0.0    0.00    0.00       9         parser::initables(SYMTABLE) [158]
+                0.00    0.00      24/24          parser::regist(UNIT, char const *) [143]
+                0.00    0.00       4/4           parser::alias(char const *, char const *) [174]
+-----------------------------------------------
+                0.00    0.00       3/9           cmd_data(char *, agent *) [193]
+                0.00    0.00       6/9           a_io::a_io(char const *, DATA_TYPE, DATA_TYPE) [415]
+[159]    0.0    0.00    0.00       9         hash_table<char, int>::translate(char const *) [159]
+                0.00    0.00       9/14          hash_table<char, int>::fn(char const *) [152]
+-----------------------------------------------
+                0.00    0.00       8/8           ktdsyn::syndiph(voice *, diphone, wavefm *) [162]
+[160]    0.0    0.00    0.00       8         ktdsyn::dif2psl(char *, char *) [160]
+-----------------------------------------------
+                0.00    0.00       8/8           ktdsyn::syndiph(voice *, diphone, wavefm *) [162]
+[161]    0.0    0.00    0.00       8         ktdsyn::op_psl(char *, unsigned char *) [161]
+-----------------------------------------------
+                0.00    0.00       8/8           synth::syndiphs(voice *, diphone *, int, wavefm *) [211]
+[162]    0.0    0.00    0.00       8         ktdsyn::syndiph(voice *, diphone, wavefm *) [162]
+                0.00    0.00    3272/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       8/35351       debug_wanted(int, int) [88]
+                0.00    0.00       8/8           ktdsyn::dif2psl(char *, char *) [160]
+                0.00    0.00       8/8           ktdsyn::op_psl(char *, unsigned char *) [161]
+-----------------------------------------------
+                0.00    0.00       1/7           context::context(int, int) [403]
+                0.00    0.00       6/7           a_ttscp::a_ttscp(int, int) [421]
+[163]    0.0    0.00    0.00       7         cow_claim(void *) [163]
+-----------------------------------------------
+                0.00    0.00       2/7           wavefm::attach(int) [196]
+                0.00    0.00       2/7           wavefm::detach(int) [199]
+                0.00    0.00       3/7           <hicore> <cycle 4> (86)
+[164]    0.0    0.00    0.00       7         wavefm::flush(void) [164]
+                0.00    0.00       5/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       6/6           agent::timeslice(void) [18]
+[165]    0.0    0.00    0.00       6         a_accept::run(void) [165]
+                0.00    0.00       6/35351       debug_wanted(int, int) [88]
+                0.00    0.00       6/73          context::leave(void) [115]
+                0.00    0.00       6/6           a_ttscp::a_ttscp(int, int) [421]
+                0.00    0.00       6/74          context::enter(void) [114]
+                0.00    0.00       6/33          agent::block(int) [126]
+-----------------------------------------------
+                0.00    0.00       6/6           synth::syndiphs(voice *, diphone *, int, wavefm *) [211]
+[166]    0.0    0.00    0.00       6         lpcsyn::syndiph(voice *, diphone, wavefm *) [166]
+                0.00    0.00      51/35351       debug_wanted(int, int) [88]
+                0.00    0.00      45/45          lpcvq::frobmod(int, diphone, model *, int &, int &) [121]
+                0.00    0.00      45/45          lpcsyn::synmod(model, wavefm *) [123]
+-----------------------------------------------
+                0.00    0.00       6/6           unit::assim(UNIT, bool, char *, bool *, bool *) [103]
+[167]    0.0    0.00    0.00       6         unit::unlink(REPARENT) [167]
+                0.00    0.00      18/35351       debug_wanted(int, int) [88]
+                0.00    0.00       6/9234        unit::sanity(void) [89]
+                0.00    0.00       5/11          unit::~unit(void) [404]
+-----------------------------------------------
+                0.00    0.00       5/5           claim(char const *, char const *, char const *, char const *) [74]
+[168]    0.0    0.00    0.00       5         hash_table<char, file>::add(char const *, file const *) [168]
+                0.00    0.00      10/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       5/23          hash_table<char, file>::fn(char const *) [144]
+-----------------------------------------------
+                0.00    0.00       5/5           a_protocol::run(void) [54]
+[169]    0.0    0.00    0.00       5         a_disconnector::disconnect(a_protocol *) [169]
+                0.00    0.00       5/29          agent::schedule(void) [135]
+-----------------------------------------------
+                0.00    0.00       5/5           uncache_file(char *, file *) [173]
+[170]    0.0    0.00    0.00       5         hash_table<char, file>::remove(char const *) [170]
+                0.00    0.00       5/23          hash_table<char, file>::fn(char const *) [144]
+                0.00    0.00       5/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       5/5           agent::timeslice(void) [18]
+[171]    0.0    0.00    0.00       5         a_disconnector::run(void) [171]
+                0.00    0.00       5/5           a_ttscp::~a_ttscp(void) [425]
+-----------------------------------------------
+                0.00    0.00       5/5           next_rule(text *, hash *, int *) <cycle 2> [8]
+[172]    0.0    0.00    0.00       5         r_syll::set_level(UNIT, UNIT) [172]
+                0.00    0.00       5/675         rule::set_level(UNIT, UNIT) [95]
+-----------------------------------------------
+                0.00    0.00       5/5           hash_table<char, file>::fortree(hsearchtree<char, file> *, void (*)(char *, file *)) [133]
+[173]    0.0    0.00    0.00       5         uncache_file(char *, file *) [173]
+                0.00    0.00       5/5           hash_table<char, file>::remove(char const *) [170]
+                0.00    0.00       5/5           file::~file(void) [423]
+-----------------------------------------------
+                0.00    0.00       4/4           parser::initables(SYMTABLE) [158]
+[174]    0.0    0.00    0.00       4         parser::alias(char const *, char const *) [174]
+-----------------------------------------------
+                0.00    0.00       4/4           block_rule::apply_current(unit *) [21]
+[175]    0.0    0.00    0.00       4         r_syll::apply(unit *) [175]
+                0.00    0.00       4/4           unit::syllabify(UNIT, char *) [190]
+-----------------------------------------------
+                0.00    0.00       4/4           cmd_apply(char *, agent *) [178]
+[176]    0.0    0.00    0.00       4         stream::apply(agent *, int) [176]
+                0.00    0.00       4/35351       debug_wanted(int, int) [88]
+                0.00    0.00       4/4           a_input::apply(int) [177]
+-----------------------------------------------
+                0.00    0.00       4/4           stream::apply(agent *, int) [176]
+[177]    0.0    0.00    0.00       4         a_input::apply(int) [177]
+                0.00    0.00       8/35351       debug_wanted(int, int) [88]
+                0.00    0.00       4/33          agent::block(int) [126]
+-----------------------------------------------
+                0.00    0.00       4/4           a_ttscp::run_command(char *) [55]
+[178]    0.0    0.00    0.00       4         cmd_apply(char *, agent *) [178]
+                0.00    0.00       4/35351       debug_wanted(int, int) [88]
+                0.00    0.00       4/4           stream::apply(agent *, int) [176]
+                0.00    0.00       4/45          reply(char const *) [122]
+-----------------------------------------------
+                0.00    0.00       4/4           a_output::report(int) [186]
+[179]    0.0    0.00    0.00       4         agent::finis(void) [179]
+                0.00    0.00       4/4           stream::finis(void) [180]
+-----------------------------------------------
+                0.00    0.00       4/4           agent::finis(void) [179]
+[180]    0.0    0.00    0.00       4         stream::finis(void) [180]
+                0.00    0.00       4/33          agent::block(int) [126]
+-----------------------------------------------
+                0.00    0.00       4/4           a_output::foreground(void) [182]
+[181]    0.0    0.00    0.00       4         stream::foreground(void) [181]
+-----------------------------------------------
+                0.00    0.00       4/4           a_output::report(int) [186]
+[182]    0.0    0.00    0.00       4         a_output::foreground(void) [182]
+                0.00    0.00       4/4           stream::foreground(void) [181]
+-----------------------------------------------
+                0.00    0.00       4/4           parser::parser(char const *, int) [430]
+[183]    0.0    0.00    0.00       4         parser::init(SYMTABLE) [183]
+                0.00    0.00       8/35351       debug_wanted(int, int) [88]
+                0.00    0.00       4/9           parser::initables(SYMTABLE) [158]
+                0.00    0.00       4/33          parser::chrlev(unsigned char) [127]
+                0.00    0.00       4/28          parser::gettoken(void) [136]
+-----------------------------------------------
+                0.00    0.00       1/4           daemonize(void) [216]
+                0.00    0.00       3/4           cmd_data(char *, agent *) [193]
+[184]    0.0    0.00    0.00       4         make_rnd_passwd(char *, int) [184]
+-----------------------------------------------
+                0.00    0.00       4/4           epos_init(void) [4]
+[185]    0.0    0.00    0.00       4         parse_cmd_line(void) [185]
+-----------------------------------------------
+                0.00    0.00       2/4           a_output::run(void) [207]
+                0.00    0.00       2/4           oa_wavefm::run(void) [208]
+[186]    0.0    0.00    0.00       4         a_output::report(int) [186]
+                0.00    0.00      12/45          reply(char const *) [122]
+                0.00    0.00       4/4           a_output::foreground(void) [182]
+                0.00    0.00       4/4           agent::finis(void) [179]
+-----------------------------------------------
+                0.00    0.00       4/4           agent::timeslice(void) [18]
+[187]    0.0    0.00    0.00       4         a_ascii::run(void) [187]
+                0.00    0.00       4/4           str2units(char *) [189]
+                0.00    0.00       4/18          agent::pass(void) [148]
+-----------------------------------------------
+                0.00    0.00       4/4           agent::timeslice(void) [18]
+[188]    0.0    0.00    0.00       4         a_input::run(void) [188]
+                0.00    0.00       8/35351       debug_wanted(int, int) [88]
+                0.00    0.00       4/18          agent::pass(void) [148]
+-----------------------------------------------
+                0.00    0.00       4/4           a_ascii::run(void) [187]
+[189]    0.0    0.00    0.00       4         str2units(char *) [189]
+                0.00    0.00       4/4           parser::parser(char const *, int) [430]
+                0.00    0.00       4/76          unit::operator new(int) [384]
+                0.00    0.00       4/4           unit::unit(UNIT, parser *) [429]
+                0.00    0.00       4/4           parser::~parser(void) [428]
+-----------------------------------------------
+                0.00    0.00       4/4           r_syll::apply(unit *) [175]
+[190]    0.0    0.00    0.00       4         unit::syllabify(UNIT, char *) [190]
+                0.00    0.00      18/18          unit::syllabify(char *) [149]
+                0.00    0.00      18/574         unit::Prev(UNIT) [96]
+                0.00    0.00       4/35351       debug_wanted(int, int) [88]
+                0.00    0.00       4/418         unit::RightMost(UNIT) [99]
+-----------------------------------------------
+                0.00    0.00       3/3           cmd_data(char *, agent *) [193]
+[191]    0.0    0.00    0.00       3         hash_table<char, int>::add(char const *, int const *) [191]
+                0.00    0.00       6/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       3/14          hash_table<char, int>::fn(char const *) [152]
+-----------------------------------------------
+                0.00    0.00       3/3           hash_table<char, option>::hash_table(int) [436]
+[192]    0.0    0.00    0.00       3         hash_table<char, option>::cfg_rehash(int, int, int) [192]
+-----------------------------------------------
+                0.00    0.00       3/3           a_ttscp::run_command(char *) [55]
+[193]    0.0    0.00    0.00       3         cmd_data(char *, agent *) [193]
+                0.00    0.00       9/45          reply(char const *) [122]
+                0.00    0.00       3/4           make_rnd_passwd(char *, int) [184]
+                0.00    0.00       3/9           hash_table<char, int>::translate(char const *) [159]
+                0.00    0.00       3/3           hash_table<char, int>::add(char const *, int const *) [191]
+-----------------------------------------------
+                0.00    0.00       3/3           str2hash(char const *, unsigned int) [77]
+[194]    0.0    0.00    0.00       3         enum2str(int, char const *) [194]
+-----------------------------------------------
+                0.00    0.00       3/3           epos_done(void) [66]
+[195]    0.0    0.00    0.00       3         release(char **) [195]
+-----------------------------------------------
+                0.00    0.00       2/2           oa_wavefm::run(void) [208]
+[196]    0.0    0.00    0.00       2         wavefm::attach(int) [196]
+                0.00    0.00       2/35351       debug_wanted(int, int) [88]
+                0.00    0.00       2/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       2/2           ioctlable(int) [202]
+                0.00    0.00       2/2           wavefm::ioctl_attach(void) [201]
+                0.00    0.00       2/7           wavefm::flush(void) [164]
+-----------------------------------------------
+                0.00    0.00       2/2           a_ttscp::run_command(char *) [55]
+[197]    0.0    0.00    0.00       2         cmd_delhandle(char *, agent *) [197]
+                0.00    0.00       2/2           hash_table<char, int>::remove(char const *) [204]
+                0.00    0.00       2/45          reply(char const *) [122]
+-----------------------------------------------
+                0.00    0.00       2/2           a_ttscp::run_command(char *) [55]
+[198]    0.0    0.00    0.00       2         cmd_done(char *, agent *) [198]
+                0.00    0.00       2/45          reply(char const *) [122]
+-----------------------------------------------
+                0.00    0.00       2/2           oa_wavefm::run(void) [208]
+[199]    0.0    0.00    0.00       2         wavefm::detach(int) [199]
+                0.00    0.00       2/7           wavefm::flush(void) [164]
+                0.00    0.00       2/35351       debug_wanted(int, int) [88]
+                0.00    0.00       2/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       1/2           a_accept::a_accept(void) [468]
+                0.00    0.00       1/2           just_connect_socket(unsigned int, int) [220]
+[200]    0.0    0.00    0.00       2         getaddrbyname(char const *) [200]
+-----------------------------------------------
+                0.00    0.00       2/2           wavefm::attach(int) [196]
+[201]    0.0    0.00    0.00       2         wavefm::ioctl_attach(void) [201]
+                0.00    0.00       2/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       2/2           wavefm::attach(int) [196]
+[202]    0.0    0.00    0.00       2         ioctlable(int) [202]
+-----------------------------------------------
+                0.00    0.00       2/2           a_io::a_io(char const *, DATA_TYPE, DATA_TYPE) [415]
+[203]    0.0    0.00    0.00       2         limit_pathname(char const *, char const *) [203]
+                0.00    0.00       2/97          compose_pathname(char const *, char const *) [108]
+-----------------------------------------------
+                0.00    0.00       2/2           cmd_delhandle(char *, agent *) [197]
+[204]    0.0    0.00    0.00       2         hash_table<char, int>::remove(char const *) [204]
+                0.00    0.00       2/14          hash_table<char, int>::fn(char const *) [152]
+                0.00    0.00       2/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       2/2           agent::timeslice(void) [18]
+[205]    0.0    0.00    0.00       2         a_diphs::run(void) [205]
+                0.00    0.00       2/2           unit::write_diphs(diphone *, int, int) [213]
+                0.00    0.00       2/11          unit::~unit(void) [404]
+                0.00    0.00       2/35351       debug_wanted(int, int) [88]
+                0.00    0.00       2/18          agent::pass(void) [148]
+-----------------------------------------------
+                0.00    0.00       2/2           agent::timeslice(void) [18]
+[206]    0.0    0.00    0.00       2         a_print::run(void) [206]
+                0.00    0.00       2/110         unit::gather(char *, char *, bool) [107]
+                0.00    0.00       2/11          unit::~unit(void) [404]
+                0.00    0.00       2/18          agent::pass(void) [148]
+-----------------------------------------------
+                0.00    0.00       2/2           agent::timeslice(void) [18]
+[207]    0.0    0.00    0.00       2         a_output::run(void) [207]
+                0.00    0.00       2/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       2/4           a_output::report(int) [186]
+-----------------------------------------------
+                0.00    0.00       2/2           agent::timeslice(void) [18]
+[208]    0.0    0.00    0.00       2         oa_wavefm::run(void) [208]
+                0.00    0.00       2/2           wavefm::attach(int) [196]
+                0.00    0.00       2/2           wavefm::detach(int) [199]
+                0.00    0.00       2/35351       debug_wanted(int, int) [88]
+                0.00    0.00       2/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       2/4           a_output::report(int) [186]
+-----------------------------------------------
+                0.00    0.00       2/2           unit::syll_break(char *, unit *) [210]
+[209]    0.0    0.00    0.00       2         unit::split(unit *) [209]
+                0.00    0.00       4/35351       debug_wanted(int, int) [88]
+                0.00    0.00       2/76          unit::operator new(int) [384]
+                0.00    0.00       2/66          unit::set_father(unit *) [116]
+                0.00    0.00       2/9234        unit::sanity(void) [89]
+-----------------------------------------------
+                0.00    0.00       2/2           unit::syllabify(char *) [149]
+[210]    0.0    0.00    0.00       2         unit::syll_break(char *, unit *) [210]
+                0.00    0.00       2/2           unit::split(unit *) [209]
+-----------------------------------------------
+                0.00    0.00       2/2           a_synth::run(void) [80]
+[211]    0.0    0.00    0.00       2         synth::syndiphs(voice *, diphone *, int, wavefm *) [211]
+                0.00    0.00       8/8           ktdsyn::syndiph(voice *, diphone, wavefm *) [162]
+                0.00    0.00       6/6           lpcsyn::syndiph(voice *, diphone, wavefm *) [166]
+-----------------------------------------------
+                0.00    0.00       2/2           cmd_set(char *, agent *) [59]
+[212]    0.0    0.00    0.00       2         voice_switch(char const *) [212]
+-----------------------------------------------
+                0.00    0.00       2/2           a_diphs::run(void) [205]
+[213]    0.0    0.00    0.00       2         unit::write_diphs(diphone *, int, int) [213]
+                0.00    0.00      42/42          unit::effective(FIT_IDX) [124]
+                0.00    0.00      14/9234        unit::sanity(void) [89]
+                0.00    0.00      14/1306        unit::Next(UNIT) [91]
+                0.00    0.00       2/1084        unit::LeftMost(UNIT) [92]
+-----------------------------------------------
+                0.00    0.00       1/1           hash_table<char, file>::hash_table(int) [469]
+[214]    0.0    0.00    0.00       1         hash_table<char, file>::cfg_rehash(int, int, int) [214]
+-----------------------------------------------
+                0.00    0.00       1/1           hash_table<char, int>::hash_table(int) [470]
+[215]    0.0    0.00    0.00       1         hash_table<char, int>::cfg_rehash(int, int, int) [215]
+-----------------------------------------------
+                0.00    0.00       1/1           server(void) [19]
+[216]    0.0    0.00    0.00       1         daemonize(void) [216]
+                0.00    0.00       1/4           make_rnd_passwd(char *, int) [184]
+                0.00    0.00       1/35351       debug_wanted(int, int) [88]
+                0.00    0.00       1/12          context::context(int, int) [403]
+                0.00    0.00       1/1           a_accept::a_accept(void) [468]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[217]    0.0    0.00    0.00       1         detach(void) [217]
+                0.00    0.00       1/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       1/1           make_option_set(void) [40]
+[218]    0.0    0.00    0.00       1         text::exists(void) [218]
+-----------------------------------------------
+                0.00    0.00       1/1           shutdown_file_cache(void) [222]
+[219]    0.0    0.00    0.00       1         hash_table<char, file>::forall(void (*)(char *, file *)) [219]
+                0.00    0.00      30/30          hash_table<char, file>::fortree(hsearchtree<char, file> *, void (*)(char *, file *)) [133]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[220]    0.0    0.00    0.00       1         just_connect_socket(unsigned int, int) [220]
+                0.00    0.00       1/2           getaddrbyname(char const *) [200]
+-----------------------------------------------
+                0.00    0.00       1/1           cmd_set(char *, agent *) [59]
+[221]    0.0    0.00    0.00       1         lang_switch(char const *) [221]
+-----------------------------------------------
+                0.00    0.00       1/1           epos_catharsis(void) [65]
+[222]    0.0    0.00    0.00       1         shutdown_file_cache(void) [222]
+                0.00    0.00       1/1           hash_table<char, file>::forall(void (*)(char *, file *)) [219]
+                0.00    0.00       1/1           hash_table<char, file>::~hash_table(void) [457]
+-----------------------------------------------
+                0.00    0.00       1/1           epos_done(void) [66]
+[223]    0.0    0.00    0.00       1         shutdown_hashing(void) [223]
+                0.00    0.00       1/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       1/1           epos_done(void) [66]
+[224]    0.0    0.00    0.00       1         shutdown_units(void) [224]
+                0.00    0.00       1/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       5/679         r_syll::~r_syll(void) [424]
+                0.00    0.00       9/679         r_smooth::~r_smooth(void) [412]
+                0.00    0.00      10/679         r_raise::~r_raise(void) [408]
+                0.00    0.00      14/679         <hicore> <cycle 4> (86)
+                0.00    0.00      55/679         cond_rule::~cond_rule(void) <cycle 3> [75]
+                0.00    0.00      58/679         hashing_rule::~hashing_rule(void) <cycle 4> [385]
+                0.00    0.00      92/679         block_rule::~block_rule(void) <cycle 3> [70]
+                0.00    0.00     102/679         r_regex::~r_regex(void) [379]
+                0.00    0.00     111/679         r_contour::~r_contour(void) [377]
+                0.00    0.00     223/679         r_regress::~r_regress(void) [375]
+[373]    0.0    0.00    0.00     679         rule::~rule(void) [373]
+                0.00    0.00     679/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       5/679         r_syll::r_syll(char *) [426]
+                0.00    0.00       9/679         r_smooth::r_smooth(char *) [414]
+                0.00    0.00      10/679         r_raise::r_raise(char *) [409]
+                0.00    0.00      14/679         <hicore> <cycle 4> (86)
+                0.00    0.00      55/679         cond_rule::cond_rule(char *, text *, hash *) <cycle 2> [389]
+                0.00    0.00      58/679         hashing_rule::hashing_rule(char *) [386]
+                0.00    0.00      92/679         block_rule::block_rule(void) [381]
+                0.00    0.00     102/679         r_regex::r_regex(char *) [380]
+                0.00    0.00     111/679         r_contour::r_contour(char *) [378]
+                0.00    0.00     223/679         r_regress::r_regress(char *) [13]
+[374]    0.0    0.00    0.00     679         rule::rule(char *) [374]
+-----------------------------------------------
+                0.00    0.00      79/223         <hicore> <cycle 4> (86)
+                0.00    0.00     144/223         block_rule::~block_rule(void) <cycle 3> [70]
+[375]    0.0    0.00    0.00     223         r_regress::~r_regress(void) [375]
+                0.00    0.00     223/679         rule::~rule(void) [373]
+-----------------------------------------------
+                                 116             <hicore> <cycle 4> (86)
+[376]    0.0    0.00    0.00     116         hash_table<char, char>::~hash_table(void) <cycle 4> [376]
+                               16850             hash_table<char, char>::dissolvetree(hsearchtree<char, char> *) <cycle 4> [33]
+-----------------------------------------------
+                0.00    0.00     111/111         block_rule::~block_rule(void) <cycle 3> [70]
+[377]    0.0    0.00    0.00     111         r_contour::~r_contour(void) [377]
+                0.00    0.00     111/679         rule::~rule(void) [373]
+-----------------------------------------------
+                0.00    0.00     111/111         next_rule(text *, hash *, int *) <cycle 2> [8]
+[378]    0.0    0.00    0.00     111         r_contour::r_contour(char *) [378]
+                0.00    0.00     111/679         rule::rule(char *) [374]
+                0.00    0.00     111/120         fit(char) [106]
+-----------------------------------------------
+                0.00    0.00     102/102         block_rule::~block_rule(void) <cycle 3> [70]
+[379]    0.0    0.00    0.00     102         r_regex::~r_regex(void) [379]
+                0.00    0.00     102/679         rule::~rule(void) [373]
+-----------------------------------------------
+                0.00    0.00     102/102         next_rule(text *, hash *, int *) <cycle 2> [8]
+[380]    0.0    0.00    0.00     102         r_regex::r_regex(char *) [380]
+                0.00    0.00     306/35351       debug_wanted(int, int) [88]
+                0.00    0.00     102/679         rule::rule(char *) [374]
+-----------------------------------------------
+                0.00    0.00      11/92          r_switch::r_switch(text *, hash *) <cycle 2> [406]
+                0.00    0.00      24/92          r_choice::r_choice(text *, hash *) <cycle 2> [397]
+                0.00    0.00      57/92          r_block::r_block(text *, hash *) <cycle 2> [388]
+[381]    0.0    0.00    0.00      92         block_rule::block_rule(void) [381]
+                0.00    0.00      92/679         rule::rule(char *) [374]
+-----------------------------------------------
+                                  92             <hicore> <cycle 4> (86)
+[382]    0.0    0.00    0.00      92         hash_table<char, char>::hash_table(hash_table<char, char> *) <cycle 4> [382]
+                0.00    0.00      92/186         hash_table<char, char>::cfg_rehash(int, int, int) [104]
+                                2116             hash_table<char, char>::rehash_tree(hsearchtree<char, char> *) <cycle 4> [87]
+-----------------------------------------------
+                0.00    0.00      76/76          unit::~unit(void) [404]
+[383]    0.0    0.00    0.00      76         unit::operator delete(void *) [383]
+                0.00    0.00      76/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       2/76          unit::split(unit *) [209]
+                0.00    0.00       4/76          str2units(char *) [189]
+                0.00    0.00       6/76          unit::insert(UNIT, bool, char, bool *, bool *) [125]
+                0.00    0.00      28/76          unit::diph(hash *) [47]
+                0.00    0.00      36/76          unit::unit(UNIT, parser *) [429]
+[384]    0.0    0.00    0.00      76         unit::operator new(int) [384]
+                0.00    0.00      76/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                                  32             r_subst::~r_subst(void) <cycle 4> [392]
+                0.00    0.00       6/18991       r_diph::~r_diph(void) [73]
+                0.00    0.00      20/18991       r_prosody::~r_prosody(void) [72]
+[385]    0.0    0.00    0.00      58         hashing_rule::~hashing_rule(void) <cycle 4> [385]
+                0.00    0.00      58/679         rule::~rule(void) [373]
+                                  17             <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       6/58          r_diph::r_diph(char *) [419]
+                0.00    0.00      20/58          r_prosody::r_prosody(char *) [401]
+                0.00    0.00      32/58          r_subst::r_subst(char *) [394]
+[386]    0.0    0.00    0.00      58         hashing_rule::hashing_rule(char *) [386]
+                0.00    0.00      58/679         rule::rule(char *) [374]
+                0.00    0.00      52/97          compose_pathname(char const *, char const *) [108]
+-----------------------------------------------
+                                   2             block_rule::~block_rule(void) <cycle 3> [70]
+                                  51             cond_rule::~cond_rule(void) <cycle 3> [75]
+                0.00    0.00       4/4           rules::~rules(void) [69]
+[387]    0.0    0.00    0.00      57         r_block::~r_block(void) <cycle 3> [387]
+                                  57             block_rule::~block_rule(void) <cycle 3> [70]
+-----------------------------------------------
+                                  53             next_rule(text *, hash *, int *) <cycle 2> [8]
+                0.01    0.06       4/4           rules::rules(char const *, char const *) [6]
+[388]    0.0    0.00    0.00      57         r_block::r_block(text *, hash *) <cycle 2> [388]
+                0.00    0.00      57/92          block_rule::block_rule(void) [381]
+                                  57             block_rule::load_rules(rule *, text *, hash *) <cycle 2> [109]
+-----------------------------------------------
+                                   6             r_with::r_with(char *, text *, hash *) <cycle 2> [420]
+                                  17             r_if::r_if(char *, text *, hash *) <cycle 2> [50]
+                                  32             r_inside::r_inside(char *, text *, hash *) <cycle 2> [395]
+[389]    0.0    0.00    0.00      55         cond_rule::cond_rule(char *, text *, hash *) <cycle 2> [389]
+                0.00    0.00      55/679         rule::rule(char *) [374]
+                                  55             next_rule(text *, hash *, int *) <cycle 2> [8]
+-----------------------------------------------
+                0.00    0.00       6/34          unit::insert(UNIT, bool, char, bool *, bool *) [125]
+                0.00    0.00      28/34          unit::diph(hash *) [47]
+[390]    0.0    0.00    0.00      34         unit::unit(UNIT, int) [390]
+                0.00    0.00      34/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       1/34          a_accept::a_accept(void) [468]
+                0.00    0.00       1/34          a_disconnector::a_disconnector(void) [465]
+                0.00    0.00       2/34          a_synth::a_synth(void) [450]
+                0.00    0.00       2/34          a_diphs::a_diphs(void) [448]
+                0.00    0.00       2/34          a_print::a_print(void) [449]
+                0.00    0.00       4/34          stream::stream(char *) [62]
+                0.00    0.00       4/34          a_rules::a_rules(void) [433]
+                0.00    0.00       4/34          a_ascii::a_ascii(void) [431]
+                0.00    0.00       6/34          a_protocol::a_protocol(void) [418]
+                0.00    0.00       8/34          a_io::a_io(char const *, DATA_TYPE, DATA_TYPE) [415]
+[391]    0.0    0.00    0.00      34         agent::agent(DATA_TYPE, DATA_TYPE) [391]
+                0.00    0.00      34/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                                  11             <hicore> <cycle 4> (86)
+                0.00    0.00      21/18991       block_rule::~block_rule(void) <cycle 3> [70]
+[392]    0.0    0.00    0.00      32         r_subst::~r_subst(void) <cycle 4> [392]
+                                  32             hashing_rule::~hashing_rule(void) <cycle 4> [385]
+-----------------------------------------------
+                                  32             block_rule::~block_rule(void) <cycle 3> [70]
+[393]    0.0    0.00    0.00      32         r_inside::~r_inside(void) <cycle 3> [393]
+                                  32             cond_rule::~cond_rule(void) <cycle 3> [75]
+-----------------------------------------------
+                0.00    0.00       2/32          r_postp::r_postp(char *) [451]
+                0.00    0.00       9/32          r_prep::r_prep(char *) [413]
+                0.00    0.00      21/32          next_rule(text *, hash *, int *) <cycle 2> [8]
+[394]    0.0    0.00    0.00      32         r_subst::r_subst(char *) [394]
+                0.00    0.00      32/58          hashing_rule::hashing_rule(char *) [386]
+-----------------------------------------------
+                                  32             next_rule(text *, hash *, int *) <cycle 2> [8]
+[395]    0.0    0.00    0.00      32         r_inside::r_inside(char *, text *, hash *) <cycle 2> [395]
+                0.00    0.00      32/498         booltab(char const *) [98]
+                                  32             cond_rule::cond_rule(char *, text *, hash *) <cycle 2> [389]
+-----------------------------------------------
+                                  24             block_rule::~block_rule(void) <cycle 3> [70]
+[396]    0.0    0.00    0.00      24         r_choice::~r_choice(void) <cycle 3> [396]
+                                  24             block_rule::~block_rule(void) <cycle 3> [70]
+-----------------------------------------------
+                                  24             next_rule(text *, hash *, int *) <cycle 2> [8]
+[397]    0.0    0.00    0.00      24         r_choice::r_choice(text *, hash *) <cycle 2> [397]
+                0.00    0.00      24/92          block_rule::block_rule(void) [381]
+                                  24             block_rule::load_rules(rule *, text *, hash *) <cycle 2> [109]
+-----------------------------------------------
+                0.00    0.00       6/24          <hicore> <cycle 4> (86)
+                0.00    0.00      18/24          hash::hash(char const *, int, int, int, int, char const *, bool, char const *, char *) [28]
+[398]    0.0    0.00    0.00      24         hash_table<char, char>::hash_table(int) [398]
+                0.00    0.00      24/186         hash_table<char, char>::cfg_rehash(int, int, int) [104]
+-----------------------------------------------
+                0.00    0.00       1/22          make_option_set(void) [40]
+                0.00    0.00       4/22          rules::rules(char const *, char const *) [6]
+                0.00    0.00      17/22          load_config(char const *, char const *, char const *, OPT_STRUCT, void *, lang *) [17]
+[399]    0.0    0.00    0.00      22         text::~text(void) [399]
+                0.00    0.00      22/22          text::done(void) [145]
+                0.00    0.00      22/22          doneprefices(void) [146]
+-----------------------------------------------
+                0.00    0.00       1/20          a_disconnector::~a_disconnector(void) [453]
+                0.00    0.00       2/20          stream::~stream(void) [438]
+                0.00    0.00       2/20          a_synth::~a_synth(void) [443]
+                0.00    0.00       2/20          a_diphs::~a_diphs(void) [440]
+                0.00    0.00       2/20          a_rules::~a_rules(void) [442]
+                0.00    0.00       2/20          a_ascii::~a_ascii(void) [439]
+                0.00    0.00       4/20          a_io::~a_io(void) [427]
+                0.00    0.00       5/20          a_protocol::~a_protocol(void) [422]
+[400]    0.0    0.00    0.00      20         agent::~agent(void) [400]
+                0.00    0.00      20/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00      20/20          next_rule(text *, hash *, int *) <cycle 2> [8]
+[401]    0.0    0.00    0.00      20         r_prosody::r_prosody(char *) [401]
+                0.00    0.00      20/58          hashing_rule::hashing_rule(char *) [386]
+-----------------------------------------------
+                                  17             block_rule::~block_rule(void) <cycle 3> [70]
+[402]    0.0    0.00    0.00      17         r_if::~r_if(void) <cycle 3> [402]
+                                  17             cond_rule::~cond_rule(void) <cycle 3> [75]
+-----------------------------------------------
+                0.00    0.00       1/12          daemonize(void) [216]
+                0.00    0.00       1/12          a_accept::a_accept(void) [468]
+                0.00    0.00       4/12          stream::stream(char *) [62]
+                0.00    0.00       6/12          a_ttscp::a_ttscp(int, int) [421]
+[403]    0.0    0.00    0.00      12         context::context(int, int) [403]
+                0.00    0.00      13/35351       debug_wanted(int, int) [88]
+                0.00    0.00      11/13          cow(cowabilium **, int) [154]
+                0.00    0.00       1/7           cow_claim(void *) [163]
+-----------------------------------------------
+                                  66             unit::~unit(void) [404]
+                0.00    0.00       1/11          global destructors keyed to unit::unit(UNIT, parser *) [459]
+                0.00    0.00       1/11          epos_catharsis(void) [65]
+                0.00    0.00       2/11          a_print::run(void) [206]
+                0.00    0.00       2/11          a_diphs::run(void) [205]
+                0.00    0.00       5/11          unit::unlink(REPARENT) [167]
+[404]    0.0    0.00    0.00      11+66      unit::~unit(void) [404]
+                0.00    0.00      77/35351       debug_wanted(int, int) [88]
+                0.00    0.00      76/76          unit::operator delete(void *) [383]
+                                  66             unit::~unit(void) [404]
+-----------------------------------------------
+                                  11             block_rule::~block_rule(void) <cycle 3> [70]
+[405]    0.0    0.00    0.00      11         r_switch::~r_switch(void) <cycle 3> [405]
+                                  11             block_rule::~block_rule(void) <cycle 3> [70]
+-----------------------------------------------
+                                  11             next_rule(text *, hash *, int *) <cycle 2> [8]
+[406]    0.0    0.00    0.00      11         r_switch::r_switch(text *, hash *) <cycle 2> [406]
+                0.00    0.00      11/92          block_rule::block_rule(void) [381]
+                                  11             block_rule::load_rules(rule *, text *, hash *) <cycle 2> [109]
+-----------------------------------------------
+                0.00    0.00      10/10          lang::~lang(void) [68]
+[407]    0.0    0.00    0.00      10         voice::~voice(void) [407]
+                0.00    0.00      10/13          unclaim(file *) [157]
+                0.00    0.00      10/10          voice::operator delete(void *) [410]
+                0.00    0.00       1/1           ktdsyn::~ktdsyn(void) [455]
+                0.00    0.00       1/1           lpcvq::~lpcvq(void) [454]
+-----------------------------------------------
+                0.00    0.00      10/10          block_rule::~block_rule(void) <cycle 3> [70]
+[408]    0.0    0.00    0.00      10         r_raise::~r_raise(void) [408]
+                0.00    0.00      10/679         rule::~rule(void) [373]
+-----------------------------------------------
+                0.00    0.00      10/10          next_rule(text *, hash *, int *) <cycle 2> [8]
+[409]    0.0    0.00    0.00      10         r_raise::r_raise(char *) [409]
+                0.00    0.00      20/498         booltab(char const *) [98]
+                0.00    0.00      10/679         rule::rule(char *) [374]
+-----------------------------------------------
+                0.00    0.00      10/10          voice::~voice(void) [407]
+[410]    0.0    0.00    0.00      10         voice::operator delete(void *) [410]
+-----------------------------------------------
+                0.00    0.00      10/10          lang::add_voice(char const *) [36]
+[411]    0.0    0.00    0.00      10         voice::operator new(unsigned int) [411]
+-----------------------------------------------
+                0.00    0.00       9/9           block_rule::~block_rule(void) <cycle 3> [70]
+[412]    0.0    0.00    0.00       9         r_smooth::~r_smooth(void) [412]
+                0.00    0.00       9/679         rule::~rule(void) [373]
+-----------------------------------------------
+                0.00    0.00       9/9           next_rule(text *, hash *, int *) <cycle 2> [8]
+[413]    0.0    0.00    0.00       9         r_prep::r_prep(char *) [413]
+                0.00    0.00       9/32          r_subst::r_subst(char *) [394]
+-----------------------------------------------
+                0.00    0.00       9/9           next_rule(text *, hash *, int *) <cycle 2> [8]
+[414]    0.0    0.00    0.00       9         r_smooth::r_smooth(char *) [414]
+                0.00    0.00       9/679         rule::rule(char *) [374]
+                0.00    0.00       9/120         fit(char) [106]
+-----------------------------------------------
+                0.00    0.00       4/8           a_input::a_input(char const *) [432]
+                0.00    0.00       4/8           a_output::a_output(char const *, DATA_TYPE) [434]
+[415]    0.0    0.00    0.00       8         a_io::a_io(char const *, DATA_TYPE, DATA_TYPE) [415]
+                0.00    0.00       8/34          agent::agent(DATA_TYPE, DATA_TYPE) [391]
+                0.00    0.00       8/35351       debug_wanted(int, int) [88]
+                0.00    0.00       6/9           hash_table<char, int>::translate(char const *) [159]
+                0.00    0.00       2/2           limit_pathname(char const *, char const *) [203]
+-----------------------------------------------
+                0.00    0.00       2/7           stream::~stream(void) [438]
+                0.00    0.00       5/7           a_ttscp::~a_ttscp(void) [425]
+[416]    0.0    0.00    0.00       7         context::~context(void) [416]
+-----------------------------------------------
+                                   6             block_rule::~block_rule(void) <cycle 3> [70]
+[417]    0.0    0.00    0.00       6         r_with::~r_with(void) <cycle 3> [417]
+                0.00    0.00       2/18991       <hicore> <cycle 4> (86)
+                                   6             cond_rule::~cond_rule(void) <cycle 3> [75]
+-----------------------------------------------
+                0.00    0.00       6/6           a_ttscp::a_ttscp(int, int) [421]
+[418]    0.0    0.00    0.00       6         a_protocol::a_protocol(void) [418]
+                0.00    0.00       6/34          agent::agent(DATA_TYPE, DATA_TYPE) [391]
+-----------------------------------------------
+                0.00    0.00       6/6           next_rule(text *, hash *, int *) <cycle 2> [8]
+[419]    0.0    0.00    0.00       6         r_diph::r_diph(char *) [419]
+                0.00    0.00       6/58          hashing_rule::hashing_rule(char *) [386]
+-----------------------------------------------
+                                   6             next_rule(text *, hash *, int *) <cycle 2> [8]
+[420]    0.0    0.00    0.00       6         r_with::r_with(char *, text *, hash *) <cycle 2> [420]
+                0.00    0.00       2/97          compose_pathname(char const *, char const *) [108]
+                                   6             cond_rule::cond_rule(char *, text *, hash *) <cycle 2> [389]
+-----------------------------------------------
+                0.00    0.00       6/6           a_accept::run(void) [165]
+[421]    0.0    0.00    0.00       6         a_ttscp::a_ttscp(int, int) [421]
+                0.00    0.00       6/6           a_protocol::a_protocol(void) [418]
+                0.00    0.00       6/12          context::context(int, int) [403]
+                0.00    0.00       6/74          context::enter(void) [114]
+                0.00    0.00       6/7           cow_claim(void *) [163]
+                0.00    0.00       6/45          reply(char const *) [122]
+                0.00    0.00       6/73          context::leave(void) [115]
+                0.00    0.00       6/33          agent::block(int) [126]
+-----------------------------------------------
+                0.00    0.00       5/5           a_ttscp::~a_ttscp(void) [425]
+[422]    0.0    0.00    0.00       5         a_protocol::~a_protocol(void) [422]
+                0.00    0.00       5/20          agent::~agent(void) [400]
+-----------------------------------------------
+                0.00    0.00       5/5           uncache_file(char *, file *) [173]
+[423]    0.0    0.00    0.00       5         file::~file(void) [423]
+-----------------------------------------------
+                0.00    0.00       5/5           block_rule::~block_rule(void) <cycle 3> [70]
+[424]    0.0    0.00    0.00       5         r_syll::~r_syll(void) [424]
+                0.00    0.00       5/679         rule::~rule(void) [373]
+-----------------------------------------------
+                0.00    0.00       5/5           a_disconnector::run(void) [171]
+[425]    0.0    0.00    0.00       5         a_ttscp::~a_ttscp(void) [425]
+                0.00    0.00       5/35351       debug_wanted(int, int) [88]
+                0.00    0.00       5/7           context::~context(void) [416]
+                0.00    0.00       5/5           a_protocol::~a_protocol(void) [422]
+-----------------------------------------------
+                0.00    0.00       5/5           next_rule(text *, hash *, int *) <cycle 2> [8]
+[426]    0.0    0.00    0.00       5         r_syll::r_syll(char *) [426]
+                0.00    0.00     221/35351       debug_wanted(int, int) [88]
+                0.00    0.00       5/679         rule::rule(char *) [374]
+-----------------------------------------------
+                0.00    0.00       2/4           a_output::~a_output(void) [444]
+                0.00    0.00       2/4           a_input::~a_input(void) [441]
+[427]    0.0    0.00    0.00       4         a_io::~a_io(void) [427]
+                0.00    0.00       4/35351       debug_wanted(int, int) [88]
+                0.00    0.00       4/20          agent::~agent(void) [400]
+-----------------------------------------------
+                0.00    0.00       4/4           str2units(char *) [189]
+[428]    0.0    0.00    0.00       4         parser::~parser(void) [428]
+-----------------------------------------------
+                                  36             unit::unit(UNIT, parser *) [429]
+                0.00    0.00       4/4           str2units(char *) [189]
+[429]    0.0    0.00    0.00       4+36      unit::unit(UNIT, parser *) [429]
+                0.00    0.00      80/35351       debug_wanted(int, int) [88]
+                0.00    0.00      36/76          unit::operator new(int) [384]
+                0.00    0.00      36/64          unit::insert_end(unit *, unit *) [117]
+                0.00    0.00      24/28          parser::gettoken(void) [136]
+                                  36             unit::unit(UNIT, parser *) [429]
+-----------------------------------------------
+                0.00    0.00       4/4           str2units(char *) [189]
+[430]    0.0    0.00    0.00       4         parser::parser(char const *, int) [430]
+                0.00    0.00       4/35351       debug_wanted(int, int) [88]
+                0.00    0.00       4/4           parser::init(SYMTABLE) [183]
+-----------------------------------------------
+                0.00    0.00       4/4           make_agent(char *, agent *) [60]
+[431]    0.0    0.00    0.00       4         a_ascii::a_ascii(void) [431]
+                0.00    0.00       4/34          agent::agent(DATA_TYPE, DATA_TYPE) [391]
+-----------------------------------------------
+                0.00    0.00       4/4           make_agent(char *, agent *) [60]
+[432]    0.0    0.00    0.00       4         a_input::a_input(char const *) [432]
+                0.00    0.00       4/8           a_io::a_io(char const *, DATA_TYPE, DATA_TYPE) [415]
+-----------------------------------------------
+                0.00    0.00       4/4           make_agent(char *, agent *) [60]
+[433]    0.0    0.00    0.00       4         a_rules::a_rules(void) [433]
+                0.00    0.00       4/34          agent::agent(DATA_TYPE, DATA_TYPE) [391]
+-----------------------------------------------
+                0.00    0.00       2/4           oa_wavefm::oa_wavefm(char const *) [452]
+                0.00    0.00       2/4           <hicore> <cycle 4> (86)
+[434]    0.0    0.00    0.00       4         a_output::a_output(char const *, DATA_TYPE) [434]
+                0.00    0.00       4/8           a_io::a_io(char const *, DATA_TYPE, DATA_TYPE) [415]
+-----------------------------------------------
+                0.00    0.00       1/3           epos_catharsis(void) [65]
+                0.00    0.00       2/3           lang::~lang(void) [68]
+[435]    0.0    0.00    0.00       3         hash_table<char, option>::~hash_table(void) [435]
+                0.00    0.00     360/360         hash_table<char, option>::dissolvetree(hsearchtree<char, option> *) [100]
+-----------------------------------------------
+                0.00    0.00       1/3           make_option_set(void) [40]
+                0.00    0.00       2/3           lang::add_soft_option(char const *) [51]
+[436]    0.0    0.00    0.00       3         hash_table<char, option>::hash_table(int) [436]
+                0.00    0.00       3/3           hash_table<char, option>::cfg_rehash(int, int, int) [192]
+-----------------------------------------------
+                0.00    0.00       1/2           ktdsyn::~ktdsyn(void) [455]
+                0.00    0.00       1/2           lpcsyn::~lpcsyn(void) [456]
+[437]    0.0    0.00    0.00       2         synth::~synth(void) [437]
+-----------------------------------------------
+                0.00    0.00       2/2           cmd_stream(char *, agent *) [61]
+[438]    0.0    0.00    0.00       2         stream::~stream(void) [438]
+                0.00    0.00       2/2           oa_wavefm::~oa_wavefm(void) [445]
+                0.00    0.00       2/2           a_synth::~a_synth(void) [443]
+                0.00    0.00       2/2           a_diphs::~a_diphs(void) [440]
+                0.00    0.00       2/2           a_rules::~a_rules(void) [442]
+                0.00    0.00       2/2           a_ascii::~a_ascii(void) [439]
+                0.00    0.00       2/2           a_input::~a_input(void) [441]
+                0.00    0.00       2/7           context::~context(void) [416]
+                0.00    0.00       2/20          agent::~agent(void) [400]
+-----------------------------------------------
+                0.00    0.00       2/2           stream::~stream(void) [438]
+[439]    0.0    0.00    0.00       2         a_ascii::~a_ascii(void) [439]
+                0.00    0.00       2/20          agent::~agent(void) [400]
+-----------------------------------------------
+                0.00    0.00       2/2           stream::~stream(void) [438]
+[440]    0.0    0.00    0.00       2         a_diphs::~a_diphs(void) [440]
+                0.00    0.00       2/20          agent::~agent(void) [400]
+-----------------------------------------------
+                0.00    0.00       2/2           stream::~stream(void) [438]
+[441]    0.0    0.00    0.00       2         a_input::~a_input(void) [441]
+                0.00    0.00       2/4           a_io::~a_io(void) [427]
+-----------------------------------------------
+                0.00    0.00       2/2           stream::~stream(void) [438]
+[442]    0.0    0.00    0.00       2         a_rules::~a_rules(void) [442]
+                0.00    0.00       2/20          agent::~agent(void) [400]
+-----------------------------------------------
+                0.00    0.00       2/2           stream::~stream(void) [438]
+[443]    0.0    0.00    0.00       2         a_synth::~a_synth(void) [443]
+                0.00    0.00       2/20          agent::~agent(void) [400]
+-----------------------------------------------
+                0.00    0.00       2/2           oa_wavefm::~oa_wavefm(void) [445]
+[444]    0.0    0.00    0.00       2         a_output::~a_output(void) [444]
+                0.00    0.00       2/4           a_io::~a_io(void) [427]
+-----------------------------------------------
+                0.00    0.00       2/2           stream::~stream(void) [438]
+[445]    0.0    0.00    0.00       2         oa_wavefm::~oa_wavefm(void) [445]
+                0.00    0.00       2/2           a_output::~a_output(void) [444]
+-----------------------------------------------
+                0.00    0.00       1/2           ktdsyn::ktdsyn(voice *) [467]
+                0.00    0.00       1/2           lpcsyn::lpcsyn(voice *) [84]
+[446]    0.0    0.00    0.00       2         synth::synth(void) [446]
+-----------------------------------------------
+                0.00    0.00       2/2           a_synth::run(void) [80]
+[447]    0.0    0.00    0.00       2         wavefm::wavefm(voice *) [447]
+-----------------------------------------------
+                0.00    0.00       2/2           make_agent(char *, agent *) [60]
+[448]    0.0    0.00    0.00       2         a_diphs::a_diphs(void) [448]
+                0.00    0.00       2/34          agent::agent(DATA_TYPE, DATA_TYPE) [391]
+-----------------------------------------------
+                0.00    0.00       2/2           make_agent(char *, agent *) [60]
+[449]    0.0    0.00    0.00       2         a_print::a_print(void) [449]
+                0.00    0.00       2/34          agent::agent(DATA_TYPE, DATA_TYPE) [391]
+-----------------------------------------------
+                0.00    0.00       2/2           make_agent(char *, agent *) [60]
+[450]    0.0    0.00    0.00       2         a_synth::a_synth(void) [450]
+                0.00    0.00       2/34          agent::agent(DATA_TYPE, DATA_TYPE) [391]
+-----------------------------------------------
+                0.00    0.00       2/2           next_rule(text *, hash *, int *) <cycle 2> [8]
+[451]    0.0    0.00    0.00       2         r_postp::r_postp(char *) [451]
+                0.00    0.00       2/32          r_subst::r_subst(char *) [394]
+-----------------------------------------------
+                0.00    0.00       2/2           make_agent(char *, agent *) [60]
+[452]    0.0    0.00    0.00       2         oa_wavefm::oa_wavefm(char const *) [452]
+                0.00    0.00       2/4           a_output::a_output(char const *, DATA_TYPE) [434]
+-----------------------------------------------
+                0.00    0.00       1/1           global destructors keyed to agent::agent(DATA_TYPE, DATA_TYPE) [460]
+[453]    0.0    0.00    0.00       1         a_disconnector::~a_disconnector(void) [453]
+                0.00    0.00       1/20          agent::~agent(void) [400]
+-----------------------------------------------
+                0.00    0.00       1/1           voice::~voice(void) [407]
+[454]    0.0    0.00    0.00       1         lpcvq::~lpcvq(void) [454]
+                0.00    0.00       1/13          unclaim(file *) [157]
+                0.00    0.00       1/1           lpcsyn::~lpcsyn(void) [456]
+-----------------------------------------------
+                0.00    0.00       1/1           voice::~voice(void) [407]
+[455]    0.0    0.00    0.00       1         ktdsyn::~ktdsyn(void) [455]
+                0.00    0.00       1/2           synth::~synth(void) [437]
+-----------------------------------------------
+                0.00    0.00       1/1           lpcvq::~lpcvq(void) [454]
+[456]    0.0    0.00    0.00       1         lpcsyn::~lpcsyn(void) [456]
+                0.00    0.00       2/13          unclaim(file *) [157]
+                0.00    0.00       1/2           synth::~synth(void) [437]
+-----------------------------------------------
+                0.00    0.00       1/1           shutdown_file_cache(void) [222]
+[457]    0.0    0.00    0.00       1         hash_table<char, file>::~hash_table(void) [457]
+                0.00    0.00      30/30          hash_table<char, file>::dissolvetree(hsearchtree<char, file> *) [131]
+-----------------------------------------------
+                0.00    0.00       1/1           cmd_shutdown(char *, agent *) [64]
+[458]    0.0    0.00    0.00       1         hash_table<char, int>::~hash_table(void) [458]
+                0.00    0.00      30/30          hash_table<char, int>::dissolvetree(hsearchtree<char, int> *) [132]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_dtors_aux [513]
+[459]    0.0    0.00    0.00       1         global destructors keyed to unit::unit(UNIT, parser *) [459]
+                0.00    0.00       1/18991       <hicore> <cycle 4> (86)
+                0.00    0.00       1/11          unit::~unit(void) [404]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_dtors_aux [513]
+[460]    0.0    0.00    0.00       1         global destructors keyed to agent::agent(DATA_TYPE, DATA_TYPE) [460]
+                0.00    0.00       1/1           a_disconnector::~a_disconnector(void) [453]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [512]
+[461]    0.0    0.00    0.00       1         global constructors keyed to command_failed::command_failed(void) [461]
+                0.00    0.00       1/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [512]
+[462]    0.0    0.00    0.00       1         global constructors keyed to unit::unit(UNIT, parser *) [462]
+                0.00    0.00       1/1           unit::unit(void) [466]
+                0.00    0.00       1/18991       <hicore> <cycle 4> (86)
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [512]
+[463]    0.0    0.00    0.00       1         global constructors keyed to agent::agent(DATA_TYPE, DATA_TYPE) [463]
+                0.00    0.00       1/1           a_disconnector::a_disconnector(void) [465]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [512]
+[464]    0.0    0.00    0.00       1         global constructors keyed to reply(char const *) [464]
+                0.00    0.00       1/1           hash_table<char, int>::hash_table(int) [470]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to agent::agent(DATA_TYPE, DATA_TYPE) [463]
+[465]    0.0    0.00    0.00       1         a_disconnector::a_disconnector(void) [465]
+                0.00    0.00       1/34          agent::agent(DATA_TYPE, DATA_TYPE) [391]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to unit::unit(UNIT, parser *) [462]
+[466]    0.0    0.00    0.00       1         unit::unit(void) [466]
+-----------------------------------------------
+                0.00    0.00       1/1           setup_synth(voice *) [81]
+[467]    0.0    0.00    0.00       1         ktdsyn::ktdsyn(voice *) [467]
+                0.00    0.00       1/2           synth::synth(void) [446]
+                0.00    0.00       1/97          compose_pathname(char const *, char const *) [108]
+                0.00    0.00       1/35351       debug_wanted(int, int) [88]
+-----------------------------------------------
+                0.00    0.00       1/1           daemonize(void) [216]
+[468]    0.0    0.00    0.00       1         a_accept::a_accept(void) [468]
+                0.00    0.00       1/34          agent::agent(DATA_TYPE, DATA_TYPE) [391]
+                0.00    0.00       1/12          context::context(int, int) [403]
+                0.00    0.00       1/74          context::enter(void) [114]
+                0.00    0.00       1/2           getaddrbyname(char const *) [200]
+                0.00    0.00       1/35351       debug_wanted(int, int) [88]
+                0.00    0.00       1/33          agent::block(int) [126]
+                0.00    0.00       1/73          context::leave(void) [115]
+-----------------------------------------------
+                0.00    0.00       1/1           claim(char const *, char const *, char const *, char const *) [74]
+[469]    0.0    0.00    0.00       1         hash_table<char, file>::hash_table(int) [469]
+                0.00    0.00       1/1           hash_table<char, file>::cfg_rehash(int, int, int) [214]
+-----------------------------------------------
+                0.00    0.00       1/1           global constructors keyed to reply(char const *) [464]
+[470]    0.0    0.00    0.00       1         hash_table<char, int>::hash_table(int) [470]
+                0.00    0.00       1/1           hash_table<char, int>::cfg_rehash(int, int, int) [215]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+
+Index by function name
+
+  (86) <hicore>              [452] oa_wavefm::oa_wavefm(char const *) [136] parser::gettoken(void)
+  [92] unit::LeftMost(UNIT)  [378] r_contour::r_contour(char *) [183] parser::init(SYMTABLE)
+  [91] unit::Next(UNIT)      [401] r_prosody::r_prosody(char *) [158] parser::initables(SYMTABLE)
+  [96] unit::Prev(UNIT)       [13] r_regress::r_regress(char *) [125] unit::insert(UNIT, bool, char, bool *, bool *)
+  [99] unit::RightMost(UNIT) [383] unit::operator delete(void *) [117] unit::insert_end(unit *, unit *)
+ [422] a_protocol::~a_protocol(void) [410] voice::operator delete(void *) [201] wavefm::ioctl_attach(void)
+  [70] block_rule::~block_rule(void) [384] unit::operator new(int) [202] ioctlable(int)
+ [385] hashing_rule::~hashing_rule(void) [411] voice::operator new(unsigned int) [220] just_connect_socket(unsigned int, int)
+ [453] a_disconnector::~a_disconnector(void) [469] hash_table<char, file>::hash_table(int) [221] lang_switch(char const *)
+ [427] a_io::~a_io(void)     [436] hash_table<char, option>::hash_table(int) [115] context::leave(void)
+ [423] file::~file(void)     [382] hash_table<char, char>::hash_table(hash_table<char, char> *) [203] limit_pathname(char const *, char const *)
+  [68] lang::~lang(void)     [398] hash_table<char, char>::hash_table(int) [83] literal_hash(char *)
+ [402] r_if::~r_if(void)     [470] hash_table<char, int>::hash_table(int) [43] load_config(char const *)
+ [373] rule::~rule(void)     [168] hash_table<char, file>::add(char const *, file const *) [17] load_config(char const *, char const *, char const *, OPT_STRUCT, void *, lang *)
+ [399] text::~text(void)      [42] hash_table<char, option>::add(char const *, option const *) [30] hashing_rule::load_hash(void)
+ [404] unit::~unit(void)      [10] hash_table<char, char>::add(char const *, char const *) [26] load_languages(char const *)
+ [400] agent::~agent(void)   [191] hash_table<char, int>::add(char const *, int const *) [109] block_rule::load_rules(rule *, text *, hash *)
+ [454] lpcvq::~lpcvq(void)    [76] hash::add_int(char const *, int) [1] main
+  [69] rules::~rules(void)    [25] add_language(char const *) [60] make_agent(char *, agent *)
+ [437] synth::~synth(void)    [51] lang::add_soft_option(char const *) [40] make_option_set(void)
+ [407] voice::~voice(void)    [52] lang::add_soft_opts(char const *) [184] make_rnd_passwd(char *, int)
+ [455] ktdsyn::~ktdsyn(void)  [36] lang::add_voice(char const *) [8] next_rule(text *, hash *, int *)
+ [456] lpcsyn::~lpcsyn(void)  [37] lang::add_voices(char const *) [161] ktdsyn::op_psl(char *, unsigned char *)
+ [428] parser::~parser(void) [174] parser::alias(char const *, char const *) [29] option_struct(char const *, hash_table<char, option> *)
+  [73] r_diph::~r_diph(void)  [46] r_if::apply(unit *)   [105] parse_cfg_str(char *, char const *)
+ [424] r_syll::~r_syll(void)  [22] rules::apply(unit *)  [185] parse_cmd_line(void)
+ [417] r_with::~r_with(void)  [44] r_diph::apply(unit *) [148] agent::pass(void)
+ [438] stream::~stream(void) [175] r_syll::apply(unit *) [153] unit::raise(bool *, bool *, UNIT, UNIT)
+ [439] a_ascii::~a_ascii(void) [49] r_with::apply(unit *) [113] unit::regex(re_pattern_buffer *, int, regmatch_t *, char const *)
+ [440] a_diphs::~a_diphs(void) [176] stream::apply(agent *, int) [143] parser::regist(UNIT, char const *)
+ [441] a_input::~a_input(void) [177] a_input::apply(int) [141] hash_table<char, char>::rehash(void)
+ [442] a_rules::~a_rules(void) [23] r_block::apply(unit *) [142] hash_table<char, char>::rehash(int)
+ [443] a_synth::~a_synth(void) [151] r_raise::apply(unit *) [87] hash_table<char, char>::rehash_tree(hsearchtree<char, char> *)
+ [425] a_ttscp::~a_ttscp(void) [112] r_regex::apply(unit *) [137] unit::relabel(hash *, SUBST_METHOD, UNIT)
+ [416] context::~context(void) [32] r_subst::apply(unit *) [195] release(char **)
+ [387] r_block::~r_block(void) [147] r_inside::apply(unit *) [170] hash_table<char, file>::remove(char const *)
+ [408] r_raise::~r_raise(void) [45] r_prosody::apply(unit *) [71] hash_table<char, option>::remove(char const *)
+ [379] r_regex::~r_regex(void) [102] r_regress::apply(unit *) [204] hash_table<char, int>::remove(char const *)
+ [392] r_subst::~r_subst(void) [21] block_rule::apply_current(unit *) [122] reply(char const *)
+ [444] a_output::~a_output(void) [103] unit::assim(UNIT, bool, char *, bool *, bool *) [186] a_output::report(int)
+ [396] r_choice::~r_choice(void) [196] wavefm::attach(int) [54] a_protocol::run(void)
+ [393] r_inside::~r_inside(void) [126] agent::block(int) [171] a_disconnector::run(void)
+ [412] r_smooth::~r_smooth(void) [98] booltab(char const *) [187] a_ascii::run(void)
+ [405] r_switch::~r_switch(void) [214] hash_table<char, file>::cfg_rehash(int, int, int) [205] a_diphs::run(void)
+  [75] cond_rule::~cond_rule(void) [192] hash_table<char, option>::cfg_rehash(int, int, int) [188] a_input::run(void)
+ [445] oa_wavefm::~oa_wavefm(void) [104] hash_table<char, char>::cfg_rehash(int, int, int) [206] a_print::run(void)
+ [377] r_contour::~r_contour(void) [215] hash_table<char, int>::cfg_rehash(int, int, int) [24] a_rules::run(void)
+  [72] r_prosody::~r_prosody(void) [93] rule::check_child(rule *) [80] a_synth::run(void)
+ [375] r_regress::~r_regress(void) [119] block_rule::check_children(void) [165] a_accept::run(void)
+ [457] hash_table<char, file>::~hash_table(void) [97] rule::check_children(void) [207] a_output::run(void)
+ [435] hash_table<char, option>::~hash_table(void) [120] cond_rule::check_children(void) [208] oa_wavefm::run(void)
+ [376] hash_table<char, char>::~hash_table(void) [127] parser::chrlev(unsigned char) [55] a_ttscp::run_command(char *)
+ [458] hash_table<char, int>::~hash_table(void) [74] claim(char const *, char const *, char const *, char const *) [89] unit::sanity(void)
+ [459] global destructors keyed to unit::unit(UNIT, parser *) [178] cmd_apply(char *, agent *) [134] sched_sel(void)
+ [460] global destructors keyed to agent::agent(DATA_TYPE, DATA_TYPE) [193] cmd_data(char *, agent *) [135] agent::schedule(void)
+ [461] global constructors keyed to command_failed::command_failed(void) [197] cmd_delhandle(char *, agent *) [118] select_socket(bool)
+ [462] global constructors keyed to unit::unit(UNIT, parser *) [198] cmd_done(char *, agent *) [19] server(void)
+ [463] global constructors keyed to agent::agent(DATA_TYPE, DATA_TYPE) [59] cmd_set(char *, agent *) [94] rule::set_dbg_tag(text *)
+ [464] global constructors keyed to reply(char const *) [64] cmd_shutdown(char *, agent *) [116] unit::set_father(unit *)
+ [418] a_protocol::a_protocol(void) [61] cmd_stream(char *, agent *) [111] block_rule::set_level(UNIT, UNIT)
+ [381] block_rule::block_rule(void) [5] lang::compile_rules(void) [150] r_if::set_level(UNIT, UNIT)
+  [41] r_progress::r_progress(char *) [108] compose_pathname(char const *, char const *) [95] rule::set_level(UNIT, UNIT)
+ [386] hashing_rule::hashing_rule(char *) [154] cow(cowabilium **, int) [172] r_syll::set_level(UNIT, UNIT)
+ [465] a_disconnector::a_disconnector(void) [163] cow_claim(void *) [129] r_subst::set_level(UNIT, UNIT)
+ [415] a_io::a_io(char const *, DATA_TYPE, DATA_TYPE) [216] daemonize(void) [79] set_option(option *, char *)
+  [28] hash::hash(char const *, int, int, int, int, char const *, bool, char const *, char *) [88] debug_wanted(int, int) [53] set_option(option *, char *, void *)
+  [27] lang::lang(char const *, char const *) [199] wavefm::detach(int) [31] set_option(char *, char *, void *, hash_table<char, option> *)
+  [50] r_if::r_if(char *, text *, hash *) [217] detach(void) [81] setup_synth(voice *)
+ [374] rule::rule(char *)    [160] ktdsyn::dif2psl(char *, char *) [138] sgets(char *, int, int, char *)
+  [78] text::text(char const *, char const *, char const *, bool) [47] unit::diph(hash *) [67] configuration::shutdown(void)
+ [466] unit::unit(void)       [48] unit::diphs(UNIT, hash *) [222] shutdown_file_cache(void)
+ [429] unit::unit(UNIT, parser *) [169] a_disconnector::disconnect(a_protocol *) [223] shutdown_hashing(void)
+ [390] unit::unit(UNIT, int) [131] hash_table<char, file>::dissolvetree(hsearchtree<char, file> *) [224] shutdown_units(void)
+ [391] agent::agent(DATA_TYPE, DATA_TYPE) [100] hash_table<char, option>::dissolvetree(hsearchtree<char, option> *) [209] unit::split(unit *)
+  [82] lpcvq::lpcvq(voice *)  [33] hash_table<char, char>::dissolvetree(hsearchtree<char, char> *) [101] split_string(char *)
+   [6] rules::rules(char const *, char const *) [132] hash_table<char, int>::dissolvetree(hsearchtree<char, int> *) [110] sputs(char const *, int)
+ [446] synth::synth(void)    [145] text::done(void)       [57] unit::sseg(UNIT, hash *)
+  [38] voice::voice(char const *, char const *, lang *) [146] doneprefices(void) [56] unit::sseg(hash *, char, int *)
+ [467] ktdsyn::ktdsyn(voice *) [124] unit::effective(FIT_IDX) [11] str2enum(char const *, char const *, int)
+  [84] lpcsyn::lpcsyn(voice *) [114] context::enter(void) [77] str2hash(char const *, unsigned int)
+ [430] parser::parser(char const *, int) [194] enum2str(int, char const *) [189] str2units(char *)
+ [419] r_diph::r_diph(char *) [65] epos_catharsis(void)   [90] strip(char *)
+ [413] r_prep::r_prep(char *) [66] epos_done(void)       [139] text::subfile(char const *)
+ [426] r_syll::r_syll(char *)  [3] epos_init(int, char **) [130] unit::subst(hash *, SUBST_METHOD)
+ [420] r_with::r_with(char *, text *, hash *) [4] epos_init(void) [140] text::superfile(void)
+  [62] stream::stream(char *) [218] text::exists(void)   [210] unit::syll_break(char *, unit *)
+ [447] wavefm::wavefm(voice *) [179] agent::finis(void)  [190] unit::syllabify(UNIT, char *)
+ [431] a_ascii::a_ascii(void) [180] stream::finis(void)  [149] unit::syllabify(char *)
+ [448] a_diphs::a_diphs(void) [106] fit(char)            [162] ktdsyn::syndiph(voice *, diphone, wavefm *)
+ [432] a_input::a_input(char const *) [164] wavefm::flush(void) [166] lpcsyn::syndiph(voice *, diphone, wavefm *)
+ [449] a_print::a_print(void) [144] hash_table<char, file>::fn(char const *) [211] synth::syndiphs(voice *, diphone *, int, wavefm *)
+ [433] a_rules::a_rules(void) [35] hash_table<char, option>::fn(char const *) [123] lpcsyn::synmod(model, wavefm *)
+ [450] a_synth::a_synth(void) [14] hash_table<char, char>::fn(char const *) [18] agent::timeslice(void)
+ [421] a_ttscp::a_ttscp(int, int) [152] hash_table<char, int>::fn(char const *) [156] hash_table<char, file>::translate(char const *)
+ [403] context::context(int, int) [12] fntab(char const *, char const *) [20] hash_table<char, option>::translate(char const *)
+ [388] r_block::r_block(text *, hash *) [128] fopen(char const *, char const *, char const *) [39] hash_table<char, char>::translate(char const *)
+ [451] r_postp::r_postp(char *) [219] hash_table<char, file>::forall(void (*)(char *, file *)) [159] hash_table<char, int>::translate(char const *)
+ [409] r_raise::r_raise(char *) [181] stream::foreground(void) [15] hash::translate_int(char const *)
+ [380] r_regex::r_regex(char *) [182] a_output::foreground(void) [173] uncache_file(char *, file *)
+ [394] r_subst::r_subst(char *) [133] hash_table<char, file>::fortree(hsearchtree<char, file> *, void (*)(char *, file *)) [157] unclaim(file *)
+ [468] a_accept::a_accept(void) [121] lpcvq::frobmod(int, diphone, model *, int &, int &) [167] unit::unlink(REPARENT)
+ [434] a_output::a_output(char const *, DATA_TYPE) [107] unit::gather(char *, char *, bool) [212] voice_switch(char const *)
+ [397] r_choice::r_choice(text *, hash *) [58] get_named_cfg(char const *) [213] unit::write_diphs(diphone *, int, int)
+ [395] r_inside::r_inside(char *, text *, hash *) [155] get_timestamp(char *) [85] <cycle 1>
+ [414] r_smooth::r_smooth(char *) [34] get_words(char *, char **, int) [7] <cycle 2>
+ [406] r_switch::r_switch(text *, hash *) [200] getaddrbyname(char const *) [63] <cycle 3>
+ [389] cond_rule::cond_rule(char *, text *, hash *) [16] text::getline(char *) [9] <cycle 4>

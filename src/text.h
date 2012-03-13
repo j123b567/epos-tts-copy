@@ -1,5 +1,5 @@
 /*
- *	ss/src/text.h
+ *	epos/src/text.h
  *	(c) geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -16,10 +16,10 @@
  *	preprocessing directives, such as #include "..." .
  */
 
-#ifndef SS_TEXT
-#define SS_TEXT
+#ifndef EPOS_TEXT
+#define EPOS_TEXT
 
-extern hash *_directive_prefices;		//called only by ss_done()
+extern hash *_directive_prefices;		//called only by epos_done()
 
 struct textlink;
 
@@ -48,4 +48,4 @@ class text
 	int   current_line;
 };
 
-#endif                    //#ifndef SS_TEXT
+#endif                    //#ifndef EPOS_TEXT

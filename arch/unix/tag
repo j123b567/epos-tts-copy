@@ -1,0 +1,7 @@
+#! /bin/sh
+
+if [ -z "$2" ]; then n=1
+else n=$2
+fi
+
+`grep -n $1 *c *h | sed -e "$n !d" |awk -F: '{print "joe +"$2" "$1}'`

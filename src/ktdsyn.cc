@@ -1,5 +1,5 @@
 /*
- *	ss/src/ktdsyn.cc
+ *	epos/src/ktdsyn.cc
  *	(c) 1996-98 Zdenek Kadlec, kadlec@phil.muni.cz
  *	(c) 1997-98 Martin Petriska, petriska@decef.stuba.sk
  *	(c) 1997-98 Petr Horak, horak@ure.cas.cz
@@ -43,7 +43,7 @@ ktdsyn::ktdsyn (voice *v)
 	char * pathname = compose_pathname("useky.dat", v->inv_dir);
 	f = fopen (pathname, "rt");
 	free(pathname);
-	if (!f) shriek("Nemozem otvorit subor 'useky.dat'");
+	if (!f) shriek(841, "Cannot open file useky.dat");
 	po_u = 0;
  	while (!feof (f)) {		/* FIXME: consider turning into a freadin() call */
 		int imp_int;		/* to make scanf() happy */
@@ -52,7 +52,7 @@ ktdsyn::ktdsyn (voice *v)
 		po_u++;
 	}
 	fclose (f);
-	DEBUG(3,9,fprintf(stddbg,"Time Domain synth OK\n");)
+	DEBUG(3,9,fprintf(STDDBG,"Time Domain synth OK\n");)
 }
 
 
@@ -62,19 +62,18 @@ ktdsyn::~ktdsyn()
 	/* uzavrit wavout */
 }
 
-void ktdsyn::syndiph(voice *v, diphone d)
+void ktdsyn::syndiph(voice *v, diphone d, wavefm *w)
 {
-	DEBUG(1,9,fprintf(stddbg, "Diphone %d for ktdsyn\n", d.code);)
-	if (v->samp_size != 8) shriek("ktd synth still supports only 8bit channels, sorry\n");
+	DEBUG(1,9,fprintf(STDDBG, "Diphone %d for ktdsyn\n", d.code);)
+	if (v->samp_size != 8) shriek(813, "ktd synth still supports only 8bit channels, sorry\n");
 
-	unsigned char *s_psl;
-	s_psl = new unsigned char[6000];
-	char *m_sub;
-	m_sub = (char *)malloc(MAX_PATHNAME);
+	unsigned char *s_psl = new unsigned char[6000];
+	char *m_sub = (char *)malloc(MAX_PATHNAME);
+
 	strcpy (m_sub, cfg->base_dir);
 	strcat (m_sub, "/");
 	strcat (m_sub, v->inv_dir);
-	strcat (m_sub, "/");
+	strcat (m_sub, "/USEKY/");
 	dif2psl (U[d.code].jm, m_sub);
 	strcat (m_sub, ".PSL");
 	op_psl (m_sub, s_psl);
@@ -88,16 +87,16 @@ void ktdsyn::syndiph(voice *v, diphone d)
 		smer = (pocimp - 1) / (pocp - 1);
 		for (int i = 0; i < pocp; i++) {
 			int jw = int (smer * i) * 100;
-            if (peri<99) jw = jw+(50-peri/2);
+			if (peri<99) jw = jw+(50-peri/2);
 			for (int j = 0; j < peri; j++) {
 				if (j < 100) {
-                    pomr = s_psl[jw] - 128 ;
-				    pomr = 0x80 + d.e * (pomr) / 100;
-				    if (pomr > 255) pomr = 255;
-				    if (pomr < 0) pomr = 0;
-				    v->sample((int)pomr);
-                } else
-                    v->sample((int)128);
+					pomr = s_psl[jw] - 128 ;
+					pomr = 0x80 + d.e * (pomr) / 100;
+					if (pomr > 255) pomr = 255;
+					if (pomr < 0) pomr = 0;
+					w->sample((int)pomr);
+				} else
+					w->sample((int)128);
 				jw++;
 			}
 		}
@@ -108,8 +107,10 @@ void ktdsyn::syndiph(voice *v, diphone d)
 
 int ktdsyn::dif2psl (char *m_difon, char *m_sub)
 {
-	for (int i = 0; i < 2; i++)
-		if ((m_difon[i] == '/') || (m_difon[i] == '\\'))
+	for (int i = 0; i < 2; i++) {
+		if (m_difon[i] == ',')
+			strcat(m_sub, "0");
+		else if (m_difon[i] == '/' || m_difon[i] == '\\')
 			strcat (m_sub, "-");
 		else if (m_difon[i] == '[')
 			strcat (m_sub, "(");
@@ -120,6 +121,7 @@ int ktdsyn::dif2psl (char *m_difon, char *m_sub)
 			strcat (m_sub, "~");
 		} else
 		strncat (m_sub, &m_difon[i], 1);
+	}
 	return 0;
 }
 

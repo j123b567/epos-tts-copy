@@ -1,37 +1,43 @@
 
 		Files in this package (UNIX)
 
-	Note that the DOS version doesn't contain the "aux", "src" and "dos" 
-directories, while src/*.cc, src/*.h, aux/ss.cpp and ss/README.dos are
+	[outdated, FIXME]
+
+	Note that the DOS version doesn't contain the "arch", "src" and "dos" 
+directories, while src/*.cc, src/*.h, aux/epos.cpp and aux/README.dos are
 copied to the base directory. The files may use a different encoding of the
 Czech characters (UNIX always uses ISO 8859-2) and have been LF->CRLF converted.
 
 	This file tends to be outdated.
 
 	The files usually located in the "cfg" directory may be moved
-elsewhere using ss.ini.
+elsewhere using epos.ini.
 
-/usr/lib/ss/cfg			various configuration files read by ss
-/usr/lib/ss/lng/*		various language specific cfg files
-/usr/lib/ss/lng/*/text.txt	random input text to be processed (change in ss.ini)
-/usr/lib/ss/lng/czech/nnet.rul	invokes czech.rul, adds some special neural net rules
-/usr/lib/ss/cfg/*hdr.txt	printed just before the transcription
-/usr/lib/ss/cfg/*ftr.txt	printed following the transcription
-/usr/lib/ss/lng/*/*.dic		various corpora of exceptions, used by the current rules
-/usr/lib/ss/lng/*/*.dph		descriptions of diphone inventories, used by the rules
-/usr/lib/ss/cfg/ssfixed.ini	presumably never-changing (but changeable) parameters
-/usr/lib/ss/cfg/ss.ini		presumably often changing tunable parameters
-/usr/lib/ss/cfg/ssdeflt.ini	default values (used only in ss_reinit())
-/usr/lib/ss/cfg/ssansi.ini	if selected in ssfixed.ini, defines ANSI color output
-/usr/lib/ss/cfg/ssrtf.ini	if chosen in ssfixed.ini, defines Rich Text Fmt output
-/usr/lib/ss/inv/*/*.ini		diphone inventories
-/usr/lib/ss/prosody/*.dic	language independent (rather, default) prosody rules
+/usr/lib/epos/cfg		various configuration files read by Epos
+/usr/lib/epos/lng/*		various language specific cfg files
+/usr/lib/epos/lng/*/text.txt	random input text to be processed (change in epos.ini)
+/usr/lib/epos/lng/czech/nnet.rul   invokes czech.rul, adds some special neural net rules
+/usr/lib/epos/cfg/*hdr.txt	printed just before the transcription
+/usr/lib/epos/cfg/*ftr.txt	printed following the transcription
+/usr/lib/epos/lng/*/*.dic	various corpora of exceptions, used by the current rules
+/usr/lib/epos/lng/*/*.dph	descriptions of diphone inventories, used by the rules
+/usr/lib/epos/cfg/fixed.ini	presumably never-changing (but changeable) parameters
+/usr/lib/epos/cfg/epos.ini	presumably often changing tunable parameters
+/usr/lib/epos/cfg/default.ini	default values (used only in epos_reinit())
+/usr/lib/epos/cfg/ansi.ini	if selected in fixed.ini, defines ANSI color output
+/usr/lib/epos/cfg/rtf.ini	if chosen in fixed.ini, defines Rich Text Fmt output
+/usr/lib/epos/inv/*/*.ini	diphone inventories, voice configuration
+/usr/lib/epos/prosody/*.dic	language independent (rather, default) prosody rules
 
-/var/log/ssdlog		system wide log of TTSCP transactions of the daemon
+/var/log/epos		system wide log of TTSCP transactions of the daemon
 			(still useful mostly for debugging)
 
 doc			various documentation, mostly both in Czech and English
-doc/*/*.doc		the filenames are self-explanatory
+doc/czech/*.doc		the filenames are self-explanatory, plain ASCII text, incomplete
+doc/english/*.sgml	Epos documentation source text in SGML
+doc/english/epos.dvi	complete Epos documentation, nicely typeset
+doc/english/epos.txt	complete Epos documentation in plain text (read with "more")
+doc/english/epos*.html	complete Epos documentation in HTML
 doc/Intro		what to read first
 doc/Changes		what is new, improved or newly broken in this version
 doc/Todo		things I'd add if I knew how and had the time
@@ -39,7 +45,7 @@ doc/Files		(this file)
 doc/COPYING		the GNU license - legalese and copyleft. Worth reading.
 
 dos			if you do a "make dos" ("make dos1250" etc.), a DOS
-dos/ss?-?-?.zip	        	package will show up here
+dos/ep?-?-?.zip	        	package will show up here
 
 src			C++ source files
 src/configure		compilation support (converts Makefile.in to Makefile)
@@ -59,24 +65,23 @@ src/interf.h   (.cc)	interface routines
 src/text.h     (.cc)	text file preprocessor (handles #include etc.)
 src/synth.h    (.cc)    diphones-to-speech synthesis
 ...
-src/config.cc		list of various runtime options. Gets #included nine times.
-src/ss.cc		an example main() code. Not present in a DLL.
+src/options.cc		list of various runtime options. Gets #included nine times.
 
-aux			things that don't fit elsewhere, scripts et alia
-aux/ss.cpp		Borland C++ source file. Compile just this one.
+arch			things that don't fit elsewhere, scripts et alia
+aux/epos.cpp		Borland C++ source file. Compile just this one.
 aux/cstodos		script to make a DOS package. Uses cstocs, awk...
 aux/tag			script to find a tag in the sources (invoke in "src")
 aux/README.dos		how to compile the DOS package
-aux/maketgz		script to make a ss?-?-? package on both disk & floppy
+aux/maketgz		script to make a ep?-?-? package on both disk & floppy
 aux/makedate		print last modification time of the sources
-aux/makever		print the ss version (as #defined in common.h)
-aux/makeinst		installs cfg/... to /usr/lib/ss... and more
-
+aux/makever		print the Epos version (as #defined in common.h)
+aux/makeinst		installs cfg/... to /usr/lib/epos... and more
+...
 
 
 How does the autoconfiguration work: 
 
-	I. The maintainer edits configure.in and Makefile.in
+	I. The maintainer creates configure.in and Makefile.in
 	   and runs two programs on it before making a package:
 
 configure.in ----(running autoheader)----> config.h.in
@@ -84,7 +89,7 @@ configure.in ----(running autoheader)----> config.h.in
         `--------(running autoconf)----> configure
 
 
-	II. The guy who installs the package runs configure
+	II. The user who installs the package runs configure
 	    which will adjust the package to his computer:	
 
 Makefile.in --.                           ,----> Makefile
@@ -92,5 +97,5 @@ Makefile.in --.                           ,----> Makefile
 config.h.in --'                           `----> config.h
 
 
-	III. Now you can run "make" and "make install"
+	III. Now it is possible to run "make" and "make install"
 	     using the Makefile generated.

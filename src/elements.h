@@ -1,5 +1,5 @@
 /*
- *	ss/src/elements.h
+ *	epos/src/elements.h
  *	(c) geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 
 class unit
 {
-	friend void ss_catharsis();	  // necessary only #ifdef WANT_DMALLOC
+	friend void epos_catharsis();	  // necessary only #ifdef WANT_DMALLOC
 	friend class r_inside;
 
 	unit *next, *prev;                //same layer
@@ -50,7 +50,7 @@ class unit
 	inline bool subst(hash *table, unsigned int safe_grow,
 		char*s1b,char*s1e,char*s2b,char*s3b,char*s3e); //inner, see implem.
 	void syll_break(char *sonority, unit *before);    //Implements the side-syllable hack
-	void syllablify(char *sonority);  //May split "father" just before "this", if sonority minimum
+	void syllabify(char *sonority);  //May split "father" just before "this", if sonority minimum
 	void sseg(hash *templates, char symbol, int *quantity);
 	void diph(hash *diph_inventory);  //Will create up to one diphone. Go see it if curious.
     
@@ -68,6 +68,7 @@ class unit
                                       //Writes the diphones out to an array of
                                       // struct diphone. Returns: how many written
                                       // starting_at==0 for the first diphone
+	void show_phones();	      // printf() the phones
 	void nnet_out(const char *filename, const char *dirname);
 	void fout(char *filename);        //stdout if NULL
 	void fprintln(FILE *outf);        //does not recurse, prints cont,f,i,t
@@ -86,7 +87,7 @@ class unit
                                       // and right[Prev] are both true. Backwards=regressive. 
 	void split(unit *before);         //Split this unit just before "before"
                                       //not too robust
-	void syllablify(UNIT target, char *sonority);
+	void syllabify(UNIT target, char *sonority);
                                       // Will split units (syllables),
                                       // according to sonority[cont] of "target"
                                       // units (phones) contained there
@@ -114,8 +115,12 @@ class unit
                                       //  the scope, returns EMPTY
 	unit *Next(UNIT target);          //If no targets follow (or precede) within 
 	unit *Prev(UNIT target);          //  the current scope, returns EMPTY
+
+	void *operator new(size_t size);
+	void operator delete(void *ptr);
 };
 
 extern char * _subst_buff;
 extern unit * _unit_just_unlinked;
 
+void shutdown_units();

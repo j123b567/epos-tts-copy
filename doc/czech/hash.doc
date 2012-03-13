@@ -1,51 +1,51 @@
 
 Tento soubor je urèen pouze tìm, kdo mají v úmyslu modifikovat nebo
-ve vlastních programech vyuívat tøídu hash (hashovací tabulky).
+ve vlastních programech vyu¾ívat tøídu hash (hashovací tabulky).
 
 
 Co momentálnì hashovací tabulky umí
 -----------------------------------
 
 "Hashování (krkolomnì druhdy zváno "methoda transformace klíèe") jest
- zpùsob, jak vìtšího mnoství neuspoøádanıch dat v memoráøi uloiti
- a v èase hbitém, ba s mnostvím nemìnném, k datu veškeren pøístup míti."
-			(Repetitorium školy mateøské, J.A. Comenius)
+ zpùsob, jak vìt¹ího mno¾ství neuspoøádanıch dat v memoráøi ulo¾iti
+ a v èase hbitém, ba s mno¾stvím nemìnném, k datu ve¹keren pøístup míti."
+			(Repetitorium ¹koly mateøské, J.A. Comenius)
 
-Tato implementace hashovacích tabulek pro ošetøení kolizí pouívá
-vyvaované AVL stromy, a je mono ji nastavit, aby se sama
+Tato implementace hashovacích tabulek pro o¹etøení kolizí pou¾ívá
+vyva¾ované AVL stromy, a je mo¾no ji nastavit, aby se sama
 pøehashovala, pakli hloubka stromu nebo koeficient zaplnìní pøesáhne
 urèitou mez, nebo naopak pokud zaène bıt velmi øídká.
 
-Kadá poloka v tabulce sestává z klíèe a s ním asociovanıch dat.
-Klíè a data mohou bıt buïto objekty nebo øetìzce (ne nutnì toté).
-Klíè se pouívá k vyhledávání, data se pouze vezou.
+Ka¾dá polo¾ka v tabulce sestává z klíèe a s ním asociovanıch dat.
+Klíè a data mohou bıt buïto objekty nebo øetìzce (ne nutnì toté¾).
+Klíè se pou¾ívá k vyhledávání, data se pouze vezou.
 
-Podporované operace v zásadì jsou pøidání poloky, vyhledání poloky
+Podporované operace v zásadì jsou pøidání polo¾ky, vyhledání polo¾ky
 (vstup: klíè; vıstup: data, pokud byl nalezen), odstranìní existující
-poloky a seslání zvenku poskytnuté funkce na všechny poloky.
+polo¾ky a seslání zvenku poskytnuté funkce na v¹echny polo¾ky.
 
-Oèekává se ovšem, e je-li klíè objektem, nikoli øetìzcem, e má
+Oèekává se ov¹em, ¾e je-li klíè objektem, nikoli øetìzcem, ¾e má
 korektnì fungující operátor "-" (vrací nulu v pøípadì logické 
 shodnosti klíèù a nebo kladné èi záporné èíslo tak, aby se choval
 asymetricky a transitivnì, tj. analogicky jako strcmp) a dále
-operátor pøetypování na unsigned int, kterı slouí jako vıchodisko
+operátor pøetypování na unsigned int, kterı slou¾í jako vıchodisko
 pro hashovací funkci, to jest musí dávat stejnou hodnotu pro logicky
-shodné klíèe a pokud mono rùznou hodnotu pro klíèe rùzné; 
+shodné klíèe a pokud mo¾no rùznou hodnotu pro klíèe rùzné; 
 je vhodné, aby se tento operátor choval deterministicky, ale pøitom
 co nejnepøedvídatelnìji. 
 
 Dále jak klíè, tak data, jsou-li objektem, musí disponovat korektním
-copy constructorem, kterı se pouije pro vytvoøení lokální kopie pøi
-pøidávání do tabulky. Leda, e by uivatel chtìl, aby si tabulka
+copy constructorem, kterı se pou¾ije pro vytvoøení lokální kopie pøi
+pøidávání do tabulky. Leda, ¾e by u¾ivatel chtìl, aby si tabulka
 nevytváøela vlastní kopie objektù - zejména pokud jde o objekty
-trvalé, jejich existenci po dobu uloení v tabulce zajišuje sám.
+trvalé, jejich¾ existenci po dobu ulo¾ení v tabulce zaji¹»uje sám.
 V takovém pøípadì je nutno po vytvoøení prázdné tabulky vypnout
-(vynulovat) její poloky "dupkey" èi "dupdata", jak je zapotøebí.
+(vynulovat) její polo¾ky "dupkey" èi "dupdata", jak je zapotøebí.
 
-Pokud je nutné udrovat poloky uspoøádané, je to moné. Vynutí se to 
-sníením kapacity tabulky na jedinı prvek a zakázáním automatického
-pøehashovávání. Základní operace se pak provádìjí v O(log n_poloek)
-a tabulka vlastnì slouí jako AVL strom.
+Pokud je nutné udr¾ovat polo¾ky uspoøádané, je to mo¾né. Vynutí se to 
+sní¾ením kapacity tabulky na jedinı prvek a zakázáním automatického
+pøehashovávání. Základní operace se pak provádìjí v O(log n_polo¾ek)
+a tabulka vlastnì slou¾í jako AVL strom.
 
 
 Co lze hashovat
@@ -53,60 +53,60 @@ Co lze hashovat
 
 Jediná zmìna, která mì pøimìla zmìnit èíslo verze z 1.x na 2.x, je
 pøepracování tøídy hash na template hash_table <key_t, data_t>,
-a pak odvození hash ze tøídy hash_table <char, char>. Take pokud
+a pak odvození hash ze tøídy hash_table <char, char>. Tak¾e pokud
 nìkdo chce hashovat tøeba øetìzce na struct history, nadeklaruje
 si hash_table <char, history> name. Øetìzce jsou definovány tak,
-e je jejich sizeof() roven jedné; délka øetìzce je pak dána funkcí
+¾e je jejich sizeof() roven jedné; délka øetìzce je pak dána funkcí
 strlen(). 
 
 Z verze 2.0 na 2.1 se zmìnilo chování pøi hashování struktur.
-K jejich kopírování se pouívá copy constructor, to jest za normálních
-okolností pùjde o default copy constructor. Pokud však struktura slouí
+K jejich kopírování se pou¾ívá copy constructor, to jest za normálních
+okolností pùjde o default copy constructor. Pokud v¹ak struktura slou¾í
 jako klíè, musí mít dále definován operátor binární minus a pøetypování
-na unsigned int slouící jako neomezené hashovací funkce (viz vıše pro
+na unsigned int slou¾ící jako neomezené hashovací funkce (viz vı¹e pro
 popis).
 
-Ve verzi 2.2 je navíc mono vypnout kopírování a klíèe nebo dat úplnì.
-K tomu staèí po vytvoøení tabulky, ale pøed vloením prvního prvku
+Ve verzi 2.2 je navíc mo¾no vypnout kopírování a» klíèe nebo dat úplnì.
+K tomu staèí po vytvoøení tabulky, ale pøed vlo¾ením prvního prvku
 vynulovat její èlen dupkey anebo dupdata. V takovém pøípadì musí
-uivatel zajistit existenci hashovaného objektu tak dlouho, dokud
+u¾ivatel zajistit existenci hashovaného objektu tak dlouho, dokud
 není vyjmut z tabulky.
 
-Kdy u jsme u té historie, ve verzi 2.3 pøibylo ošetøení escape
+Kdy¾ u¾ jsme u té historie, ve verzi 2.3 pøibylo o¹etøení escape
 sekvencí pøi naèítání tabulky z textového souboru (backslash + znak
--> znak). Viz poslední parametr pøíslušného konstruktoru.
+-> znak). Viz poslední parametr pøíslu¹ného konstruktoru.
 
 
 Pøehashovávání
 --------------
 
-Pokud chceš, aby se tabulka pøehashovala, kdykoli si umane (to by tøeba
-u real-time aplikace vadilo), je jí to potøeba øíci. Kadá tabulka má dva
+Pokud chce¹, aby se tabulka pøehashovala, kdykoli si umane (to by tøeba
+u real-time aplikace vadilo), je jí to potøeba øíci. Ka¾dá tabulka má dva
 èíselné argumenty, které uvádìjí (v procentech) míru pøeplnìní a naopak
-minimální míru zaplnìní, pøi jejím pøekroèení (podkroèení) se tabulka
+minimální míru zaplnìní, pøi jejím¾ pøekroèení (podkroèení) se tabulka
 celá pøehashuje. Tyto parametry se udávají buïto jako argumenty nìkterıch
 konstruktorù, nebo je lze kdykoli nastavit pomocí metody cfg_rehash().
-Analogicky lze nastavit maximální hloubku kolizního stromu, která rovnì
-vyvolá pokus o pøehashování. Tabulka se vdy pøehashuje tak, aby koeficient
-zaplnìní byl roven opìt dalšímu parametru (v procentech).
+Analogicky lze nastavit maximální hloubku kolizního stromu, která rovnì¾
+vyvolá pokus o pøehashování. Tabulka se v¾dy pøehashuje tak, aby koeficient
+zaplnìní byl roven opìt dal¹ímu parametru (v procentech).
 
 Implicitní hodnoty jsou: optimální míra zaplnìní 60%, smí se pohybovat
 v rozmezí 0 - 400%, kolizní strom nesmí dosáhnout hloubky 6. Pøípadnı
-upsizing pøi tìchto hodnotách lze oèekávat spíše kvùli pøeplnìní, ne
-kvùli náhodnému vzniku pøíliš hlubokému stromu. Tyto hodnoty povauji
+upsizing pøi tìchto hodnotách lze oèekávat spí¹e kvùli pøeplnìní, ne¾
+kvùli náhodnému vzniku pøíli¹ hlubokému stromu. Tyto hodnoty pova¾uji
 za praktické i tam, kde je potøeba maximalizovat rychlost základních
 operací.
 
-Vnìjší program mùe o pøehashování poádat explicitnì funkcí rehash().
+Vnìj¹í program mù¾e o pøehashování po¾ádat explicitnì funkcí rehash().
 Jedinım parametrem je nová kapacita tabulky, k momentálnímu poètu
-prvkù se nepøihlédne. Pokud není ádnı parametr uveden, tabulka se pøehashuje
-na rozmìr, kterı zrovna povauje za optimální podle momentálního poètu
+prvkù se nepøihlédne. Pokud není ¾ádnı parametr uveden, tabulka se pøehashuje
+na rozmìr, kterı zrovna pova¾uje za optimální podle momentálního poètu
 prvkù.
 
-Pokud by se pøi pøidávání prvkù zjistilo, e tabulka by se vlastnì mìla
-zmenšit, protoe byla pøedtím umìle zvìtšena funkcí rehash(), pøehashovávat
-se nebude, protoe aplikace asi vìdìla, proè ji zvìtšuje. Analogicky, pøi
-ubírání prvku se tabulka mùe zmenšit, ale ne zvìtšit. Pøi vyhledávání
+Pokud by se pøi pøidávání prvkù zjistilo, ¾e tabulka by se vlastnì mìla
+zmen¹it, proto¾e byla pøedtím umìle zvìt¹ena funkcí rehash(), pøehashovávat
+se nebude, proto¾e aplikace asi vìdìla, proè ji zvìt¹uje. Analogicky, pøi
+ubírání prvku se tabulka mù¾e zmen¹it, ale ne zvìt¹it. Pøi vyhledávání
 prvku se tabulka zásadnì nemìní.
 
 
@@ -118,49 +118,49 @@ hashovat øetìzce na øetìzce, ale nikoli skrze hash_table <char, char>.
 
 Je-li pøi vstupu do hash.cc definován symbol HASH_CAN_READ_FILES,
 pøibude jeden konstruktor, konstruující tabulku z textového souboru,
-a dvì funkce write() a update(). Tento cirkus lze vyuívat pouze
+a dvì funkce write() a update(). Tento cirkus lze vyu¾ívat pouze
 pokud je klíè i data typu øetìzec.
 
-Textovı soubor mùe vypadat napø. takto:
+Textovı soubor mù¾e vypadat napø. takto:
 
 klíè1 data1
 klíè2	data2
 # komentáø
 klíè3	s_daty	; a s komentáøem
 
-Kadı øádek odpovídá (nejvıše) jedné poloce. Díváme-li se na nìj jako
+Ka¾dı øádek odpovídá (nejvı¹e) jedné polo¾ce. Díváme-li se na nìj jako
 na posloupnost slov oddìlenıch mezerami èi tabelátory (lze míchat
-a pøiøazením do globální promìnné WHITESPACE lze pouít úplnì jiné
-oddìlovaèe), tvoøí poloku slova a po poslední, které ještì nezaèíná
+a pøiøazením do globální promìnné WHITESPACE lze pou¾ít úplnì jiné
+oddìlovaèe), tvoøí polo¾ku slova a¾ po poslední, které je¹tì nezaèíná
 oddìlovaèem komentáøe (implicitnì støedník nebo double cross, lze mìnit
 pøiøazením do promìnné COMMENT_LINES). Je-li tìchto slov nula, øádka
-se pøeskoèí, jsou-li dvì, bude vytvoøena pøíslušná poloka v hashovací
+se pøeskoèí, jsou-li dvì, bude vytvoøena pøíslu¹ná polo¾ka v hashovací
 tabulce.
 
-Šestı parametr souborového konstruktoru urèuje, jak bude naloeno
-s øádky, které obsahují pouze jedno slovo. Moné hodnoty jsou
+©estı parametr souborového konstruktoru urèuje, jak bude nalo¾eno
+s øádky, které obsahují pouze jedno slovo. Mo¾né hodnoty jsou
 DATA_OBLIGATORY, to jest pokyn k havárii, DATA_EQUALS_KEY, to jest
-je tøeba v takovém pøípadì toto slovo povaovat jak za klíè, tak za data
-a dále libovolnı øetìzec, kterı se pouije jako implicitní hodnota dat
+je tøeba v takovém pøípadì toto slovo pova¾ovat jak za klíè, tak za data
+a dále libovolnı øetìzec, kterı se pou¾ije jako implicitní hodnota dat
 pro tento pøípad.
 
 Sedmı parametr souborového konstruktoru urèuje, co se stane, jsou-li
-na øádku tøi nebo více slov - true znamená, e druhé a poslední slovo
-budou interpretovány jako víceslovná data, false znamená, e program
-havaruje s chybovım hlášením.
+na øádku tøi nebo více slov - true znamená, ¾e druhé a¾ poslední slovo
+budou interpretovány jako víceslovná data, false znamená, ¾e program
+havaruje s chybovım hlá¹ením.
 
-Pøedposlední, osmı parametr pak urèuje, jaké chybové hlášení se má vhodit
+Pøedposlední, osmı parametr pak urèuje, jaké chybové hlá¹ení se má vhodit
 do funkce shriek(), pokud se soubor nepodaøí otevøít. Je-li tento parametr
-NULL, pouije se vestavìná hodnota. Je-li roven konstantì ANYWAY, bude
+NULL, pou¾ije se vestavìná hodnota. Je-li roven konstantì ANYWAY, bude
 v takovém pøípadì vytvoøena mrtvì narozená hashovací tabulka; není vùbec
-definováno, jak se bude chovat, pouze, e poloka "items" bude rovna minus
-jedné, a e pùjde provést její defaultní destruktor.
+definováno, jak se bude chovat, pouze, ¾e polo¾ka "items" bude rovna minus
+jedné, a ¾e pùjde provést její defaultní destruktor.
 
 A poslední devátı parametr, není-li NULL, je pøekladová tabulka
 pro escape sekvence, to jest objeví-li se na øádce zpìtné lomítko,
 zaindexuje se znakem, kterı následuje za zpìtnım lomítkem do této
 tabulky a vyloví se odpovídající znak, kterım se zpìtné lomítko
-s následujícím znakem nahradí. Pokud o zvláštní chování zpìtného
+s následujícím znakem nahradí. Pokud o zvlá¹tní chování zpìtného
 lomítka není zájem, staèí místo tohoto parametru uvést NULL.
 Jinak musí bıt tabulka 256 znakù dlouhá. Tuto funkci lze kombinovat
 se zpìtnım vıstupem do souboru jen omezenì.
@@ -168,52 +168,52 @@ se zpìtnım vıstupem do souboru jen omezenì.
 Ostatní parametry souborového konstruktoru jsou jednak jméno souboru,
 jednak parametry kontrolující automatické pøehashovávání.
 
-Funkce write() zapíše danou hashovací tabulku do uvedeného souboru.
+Funkce write() zapí¹e danou hashovací tabulku do uvedeného souboru.
 Z pùvodního souboru nechá jen hlavièku (komentáøové øádky pøedcházející
-první skuteènou poloku), nevyaduje jeho existenci. Dojde-li k chybì,
-nebo je-li o to poádána druhım argumentem, nebude po dokonèení operace
-smazán záloní soubor, kterı má shodné jméno s tildou (vlnovkou) 
-pøipojenou na zaèátek. Novı soubor ovsahuje poloky seøazené abecednì.
+první skuteènou polo¾ku), nevy¾aduje jeho existenci. Dojde-li k chybì,
+nebo je-li o to po¾ádána druhım argumentem, nebude po dokonèení operace
+smazán zálo¾ní soubor, kterı má shodné jméno s tildou (vlnovkou) 
+pøipojenou na zaèátek. Novı soubor ovsahuje polo¾ky seøazené abecednì.
 Funkce write() nijak neovlivòuje vlastní tabulku.
 
 Funkce update() upraví uvedenı soubor podle hashovací tabulky. Pùvodní
 soubor musí bezpodmíneènì existovat a jeho struktura, pokud jde o uspo-
-øádání poloek nebo umístìní komentáøù je zachována, mìní se pouze
-hodnoty. Pokud soubor obsahuje nìjaké poloky navíc oproti hashovací
+øádání polo¾ek nebo umístìní komentáøù je zachována, mìní se pouze
+hodnoty. Pokud soubor obsahuje nìjaké polo¾ky navíc oproti hashovací
 tabulce, jsou vyhozeny nebo zachovány podle parametru remove_removed.
-Pokud v souboru nìkteré poloky naopak schází, jsou pøipojeny na jeho
-konec. Funkce update() nièí veškerı obsah hashovací tabulky, zbyde
+Pokud v souboru nìkteré polo¾ky naopak schází, jsou pøipojeny na jeho
+konec. Funkce update() nièí ve¹kerı obsah hashovací tabulky, zbyde
 prázdná tabulka. Pokud by toto chování vadilo, lze metodu update()
 sesílat pouze na kopii vytvoøenou copy constructorem.
 
-Je závanou chybou, e tyto dvì zápisové funkce pøedpokládají bìnı
-obsah promìnné WHITESPACE. Nebo u ne?
+Je záva¾nou chybou, ¾e tyto dvì zápisové funkce pøedpokládají bì¾nı
+obsah promìnné WHITESPACE. Nebo u¾ ne?
 
 Ve tøídì hash lze funkcemi add_int() a translate_int() vkládat
 a vyhledávat i dvojice øetìzec-èíslo. Èíslo se representuje
-v desítkové soustavì, jak je zvykem; s tím je mono míchat
+v desítkové soustavì, jak je zvykem; s tím je mo¾no míchat
 øetìzce a èísla.
 
-Pokud se hashují øetìzce na cokoli, poloka longest obsahuje poèet
-znakù nejdelšího klíèe, kterı vùbec kdy uvnitø bydlel. Mùe se nìkdy
+Pokud se hashují øetìzce na cokoli, polo¾ka longest obsahuje poèet
+znakù nejdel¹ího klíèe, kterı vùbec kdy uvnitø bydlel. Mù¾e se nìkdy
 hodit zvenku vìdìt, co já vím.
 
-Tato implementace hashovací tabulky je pomìrnì nároèná na pamì.
+Tato implementace hashovací tabulky je pomìrnì nároèná na pamì».
 Uchovává si mimo jiné strukturu sestávající ze short intu a ètyø
-ukazatelù pro kadou poloku (searchtreestruct). To moná nìkdy
-zkusím zlepšit vzhledem k tomu, e dva z tìch pointerù nabıvají
+ukazatelù pro ka¾dou polo¾ku (searchtreestruct). To mo¾ná nìkdy
+zkusím zlep¹it vzhledem k tomu, ¾e dva z tìch pointerù nabıvají
 nenulovıch hodnot jen pøi kolizích.
 
 Funkce translate() i funkce remove() vracejí pointer pøímo na vnitøní
-kopii v tabulce; v pøípadì translate() nesmí volající tuto pamì uvolnit,
+kopii v tabulce; v pøípadì translate() nesmí volající tuto pamì» uvolnit,
 v pøípadì remove() naopak musí.
 
-Hashovací tabulka jako taková je velice rychlá, take pojede na rychlosti
-malloc() a free(). Funkce translate() nikdy nemìní obsah tabulky, take
-ta nebude zdrovaná vùbec a nejvíc èasu nejspíš stráví ve fn() (privátní
+Hashovací tabulka jako taková je velice rychlá, tak¾e pojede na rychlosti
+malloc() a free(). Funkce translate() nikdy nemìní obsah tabulky, tak¾e
+ta nebude zdr¾ovaná vùbec a nejvíc èasu nejspí¹ stráví ve fn() (privátní
 inline metoda poèítající hashovací funkci).
 
-Funkce debug() vypíše obsah tabulky, pokud se hashují øetìzce na øetìzce.
+Funkce debug() vypí¹e obsah tabulky, pokud se hashují øetìzce na øetìzce.
 
 Tento soubor zhruba dokumentuje stav v létì 1998.
 

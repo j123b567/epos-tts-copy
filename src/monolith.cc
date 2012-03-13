@@ -1,5 +1,5 @@
 /*
- *	ss/src/ss.cc
+ *	epos/src/monolith.cc
  *	(c) 1996-98 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -31,16 +31,16 @@ int submain()
 	unit *root;
 	parser *parsie;
 
-	check_lib_version(VERSION);
+//	check_lib_version(VERSION);
 	parsie = cfg->input_text && *cfg->input_text ? new parser(cfg->input_text, 1)
 		: new parser(this_lang->input_file, 0);
 	root=new unit(U_TEXT, parsie);
 	delete parsie;
 	this_lang->ruleset->apply(root);
-	fprintf(stddbg,"*********************************************\n");
+	fprintf(stdout,"*********************************************\n");
 	root->fout(NULL);
 
-	if (cfg->use_diph) {
+	if (cfg->use_diph || cfg->show_phones) {
 		if (cfg->play_diph) {
 			if (cfg->forking) {
 				switch (fork()) {
@@ -52,26 +52,27 @@ int submain()
 				}
 			} else play_diphones(root, this_voice);
 		}
+		if (cfg->show_phones) root->show_phones();
 		if (cfg->show_diph) show_diphones(root);
 	}
 
 	if (cfg->neuronet) root->nnet_out(cfg->nnet_file, cfg->matlab_dir);
 	delete(root);
-	fprintf(stddbg,"***** The End. ******************************\n");
+	fprintf(stdout,"***** The End. ******************************\n");
 	return 0;
 }
 
 int main(int argc, char **argv)
 {
 	try {
-		ss_init(argc, argv);
-		ss_reinit();
-		/*return */ submain();
-		ss_reinit();
-		ss_done();
-	} catch (exception *e) {
-		unuse(e);
+		epos_init(argc, argv);
+		submain();
+		epos_done();
+		return 0;
+	} catch (exception *e) {	// this one is preferred, however.
+//	} catch (old_style_exc *e) {	// this one is required by the g++ bugware
 		printf("*****************\n");
 		return 4;
 	}
 }
+

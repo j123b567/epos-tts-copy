@@ -4,57 +4,57 @@ Zapínání debugovacích tiskù:
 ---------------------------
 
 Pøi kompilaci je nutné, aby v souboru interf.h bylo uvedeno
-"#define DEBUGGING". Uživatelskou verzi programu by však neustálé
-ovìøování, že se ladicí tisky opravdu nikde tisknout nemají, 
-zdržovalo, proèež je vhodné po doladìní tento øádek odkomentovat
-a pøekompilovat. Program se tím rovnìž ponìkud zmenší.
+"#define DEBUGGING". U¾ivatelskou verzi programu by v¹ak neustálé
+ovìøování, ¾e se ladicí tisky opravdu nikde tisknout nemají, 
+zdr¾ovalo, proèe¾ je vhodné po doladìní tento øádek odkomentovat
+a pøekompilovat. Program se tím rovnì¾ ponìkud zmen¹í.
 
-Pak je možno v konfiguraèním souboru nastavit, jak významné ladící
-tisky se budou propouštìt na výstup v jednotlivých èástech programu:
+Pak je mo¾no v konfiguraèním souboru nastavit, jak významné ladící
+tisky se budou propou¹tìt na výstup v jednotlivých èástech programu:
 	interf_debug    Rùzné funkce stojící mimo jednotlivé objekty
 	rules_debug     Syntaktické zpracování souboru s pravidly
-	elem_debug      Všeobecné metody tøídy unit
+	elem_debug      V¹eobecné metody tøídy unit
 	subst_debug     Substituèní metody tøídy unit
 	assim_debug     "Asimilaèní" metody tøídy unit
 	split_debug     Metody tøídy unit vytváøející slabiky a difony
 	parser_debug    Pøedzpracování vstupního souboru (s textem)
 	synth_debug	Vlastní difonová syntéza
-Èím nižší hodnota, tím vìtší detaily se budou tisknout. Témìø vždy asi
-pùjde o hodnoty 0 až 2. Mimoto je pomocí parametrù limit_debug, resp.
-always_debug možné stanovit globální dolní (detailní) resp. horní mez;
-pokud lokální parametry tyto meze pøekroèí, použije se pøíslušná mez.
-To umožòuje rychlé globální ovládání ukecanosti ladících tiskù.
+Èím ni¾¹í hodnota, tím vìt¹í detaily se budou tisknout. Témìø v¾dy asi
+pùjde o hodnoty 0 a¾ 2. Mimoto je pomocí parametrù limit_debug, resp.
+always_debug mo¾né stanovit globální dolní (detailní) resp. horní mez;
+pokud lokální parametry tyto meze pøekroèí, pou¾ije se pøíslu¹ná mez.
+To umo¾òuje rychlé globální ovládání ukecanosti ladících tiskù.
 
-Nanejvýš jedna oblast se mùže vymknout dolnímu globálnímu limitu, a to
+Nanejvý¹ jedna oblast se mù¾e vymknout dolnímu globálnímu limitu, a to
 oblast urèená parametrem focus_dbg. Typicky jde o oblast, ve které se
 nachází momentálnì ladìný kód a kterou chceme manipulovat nezávisle
 na ostatních. Jako hodnota se uvádí symbolické jméno oblasti, tak,
 jak tvoøí souèást názvu jejího parametru (napø. "elem"). Horní globální
-limit, always_debug, ovšem lokálnì omezen být nemùže (taky proè, že).
+limit, always_debug, ov¹em lokálnì omezen být nemù¾e (taky proè, ¾e).
 
-Drobné nejasnosti mùže spravit prùzkum funkce debug_wanted v interf.cc,
+Drobné nejasnosti mù¾e spravit prùzkum funkce debug_wanted v interf.cc,
 velké nejasnosti ústní domluva.
 
 
-V souboru doc/rules.doc lze též najít informace o používání pravidla
+V souboru doc/rules.doc lze té¾ najít informace o pou¾ívání pravidla
 DEBUG, které není závislé na "#define DEBUGGING" a které poskytuje
 nìkolik typù informací mezi zvolenými aplikacemi pravidel. Vhodné
-též pro ladìní pravidel vytváøených neprogramátorem.
+té¾ pro ladìní pravidel vytváøených neprogramátorem.
 
 Manuální ovládání:
 ------------------
 
 src/interf.h obsahuje funkci  debug_wanted(int level, int area), která vrací boolean,
-zda se mají debugovací informace pøíslušné úrovnì a z pøíslušné oblasti tisknout.
-Je možné pøíslušnou funkci napsat znova. Debugování všeho se napø. zapne umístìním 
+zda se mají debugovací informace pøíslu¹né úrovnì a z pøíslu¹né oblasti tisknout.
+Je mo¾né pøíslu¹nou funkci napsat znova. Debugování v¹eho se napø. zapne umístìním 
 pøíkazu "return true" na zaèátek této funkce (nutno poèítat s megabajtem ladicích tiskù, 
 nedoporuèuji), vypne se nejlépe odkomentováním øádku "#define DEBUGGING" v souboru interf.h. 
-V takovém pøípadì se makro DEBUG chápe jako prázdný pøíkaz, takže ladící tisky neovlivní 
+V takovém pøípadì se makro DEBUG chápe jako prázdný pøíkaz, tak¾e ladící tisky neovlivní 
 výslednou rychlost ani velikost kompilátu.
 
-Hodnota "level" se interpretuje pøibližnì takto:
+Hodnota "level" se interpretuje pøibli¾nì takto:
 
-0 detail           (mùže zcela zahltit výstup, zøídkakdy užiteèné)
+0 detail           (mù¾e zcela zahltit výstup, zøídkakdy u¾iteèné)
 1 verbose execution tracing
 2 normal execution tracing
 3 single occurrence or rare messages
@@ -68,7 +68,7 @@ Hodnota "area" je jedna z následujících:
 2 elements
 3 elements - subst methods
 4 elements - assim methods
-5 elements - syllablify, diphs & split methods
+5 elements - syllabify, diphs & split methods
 7 parser
 9 synthesis
 10 configuration, languages, voices
@@ -82,8 +82,8 @@ do tìla programu, tzn. s èíselnou hodnotou.
 Hashovací tabulky
 -----------------
 
-Hashovacím tabulkám lze vìøit, že jsou bez chyb a ani zásahy do jiných souborù, než
+Hashovacím tabulkám lze vìøit, ¾e jsou bez chyb a ani zásahy do jiných souborù, ne¾
 hash.h, defaults.h a hash.cc, se do nich nemohou promítnout. Ladící tisky mají zde roli
-spíše informativní (co se pøesnì hashuje); zapínají se v hash.cc pomocí #define DEBUG_HASH
+spí¹e informativní (co se pøesnì hashuje); zapínají se v hash.cc pomocí #define DEBUG_HASH
 a nelze je nijak dále konfigurovat.
 

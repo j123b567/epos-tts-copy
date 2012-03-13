@@ -569,3 +569,122 @@ for an exciting story.
 	- fixed minor memory leaks
 
 
+2.2.2 from 2.2.1	30.7.98
+	- changed r_if to take a boolean voice option name as a parameter
+	- colloquial and irony options changed to soft, -c and -i removed
+	- got the traditnl.dph vs. kadlec.dph file switching stuff right (cz)
+	- got rid of stdwarn, moved stdshriek & stdbg to struct configuration
+
+
+2.3.-1 from 2.2.2	13.9.98
+	- ss is renamed to Epos. All file names, related identifiers and such
+		have changed.
+	- ss client renamed to "say"
+	- some voice-specific prosodic adjustments to a diphone are now done
+		in synth::syndiphs() (and do not alter the diphone stream anymore)
+	- waveform.cc (we now represent the output signal in the .wav file format)
+	- it is possible to generate the .wav data before attaching to a device
+	- src/agent.cc, agent.h, ttscp.cc; the new TTSCP protocol and streaming
+	- more built-in TTSCP command help
+	- exception handling reworked (proper response codes and classification)
+	- near-complete English documentation in linuxdoc-SGML
+	- option -e (or --show_phones) lists the sounds generated line by line.
+
+
+2.3.0 from 2.3.-1	20.9.98
+	- install script and #include fixes
+	- doc/english/allowed.ini integrated into doc/english/options.sgml
+	- protocol.sgml renamed to ttscp.sgml
+	- TTSCP delh command
+	- primitive tcpsyn (remote synchronous synthesis)
+	- unit::effective can use multiply levels instead of add levels
+	- scheduler somewhat secured against starvation
+	- documentation esp. on rules reorganised and improved
+	- documentation automatically tweaked and version-stamped
+	
+
+2.3.1 from 2.3.0	27.9.98
+	- more documentation improvements (spelling and formatting fixes)
+	- tcpsyn is now configurable using the "remote_server" option
+
+
+2.3.2 from 2.3.1	 7.10.98
+	- class unit is slabbed (allocated faster)
+	- individual options partly documented
+	- multiple src and autoconf fixes, better support for buggy compilers
+
+
+2.3.3 from 2.3.2	13.10.98
+	- ugly segfault in class ttscp constructor removed
+	- class context deletes its shdshriek and stddbg
+	- class navelcord (in src/navel.h) can be used to avoid memory leaks
+	  in case of exceptions
+	- documentation adjusted to sgml-tools 1.0.6,
+	  but the good old linuxdoc dtd (96) has been retained
+	- doc conversion to html and other formats somewhat debugged
+	- remaining individual options documented
+	- voice .ini files can be located in language dependent places
+
+
+2.3.4 from 2.3.3	19.10.98
+	- cfg->pseudo_root_dir limits the TTSCP file namespace
+	- ktd files placed more appropriately
+	- the LOG macro changed to  DEBUG(x,11,fprintf(stddbg,...);)
+	- struct cowabilium, cow_claim() introduced, 
+	- changed struct configuration to a a derived class (bad move?)
+	- removed a cfg bug when issuing strm a second time in TTSCP
+	- updated some files under doc/., renamed HOWTO to WELCOME
+
+
+2.3.5 from 2.3.4	20.10.98
+	- dist/inst script fixes ("cp" to "cp -a"), other minor fixes
+	- don't bind to "localhost", but to the real Internet address
+	  as given by gethostname() and getaddrbyname() in src/client.cc
+
+
+2.3.6 from 2.3.5	26.10.98
+	- don't connect to "localhost" (say and tcpsyn)
+	- symlinks are copied by aux/makeinst
+
+
+2.3.7 from 2.3.6	 2.11.98
+	- "say -l" lists languages and voices for the current language
+	- the daemon now binds to all available interfaces
+	- severe bug fixes in src/waveform.cc and src/tcpsyn.cc
+	- pushing file descriptors with select() (writing to sockets &c)
+	  and other changes to output agents (and struct wavefm semantics)
+
+
+2.3.8 from 2.3.7	6.11.98
+	- portability fixes (partly ported to Visual C)
+	- waveform agent type (dummy agent for trivial audio icons, untested)
+
+
+2.3.9 from 2.3.8	15.11.98
+	- explicit agent type specifiers within streams
+	- missing SNDCTL_DSP_SETFMT bug fixed (affected direct 16bit speech)
+	- get_result() in say.cc now returns the error code; related fixes
+	- SO_REUSEADDR placed correctly, the persistence option removed
+
+
+2.3.10 from 2.3.9	23.11.98
+	- fixes: a_disconnector, waveform input
+	- Visual C portability adjustments and VC bug workarounds
+	- aux renamed to arch/unix, moved/deleted some files
+
+
+2.3.11 from 2.3.10	30.11.98
+	- numerous fixes, including a diphones input agent fix
+	- TTSCP greeting string includes Epos version number
+	- nonblocking soundcard writes ioctl()ified (OSS ignores O_NONBLOCK)
+	- the 'f' (aka "---forking") short option
+	- hacked up the global brk command
+
+
+2.3.12 from 2.3.11	6.12.98
+	- cfg/winepos.ini renamed to arch/win/epos.ini and other similar cleanup
+	- nonblocking sgets() can now cope with "no data on socket" situations
+	- stream::callbk is now scheduled inconditionally (not block()ed)
+	- async_close() forks off children to do fd closes on background
+	- memory leak in failing stream::stream() patched
+

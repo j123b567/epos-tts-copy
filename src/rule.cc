@@ -1,5 +1,5 @@
 /*
- *	ss/src/rule.cc
+ *	epos/src/rule.cc
  *	(c) 1996-98 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -84,7 +84,7 @@ rule::rule(char *param)
 
 rule::~rule()
 {
-	DEBUG(0,1,fprintf(stddbg, "rule::~rule, raw=%s, dbg_tag=%s\n", raw, dbg_tag););
+	DEBUG(0,1,fprintf(STDDBG, "rule::~rule, raw=%s, dbg_tag=%s\n", raw, dbg_tag););
 	if (raw) free(raw);
 #ifdef DEBUGGING
 	if (dbg_tag) free(dbg_tag);
@@ -96,7 +96,7 @@ rule::set_level(UNIT scp, UNIT trg)
 {
 	scope =  scp == U_DEFAULT ? DEFAULT_SCOPE : scp;
 	target = trg == U_DEFAULT ? DEFAULT_TARGET : trg;
-	if (scope < target) shriek ("Scope must not be more narrow than target%s", debug_tag());
+	if (scope < target) shriek (811, fmt("Scope must not be more narrow than target%s", debug_tag()));
 			// was scope <= target -  consider returning back
 }
 
@@ -104,7 +104,7 @@ void
 rule::set_dbg_tag(text *file)
 {
 #ifdef DEBUGGING
-	DEBUG(0,1,fprintf(stddbg,"Debugging tag %s\n",file->current_file));
+	DEBUG(0,1,fprintf(STDDBG,"Debugging tag %s\n",file->current_file));
 	sprintf(scratch, "%s:%d", file->current_file, file->current_line);
 	dbg_tag=strdup(scratch);
 #else
@@ -119,7 +119,7 @@ rule::check_child(rule *r)
 		if (r->scope != U_INHERIT) {
 			printf("this %d child %d\n",scope, r->scope);
 			debug();
-			shriek("Scope of rule exceeds scope of its block%s", debug_tag());
+			shriek(811, fmt("Scope of rule exceeds scope of its block%s", debug_tag()));
 		}
 		r->scope = this->scope;
 	}
@@ -168,7 +168,7 @@ hash *literal_hash(char *s)
 	while (1) {
 		switch(*++p) {
 		case COMMA:
-			if (comma) shriek("too many commae");
+			if (comma) shriek(811, "too many commae");
 			comma = p;
 			*comma = 0;
 			break;
@@ -210,21 +210,21 @@ hashing_rule::~hashing_rule()
 inline void
 hashing_rule::load_hash()
 {
-	if (dict) shriek("unwanted load_hash");
+	if (dict) shriek(862, "unwanted load_hash");
 
 	if (*raw != DQUOT) {
 		dict = new hash(raw, cfg->hash_full, 0, 200, 3,
 			(char *) allow_id, false, "dictionary %s not found", esctab);
 	} else dict = literal_hash(raw);
-	if (!dict) shriek("Unterminated argument%s", debug_tag());	// or out of memory
+	if (!dict) shriek(463, fmt("Unterminated argument%s", debug_tag()));	// or out of memory
 }
 
 void 
 rule::debug()
 {
-	fprintf(stddbg," rule: '%s' ",enum2str(code(),OPCODEstr));
-	fprintf(stddbg,"par %s scope '%s' ", raw, enum2str(scope,UNITstr));
-	fprintf(stddbg,"target '%s'\n", enum2str(target,UNITstr));
+	fprintf(STDDBG," rule: '%s' ",enum2str(code(),OPCODEstr));
+	fprintf(STDDBG,"par %s scope '%s' ", raw, enum2str(scope,UNITstr));
+	fprintf(STDDBG,"target '%s'\n", enum2str(target,UNITstr));
 }
 
 
@@ -283,7 +283,7 @@ void
 r_subst::set_level(UNIT scp, UNIT trg)
 {
 	rule::set_level(scp, trg);
-//	if (target != U_PHONE) shriek("Cannot substitute for non-phones %s",debug_tag());
+//	if (target != U_PHONE) shriek(fmt("Cannot substitute for non-phones %s",debug_tag()));
 }
 
 /************************************************
@@ -300,7 +300,7 @@ r_subst::apply(unit *root)
 	root->relabel(dict, method, target);
 
 	if (cfg->lowmemory) {
-		DEBUG(2,2,fprintf(stddbg,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
+		DEBUG(2,2,fprintf(STDDBG,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict = NULL;
 	}
@@ -340,12 +340,12 @@ r_diph::apply(unit *root)
 	if (!dict) load_hash();
 	root->diphs(target, dict);
 	if (cfg->lowmemory) {
-		DEBUG(2,2,fprintf(stddbg,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
+		DEBUG(2,2,fprintf(STDDBG,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict=NULL;
 	}
 
-	DEBUG(1,2,fprintf(stddbg,"Diphones w%s be dumped just after the DIPHONES rule\n", cfg->imm_diph?"ill":"on't");)
+	DEBUG(1,2,fprintf(STDDBG,"Diphones w%s be dumped just after the DIPHONES rule\n", cfg->imm_diph?"ill":"on't");)
 	if (cfg->imm_diph) {
 		static diphone d[DIPH_BUFF_SIZE];   //every item is 16 bytes long
 		
@@ -353,10 +353,9 @@ r_diph::apply(unit *root)
 		for (int k=0; i==DIPH_BUFF_SIZE; k+=DIPH_BUFF_SIZE) {
 			i=root->write_diphs(d,k,DIPH_BUFF_SIZE);
 			for (int j=0;j<i;j++) 
-				fprintf(stddbg,"diphone number=%3d f=%d t=%d i=%d\n", d[j].code, d[j].f, d[j].t, d[j].e);
+				fprintf(STDDBG,"diphone number=%3d f=%d t=%d i=%d\n", d[j].code, d[j].f, d[j].t, d[j].e);
 		}
 	}
-
 }
 
 /************************************************
@@ -386,10 +385,10 @@ void
 r_prosody::apply(unit *root)
 {
 	if (!dict) load_hash();
-	DEBUG(1,1,fprintf(stddbg,"entering rules::sseg()\n");)
+	DEBUG(1,1,fprintf(STDDBG,"entering rules::sseg()\n");)
 	root->sseg(target, dict);
 	if (cfg->lowmemory) {
-		DEBUG(2,2,fprintf(stddbg,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
+		DEBUG(2,2,fprintf(STDDBG,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict = NULL;
 	}
@@ -426,11 +425,11 @@ r_contour::r_contour(char *param) : rule(param)
 			   sgn=1; contour[l] = 0;  break;
 		case '-':
 		case '+':  contour[l]+=tmp*sgn; sgn=(*p=='+' ?+1:-1); break;
-		default:   if (*p<'0' || *p>'9') shriek("Expected a number, found \"%s\"%s",
-					p, debug_tag());
+		default:   if (*p<'0' || *p>'9') shriek(811, fmt("Expected a number, found \"%s\"%s",
+					p, debug_tag()));
 			   else tmp = tmp*10 + *p-'0';
-		};
-	};
+		}
+	}
 	if (tmp) contour[l++] += tmp*sgn;
 
 	quantity = fit(*param);
@@ -482,21 +481,21 @@ r_smooth::r_smooth(char *param) : rule(param)
 			   sgn=1; list[l]=0;  break;
 		case '-':
 		case '+':  list[l]+=tmp*sgn; sgn=(*p=='+' ?+1:-1); break;
-		default:   if (*p<'0' || *p>'9') shriek("Expected a number, found \"%s\"%s",
-					p, debug_tag());
+		default:   if (*p<'0' || *p>'9') shriek(811, fmt("Expected a number, found \"%s\"%s",
+					p, debug_tag()));
 			   else tmp = tmp*10 + *p-'0';
-		};
-	};
+		}
+	}
 	if (tmp) list[l++]+=tmp*sgn, total+=tmp*sgn;
 	if (total!=RATIO_TOTAL)
-		shriek ("Smooth percentages don't add up to 100%% (%d%%)", total);
+		shriek (811, fmt("Smooth percentages don't add up to 100%% (%d%%)", total));
 	if (cfg->paranoid) {
 		for (tmp=max=0; tmp<l; tmp++)
 			if (list[tmp]>max) max=list[tmp];
-		if (max!=list[n]) warn("Oversmooth, max weight is given elsewhere");
+		if (max!=list[n]) shriek(811, "Oversmooth, max weight is given elsewhere");
 	}
 
-	if (l>=SMOOTH_CQ_SIZE) shriek("unit::smooth circular queue too small, increase SMOOTH_CQ_SIZE");
+	if (l>=SMOOTH_CQ_SIZE) shriek(864, "unit::smooth circular queue too small, increase SMOOTH_CQ_SIZE");
 	
 	quantity = fit(*param);
 }
@@ -515,7 +514,7 @@ void
 r_smooth::apply(unit *root)
 {
 	
-	DEBUG(1,1,fprintf(stddbg,"entering rules::smooth()\n");)
+	DEBUG(1,1,fprintf(STDDBG,"entering rules::smooth()\n");)
 	root->project(target,0,0,0);
 	root->smooth(target, list, n, l, quantity);
 }
@@ -558,15 +557,15 @@ r_regress::r_regress(char *param) : rule(param)
 	char *left;      
 	char *right;
 
-	eff=strchr(aff=strdup(param),ASSIM_DELIM1);if(!eff) shriek("Bad param%s", debug_tag());
+	eff=strchr(aff=strdup(param),ASSIM_DELIM1);if(!eff) shriek(811, fmt("Bad param%s", debug_tag()));
 	*eff++=0;
-	left=strchr(eff,ASSIM_DELIM2);if(!left) shriek("Bad param%s", debug_tag());
+	left=strchr(eff,ASSIM_DELIM2);if(!left) shriek(811, fmt("Bad param%s", debug_tag()));
 	*left++=0;
-	right=strchr(left,ASSIM_DELIM3);if(!right) shriek("Bad param%s", debug_tag());
+	right=strchr(left,ASSIM_DELIM3);if(!right) shriek(811, fmt("Bad param%s", debug_tag()));
 	*right++=0;
-	fn=strchr(right,ASSIM_DELIM4);if(!fn) shriek("Bad param%s", debug_tag());
-	*fn++=0;if(*fn) shriek("Strange appendix to param%s", debug_tag());
-	DEBUG(1,4,fprintf(stddbg,"Parsed assim param \"%s>%s(%s_%s)\"\n",aff,eff,left,right);)
+	fn=strchr(right,ASSIM_DELIM4);if(!fn) shriek(811, fmt("Bad param%s", debug_tag()));
+	*fn++=0;if(*fn) shriek(811, fmt("Strange appendix to param%s", debug_tag()));
+	DEBUG(1,4,fprintf(STDDBG,"Parsed assim param \"%s>%s(%s_%s)\"\n",aff,eff,left,right);)
 	fn=fntab(aff,eff);ltab=booltab(left);rtab=booltab(right);
 	free(aff);
 	
@@ -630,9 +629,9 @@ r_syll::r_syll(char *param) : rule(param)
 	for (tmp = param; *tmp && lv; tmp++) {
 		if (*tmp==LESS_THAN) lv++;
 		else son[(unsigned char)(*tmp)]=lv;
-		DEBUG(0,1,fprintf(stddbg,"Giving to %c sonority %d\n", *tmp, lv);)
-	};
-	DEBUG(1,1,fprintf(stddbg,"rules::parse_syll going to call syllablify()\n");)
+		DEBUG(0,1,fprintf(STDDBG,"Giving to %c sonority %d\n", *tmp, lv);)
+	}
+	DEBUG(1,1,fprintf(STDDBG,"rules::parse_syll going to call syllabify()\n");)
 }
 
 r_syll::~r_syll()
@@ -655,7 +654,7 @@ r_syll::set_level(UNIT scp, UNIT trg)
 void
 r_syll::apply(unit *root)
 {
-	root->syllablify(target, son);
+	root->syllabify(target, son);
 }
 
 /************************************************
@@ -721,13 +720,13 @@ class r_regex: public rule
 #define PAREN_OPEN  '('
 #define PAREN_CLOS  ')'
 
-#define rshr(x) shriek("Regex invalid: %s%s", x, debug_tag());
+#define rshr(x) shriek(811, fmt("Regex invalid: %s%s", x, debug_tag()));
 
 r_regex::r_regex(char *param) : rule(param)
 {
 	char separator = *param++;
 	char *tmp = strchr(param, separator);
-	if (!tmp) shriek("regex param should be separated thus: /regex/replacement/ %s", debug_tag());
+	if (!tmp) shriek(811, fmt("regex param should be separated thus: /regex/replacement/ %s", debug_tag()));
 	*tmp++=0;
 	parens = 0;
 	int result;
@@ -747,9 +746,9 @@ r_regex::r_regex(char *param) : rule(param)
 	param = strdup(scratch);
 
 	matchbuff = (regmatch_t *)malloc((parens+2)*sizeof(regmatch_t));
-	DEBUG(1,1,fprintf(stddbg, "Compiling regex %s\n", param);)
+	DEBUG(1,1,fprintf(STDDBG, "Compiling regex %s\n", param);)
 	result = regcomp(&regex, param, 0);
-	DEBUG(0,1,fprintf(stddbg, "...hm...\n");)
+	DEBUG(0,1,fprintf(STDDBG, "...hm...\n");)
 	switch (result) {
 		case 0: break;
 		case REG_BADBR:
@@ -773,16 +772,16 @@ r_regex::r_regex(char *param) : rule(param)
 			rshr("too ugly");
 		case REG_ESPACE:
 			rshr("too huge");
-		default: shriek("Bad regex%s, regcomp returns %d", debug_tag(), result);
+		default: shriek(811, fmt("Bad regex%s, regcomp returns %d", debug_tag(), result));
 	}
 	free(param);
 	repl = tmp;
 	tmp = strchr(tmp, separator);
-	if (!tmp) shriek("regex param should be separated thus: /regex/replacement/ %s", debug_tag());
-	if (tmp[1]) shriek("garbage follows replacement%s", debug_tag());
+	if (!tmp) shriek(811, fmt("regex param should be separated thus: /regex/replacement/ %s", debug_tag()));
+	if (tmp[1]) shriek(811, fmt("garbage follows replacement%s", debug_tag()));
 	*tmp=0;
 	repl=strdup(repl);
-	DEBUG(1,1,fprintf(stddbg,"regex%s is okay\n", debug_tag());)
+	DEBUG(1,1,fprintf(STDDBG,"regex%s is okay\n", debug_tag());)
 }
 
 #undef rshr
@@ -939,7 +938,7 @@ r_with::apply(unit *root)
 		else dict = new hash(raw, cfg->hash_full,
 			0, 200, 3, DATA_EQUALS_KEY, false, "dictionary %s not found", esctab);
 	}
-	if (!dict) shriek("Unterminated argument%s", debug_tag());	// or out of memory
+	if (!dict) shriek(811, fmt("Unterminated argument%s", debug_tag()));	// or out of memory
 
 	if (root->subst(dict, M_ONCE)) then->apply(root);
 }
@@ -955,26 +954,42 @@ r_with::apply(unit *root)
 class r_if: public cond_rule
 {
 	virtual OPCODE code() {return OP_IF;};
-	bool result;
-   public:
+//	bool result;
+	int flag_offs;	// offset for this_voice
+ 	virtual void set_level(UNIT scp, UNIT trg);
+  public:
 		r_if(char *param, text *file, hash *vars);
 	virtual void apply(unit *root);
 };
 
 r_if::r_if(char *param, text *file, hash *vars) : cond_rule(param, file, vars)
 {
-	char *tmp = strchr(raw, '=');
-	if (!tmp) shriek("Conditional expression must contain '='%s", debug_tag());
-	if (strchr(++tmp, '=')) shriek("Too many eq's%s", debug_tag());
-	result =  raw+strlen(tmp) == tmp-1  &&  !strncmp(raw, tmp, strlen(tmp));
-	DEBUG(1,1,fprintf(stddbg, "r_if result is constant and %s\n", result?"true":"false");)
+//	char *tmp = strchr(raw, '=');
+//	if (!tmp) shriek("Conditional expression must contain '='%s", debug_tag());
+//	if (strchr(++tmp, '=')) shriek("Too many eq's%s", debug_tag());
+//	result =  raw+strlen(tmp) == tmp-1  &&  !strncmp(raw, tmp, strlen(tmp));
+//	DEBUG(1,1,fprintf(STDDBG, "r_if result is constant and %s\n", result?"true":"false");)
+	option *o = option_struct(raw + (*raw == EXCL) , this_lang->soft_options);
+	if (!o) shriek(811, fmt("Not an option: %s in %s", raw, debug_tag()));
+	if (o->opttype != O_BOOL) shriek(811, fmt("Not a truth value option: %s in %s", raw, debug_tag()));
+	if (o->structype != OS_VOICE) shriek(811, fmt("Not a voice option: %s in %s", raw, debug_tag()));
+	flag_offs = o->offset;
 }
 
 void
-r_if::apply(unit *root)
+r_if::apply(unit *root)		// this_lang must correspond to these rules!
 {
-	if (result) then->apply(root);
+	if (this_voice && (*(bool *)((char *)this_voice + flag_offs)) ^ (*raw == EXCL))
+		then->apply(root);
 }
+
+void
+r_if::set_level(UNIT scp, UNIT trg)
+{
+	if (scp == U_DEFAULT) scp = U_INHERIT;
+	rule::set_level(scp, trg);
+}	
+
 
 /************************************************
  r_nothing  The following rule class can serve

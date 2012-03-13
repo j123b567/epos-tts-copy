@@ -1,0 +1,5 @@
+#! /bin/sh
+
+killall epos 2>/dev/null
+echo Starting epos
+epos &

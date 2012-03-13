@@ -1,5 +1,5 @@
 /*
- *	ss/src/interf.h
+ *	epos/src/interf.h
  *	(c) geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -16,10 +16,10 @@
  *	including nearly everything that should be ever printf'ed.
  */
 
-#ifndef SS_INTERF_H
-#define SS_INTERF_H
+#ifndef EPOS_INTERF_H
+#define EPOS_INTERF_H
 
-#define CFG_FILE_ENVIR_VAR	"SSCFGFILE"
+#define CFG_FILE_ENVIR_VAR	"EPOSCFGFILE"
 
 enum OPT_STRUCT { OS_CFG, OS_LANG, OS_VOICE };
 enum ACCESS { A_PUBLIC, A_AUTH, A_ROOT, A_NOACCESS };
@@ -28,32 +28,49 @@ enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SYNTH, O_CHANNEL, O_DBG_AREA, O_INT,
 enum OUT_ML { ML_NONE, ML_ANSI, ML_RTF};
 #define OUT_MLstr "none:ansi:rtf:"
 enum _DEBUG_AREA_ {_INTERF_, _RULES_, _ELEM_, _SUBST_, _ASSIM_, _SPLIT_,
-			_PARSER_=7, _SYNTH_=9, _CFG_=10,_NONE_=127}; 
+			_PARSER_=7, _SYNTH_=9, _CFG_=10, _DAEMON_=11, _NONE_=127}; 
            //Don't touch this enum. We're gonna mix these identifiers and raw integer constants;
            // this way, _INTERF_ will be treated as equal to zero, _RULES_ equal to one etc.
            // Some more info can be found in doc/debug.txt
-#define DEBUG_AREAstr "interf:rules:elem:subst:assim:split::parser::synth:cfg:"
+#define DEBUG_AREAstr "interf:rules:elem:subst:assim:split::parser::synth:cfg:daemon:"
+
+void cow(cowabilium **p, int size);	/* copy **p if shared and adjust *p, see interf.cc */
+void cow_claim(void *owner);	/* claim the ownership of all current cfg */
 
 #define CONFIG_DECLARE
-struct configuration		//Some description & defaults can be found in options.cc
+struct configuration : public cowabilium	//Some description & defaults can be found in options.cc
 {
 	#include "options.cc"
 
 	int n_langs;
 	lang **langs;
 
+	FILE *stdshriek;
+	FILE *stddbg;
+
+	stream * current_stream;
+
+	configuration();
 	void shutdown();	// destructor of some sort
 };
+
+#ifdef  BROKEN_ENUM_BITFIELDS
+	#define BIT_FIELD(x)	/* Visual C++ 6.0 generates incorrect code
+					for enum bit fields                */
+#else
+	#define BIT_FIELD(x) : x	/* most compilers are OK */
+#endif
+
 
 struct option
 {
 	const char *optname;
-  	OPT_TYPE opttype	: 5;
-//	int reserved		: 3;
-	OPT_STRUCT structype	: 2;
-	ACCESS 	readable	: 2;
-	ACCESS 	writable	: 2;
-//	int reserved		: 2;
+  	OPT_TYPE opttype	BIT_FIELD(5);
+//	int reserved		BIT_FIELD(3);
+	OPT_STRUCT structype	BIT_FIELD(2);
+	ACCESS 	readable	BIT_FIELD(2);
+	ACCESS 	writable	BIT_FIELD(2);
+//	int reserved		BIT_FIELD(2);
 	short int offset;
 };
 
@@ -73,13 +90,13 @@ extern configuration *cfg;
 extern int argc;
 extern char** argv;
 
-void ss_init(int argc, char**argv);
-void ss_init();
-void ss_reinit();
+void epos_init(int argc, char**argv);
+void epos_init();
+void epos_reinit();
 void load_config(const char *filename);
 void load_config(const char *filename, const char *dirname, const char *what,
 		OPT_STRUCT type, void *whither, lang *parent_lang);
-void ss_done();		// No real need to call, ever. Just to be 100% dmalloc correct.
+void epos_done();		// No real need to call, ever. Just to be 100% dmalloc correct.
 
 
 #define color(stream, seq) if (cfg->colored) fprintf(stream, seq)
@@ -91,17 +108,23 @@ void colorize(int level, FILE *handle);  // See this function in interf.cc for v
 
 void check_lib_version(const char *s);
 
-void shriek(const char *s);
-void shriek(const char *s, int userval);
-void shriek(const char *s, const char *t, int userval);
-void shriek(const char *s, const char *t);
-void shriek(const char *s, const char *t, const char *u);
-void shriek(const char *s, const char *t, const char *u, int userval);
-void shriek(const char *s, const char *t, const char *u, const char *v);
 
-void warn(const char *s);
-void warn(const char *s, const char *t);
+char *fmt(const char *s, int userval);
+char *fmt(const char *s, int userval, int anotherval);
+char *fmt(const char *s, const char *t, int userval);
+char *fmt(const char *s, const char *t);
+char *fmt(const char *s, const char *t, const char *u);
+char *fmt(const char *s, const char *t, const char *u, int userval);
+char *fmt(const char *s, const char *t, const char *u, const char *v);
+
 void user_pause();
+
+void shriek(int code, const char *msg)
+#ifdef __GNUC__
+	__attribute__((__noreturn__))
+#endif
+					;
+
 char *split_string(char *string);	// 0-terminate the first word, return the rest
 FILE *fopen(const char *filename, const char *flags, const char *reason);
 
@@ -121,6 +144,7 @@ char *fntab(const char *s, const char *t); //will calloc and return 256 bytes no
 bool *booltab(const char *s);          //will calloc and return 256 bytes not freeing s
 
 char *compose_pathname(const char *filename, const char *dirname);
+char *limit_pathname(const char *filename, const char *dirname);
 
 struct file
 {
@@ -132,6 +156,7 @@ struct file
 };
 
 file *claim(const char *filename, const char *dirname, const char *flags, const char *description);
+bool reclaim(file *);	// false...unchanged, true...changed
 void unclaim(file *);
 
 void list_languages();
@@ -150,9 +175,9 @@ struct diphone {
 
 extern char *esctab;
 
-extern FILE *stdshriek;
-extern FILE *stdwarn;
-extern FILE *stddbg;
+// extern FILE *stdshriek;
+// extern FILE *stdwarn;
+// extern FILE *stddbg;
 
 extern int session_uid;
 
@@ -160,6 +185,11 @@ extern int session_uid;
 #define	UID_ROOT	 0
 #define UID_SERVER	 1
 
+#ifndef HAVE_FORK
+	int fork();
+#endif
+
+void async_close(int fd);
 
 
 #define DEBUGGING     
@@ -170,7 +200,8 @@ extern char *current_debug_tag;
 bool debug_wanted(int lev, /*_DEBUG_AREA_*/ int area);
 void debug_prefix(int lev, int area);
 
-#define DEBUG(xxx,yyy,zzz) {if(debug_wanted(xxx,yyy)) {debug_prefix(xxx,yyy);zzz;fflush(stddbg);};}
+#define DEBUG(xxx,yyy,zzz) {if(debug_wanted(xxx,yyy)) {debug_prefix(xxx,yyy);zzz;fflush(STDDBG);};}
+#define STDDBG  ::cfg->stddbg
 
 #else       // ifndef DEBUGGING
 #define DEBUG(xxx,yyy,zzz) ; 
@@ -191,4 +222,4 @@ void end_of_eternity();
 #endif      // ifdef WANT_MALLOC
 
 
-#endif      // ifndef SS_INTERF_H
+#endif      // ifndef EPOS_INTERF_H

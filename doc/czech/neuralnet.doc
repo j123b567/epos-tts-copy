@@ -2,8 +2,8 @@
 
 (Petr Horák, 6.6.1997 - popis vstupu pro neuronové sítì ing. Tuèkové;
  implementace je soustøedìna v src/nnet.cc; tento soubor popisuje formát
- souboru matlab.in, který je vytváøen po spuštìní ss. Moje (geo) poznámky
- skotaèí v hranatých závorkách.)
+ souboru matlab.in, který je vytváøen po zpracování pravidel. Moje (geo)
+ poznámky skotaèí v hranatých závorkách.)
 
 ---------------------
 

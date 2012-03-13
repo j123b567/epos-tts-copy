@@ -1,0 +1,10 @@
+Necessary changes to the sgml-tools:
+
+(i)   &ecaron; should be understood as an "e" with a caron
+	or replaced with just plain "e" in intro.sgml
+(ii)  /usr/lib/sgml-tools/dist/fmt_latex2e.pl must not escape
+      | at every context. This would break the <tabular ca="...">
+      tag.
+
+
+(maybe maybe not)

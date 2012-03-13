@@ -1,11 +1,13 @@
 
+ignore this
+
 1	jedna		one			une			yksi
 2	dvì		two			deux			kaksi
 10	deset		ten			dix			kymmenen
 11	jedenáct	eleven			onze			yksitoista
 14	ètrnáct		fourteen		quatorze		neljätoista
 22	dvacet dva	twenty two		vingt-deux		kaksikyemmentäkaksi
-26	dvacet šest	twenty six		vingt-six		kaksikyemmentäkuusi
+26	dvacet ¹est	twenty six		vingt-six		kaksikyemmentäkuusi
 123	sto dvacet tøi	one hundred and ...	cent vingt-trois	satakkaksikyemmentäkolme
 212	dvì stì dvanáct two hundred and ...	deux cents douze	kaksisataakaksitoista
 1011	tisíc jedenáct	one thousand and ...	mille onze		tuhatyksitoista
@@ -15,6 +17,6 @@ Fr:
 80	quatre-vingts
 81	quatre-vingt-un
 
-maïarština také zlobí
+maïar¹tina také zlobí
 èeské "627 tisíc"
 obecné problémy s jedenáctkou

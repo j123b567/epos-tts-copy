@@ -1,5 +1,5 @@
 /*
- *	ss/src/slab.h
+ *	epos/src/slab.h
  *	(c) 1998 Jirka Hanika, geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@ template <int size> class slab
    public:
 	inline slab();
 	inline ~slab();
+	inline void shutdown();
 	inline void *alloc();
 	inline void release(void *ptr);
 };
@@ -49,18 +50,23 @@ inline slab<size>::slab()
 template <int size>
 inline slab<size>::~slab()
 {
+	shutdown();
+}
+
+template <int size>
+inline void slab<size>::shutdown()
+{
 	slab_free_list *tmp, *tmp2;
 	int cells = 0;
 
 	for (tmp = tail; tmp; tmp = tmp->n) cells++;
-	tmp2 = NULL;
-	for (tmp = slices; tmp; tmp = tmp->n) {
-		if (tmp2) free(tmp2);
-		tmp2 = tmp;
+	for (tmp = slices; tmp; ) {
 		cells -= SLAB_FRAGMENT_SIZE - 1;
+		tmp2 = tmp;
+		tmp = tmp->n;
+		free(tmp2);
 	}
-	free(tmp2);
-	if (cells) shriek("%sHash slab lost %d cells", "", -cells);
+//	if (cells) shriek(862, fmt("%sHash slab lost %d cells", "", -cells));
 	tail = NULL;
 	slices = NULL;
 }

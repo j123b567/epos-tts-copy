@@ -1,0 +1,19 @@
+#/bin/sh
+
+day=`../../arch/unix/makedate |awk '{print $3 }'`
+month=`../../arch/unix/makedate | awk '{print $2 }'`
+year=`../../arch/unix/makedate |awk '{print $1 }'`
+
+if [ $month = "Jan" ]; then month="January"; fi
+if [ $month = "Feb" ]; then month="February"; fi
+if [ $month = "Mar" ]; then month="March"; fi
+if [ $month = "Apr" ]; then month="April"; fi
+if [ $month = "Jun" ]; then month="June"; fi
+if [ $month = "Jul" ]; then month="July"; fi
+if [ $month = "Aug" ]; then month="August"; fi
+if [ $month = "Sep" ]; then month="September"; fi
+if [ $month = "Oct" ]; then month="October"; fi
+if [ $month = "Nov" ]; then month="November"; fi
+if [ $month = "Dec" ]; then month="December"; fi
+
+echo $day $month $year

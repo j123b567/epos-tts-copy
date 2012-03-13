@@ -1,0 +1,73 @@
+#! /bin/sh
+
+libdir=$1
+cfgdir=$2
+srcdir=$3
+
+bak=.old
+usr=.local
+
+changed=n
+elder=n
+ignored=n
+link=n
+
+mkdir -p $cfgdir
+
+for i in `find $srcdir -printf %P\\\\n`; do
+	if [ -d $srcdir/$i ]; then
+		if [ ! -d $cfgdir/$i ]; then
+			mkdir $cfgdir/$i
+		fi
+	elif [ -f $cfgdir/$i ]; then
+		if [ $srcdir/$i -nt $cfgdir/$i ]; then
+			if [ -f $cfgdir/$i$bak ]; then
+				rm $cfgdir/$i$bak
+			fi
+			mv $cfgdir/$i $cfgdir/$i$bak
+			cp -a $srcdir/$i $cfgdir/$i
+			changed=y
+		elif diff $srcdir/$i $cfgdir/$i >/dev/null; then
+			ignored=y
+		else
+			if [ -f $cfgdir/$i$usr ]; then
+				rm $cfgdir/$i$usr
+			fi
+			mv $cfgdir/$i $cfgdir/$i$usr
+			cp -a $srcdir/$i $cfgdir/$i
+			elder=y
+		fi
+	else
+#		if [ -L $srcdir/$i ]; then
+#			link=y
+#		else
+			cp -a $srcdir/$i $cfgdir/$i
+#		fi
+	fi
+done
+
+if [ $elder = y ]; then
+	echo Some files have been replaced with older versions:
+	find $cfgdir -name \*$usr |sed s/$usr\$//g
+fi
+
+if [ $changed = y ]; then
+	echo Some files have been replaced with newer versions.
+fi
+
+if [ $link = y ]; then
+	echo Symlinks have been ignored, to my surprise.
+fi
+
+#	Note: the shared library stuff has been removed long ago.
+#
+#if [ -L $libdir/$libeposa ]; then
+#	echo Library in developer mode, not meddling
+#else
+#	if [ -f $srcdir/../src/$libeposa ]; then
+#		echo Installing $libeposa
+#		cp -a $srcdir/../src/$libeposa $libdir/$libeposa
+#		(cd $libdir; ln -sf $libeposa libepos.so)
+#	fi
+#fi
+

@@ -1,46 +1,61 @@
-- Možná by šlo cachovat, tzn. hashovat i parsery, any se leckdy opakují. 
+- Mo¾ná by ¹lo cachovat, tzn. hashovat i parsery, any se leckdy opakují. 
 - je "se" prepozice, nebo postpozice? Jak to poznáme?
 - Kumulace monosylab. Tohle bude trochu problém.
 - zjistit, zda bude nutno dále uzpùsobit ptacek97 diftongùm.
-- stddbg etc. jsou nechutné - nesnesou sdílení souboru, neuvolòují pamì
-- doladit DOS port
-- DLL, jak dál pod Windows
-- snížit pamìové nároky hashovacích tabulek
+- stddbg etc. jsou nechutné - nesnesou sdílení souboru, neuvolòují pamì»
+- sní¾it pamì»ové nároky hashovacích tabulek
 - unknown diphone - asi jen è. 19 (souhláska---r)
 - gramatický marking
-- skni unused???
 - v traditnl.dph chybí difony typu i/ (?i0), kde i je samohláska
-- umožnit hierarchii paus
-- úplnì zrušit difony kvùli snížení pamìových nárokù
+- umo¾nit hierarchii paus
 - vhodnì oøezat listy AVL stromù v hash.cc
 - make install je velmi neodolný (cfg not there, no binaries...)
 - inserting rules (not phones) may go madly looping
   (eating up all memory); why? What should they do anyway?
-- difon 254 et c. se nepoužívá, rázy jsou ošetøeny divnì, slab. r taky.
-- prof. Palková si právem stìžuje na rázy
-- otevøené slabiky se vyznaèují chybnì (slabikotvorné souhlásky)
+- difon 254 et c. se nepou¾ívá, rázy jsou o¹etøeny divnì, slab. r taky.
+- prof. Palková si právem stì¾uje na rázy
 - plýtvání pamìtí napøíklad na inventáøe
 - shriek() -> exc handling, i monolith
 - skonsistentnit options v monolith a v clientovi. Monolith napø. nepodporuje
   --input_file a client snad jo; pokud jde o -n, je to zase naopak. Soubory
-  se parsují stejnì, klávesnice však nikoli.
+  se parsují stejnì, klávesnice v¹ak nikoli.
 - autentikace
 - zaèlenit "set language" jako normální "set"
 - chybová sémantika (nejen varování/utnutí session/havárie serveru)
-- suprasegmentalia by mìla být odolná vùèi celkovému posunutí
 - zjistit, zda funguje --input_file
 - zjistit, zda a k èemu je postp2.dic
-- monolith by mìl užívat str2units()
+- monolith by mìl u¾ívat str2units()
 - jak z klávesnice zadávat parametry per language?
-- time stamps ve freadin()
-- zrušit FILE options
-- otestovat soft options
-- dopsat options.doc
 - øadové èíslovky
 - øímské èíslice
 - STML tag stack
-- freadin unregistration
-- reinit
 - t i adjustments option
 - 2x "se" za sebou apod.
+- havarie serveru se neoznamuje konexím
+- zkontrolovat, zda je ve¹kerá dokumentace pøelo¾ena do angliètiny a aktuální
+- doladit SGML konverze
+- asynchonní a robustnìj¹í tcpsyn
+- paranoia v allowed.ini by mela zpusobit hlaseni neznamych (preklepnutych) parametru
+- MBROLA synthesis
+- Seela database (sp.? German morphology)
+- NT port
+- audio icons
+- voice options on cmd line segfault ('cos this_voice==NULL)
+- E. V&iacute;chova, Zdenek
+- individual options
+- zjistit, kam se vlastnì tisknou error messages apod.
+- nìkteré tabulky v sgml2txt vyvolávají "warning: indent cannot be negative"
+- se mi povedlo vytvorit stale pripravene, lec nezpracovavane deskriptory skrze strm /f:/f
+  a appl, ktere se nevracelo.
+- chybí napø. SU.PSL v kadlecovi! a sposta dal¹ích
+- ktdsyn chce víc odladit, nesná¹í del¹í texty
+- asi ztrácím pamì» na struct cowabilium. Asi neuvolòuji pøinejmen¹ím kopie nakupované
+  v a_ttscp::a_ttscp, ale ani cow==NULL copies.
+- volit hlas v tcpsyn
+- zdvoøile pozabíjet v¹echny ctrl_conns v cmd_shutdown
+- shriek(6xx,) bìhem bg appl apod. mù¾e shodit celý server - co s tím?
+- check wh upon brk, correct byte count is reported in TTSCP
+- data conns never disconnect implicitly
+
+
 

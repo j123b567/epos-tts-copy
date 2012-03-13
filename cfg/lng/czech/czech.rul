@@ -1,10 +1,7 @@
 #
 #	(c) Jirka Hanika <geo@ff.cuni.cz>
 #
-# Pravidla pro zpracování èeštiny
-
-$colloquial	external
-$irony		external
+# Pravidla pro zpracování èe¹tiny
 
 $invent_dir	external
 $prosody_dir	external
@@ -30,7 +27,7 @@ $prosody   = ${base_dir}/${prosody_dir}
 #	smooth	f/5/40\35\15\5			colon   syll
  }
 
- if      $irony		sent
+ if      irony		sent
  {
 	inside  ,- colon		; tohle nefunguje rozumnì
 	{
@@ -63,7 +60,7 @@ $prosody   = ${base_dir}/${prosody_dir}
 	smooth	f/30/40\30			word	phone
  }
 
- inside   ?	sent	; Následující jen pro otázky zjišovací
+ inside   ?	sent	; Následující jen pro otázky zji¹»ovací
  {
 	prosody   $prosody/fadeoutp.dic	sent	phone
 	prosody	  $prosody/fadeoutw.dic	sent	word
@@ -93,11 +90,16 @@ $prosody   = ${base_dir}/${prosody_dir}
 	prosody   $prosody/exclafad.dic	sent	syll
  }
 
-regress   0>\#(!_0)	colon	; vložení pausy
+regress   0>\#(!_0)	colon	; vlo¾ení pausy
 
 # diphones  ${dph_file}	colon	    ; mìlo by být zhruba posledním pravidlem
 
- diphones  traditnl.dph colon
+if   kadlec_dph
+	diphones  kadlec.dph   colon
+if  !kadlec_dph
+	diphones  traditnl.dph colon
+
+# diphones  traditnl.dph
  
 # smooth    f/10/80\10	text diphone
 

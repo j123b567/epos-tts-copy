@@ -1,5 +1,5 @@
 /*
- *	ss/src/ktdsyn.h
+ *	epos/src/ktdsyn.h
  *	(c) 1996-98 Zdenek Kadlec, kadlec@phil.muni.cz
  *	(c) 1997-98 Martin Petriska, petriska@decef.stuba.sk
  *	(c) 1997-98 Petr Horak, horak@ure.cas.cz
@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef SS_KTD_H
-#define SS_KTD_H
+#ifndef EPOS_KTD_H
+#define EPOS_KTD_H
 
 #define  sample2_t	unsigned char
 
@@ -45,8 +45,8 @@ class ktdsyn : public synth
 //	     ktdsyn (int, int);
 	     ktdsyn (voice *);
 	    ~ktdsyn ();
-	virtual void syndiph (voice *v, diphone d);
+	virtual void syndiph (voice *v, diphone d, wavefm *w);
 	
 };
 
-#endif		// SS_KTD_H
+#endif		// EPOS_KTD_H

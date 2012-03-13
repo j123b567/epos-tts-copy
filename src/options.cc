@@ -1,5 +1,5 @@
 /*
- *	ss/src/options.cc
+ *	epos/src/options.cc
  *	(c) 1997-98 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -67,11 +67,11 @@
 #else                 //#ifdef CONFIG_INITIALIZE or CONFIG_DESCRIBE or CONFIG_INV*
 
 #ifdef CONFIG_INITIALIZE
-#define OPTION(member,name,type,default) cfg->member=default,
+#define OPTION(member,name,type,default) cfg->member=default;
 
-#define OPTIONAGGR(x) {
+#define OPTIONAGGR(x)
 #define OPTIONITEM(w,x,y,z) OPTION (w,x,y,z)
-#define OPTIONAGGRENDS },
+#define OPTIONAGGRENDS
 
 #define LNG_OPTIONAGGR(x) OPTIONAGGR(x)
 #define LNG_OPTIONITEM(w,x,y,z) OPTIONITEM(w,x,y,z)
@@ -274,9 +274,6 @@
 
 
 
-/*** it is important that INV_OPTION copy on write goes first:   ***/
-INV_OPTION (cow, cow, "",	  BOOL, false)	// copy on write (this cfg struct: is shared)
-
 OPTION (use_dbg,    "use_debug",  BOOL, false)  // Whether to print any debug info at all
 
 OPTION (interf_dbg, "interf_debug",INT, 3)      // Debugging levels of various
@@ -296,10 +293,10 @@ OPTION (always_dbg, "always_debug",INT, 3)      // Always debug this level and u
 OPTION (limit_dbg,  "limit_debug", INT, 0)      // Never debug under this level, unless focussed
 
 OPTION (loaded, "",               BOOL, false)  // Do we have already compiled the .ini files?
-OPTION (ssfixed, "ssfixed_file",   STR, "ssfixed.ini")
-OPTION (inifile, "cfg_file",       STR, "ss.ini")	// What is our favourite .ini file?
-OPTION (token_esc, "",             STR, "nt[E\\ #;~.-mX")	// Escape sequences usable in the .ini files
-OPTION (value_esc, "",             STR, "\n\t\033\033\\\377#;\1\2\3\4\037")
+OPTION (fixedfile,"fixed_ini_file",STR, "fixed.ini")
+OPTION (inifile, "cfg_file",       STR, "epos.ini")	// What is our favourite .ini file?
+OPTION (token_esc, "",             STR, "nt[eE\\ #;~.-mX")	// Escape sequences usable in the .ini files
+OPTION (value_esc, "",             STR, "\n\t\033\033\033\\\377#;\1\2\3\4\037")
 OPTION (slash_esc, "",            CHAR, '/')	// Path separator ('/' or '\') .ini escape seq
 
 OPTION (hash_full, "hashes_full",  INT, 100)    // How full should a hash table become?
@@ -307,11 +304,11 @@ OPTION (multi_subst,"multi_subst", INT, 100)    // How many substs should apply 
 OPTION (lowmemory, "memory_low",  BOOL, false)  // Should we free hash tables after first use?
 OPTION (forking, "forking",	  BOOL, false)  // (UNIX only) Speak using a child process?
 OPTION (colored, "colored",       BOOL, false)  // Use the color escape sequences?
-OPTION (languages, "languages",     STR, "")	// Which language to simulate?
+OPTION (languages, "languages",     STR, "")	// Which languages to provide?
 // OPTION (inventory, "inventory",    STR, "")	// What voice (diphone inventory) to use?
 OPTION (ml, "markup_language",  MARKUP, ML_NONE)// Are these ANSI escape seqs or the RTF ones?
-OPTION (version, "version",	  BOOL, false)	// Print version info to stdwarn on startup?
-OPTION (help, "help",		  BOOL, false)	// Print help on stdwarn and exit on startup?
+OPTION (version, "version",	  BOOL, false)	// Print version info to stdshriek on startup?
+OPTION (help, "help",		  BOOL, false)	// Print help on stdshriek and exit on startup?
 OPTION (long_help, "long_help",   BOOL, false)	// Print also a simple list of long options?
 OPTION (neuronet, "neuronet",     BOOL, false)  // Allow nnet_out()?
 OPTION (trusted, "trusted",       BOOL, false)  // Are sanity checks in unit::sanity() unnecessary?
@@ -320,12 +317,12 @@ OPTION (stml, "stml",	          BOOL, false)	// Input text are STML (as opposed 
 OPTION (showrule, "show_rule",    BOOL, false)  // Print each rule before its application? DEBUGGING only!
 OPTION (pausing, "pausing",       BOOL, false)  // Pause after each rule application?
 OPTION (r_dbg_sh_all, "verbose",  BOOL, false)  // When dumping rules, print them all?
-OPTION (warnpause, "warn_pause",  BOOL, false)  // Pause after every warning?
+// OPTION (warnpause, "warn_pause",  BOOL, false)  // Pause after every warning?
 OPTION (warnings, "warnings",     BOOL, false)	// Show warnings at all?
 OPTION (allpointers,"ptr_trusted",BOOL, true)   // When sanity checking, allow any pointers?
 
-LNG_OPTION (colloquial, colloquial, "colloquial", BOOL, false)  // Colloquial pronunciation?
-LNG_OPTION (irony, irony, "irony",	          BOOL, false) // Ironical intonation?
+// LNG_OPTION (colloquial, colloquial, "colloquial", BOOL, false)  // Colloquial pronunciation?
+// LNG_OPTION (irony, irony, "irony",	          BOOL, false) // Ironical intonation?
 
 OPTION (vars, "variables",         INT, 43)     // About how many variables in the rules?
 OPTION (rules, "rules_in_block",   INT, 32)	// About how many rules in a block?
@@ -336,25 +333,27 @@ OPTION (dev_txtlen,"dev_text_len", INT, 50000)  // How much data can we expect f
 
 OPTION (eof_char, "end_of_file",  CHAR, '\033') // Which key should terminate user input?
 
-OPTION (base_dir, "base_dir",      STR, "/usr/lib/ss")    // base path to everything
+OPTION (base_dir, "base_dir",      STR, "/usr/lib/epos")  // base path to everything
 LNG_OPTION (rules_dir, rules_dir, "rules_dir", STR, ".")  // path to the rules and banner files
-LNG_OPTION (hash_dir, hash_dir, "hash_dir",     STR, ".") //  to the dictionaries
+LNG_OPTION (hash_dir, hash_dir, "hash_dir",    STR, ".")  //  to the dictionaries
 LNG_OPTION (input_dir, input_dir, "input_dir", STR, ".")  //  to the input file
 INV_OPTION (invent_dir, inv_dir, "invent_dir", STR, ".")  //  to the diphone inventories
-LNG_OPTION (lang_dir, lang_dir, "lang_dir",    STR, ".")  //  to the language descriptions
 LNG_OPTION (pros_dir, pros_dir, "prosody_dir", STR, ".")  //  to the prosody files
-OPTION (ini_dir, "ini_dir",	   STR, "cfg")  //      to ssfixed.ini
+OPTION (pseudo_root_dir, "pseudo_root_dir",STR, "root")	  //  to the virtual file tree
+OPTION (lang_base_dir, "lang_base_dir",    STR, "lng")    //  to the language descriptions
+OPTION (ini_dir, "ini_dir",	   STR, "cfg")  //      to fixed.ini
 OPTION (matlab_dir, "matlab_dir",  STR, ".")	//      where to store nnet output
 OPTION (wav_dir, "wav_dir",        STR, ".")	//      where to store .wav files
 LNG_OPTION (input_file, input_file, "input_file",  STR, NULL)   // relative filename of the input text
 OPTION (input_text, "",            STR, NULL)			// the input text itself
 LNG_OPTION (rules_file, rules_file, "rules_file",  STR, NULL)   // relative filename of the rules text
 OPTION (nnet_file, "nnet_file",    STR, NULL)	// relative filename of nnet output
-OPTION (stddbg, "stddbg_file",     STR, NULL)   // file to write debug info to (NULL...stdout)
-OPTION (stdwarn, "stdwarn_file",   STR, NULL)   // file to write warnings to (NULL...stderr)
-OPTION (stdshriek,"stdshriek_file",STR, NULL)   // file to write fatal errors to (NULL...stderr)
+OPTION (stddbg_file, "stddbg_file",     STR, NULL)   // file to write debug info to (NULL...stdout)
+// OPTION (stdwarn_file, "stdwarn_file",   STR, NULL)   // file to write warnings to (NULL...stderr)
+OPTION (stdshriek_file,"stdshriek_file",STR, NULL)   // file to write fatal errors to (NULL...std~err)
 
 OPTION (trans, "show_transcript", BOOL, true)	// Should we display transcription on exit?
+OPTION (show_phones,"show_phones",BOOL, false)	// Should we display the sounds on exit?
 OPTION (use_diph,"",		  BOOL, true)	// (enabled if one of the following is on)
 OPTION (show_diph,"show_diphones",BOOL, false)  // Should we display the diphones on exit?
 OPTION (play_diph,"play_diphones",BOOL, false)  // Should we write the sound to a file?
@@ -378,27 +377,25 @@ INV_OPTION (inv_t0, init_t, "init_t",      INT, 100)	// Neutral time factor
 INV_OPTION (inv_hz, samp_rate, "inv_sampling_rate", INT, 8000)	// The real sampling rate of the inventory
 INV_OPTION (inv_samp_size, samp_size, "sample_size",INT, 16)	// (not supported)
 
-INV_OPTION (wav_hdr, wav_hdr, "wave_header",	BOOL, false)  // Should .wav output contain .wav file header?
-INV_OPTION (ioctlable, ioctlable, "ioctlable",	BOOL, false)  // Is the voice a real device not file?
+OPTION (wav_hdr, "wave_header",	  BOOL, false)  // Should .wav output contain .wav file header?
+// INV_OPTION (ioctlable, ioctlable, "ioctlable",	BOOL, false)  // Is the voice a real device not file?
 
 OPTION (daemon_log, "daemon_log",  STR, NULL)	// Log file of daemon.cc activities (TTSCP server)
 OPTION (allow_file, "allow_options_file", STR, "allowed.ini") // options anonymous may change
-INV_OPTION (buffer_size, buff_size, "buffer_size",	INT, 4096)
-OPTION (max_children, "",	   INT, 32)	// maximum number of simult. talking children
+OPTION (db_size, "diph_buff_size", INT, 511)	// max n of diphones to be synthesized at once
+OPTION (buffer_size, "buffer_size",INT, 8192)	// buffer size for wave files
 OPTION (max_net_cmd, "max_net_cmd",INT, 16384)  // Max TCP command length
-OPTION (listen_port, "",	   INT, 8778)	// TCP port where the daemon should listen
-OPTION (sd, "",			   INT, 0)	// network socket of the current session
+OPTION (listen_port, "listen_port",INT, 8778)	// TCP port where the daemon should listen
+INV_OPTION (inv_rserv, remote_server, "remote_server", STR, "epos.ure.cas.cz:8779")	// IP host name [:port]
+// OPTION (sd, "",		   INT, 0)	// network socket of the current session
 						// (can also be used to detect the daemon mode)
-OPTION (persistence,"persistence", INT, 60)	// Seconds to try to bind the socket (0 forever)
+OPTION (sd_in, "",		   INT, -1)	// current input network socket
+OPTION (sd_out, "",		   INT, -1)	// current output network socket
+// OPTION (persistence,"persistence", INT, 60)	// Seconds to try to bind the socket (0 forever)
 
 LNG_OPTION (std_voices, voice_names, "voices", STR, "")	// voices supported for this language
 LNG_OPTION (sft_opts, soft_option_names, "soft_options", STR, "")
 				// language-specific voice options supported for this language
-
-OPTION (f_neutral, "f_neutral",    INT, 100)    // Neutral (unmarked) frequency
-OPTION (i_neutral, "i_neutral",    INT, 100)    // Neutral intensity
-OPTION (t_neutral, "t_neutral",    INT, 100)    // Neutral time factor
-INV_OPTION (ti_adj, t_i_adjustments, "t_i_adj", BOOL, false)	// Adjust neutral time/intensity for some diphones
 
 // OPTION (ktd_pitch, "ktd_pitch",    INT, 100)
 // OPTION (ktd_speed, "ktd_speed",    INT, 4000)	//          FIXME
@@ -424,7 +421,7 @@ LNG_OPTION (limit_syll_hack, syll_thr, "limit_side_syll", CHAR, 'a')
 OPTION (normal_col, "normal_color",   STR, "")
 OPTION (curul_col, "curr_rule_color", STR, "")
 OPTION (shriek_col, "fatal_color",    STR, "")
-OPTION (warn_col, "warning_color",    STR, "")
+// OPTION (warn_col, "warning_color",    STR, "")
 
 OPTION (shriek_art, "shriek_art",     INT, 0)	// Number of picture printed on fatal errors
 
@@ -439,17 +436,33 @@ LNG_OPTIONITEM (perm[U_SENT], "perm_sent", STR, "")
 LNG_OPTIONITEM (perm[U_TEXT], "perm_text", STR, "")
 LNG_OPTIONAGGRENDS
 
-OPTIONAGGR (int sseg_weight[U_TEXT+1])
-OPTIONITEM (sseg_weight[U_DIPH],"sseg_weight_diph",INT,1)
-OPTIONITEM (sseg_weight[U_PHONE],"sseg_weight_phone",INT,1)
-OPTIONITEM (sseg_weight[U_SYLL],"sseg_weight_syll",INT,1)
-OPTIONITEM (sseg_weight[U_WORD],"sseg_weight_word",INT,1)
-OPTIONITEM (sseg_weight[U_COLON],"sseg_weight_colon",INT,1)
-OPTIONITEM (sseg_weight[U_SENT],"sseg_weight_sent",INT,1)
-OPTIONITEM (sseg_weight[U_TEXT],"sseg_weight_text",INT,1)
+OPTIONAGGR (int pros_weight[U_TEXT+1])
+OPTIONITEM (pros_weight[U_DIPH],"pros_weight_diph",INT,1)
+OPTIONITEM (pros_weight[U_PHONE],"pros_weight_phone",INT,1)
+OPTIONITEM (pros_weight[U_SYLL],"pros_weight_syll",INT,1)
+OPTIONITEM (pros_weight[U_WORD],"pros_weight_word",INT,1)
+OPTIONITEM (pros_weight[U_COLON],"pros_weight_colon",INT,1)
+OPTIONITEM (pros_weight[U_SENT],"pros_weight_sent",INT,1)
+OPTIONITEM (pros_weight[U_TEXT],"pros_weight_text",INT,1)
 OPTIONAGGRENDS
 
-// OPTION (sseg_weights_denom, "sseg_weights_denom", INT, 1) never used, maybe some day
+// OPTION (pros_weights_denom, "sseg_weights_denom", INT, 1) never used, maybe some day
+
+OPTIONAGGR (bool pros_mul[3])
+OPTIONITEM (pros_mul[Q_FREQ], "pros_eff_multiply_f",	BOOL, true)
+OPTIONITEM (pros_mul[Q_INTENS], "pros_eff_multiply_i",	BOOL, true)
+OPTIONITEM (pros_mul[Q_TIME], "pros_eff_multiply_t",	BOOL, true)
+OPTIONAGGRENDS
+
+OPTIONAGGR (int pros_neutral[3])
+OPTIONITEM (pros_neutral[Q_FREQ], "pros_neutral_f",	INT, 100) // Neutral (unmarked) frequency
+OPTIONITEM (pros_neutral[Q_INTENS], "pros_neutral_i",   INT, 100) // Neutral intensity
+OPTIONITEM (pros_neutral[Q_TIME], "pros_neutral_t",	INT, 100) // Neutral time factor
+OPTIONAGGRENDS
+
+// INV_OPTION (ti_adj, t_i_adjustments, "t_i_adj", BOOL, false)	// Adjust neutral time/intensity for some diphones
+
+
 
 OPTION (out_verbose,"structured", BOOL, true)   // Will unit::fout display other units than phones?
 OPTION (out_postfix, "postfix",   BOOL, false)  // Content char follows the offspring?

@@ -1,5 +1,5 @@
 /*
- *	ss/src/hash.h
+ *	epos/src/hash.h
  *	(c) geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -44,14 +44,6 @@
 #define DATA_EQUALS_KEY	(char *)1   //ditto, add(key, key) if no data specified
 
 #define ANYWAY (char *)1
-
-/*
-#ifndef __STRING_H
-#include <string.h>
-#endif
-#include <stdlib.h>
-#include <stdio.h>
-*/
 
 #define key_t hash_key_t
 #define data_t hash_data_t

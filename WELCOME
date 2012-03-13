@@ -1,0 +1,52 @@
+
+This is Epos, a freely distributable language independent Text-to-Speech
+system. See doc/COPYING for distribution conditions.
+
+Compiling on a UNIX machine:
+
+ 1. cd src
+ 2. ./configure
+ 3. make
+ 4. make install   (as root - will install cfg files under /usr/lib/epos)
+
+Compiling with Visual C++ on a Windows NT machine:
+ 0. having inadequate luck throughout is essential
+ 1. cd arch\win
+ 2. .\configure.bat
+ 3. cd ..\..\src
+ 4. run VC and open the workspace file epos.dsw
+ 5. build the project (press F7)
+
+Running:
+ epos   starts a speech daemon
+ say    controls this daemon, e.g. "say 'Some text'" means "tell epos to
+	     say 'some text'".
+
+The default configuration speaks Czech using /dev/dsp and the public
+TTSCP server at epos.ure.cas.cz. If you don't have /dev/dsp, you might
+wish to try "say -w 'Some text'" to create /usr/lib/epos/root/said.wav
+which is an MS Windows-style .wav file. If you are not connected to
+the Internet, or epos.ure.cas.cz is unreachable or misconfigured (not
+unusual), go to /usr/lib/epos/lng/czech/czech.ini and swap the words
+"kadlec" and "rvq" in the "voices" option. This will make Epos speak
+using a poor quality built-in voice.
+
+More info:
+
+ 1. read doc/Intro
+ 2. read doc/english/epos.* (asterisk stays for any one of txt, dvi...)
+ 3. browse http://epos.ure.cas.cz/ (mostly identical to (2))
+ 4. have a look at the files under cfg (or /usr/lib/epos)
+ 5. read the source under src
+(The last two steps are optional.)
+
+Getting help:
+
+ 0. The order of the following steps is important.
+ 1. Download a recent version.
+ 2. Get more info as outlined above.
+ 3. mail to epos@braille.mff.cuni.cz. This is a developer list.
+    Be sure to mention the version you're running or trying to run
+    (to be found in common.h or by "epos -v") and describe your
+    problems. If your mail bounces, try geo@ff.cuni.cz instead.
+

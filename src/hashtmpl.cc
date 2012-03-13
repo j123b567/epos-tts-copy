@@ -1,5 +1,5 @@
 /*
- *	ss/src/hash.cc
+ *	epos/src/hash.cc
  *	(c) 1994-98 geo@ff.cuni.cz (Jirka Hanika)
  *
     This program is free software; you can redistribute it and/or modify
@@ -69,7 +69,7 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
 #define keydel(x)	(dupkey  ? delete(x)	: (void)(x))
 #define datadel(x)	(dupdata ? delete(x)	: (void)(x))
 
-#pragma warn -rch
+// #pragma warn -rch	Enable for Borland to avoid some warnings
 
 template <class key_t, class data_t>
 struct hsearchtree {
@@ -86,7 +86,7 @@ struct hsearchtree {
 
 #define hsearchtree_size sizeof(hsearchtree<char, char>)
 
-slab <hsearchtree_size> *hash_tree_slab;
+slab <hsearchtree_size> *hash_tree_slab = 0;
 
 inline void *tree_alloc()
 {
@@ -125,9 +125,9 @@ void shutdown_hashing()
 
 #endif
 
-#if (0) //try #ifdef DEBUG_HASH if you wanna shriek()
-#define push(x) (_hash_sp>=_HASH_DEPTH?shriek("push %s%d","",_hash_sp):NULL,_hash_stk[_hash_sp++]=(x))
-#define pop (_hash_sp<1?shriek("pop %s%d","",_hash_sp):NULL,*_hash_stk[--_hash_sp])
+#if (0) //try #ifdef DEBUG_HASH if you wanna hash_shriek()
+#define push(x) (_hash_sp >= _HASH_DEPTH ? hash_shriek("push %s%d","",_hash_sp) : NULL, _hash_stk[_hash_sp++] = (x))
+#define pop (_hash_sp < 1 ? hash_shriek("pop %s%d","",_hash_sp) : NULL, *_hash_stk[--_hash_sp])
 #else
 
 #define UNTYPED(x) ((hsearchtree<void, void> **)(x))
@@ -331,7 +331,7 @@ printf("hash::hash: using file %s\n", filename);
 			items = -1;
 			goto fail;
 		}
-		shriek(not_found ? not_found : "Can't hash in file %s", filename, 0);
+		hash_shriek(not_found ? not_found : "Can't hash in file %s", filename, 0);
 	}
 	while (fgets(buff, hash_max_line, hashfile)) if (!strspn(buff+strspn(buff,WHITESPACE),COMMENT_LINES)) l++;
 	capacity = l*100/perc_full | 1;
@@ -359,23 +359,23 @@ printf("hash::hash: using file %s\n", filename);
 		value = tmp += strspn(tmp, WHITESPACE);
 		if (!*value) switch ((int)no_data) {
 			case (int)DATA_EQUALS_KEY: value = key; break;
-			case (int)DATA_OBLIGATORY: shriek("No value specified in %s, line %d",filename,l);
+			case (int)DATA_OBLIGATORY: hash_shriek("No value specified in %s, line %d",filename,l);
 			default: value = no_data;
 		}
 		else if (!multi_data && tmp[strcspn(tmp,WHITESPACE)]) 
-			shriek("Multiple values specified in %s, line %d",filename,l);
+			hash_shriek("Multiple values specified in %s, line %d",filename,l);
 		add(key, value);
-	};
+	}
 	fclose(hashfile);
    fail:
 	free(buff);
 
 #ifdef DEBUG_HASH
 printf("hash::hash: successfully returning, file %s\n", filename);
-if (_hash_sp) shriek("Hash stack dirty! %s%d", "", _hash_sp);
+if (_hash_sp) hash_shriek("Hash stack dirty! %s%d", "", _hash_sp);
 #endif
 
-};
+}
 
 FILE * _outfile;
 
@@ -451,7 +451,7 @@ hash::update(char *filename, bool keep_backup, bool remove_removed)
 	char holdchar;
 	int result = 0;
 	
-	if (!old) shriek("Cannot update %s (errno=%d)", filename, errno);
+	if (!old) hash_shriek("Cannot update %s (errno=%d)", filename, errno);
 
 	strcpy(buff, "~");
 	strcat(buff, filename);
@@ -517,7 +517,7 @@ hash_table<key_t, data_t>::fn(const key_t *key)
 #else
 	return(j % capacity);
 #endif
-};
+}
 
 
 /****************************************************************************
@@ -531,7 +531,7 @@ hash_table<key_t, data_t>::add(const key_t *key, const data_t *value)     //if p
 {
 #ifdef DEBUG_HASH
 printf("hash::add \"%s\" to \"%s\"\n",key,value);
-if (_hash_sp) shriek("Hash stack dirty! %s%d","",_hash_sp);
+if (_hash_sp) hash_shriek("Hash stack dirty! %s%d","",_hash_sp);
 #endif
 	register int result;
 	hsearchtree<key_t, data_t> *tree;
@@ -545,9 +545,9 @@ printf("hash::add %s already there, old value \"%s\"\n",key, tree->data);
 			tree->data=datadup(value);
 			_hash_sp=0;
 			return;
-		};
+		}
 		tree=(hsearchtree<key_t, data_t> *)*push(result>0?&tree->l:&tree->r);
-	};
+	}
 	if(key_t_is_string && longest<(result=strlen((char *)key))) longest=result;
 
 	/* "tree=new hsearchtree;" would confuse DMALLOC */
@@ -583,7 +583,7 @@ void hash::add_int(const char *key, int value)
 printf("hash::add_int %s to '%s'\n",key,i);
 #endif
 	add(key, (char *)i); 
-};
+}
 
 /****************************************************************************
  hash::remove
@@ -596,7 +596,7 @@ hash_table<key_t, data_t>::remove(const key_t *key)     //returns the data (NULL
 {
 #ifdef DEBUG_HASH
 printf("hash::remove \"%s\"\n",key);
-//if (_hash_sp) shriek("Hash stack dirty! %s%d","",_hash_sp);
+//if (_hash_sp) hash_shriek("Hash stack dirty! %s%d","",_hash_sp);
 #endif
 	register int result;
 	register data_t *val;
@@ -610,7 +610,7 @@ printf("hash::remove \"%s\"\n",key);
 	if (!here) {
 		_hash_sp=0;
 		return KEY_NOT_FOUND;
-	};
+	}
 #ifdef DEBUG_HASH
 printf("hash::remove %s is there, value \"%s\"\n",key, (*tree)->data);
 #endif		
@@ -630,7 +630,7 @@ printf("hash::remove %s is there, value \"%s\"\n",key, (*tree)->data);
 		if      (there->l && there->l->height>=there->height) there->height++;
 		else if (there->r && there->r->height>=there->height) there->height++;
 		else _hash_sp=0;	// if no changes there, break out.
-	};
+	}
 	tree_delete (here);
 #ifdef DEBUG_HASH
 printf("Rehash? (%d of %d)\n",items, min_items);
@@ -708,9 +708,9 @@ printf("hash::translate compares tree holding %s to %s\n",(*tree)->key, (*tree)-
 #endif
 		if(!(result=keycmp(key,(*tree)->key))) return((*tree)->data);
 		if(result>0) tree=&((*tree)->l); else tree=&((*tree)->r);
-	};
+	}
 	return(KEY_NOT_FOUND);
-};
+}
 
 int
 hash::translate_int(const char *key)
@@ -724,7 +724,7 @@ hash::translate_int(const char *key)
 	if (*result=='+') result++;
 	for(i=result;*i;i++) to_return=to_return*10+*i-'0';
 	return (int)to_return*sign;
-};
+}
 
 /****************************************************************************
  hash::rehash - rebuild the hash table, because its size has become
@@ -754,7 +754,7 @@ printf("hash::rehash Gonna rehash from %d to %d for %d items\n", capold, new_cap
 
 #ifdef POWER_OF_TWO
 	hash_fn_mask = new_capacity - 1;
-	if (new_capacity & hash_fn_mask) shriek("Not a power of two %d","",new_capacity);   // :-(
+	if (new_capacity & hash_fn_mask) hash_shriek("Not a power of two %d","",new_capacity);   // :-(
 #endif
 	capacity=new_capacity;
 	ht=(hsearchtree<key_t, data_t> **)calloc(capacity, sizeof(hsearchtree<key_t, data_t> *));
@@ -764,7 +764,7 @@ printf("hash::rehash Gonna rehash from %d to %d for %d items\n", capold, new_cap
 	for (i=0; i<capold; i++) {
 		rehash_tree(htold[i]);
 		dissolvetree(htold[i]);
-	};
+	}
 	free(htold);
 	cfg_rehash(perc_too_sparse, perc_too_dense, ttdold);
 }
@@ -838,13 +838,13 @@ hash::listtree(hsearchtree <char, char> *tree, int indent)
 		        tree->height!=tree->r->height+1 ||
 			!tree->r && tree->l && tree->l->height+1!=tree->height ||
 			!tree->l && tree->r && tree->r->height+1!=tree->height )
-//			shriek("Bad height %s%d","",tree->height);
+//			hash_shriek("Bad height %s%d","",tree->height);
 		listtree(tree->r, indent+1);
 		listtree(tree->l, indent+1);
 //		if (tree->l && tree->r && abs(tree->l->height-tree->r->height)>1)
-//			shriek("Both children, but bad %s%d","",tree->height);
-	};
-};
+//			hash_shriek("Both children, but bad %s%d","",tree->height);
+	}
+}
 
 #undef unconst
 

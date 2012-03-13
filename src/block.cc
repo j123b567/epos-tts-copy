@@ -1,5 +1,5 @@
 /*
- *	ss/src/block.cc
+ *	epos/src/block.cc
  *	(c) 1996-98 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ int   global_current_line = 0;
 extern unit EMPTY;
 
 
-#define diatax(x) shriek("%s in file %s line %d", (x), file->current_file, file->current_line)
+#define diatax(x) shriek(811, fmt("%s in file %s line %d", (x), file->current_file, file->current_line))
 
 
 class block_rule : public rule
@@ -129,8 +129,8 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 		case (int)END_OF_CHOICE: diatax("No choice to terminate");	// FIXME
 		case (int)END_OF_RULES: 
 			if (!began_at) break;
-			else shriek("Unterminated block in file %s line %d", began_in, began_at);
-		default: shriek("next_rule() gone mad");
+			else shriek(811, fmt("Unterminated block in file %s line %d", began_in, began_at));
+		default: shriek(861, "next_rule() gone mad");
 	}
 	free(began_in);
 	if (n_rules) rulist = (rule **)realloc(rulist, sizeof(rule *) * n_rules);
@@ -165,7 +165,7 @@ block_rule::apply_current(unit *root)
 	rule *r;
 	unit *u;
 
-	DEBUG(0,1,fprintf(stddbg,"rules::apply when i=%d call debug()\n",current_rule);debug();)
+	DEBUG(0,1,fprintf(STDDBG,"rules::apply when i=%d call debug()\n",current_rule);debug();)
 	DEBUG(0,2,root->fout(NULL);)
 	r = rulist[current_rule];
 	
@@ -175,10 +175,10 @@ block_rule::apply_current(unit *root)
 		unit *tmp_next = u->Next(scope);
 		tmpscope = u->scope;
 		u->scope = true;
-		DEBUG(0,1,fprintf(stddbg, "rules::apply current_rule %d\n", current_rule);)
+		DEBUG(0,1,fprintf(STDDBG, "rules::apply current_rule %d\n", current_rule);)
 #ifdef DEBUGGING
 		if (cfg->use_dbg) current_debug_tag = r->dbg_tag;
-		if (cfg->showrule) fprintf(stdwarn,"[%s] %s %s\n",
+		if (cfg->showrule) fprintf(STDDBG, "[%s] %s %s\n",
 			r->dbg_tag,
 			enum2str(r->code(), OPCODEstr), r->raw);
 #endif
@@ -202,9 +202,9 @@ block_rule::debug()
 {
 	int i;
 	for(i=0;i<n_rules;i++) {
-		if (i==current_rule) color(stddbg, cfg->curul_col);
+		if (i==current_rule) color(cfg->stddbg, cfg->curul_col);
 		if (i==current_rule || cfg->r_dbg_sh_all) rulist[i]->debug();
-		if (i==current_rule) color(stddbg, cfg->normal_col);
+		if (i==current_rule) color(cfg->stddbg, cfg->normal_col);
 	}
 }
 
@@ -243,7 +243,7 @@ void
 r_choice::apply(unit *root)
 {
 	current_rule = rand() % n_rules;	//random, less than n_rules
-	DEBUG(2,1,fprintf(stddbg,"Randomly chose rule [%s] %s %s\n",
+	DEBUG(2,1,fprintf(STDDBG,"Randomly chose rule [%s] %s %s\n",
 			rulist[current_rule]->dbg_tag,
 			enum2str(rulist[current_rule]->code(), OPCODEstr),
 			rulist[current_rule]->raw);)
@@ -266,9 +266,9 @@ void
 r_switch::apply(unit *root)
 {
 	current_rule = root->count(target) - 1;
-	if (current_rule == -1) shriek("An empty unit strikes a switch");
+	if (current_rule == -1) shriek(461, "An empty unit strikes a switch");
 	if (current_rule >= n_rules) current_rule = n_rules - 1;
-	DEBUG(1,1,fprintf(stddbg,"Length-determined rule [%s] %s %s\n",
+	DEBUG(1,1,fprintf(STDDBG,"Length-determined rule [%s] %s %s\n",
 			rulist[current_rule]->dbg_tag,
 			enum2str(rulist[current_rule]->code(), OPCODEstr),
 			rulist[current_rule]->raw);)
@@ -289,13 +289,13 @@ rules::rules(const char *filename, const char *dirname)
 	text *file;
 	hash *vars;
 
-	DEBUG(0,0,if (cfg->loaded) fprintf(stddbg,"Configuration already loaded when constructing rules\n");)
+	DEBUG(0,0,if (cfg->loaded) fprintf(STDDBG,"Configuration already loaded when constructing rules\n");)
 
-	if (!cfg->loaded) ss_init();
+	if (!cfg->loaded) epos_init();
 	
 	file=new text(filename,dirname,"rules",false);
 	vars = new hash(cfg->vars|1);
-	DEBUG(3,1,fprintf(stddbg,"Rules shall be taken from %s\n",filename);)
+	DEBUG(3,1,fprintf(STDDBG,"Rules shall be taken from %s\n",filename);)
 	
 	body = new r_block(file, vars);
 	body->scope = U_TEXT;
@@ -305,18 +305,18 @@ rules::rules(const char *filename, const char *dirname)
 #endif
 	body->check_children();
 	
-//	DEBUG(2,1,fprintf(stddbg,"There're %d parsed rules in %s\n",n_rules,filename);)
-	DEBUG(0,1,fprintf(stddbg,"rules will now release allocated memory\n");)
+//	DEBUG(2,1,fprintf(STDDBG,"There're %d parsed rules in %s\n",n_rules,filename);)
+	DEBUG(0,1,fprintf(STDDBG,"rules will now release allocated memory\n");)
 	delete vars;
 	delete file;
-	DEBUG(3,1,fprintf(stddbg,"Rules parsed OK\n");)
+	DEBUG(3,1,fprintf(STDDBG,"Rules parsed OK\n");)
 }
 
 rules::~rules()
 {
-	DEBUG(2,1,fprintf(stddbg,"Rules are being deleted\n");)
+	DEBUG(2,1,fprintf(STDDBG,"Rules are being deleted\n");)
 	delete body;
-	DEBUG(3,1,fprintf(stddbg,"Rules have been deleted\n");)
+	DEBUG(3,1,fprintf(STDDBG,"Rules have been deleted\n");)
 }
 
 /****************************************************************
@@ -347,7 +347,7 @@ rule_weight(const char *word, text *file)
 	int i=0;
 	int result=0;
 	
-	if (!word) shriek("Weight bug strikes");
+	if (!word) shriek(461, "Weight bug strikes");
 	
 	while (word[i] >= '0' && word[i] <= '9') {
 		result = result * 10 + word[i++]-'0';
@@ -374,14 +374,14 @@ resolve_vars(char *line, hash *vars, text *file)
 	char takeout;
     
 	for(src=line+1,dest=_resolve_vars_buff;*src;) {
-		DEBUG(0,1,fprintf(stddbg,"Cycling in rules::resolve_vars. Reading %s\n",src);)
+		DEBUG(0,1,fprintf(STDDBG,"Cycling in rules::resolve_vars. Reading %s\n",src);)
 		if(*src==DOLLAR && --dest && src[-1]!=ESCAPE && dest++) {
 			if (*++src==CURLY) eov=strchr(++src,UNCURLY); 
 			else eov=src+strcspn(src,VAR_TERM);
 			if (!eov) diatax("Missing right brace");
 			takeout=*eov;
 			*eov=0;
-			DEBUG(1,1,fprintf(stddbg,"Cycling in resolve_vars. Resolving \"%s\"\n",src);)
+			DEBUG(1,1,fprintf(STDDBG,"Cycling in resolve_vars. Resolving \"%s\"\n",src);)
 			value = vars->translate(src);
 			if (!value) diatax("Undefined identifier");
 			strcpy(dest, value);
@@ -389,7 +389,7 @@ resolve_vars(char *line, hash *vars, text *file)
 			if (strchr(VAR_TERM_ONLY,takeout)) eov++; else *eov=takeout;
 			src = eov;
 		} else *dest++ = *src++;
-	};
+	}
 	*dest=0;
 	strncpy(line+1, _resolve_vars_buff,cfg->max_line);          //Copy it back
 }
@@ -424,7 +424,7 @@ next_rule(text *file, hash *vars, int *count)
 	
 	if(!file->getline(str)) return END_OF_RULES;
 	
-	DEBUG(1,1,fprintf(stddbg,"str2rule should parse: %s\n",str);)
+	DEBUG(1,1,fprintf(STDDBG,"str2rule should parse: %s\n",str);)
 	if(!str[strspn(str,WHITESPACE)]) goto next_line;
 	if (*str && strchr(str+1,DOLLAR))
 		resolve_vars(str, vars, file);			   //Var reference found?
@@ -442,7 +442,7 @@ next_rule(text *file, hash *vars, int *count)
 	idx = get_words(str, word, MAX_WORDS_PER_LINE);
 	
 	weight = rule_weight(word[param], file);
-	DEBUG(0,1,fprintf(stddbg, "Rule weight: %d\n", weight))
+	DEBUG(0,1,fprintf(STDDBG, "Rule weight: %d\n", weight))
 	if (weight) {
 		if (count) {
 			*count = weight;
@@ -474,6 +474,7 @@ next_rule(text *file, hash *vars, int *count)
 			if (*p == PSEUDOSPACE) *p = ' ';
 
 	switch(code) {
+
 	case OP_DIPH:    result = new r_diph(word[param]); break;
 	case OP_SUBST:   result = new r_subst(word[param]); break;
 #ifdef WANT_REGEX
@@ -502,7 +503,8 @@ next_rule(text *file, hash *vars, int *count)
 	case OP_SWEND:	 return END_OF_SWITCH;
 	case OP_NOTHING: result = new r_nothing(); break;
 	default:  diatax("Unknown rule type"); goto next_line;  // to fool the compiler
-	};
+
+	}
     
 	if (scope == U_ILL) diatax("Scope misspelled");
 	if (target == U_ILL) diatax("Target misspelled");
@@ -510,7 +512,7 @@ next_rule(text *file, hash *vars, int *count)
 	result->set_level(scope, target);
 	result->set_dbg_tag(file);
 	
-	DEBUG(0,1,fprintf(stddbg,"DEBUG: str2rule about to return OK, %s\n", word[param]);)
+	DEBUG(0,1,fprintf(STDDBG,"str2rule about to return OK, %s\n", word[param]);)
 
 	return result;
 }

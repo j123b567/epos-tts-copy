@@ -1,5 +1,5 @@
 /*
- *	ss/src/parser.cc
+ *	epos/src/parser.cc
  *	(c) 1996-98 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -14,7 +14,7 @@
  *
  */
 
-#include"common.h"
+#include "common.h"
 
 /*
  *	If mode is 0, filename is truly a filename. If mode is 1, filename is
@@ -24,12 +24,12 @@
 
 parser::parser(const char *filename, int mode)
 {
-	if (!cfg->loaded) ss_init();
+	if (!cfg->loaded) epos_init();
 	if (!filename || !*filename) {
 		register signed char c;
 		int i = 0;
 		text = (unsigned char *)malloc(cfg->dev_txtlen+1);
-		if(!text) shriek("Parser: Out of memory");
+		if(!text) shriek(664, "Parser: Out of memory");
 		do text[i++] = c = getchar(); 
 			while(c!=-1 && c!=cfg->eof_char && i<cfg->dev_txtlen);
 		text[--i] = 0;
@@ -43,14 +43,14 @@ parser::parser(const char *filename, int mode)
 		}
 		txtlen = strlen((char *)text);
 	}
-	DEBUG(2,7,fprintf(stddbg,"Allocated %u bytes for the main parser\n", txtlen);)
+	DEBUG(2,7,fprintf(STDDBG,"Allocated %u bytes for the main parser\n", txtlen);)
 	init(ST_ROOT);
 }
 
 parser::parser(const char *str)
 {
-	if (!cfg->loaded) ss_init();
-	DEBUG(1,7,fprintf(stddbg,"Parser for %s is to be built\n",str);)
+	if (!cfg->loaded) epos_init();
+	DEBUG(1,7,fprintf(STDDBG,"Parser for %s is to be built\n",str);)
 	text = (unsigned char *)strdup(str);
 	txtlen = strlen(str);
 	init(ST_RAW);
@@ -63,7 +63,7 @@ parser::init(SYMTABLE symtab)
 
 	initables(symtab);
 	for(i=0; i<txtlen; i++) text[i]=TRANSL_INPUT [text[i]];
-	DEBUG(1,7,fprintf(stddbg,"Parser: has set up with %s\n",text);)
+	DEBUG(1,7,fprintf(STDDBG,"Parser: has set up with %s\n",text);)
 		//TRANSL_INPUT should be filled in before, in this constructor.
 		//    It's meant to be altered when we later decide to use
 		//    another Czech char encoding.
@@ -74,9 +74,9 @@ parser::init(SYMTABLE symtab)
 	gettoken();		// new - hope this works
 //	f = i = t = 0;
 
-	DEBUG(0,7,fprintf(stddbg,"Parser: initial level is %u.\n",level);)
+	DEBUG(0,7,fprintf(STDDBG,"Parser: initial level is %u.\n",level);)
 /*	if (level == U_TEXT) {		// This should go away sooner or later
-		DEBUG(2,7,fprintf(stddbg,"Parser: is empty\n");)
+		DEBUG(2,7,fprintf(STDDBG,"Parser: is empty\n");)
 		initables(ST_EMPTY);
 		*current = NO_CONT;  // return '_' or something instead of quirky '\0'
 	}   */
@@ -102,11 +102,11 @@ parser::getchar()
 	f = i = t = 0;
 	level = chrlev(*current);   // level of the next character
 	if (level == U_TEXT) {
-		DEBUG(2,7,fprintf(stddbg,"Parser: end of text reached, changing the policy\n");)
+		DEBUG(2,7,fprintf(STDDBG,"Parser: end of text reached, changing the policy\n");)
 		initables(ST_EMPTY);
 		*current = NO_CONT;  // return '_' or something instead of quirky '\0'
 	}
-	DEBUG(0,7,fprintf(stddbg,"Parser: char requested, '%c' (level %u), next: '%c' (level %u)\n",retchar, lastlev, *current, level);)
+	DEBUG(0,7,fprintf(STDDBG,"Parser: char requested, '%c' (level %u), next: '%c' (level %u)\n",retchar, lastlev, *current, level);)
 
 	return(retchar);           // return the old char
 }
@@ -129,7 +129,7 @@ parser::gettoken()
 					break;
 				}
 				if (IS_DIGIT(current[1])) {
-					token = POINT;
+					token = DECPOINT;
 					break;
 				}
 				break;
@@ -140,21 +140,21 @@ parser::gettoken()
 				}
 				while (current[1] == '-') current++;
 				break;
-			case '<': if (cfg->stml) shriek("STML not implemented"); else break;
-			case '&': if (cfg->stml) shriek("STML not implemented"); else break;
+			case '<': if (cfg->stml) shriek(462, "STML not implemented"); else break;
+			case '&': if (cfg->stml) shriek(462, "STML not implemented"); else break;
 			default : ;
 		}
 		level = chrlev(token);
 		f = i = t = 0;
 		if (level == U_TEXT) {
-			DEBUG(2,7,fprintf(stddbg,"Parser: end of text reached, changing the policy\n");)
+			DEBUG(2,7,fprintf(STDDBG,"Parser: end of text reached, changing the policy\n");)
 			initables(ST_EMPTY);
 			*current = NO_CONT;  // return '_' or something instead of quirky '\0'
 		}
 		current++;
 	} while (level <= lastlev && level > U_PHONE);
 		// (We are skipping any empty units, except for phones.)
-	DEBUG(0,7,fprintf(stddbg,"Parser: char requested, '%c' (level %u), next: '%c' (level %u)\n", ret, lastlev, *current, level);)
+	DEBUG(0,7,fprintf(STDDBG,"Parser: char requested, '%c' (level %u), next: '%c' (level %u)\n", ret, lastlev, *current, level);)
 
 	return ret;
 }
@@ -163,7 +163,7 @@ void
 parser::done()
 {
 	if (current <= text + txtlen) 
-		shriek("Too high level symbol in a dictionary, parser contains %s", (char *)text);
+		shriek(463, fmt("Too high level symbol in a dictionary, parser contains %s", (char *)text));
 }
 
 UNIT
@@ -172,9 +172,10 @@ parser::chrlev(unsigned char c)
 	if (current > text+txtlen+1) /*(!current[-1] && c))*/ return(U_VOID);
 	if (CHRLEV[c] == U_ILL)
 	{
-		if (c>127) fprintf(stdshriek,"Seems you're mixing two Czech character encodings?\n");
-		fprintf(stdshriek,"Fatal: parser dumps core.\n%s\n",(char *)current-2);
-		shriek("Parsing an unhandled character - ASCII code %d", (unsigned int) c);
+DEBUG(4,7,{	if (c>127) fprintf(cfg->stdshriek,"Seems you're mixing two Czech character encodings?\n");
+		fprintf(cfg->stdshriek,"Fatal: parser dumps core.\n%s\n",(char *)current-2);
+})
+		shriek(431, fmt("Parsing an unhandled character - ASCII code %d", (unsigned int) c));
 	}
 	return(CHRLEV[c]);
 }
@@ -183,11 +184,11 @@ void
 parser::regist(UNIT u, const char *list)
 {
 	unsigned char *s;
-	if (!list) shriek ("Parser configuration: No characters for level %d", u);
+	if (!list) shriek (812, fmt("Parser configuration: No characters for level %d", u));
 	for(s=(unsigned char *)list;*s!=0;s++)
 	{
 		if (CHRLEV[*s] != U_ILL && CHRLEV[*s] != u)
-			shriek("Ambiguous syntactic function of %c",*s);
+			shriek(812, fmt("Ambiguous syntactic function of %c",*s));
 		CHRLEV[*s] = u;
 		TRANSL_INPUT[*s] = (unsigned char)*s;
 	}
@@ -197,11 +198,11 @@ void
 parser::alias(const char *canonicus, const char *alius)
 {
 	int i;
-	if (!canonicus || !alius) shriek ("Parser configuration: Aliasing NULL");
+	if (!canonicus || !alius) shriek(861, "Parser configuration: Aliasing NULL");
 	for(i=0; (unsigned char *)canonicus[i] && (unsigned char *)alius[i]; i++)
 		TRANSL_INPUT[((unsigned char *)alius)[i]] = ((unsigned char *)canonicus)[i];
 	if((unsigned char *)canonicus[i] || (unsigned char *)alius[i]) 
-		shriek("Parser configuration: Can't match aliases");
+		shriek(861, "Parser configuration: Can't match aliases");
 }
 
 
@@ -224,6 +225,6 @@ parser::initables(SYMTABLE table)
 	case ST_EMPTY:
 		for(c=1; c<256; c++) CHRLEV[c] = U_VOID; *CHRLEV = U_TEXT;
 		break;
-	default: shriek("Garbage passed to parser::initables, %d", table);
+	default: shriek(861, fmt("Garbage passed to parser::initables, %d", table));
 	}
 }

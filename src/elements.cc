@@ -1,5 +1,5 @@
 /*
- *	ss/src/elements.cc
+ *	epos/src/elements.cc
  *	(c) 1996-98 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -30,8 +30,8 @@ unit::unit(UNIT layer, parser *parser)
 	cont = NO_CONT;
 	f = i = t = 0;
 	scope=false;
-	if((signed int) layer <0) shriek("Can't use this point of view: %d", layer);
-	DEBUG(1,2,fprintf(stddbg,"New unit %u, parser %u\n", layer, parser->level);)
+	if((signed int) layer <0) shriek(861, fmt("Can't use this point of view: %d", layer));
+	DEBUG(1,2,fprintf(STDDBG,"New unit %u, parser %u\n", layer, parser->level);)
 
 	while (parser->level < layer) insert_end(new unit((UNIT) (layer-1), parser),NULL);
 	if    (parser->level == layer) {
@@ -41,7 +41,7 @@ unit::unit(UNIT layer, parser *parser)
 		cont = parser->gettoken();
 	}
 
-	DEBUG(1,2,fprintf(stddbg,"Finished a unit with %c\n",cont);)
+	DEBUG(1,2,fprintf(STDDBG,"Finished a unit with %c\n",cont);)
 }
 
 /****************************************************************************
@@ -55,7 +55,7 @@ unit::unit(UNIT layer, int content)
 	cont = content;
 	f = i = t = 0;
 	scope = false;
-	DEBUG(1,2,fprintf(stddbg,"New unit %u, content %d\n", layer, content);)
+	DEBUG(1,2,fprintf(STDDBG,"New unit %u, content %d\n", layer, content);)
 }
 
 /****************************************************************************
@@ -75,7 +75,7 @@ unit::unit()
 
 unit::~unit()
 {
-	DEBUG(0,2,fprintf(stddbg,"Disposing %c\n",cont);)
+	DEBUG(0,2,fprintf(STDDBG,"Disposing %c\n",cont);)
 	if (next) delete next;
 	if (firstborn) delete firstborn;
 //	if (father && father->firstborn == NULL) delete father;	// FIXME
@@ -94,20 +94,31 @@ unit::write_diphs(diphone *whither, int first, int n)
 	unit *tmpu;
 	static unit *iucache; static int ifcache; static unit *ocache;
 	 
-	if (!whither) shriek ("NULL ptr passed to write_diphs() n=%d", n);
+	if (!whither) shriek (861, fmt("NULL ptr passed to write_diphs() n=%d", n));
 	scope = true;
 	if (first == ifcache && iucache == this) tmpu=ocache;
 	else for (m = first, tmpu = LeftMost(U_DIPH); m--; tmpu = tmpu->Next(U_DIPH));
 	for (m=0; m<n && tmpu != &EMPTY; m++, tmpu = tmpu->Next(U_DIPH)) {
 		tmpu->sanity();
 		whither[m].code = tmpu->cont;
-		whither[m].f = cfg->f_neutral + tmpu->effective(Q_FREQ);
-		whither[m].e = cfg->i_neutral + tmpu->effective(Q_INTENS);
-		whither[m].t = cfg->t_neutral + tmpu->effective(Q_TIME);
+		whither[m].f = tmpu->effective(Q_FREQ);
+		whither[m].e = tmpu->effective(Q_INTENS);
+		whither[m].t = tmpu->effective(Q_TIME);
 	}
 	scope = tmpscope;
 	iucache = this; ifcache = first+m; ocache = tmpu;
 	return m;
+}
+
+void
+unit::show_phones()
+{
+	unit *tmpu;
+	for (tmpu = LeftMost(U_PHONE); tmpu != &EMPTY; tmpu = tmpu->Next(U_PHONE))
+		printf("%c %d %d %d\n", tmpu->cont,
+			tmpu->effective(Q_FREQ),
+			tmpu->effective(Q_INTENS),
+			tmpu->effective(Q_TIME));
 }
 
 /****************************************************************************
@@ -120,7 +131,7 @@ unit::fout(char *filename)      //NULL means stdout
 {
 	FILE *outf;
 	file *tmp;
-	outf = filename ? fopen(filename,"wt") : stddbg;
+	outf = filename ? fopen(filename,"wt") : cfg->stddbg;
 
 	tmp = claim(cfg->header_xscr, cfg->ini_dir, "rt", "transcription header");
 	fputs(tmp->data, outf);
@@ -139,13 +150,13 @@ unit::fout(char *filename)      //NULL means stdout
  unit::fdump
  ****************************************************************************/
 
-char *
+inline char *
 fmtchar(char c)
 {
 	static char b[2];
 	switch (c) {
 		case DOTS:	return "...";
-		case POINT:	return ".";
+		case DECPOINT:	return ".";
 		case RANGE:	return "-";
 		case MINUS:	return "-";
 	}
@@ -223,8 +234,8 @@ unit::insert(UNIT target, bool backwards, char what, bool *left, bool *right)
 	static unit *baby = NULL;	//check against infinite spawning
 
 	if (depth == target) {
-		DEBUG(1,4,fprintf(stddbg,"inner unit::insert %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
-		DEBUG(1,4,fprintf(stddbg,"   env is %c %c\n",left[Prev(depth)->inside()]+'0',right[Next(depth)->inside()]+'0');)
+		DEBUG(1,4,fprintf(STDDBG,"inner unit::insert %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
+		DEBUG(1,4,fprintf(STDDBG,"   env is %c %c\n",left[Prev(depth)->inside()]+'0',right[Next(depth)->inside()]+'0');)
 		if (this == baby) return;
 		if (left[cont] && right[Next(depth)->cont]) {
 			tmpu = new unit(depth, what);
@@ -249,14 +260,14 @@ unit::insert(UNIT target, bool backwards, char what, bool *left, bool *right)
 			tmpu->i = i;
 			tmpu->t = t;
 		}
-		DEBUG(1,4,fprintf(stddbg,"New contents: %c\n",cont);)
+		DEBUG(1,4,fprintf(STDDBG,"New contents: %c\n",cont);)
 		return;
 	}
 	baby = NULL;
 	if (depth > target) 
 		for(tmpu=(backwards?lastborn:firstborn);tmpu;tmpu=(backwards?tmpu->prev:tmpu->next))
 			tmpu->insert(target,backwards,what,left,right);
-	else shriek ("Out of turtles");
+	else shriek (861, "Out of turtles");
 }
 
 
@@ -268,7 +279,7 @@ void
 unit::insert_begin(unit*from, unit*member)
 {
 	sanity();
-	if(!member) shriek("I am Sorry. Nice to meet ya at %d",depth);
+	if(!member) shriek(861, fmt("I am Sorry. Nice to meet ya at %d",depth));
 	if (firstborn) {
 		firstborn->prev=member;
 		member->next=firstborn;
@@ -285,7 +296,7 @@ unit::insert_end(unit *member, unit*to)
 {
 	sanity();
 	if(!to) to=member;
-	if(!member) shriek ("I am Sorry. Nice to meet ya at %d", depth);    //this may not be the reason
+	if(!member) shriek (861, fmt("I am Sorry. Nice to meet ya at %d", depth));    //this may not be the reason
 	if (lastborn) {
 		lastborn->next=member;
 		member->prev=lastborn;
@@ -305,16 +316,18 @@ char *
 unit::gather(char *buffer_now, char *buffer_end, bool suprasegm)
 {    
 	unit *tmpu;
-//	DEBUG(0,3,fprintf(stddbg,"Chroust! %d %s\n", buffer_end-buffer_now, buffer_now-3);)
-	for(tmpu=firstborn;tmpu && buffer_now<buffer_end;tmpu=tmpu->next) 
-		buffer_now=tmpu->gather(buffer_now, buffer_end, suprasegm);
-	if(cont!=NO_CONT && (depth==U_PHONE || suprasegm)) {
-		if(buffer_now>=buffer_end) 
-			shriek("unit::gather buffer overflow in depth %d", depth);
-		if (depth<U_PHONE) shriek("Cannot gather diphonized units (reorder rules)");
+//	DEBUG(0,3,fprintf(STDDBG,"Chroust! %d %s\n", buffer_end - buffer_now, buffer_now - 3);)
+	for(tmpu = firstborn;tmpu && buffer_now < buffer_end; tmpu = tmpu->next) 
+		buffer_now = tmpu->gather(buffer_now, buffer_end, suprasegm);
+	if (cont != NO_CONT && (depth == U_PHONE || suprasegm)) {
+		if(buffer_now >= buffer_end) 
+			shriek(863, fmt("unit::gather buffer overflow in depth %d", depth));
+		if (depth < U_PHONE) 	// FIXME CHECKME!
+			// shriek(811, "Cannot gather diphonized units (reorder rules)");
+			return buffer_now;	// FIXME
 		*(buffer_now++)=(char)cont; 
 	}
-	return(buffer_now);
+	return buffer_now;
 }
 
 /****************************************************************************
@@ -331,7 +344,7 @@ unit::subst(char *subst_buff)
 	unit   *tmpu;
 
 	parsie=new parser(subst_buff);
-	DEBUG(0,3,fprintf(stddbg,"innermost unit::subst - parser is ready\n");)
+	DEBUG(0,3,fprintf(STDDBG,"innermost unit::subst - parser is ready\n");)
 	tmpu=new unit(depth,parsie);
 	if (cfg->paranoid) parsie->done();
 	sanity();
@@ -340,7 +353,7 @@ unit::subst(char *subst_buff)
 		return;
 	}
 	delete firstborn;
-	DEBUG(0,3,fprintf(stddbg,"innermost unit::subst - gonna relink after subst\n");)
+	DEBUG(0,3,fprintf(STDDBG,"innermost unit::subst - gonna relink after subst\n");)
 	firstborn = tmpu->firstborn;
 	lastborn  = tmpu->lastborn;
 	firstborn->set_father(this);
@@ -349,7 +362,7 @@ unit::subst(char *subst_buff)
 	tmpu->next=NULL;           //Paranoid
 	delete tmpu;
 	delete parsie;
-	DEBUG(0,3,fprintf(stddbg,"innermost unit::subst - return to caller\n");)
+	DEBUG(0,3,fprintf(STDDBG,"innermost unit::subst - return to caller\n");)
 }
 
 /****************************************************************************
@@ -362,21 +375,21 @@ unit::subst(hash *table, unsigned int safe_grow, char *prefix, char *prefix_end,
 {
 	char *resultant;
 
-	DEBUG(0,3,fprintf(stddbg,"innermost unit::subst called with PREFIX %s %s MAIN %s SUFFIX %s %s\n",prefix,prefix_end,body,suffix,suffix_end);)
+	DEBUG(0,3,fprintf(STDDBG,"innermost unit::subst called with PREFIX %s %s MAIN %s SUFFIX %s %s\n",prefix,prefix_end,body,suffix,suffix_end);)
 	sanity();
 	resultant=table->translate(body);
 	if (!resultant) return false;
 	if (strlen(resultant) > safe_grow && strlen(resultant) - strlen(body) > safe_grow)
-		shriek ("Huge or infinitely iterated substitution %30s...", resultant);
+		shriek (463, fmt("Huge or infinitely iterated substitution %30s...", resultant));
 	if (prefix && prefix_end-prefix>0) {
 		strncpy(_subst_buff, prefix, prefix_end-prefix);
 		*(_subst_buff+(prefix_end-prefix))=0;
 	} else *_subst_buff=0;
 	strcat (_subst_buff, resultant);
-	DEBUG(1,3,fprintf(stddbg,"innermost unit::subst result: %s\n",_subst_buff);)
+	DEBUG(1,3,fprintf(STDDBG,"innermost unit::subst result: %s\n",_subst_buff);)
     
 	if (suffix && suffix_end-suffix>0) strncat(_subst_buff, suffix, suffix_end-suffix);
-	DEBUG(1,3,fprintf(stddbg,"innermost unit::subst - subst found: %s Resultant: %s\n", _subst_buff, resultant);)
+	DEBUG(1,3,fprintf(STDDBG,"innermost unit::subst - subst found: %s Resultant: %s\n", _subst_buff, resultant);)
 	subst(_subst_buff);
 	return true;
 }
@@ -403,8 +416,8 @@ unit::subst(hash *table, SUBST_METHOD method)
 		strend=gather(gatbuff+1, gatbuff+MAX_GATHER, (method&M_PROPER)!=M_EXACT);
 		*strend=0;
 		safe_grow = gatbuff - strend + MAX_GATHER;
-		if(safe_grow>300) shriek("safe_grow");	// fixme
-		DEBUG(1,3,fprintf(stddbg,"inner unit::subst %s, method %d\n", gatbuff+1, method);)
+		// if (safe_grow>300) shriek("safe_grow");	// fixme
+		DEBUG(1,3,fprintf(STDDBG,"inner unit::subst %s, method %d\n", gatbuff+1, method);)
 		sanity();
 		if ((method & M_PROPER) == M_EXACT) {
 			if (subst(table, safe_grow, NULL,NULL,gatbuff+1,NULL,NULL)) goto break_home;
@@ -432,13 +445,13 @@ unit::subst(hash *table, SUBST_METHOD method)
 		return i != cfg->multi_subst;
     
 		break_home:
-		DEBUG(1,3,fprintf(stddbg,"inner unit::subst has made the subst, relinking l/r, method %d\n", method);)
+		DEBUG(1,3,fprintf(STDDBG,"inner unit::subst has made the subst, relinking l/r, method %d\n", method);)
 		sanity();
 		if (method & (M_LEFT | M_RIGHT)) 
 			return unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS), true;
 		if (method & M_ONCE) return true;
 	}
-	warn("Infinite substitution loop detected on \"%s\"", gatbuff);
+	shriek(463, fmt("Infinite substitution loop detected on \"%s\"", gatbuff));
 	sanity();
 	return true;
 }
@@ -474,7 +487,7 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 	for (i = 1; u != &EMPTY; i++) {
 		buff[i] = u->cont;
 		u = u->Next(target);
-		if (i == MAX_GATHER && cfg->paranoid) shriek("Too huge word relabelled");
+		if (i == MAX_GATHER && cfg->paranoid) shriek(863, "Too huge word relabelled");
 	}
 	buff[i]='$'; buff[++i]=0; len=i;
 
@@ -482,13 +495,13 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 	if ((method & M_LEFT) && !prev) return false;
 	if ((method & M_RIGHT) && !next) return false;
 	for (n=cfg->multi_subst; n; n--) {
-		DEBUG(1,3,fprintf(stddbg,"unit::relabel %s, method %d\n", buff+1, method);)
+		DEBUG(1,3,fprintf(STDDBG,"unit::relabel %s, method %d\n", buff+1, method);)
 		sanity();
 		if ((method & M_PROPER) == M_EXACT) {
 			buff[--len] = 0; len--;
 			if ((r = table->translate(buff + 1))) {
 				if (cfg->paranoid && strlen(r) - len)
-					shriek("Substitute length differs: '%s' to '%s'", buff + 1, r);
+					shriek(462, fmt("Substitute length differs: '%s' to '%s'", buff + 1, r));
 				strcpy(buff + 1, r);
 				goto commit;
 			}
@@ -514,7 +527,7 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 						j += !j;
 						buff[i] = tmp;
 						if (cfg->paranoid && strlen(r) - i + j + !tmp)
-							shriek("Substitute length differs: '%s' to '%s'", buff+j, r);
+							shriek(462, fmt("Substitute length differs: '%s' to '%s'", buff+j, r));
 						memcpy(buff+j, r, strlen(r));
 						goto break_home;
 					}
@@ -527,11 +540,11 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 		break_home:
 		if (method & M_ONCE) goto commit;
 	}
-	warn("Infinite substitution loop detected on \"%s\"", buff);
+	shriek(463, fmt("Infinite substitution loop detected on \"%s\"", buff));
 	sanity();
 
 commit:
-	DEBUG(1,3,fprintf(stddbg,"inner unit::relabel has made the subst, relinking l/r, method %d\n", method);)    
+	DEBUG(1,3,fprintf(STDDBG,"inner unit::relabel has made the subst, relinking l/r, method %d\n", method);)    
 	for (i = 1; v != &EMPTY; i++) {
 		v->cont = buff[i];
 		v = v->Next(target);
@@ -568,10 +581,10 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 	for (i=cfg->multi_subst; i; i--) {
 		strend=gather(gatbuff, gatbuff+MAX_GATHER, true);
 		*strend=0;
-		DEBUG(1,3,fprintf(stddbg,"unit::regex %s, subexps=%d\n", gatbuff, subexps);)
+		DEBUG(1,3,fprintf(STDDBG,"unit::regex %s, subexps=%d\n", gatbuff, subexps);)
 		if (regexec(regex, gatbuff, subexps+1, subexp, 0)) return;
 		sanity();
-		DEBUG(1,3,fprintf(stddbg,"unit::regex matched %s\n", gatbuff);)
+		DEBUG(1,3,fprintf(STDDBG,"unit::regex matched %s\n", gatbuff);)
 		
 		for (k = 0; k < subexp[0].rm_so; k++) _subst_buff[k] = gatbuff[k];
 		
@@ -579,9 +592,9 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 			if (repl[j]==ESCAPE && repl[j+1]>='0' && repl[j+1]<='9') {
 				int index = repl[j+1] - '0';
 				if (index >= subexps) 
-					shriek("Index %d too big in regex replacement", index);
+					shriek(463, fmt("Index %d too big in regex replacement", index));
 				for (l = subexp[index].rm_so; l < subexp[index].rm_eo; l++) {
-					if (l<0) shriek("regex - alternative not taken, sorry");
+					if (l<0) shriek(463, "regex - alternative not taken, sorry");
 					_subst_buff[k++] = gatbuff[l];
 				}
 				j++;
@@ -596,7 +609,7 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 
 		subst(_subst_buff);
 	}
-	warn("Infinite regex replacement loop detected on \"%s\"", gatbuff);
+	shriek(463, fmt("Infinite regex replacement loop detected on \"%s\"", gatbuff));
 	sanity();
 	return;
 }
@@ -614,13 +627,13 @@ unit::assim(UNIT target, bool backwards, char *fn, bool *left, bool *right)
 
 	sanity();
 	if (depth == target) {
-		DEBUG(1,4,fprintf(stddbg,"inner unit::assim %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
-		DEBUG(1,4,fprintf(stddbg,"   env is %c %c\n",left[Prev(depth)->inside()]+'0',right[Next(depth)->inside()]+'0');)
+		DEBUG(1,4,fprintf(STDDBG,"inner unit::assim %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
+		DEBUG(1,4,fprintf(STDDBG,"   env is %c %c\n",left[Prev(depth)->inside()]+'0',right[Next(depth)->inside()]+'0');)
 		if (right[Next(depth)->inside()] && left[Prev(depth)->inside()]) {
 			if (cont == DELETE_ME) return;
 			cont = (unsigned char)fn[(unsigned char)cont];     // Digital UNIX once had trouble here
 			if (cont == DELETE_ME) unlink(M_DELETE);
-			DEBUG(1,4,fprintf(stddbg,"New contents: %c\n",cont);)
+			DEBUG(1,4,fprintf(STDDBG,"New contents: %c\n",cont);)
 		}
 		return;
 	}
@@ -630,7 +643,7 @@ unit::assim(UNIT target, bool backwards, char *fn, bool *left, bool *right)
 			tmpu->assim(target,backwards,fn,left,right);
 			tmpu = tmp_next;
 		}
-	else shriek ("Out of vodka");
+	else shriek (861, "Out of vodka");
 }
 
 /****************************************************************************
@@ -642,11 +655,11 @@ unit::split(unit *before)
 {
 	unit *clone=new unit(*this);
 
-	DEBUG(1,5,fprintf(stddbg,"Splitting in %c before %c, clone is %c\n", cont, before->inside(), clone->cont);
+	DEBUG(1,5,fprintf(STDDBG,"Splitting in %c before %c, clone is %c\n", cont, before->inside(), clone->cont);
 		fout(NULL);)
 	clone->scope=false;
 	if(!(lastborn=before->prev))
-		shriek ("Attempted splitting a unit just at its boundary");
+		shriek (463, "Attempted splitting a unit just at its boundary");
 	before->prev=NULL;
 	lastborn->next=NULL;
 	clone->firstborn=before;
@@ -655,13 +668,13 @@ unit::split(unit *before)
 	clone->prev=this;
 	next=clone;
 	if (father && this==father->lastborn) father->lastborn=clone; 
-	DEBUG(1,5,fprintf(stddbg,"is split in %c before %c, clone is %c\n", cont, before->inside(), clone->cont);
+	DEBUG(1,5,fprintf(STDDBG,"is split in %c before %c, clone is %c\n", cont, before->inside(), clone->cont);
 		father->fout(NULL);)
 	sanity();
 } 
 
 /****************************************************************************
- unit::syllablify  breaks the syllables according to the sonority table
+ unit::syllabify   breaks the syllables according to the sonority table
                    We try to split the syllable locally thus: VCV -> V|CV
                    and if there is no clear dividing point: VCCCRV -> VC|CCRV
                    where C is the least and V the most sonant element
@@ -688,7 +701,7 @@ unit::syll_break(char *sonor, unit *before)
 }
 
 void 
-unit::syllablify(char *sonor)
+unit::syllabify(char *sonor)
 {
 	if (sonor[inside()]<sonor[Next(depth)->inside()])
 		if (sonor[inside()]<sonor[Prev(depth)->inside()]) syll_break(sonor,this);
@@ -700,14 +713,14 @@ unit::syllablify(char *sonor)
 }
 
 void
-unit::syllablify(UNIT target, char *sonor)
+unit::syllabify(UNIT target, char *sonor)
 {
 	unit *tmpu;
 	
-	DEBUG(0,5,fprintf(stddbg,"unit::syllablify in level %d cont %c %c %c \n", depth,Prev(depth)->cont,cont,Next(depth)->cont);)
+	DEBUG(0,5,fprintf(STDDBG,"unit::syllabify in level %d cont %c %c %c \n", depth,Prev(depth)->cont,cont,Next(depth)->cont);)
 	syll_pending=0;
 	for(tmpu=RightMost(target);tmpu!=&EMPTY;tmpu=tmpu->Prev(tmpu->depth))
-		tmpu->syllablify(sonor);
+		tmpu->syllabify(sonor);
 }
 
 /****************************************************************************
@@ -727,7 +740,7 @@ unit::sseg(hash *templts, char symbol, int *quant)
 		adj=templts->translate_int(_sseg_question[i]);
 		if (adj==INT_NOT_FOUND) continue;
 
-		DEBUG(0,2,fprintf(stddbg,"unit::sseg adjusts %c by %d in level %d\n", symbol, adj, depth);)
+		DEBUG(0,2,fprintf(STDDBG,"unit::sseg adjusts %c by %d in level %d\n", symbol, adj, depth);)
 		*quant+=adj;
 		return;	
 	}
@@ -739,11 +752,11 @@ unit::sseg(UNIT target, hash *templts)
 	unit *tmpu;
 	int  j,n;
 	
-	DEBUG(1,2,fprintf(stddbg,"unit::sseg in level %d\n", depth);)
+	DEBUG(1,2,fprintf(STDDBG,"unit::sseg in level %d\n", depth);)
 	n=0;
 	for(tmpu=RightMost(target);tmpu!=&EMPTY;tmpu=tmpu->Prev(target)) n++;
 	for(j=n, tmpu=RightMost(target); j>0; j--, tmpu=tmpu->Prev(target)) {
-		DEBUG(0,5,fprintf(stddbg,"unit::sseg question n=%d j=%d\n", n, j);)
+		DEBUG(0,5,fprintf(STDDBG,"unit::sseg question n=%d j=%d\n", n, j);)
 		sprintf(_sseg_question[0], " /%d:%d", j, n);
 		sprintf(_sseg_question[1], " /%d:*", j);
 		sprintf(_sseg_question[2], " /%dlast:*", n-j+1);
@@ -774,10 +787,10 @@ unit::contour(UNIT target, int *recipe, int rec_len, FIT_IDX what, bool additive
 			i<rec_len && u != &EMPTY;
 			u=u->Next(target), i++)  /* just count'em */ ;
 	if (u->Next(target) != &EMPTY) {
-		shriek("recipe too short: %d items", rec_len);
+		shriek(463, fmt("recipe too short: %d items", rec_len));
 	}
 	if (i < rec_len) {
-		shriek("recipe too long");
+		shriek(463, "recipe too long");
 	}
 	for (u=LeftMost(target), i=0;  i<rec_len;  u=u->Next(target), i++)
 		FIT(u, what) = recipe[i] + (additive ? FIT(u, what) : 0);
@@ -787,7 +800,7 @@ unit::contour(UNIT target, int *recipe, int rec_len, FIT_IDX what, bool additive
 	unit *u, *v;
 	int cq_wrap, j, k, avg;
 	
-	DEBUG(1,2,fprintf(stddbg, "unit::smooth (%d:%d) %d %d ...\n", n, rec_len, recipe[0], recipe[1]);)
+	DEBUG(1,2,fprintf(STDDBG, "unit::smooth (%d:%d) %d %d ...\n", n, rec_len, recipe[0], recipe[1]);)
 	u=v=LeftMost(target);
 	for (j=0; j<n; j++) smooth_cq[j] = FIT(u, what);
 	for (; j<rec_len && u->Next(target)!=&EMPTY; j++, u=u->Next(target)) smooth_cq[j] = FIT(u, what);
@@ -829,7 +842,7 @@ unit::smooth(UNIT target, int *recipe, int n, int rec_len, FIT_IDX what)
 	unit *u, *v;
 	int cq_wrap, j, k, avg;
 	
-	DEBUG(1,2,fprintf(stddbg, "unit::smooth (%d:%d) %d %d ...\n", n, rec_len, recipe[0], recipe[1]);)
+	DEBUG(1,2,fprintf(STDDBG, "unit::smooth (%d:%d) %d %d ...\n", n, rec_len, recipe[0], recipe[1]);)
 	u=v=LeftMost(target);
 	for (j=0; j<n; j++) smooth_cq[j] = FIT(u, what);
 	for (; j<rec_len && u->Next(target)!=&EMPTY; j++, u=u->Next(target)) smooth_cq[j] = FIT(u, what);
@@ -872,22 +885,22 @@ unit::project(UNIT target, int adjf, int adji, int adjt)
 void 
 unit::raise(bool *whattab, bool*whentab, UNIT whither, UNIT whence)
 {
-	if (whither!=depth) shriek("raise bad");
+	if (whither!=depth) shriek(861, "raise bad");
 	unit *tmpu, *tmpbig;
-	DEBUG(1,2,fprintf(stddbg,"unit::raise moving from %d to %d\n",whence,whither);)
-	if  (whither<=whence) shriek("Raising downwards...huh...");
+	DEBUG(1,2,fprintf(STDDBG,"unit::raise moving from %d to %d\n",whence,whither);)
+	if  (whither<=whence) shriek(462, "Raising downwards...huh...");
 	for (tmpbig=LeftMost(whither); tmpbig!=&EMPTY; tmpbig=tmpbig->Next(whither)) {
 		if (whentab[tmpbig->cont]) {
-			DEBUG(1,2,fprintf(stddbg,"unit::raise searching %c\n",tmpbig->cont);)
+			DEBUG(1,2,fprintf(STDDBG,"unit::raise searching %c\n",tmpbig->cont);)
 			bool tmpscope=scope; scope=true;
 			for(tmpu=LeftMost(whence); tmpu!=&EMPTY; tmpu=tmpu->Next(whence)) {
 				if (whattab[tmpu->cont]) {
-					DEBUG(0,2,fprintf(stddbg,"unit::raise found %c\n",tmpu->cont);)
+					DEBUG(0,2,fprintf(STDDBG,"unit::raise found %c\n",tmpu->cont);)
 					tmpbig->cont=tmpu->cont;
 				}
 			}
 			scope=tmpscope;
-		} else DEBUG(1,2,fprintf(stddbg,"unit::raise NOT searching %c\n",tmpbig->cont););
+		} else DEBUG(1,2,fprintf(STDDBG,"unit::raise NOT searching %c\n",tmpbig->cont););
 
 	}
 }
@@ -910,10 +923,10 @@ unit::diph(hash *dinven)   //_d_descr should contain a diphone name
 {
 	int n;
 	for (n=dinven->translate_int(_d_descr);n>=0;n-=OMEGA) {
-		DEBUG(1,5,fprintf(stddbg,"Diphone number %d born\n", n%OMEGA);)
+		DEBUG(1,5,fprintf(STDDBG,"Diphone number %d born\n", n%OMEGA);)
 		insert_end(new unit(U_DIPH, n%OMEGA),NULL);
 		sanity();
-		DEBUG(1,5,fprintf(stddbg,"...born and inserted\n");)
+		DEBUG(1,5,fprintf(STDDBG,"...born and inserted\n");)
 	}
 }
 
@@ -928,10 +941,10 @@ unit::diphs(UNIT target, hash *dinven)
 {
 	unit *tmpu;
 
-	DEBUG(0,5,fprintf(stddbg,"Entering outer unit::diphs in depth %d cont %c tar %d\n", depth, cont,target);)
+	DEBUG(0,5,fprintf(STDDBG,"Entering outer unit::diphs in depth %d cont %c tar %d\n", depth, cont,target);)
 	sanity();    
 	if (depth==target) {
-		DEBUG(1,5,fprintf(stddbg,"unit::diphs %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
+		DEBUG(1,5,fprintf(STDDBG,"unit::diphs %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
 		if (!dinven->items) {
 			delete firstborn, firstborn=lastborn=NULL;
 			return;
@@ -947,10 +960,10 @@ unit::diphs(UNIT target, hash *dinven)
 		diph (dinven);
 		_d_descr[0]=Prev(depth)->inside();
 		diph (dinven);
-		DEBUG(1,5,fprintf(stddbg,"unit::diphs is done in: %c\n", cont);)
+		DEBUG(1,5,fprintf(STDDBG,"unit::diphs is done in: %c\n", cont);)
 	}
 	else for(tmpu=firstborn;tmpu;tmpu=tmpu->next) tmpu->diphs(target,dinven);
-	DEBUG(1,5,fprintf(stddbg,"Exiting outer unit::diphs tar %d (finished)\n", target);)
+	DEBUG(1,5,fprintf(STDDBG,"Exiting outer unit::diphs tar %d (finished)\n", target);)
 	sanity();
 }
 
@@ -958,12 +971,12 @@ unit::diphs(UNIT target, hash *dinven)
  unit::unlink    removes this one from the neighborhood, reparents children
  ****************************************************************************/
 
-unit *_unit_just_unlinked=NULL;		//used by unlink(), ::ss_done(), sanity()
+unit *_unit_just_unlinked=NULL;		//used by unlink(), ::epos_done(), sanity()
 
 void
 unit::unlink(REPARENT rmethod)
 {
-	DEBUG(1,2,fprintf(stddbg,"unlinking depth=%d\n",depth);)
+	DEBUG(1,2,fprintf(STDDBG,"unlinking depth=%d\n",depth);)
 	sanity();
 	if (next) next->prev=prev;
 		else if (father) father->lastborn=prev;
@@ -974,17 +987,17 @@ unit::unlink(REPARENT rmethod)
 		if (firstborn) delete firstborn;
 		break;
 	case M_RIGHTWARDS:
-		DEBUG(0,2,fprintf(stddbg,"unlinking rightwards at level %d\n",depth);)
+		DEBUG(0,2,fprintf(STDDBG,"unlinking rightwards at level %d\n",depth);)
 		if (next) next->insert_begin(firstborn, lastborn);
-		else shriek("reparent impossible in unit::unlink");
+		else shriek(861, "reparent impossible in unit::unlink");
 		break;
 	case M_LEFTWARDS:    
-		DEBUG(0,2,fprintf(stddbg,"unlinking leftwards at level %d\n",depth);)
+		DEBUG(0,2,fprintf(STDDBG,"unlinking leftwards at level %d\n",depth);)
 		if (prev) prev->insert_end(firstborn, lastborn);
-		else shriek("reparent impossible in unit::unlink");
+		else shriek(861, "reparent impossible in unit::unlink");
 		break;
 	}
-	DEBUG(0,2,fprintf(stddbg," ...successfully unlinked\n");)
+	DEBUG(0,2,fprintf(STDDBG," ...successfully unlinked\n");)
 	firstborn=NULL;lastborn=NULL;            //"this" may be involved in a for-cycle
 	if (_unit_just_unlinked) {                      //  up the stack, so we can't delete it
 	        _unit_just_unlinked->next=NULL;        //  right now. We always keep the last one.
@@ -993,10 +1006,10 @@ unit::unlink(REPARENT rmethod)
 	_unit_just_unlinked=this;
 
 	if (father && !father->firstborn) {
-		DEBUG(4,2,fprintf(stddbg, "Unsafe unlink - may need more fixing\n"););
+		DEBUG(4,2,fprintf(STDDBG, "Unsafe unlink - may need more fixing\n"););
 		father->unlink(M_DELETE);
 	}
-	DEBUG(0,2,fprintf(stddbg,"unit deleted, farewell\n");)
+	DEBUG(0,2,fprintf(STDDBG,"unit deleted, farewell\n");)
 }
 
 /****************************************************************************
@@ -1007,28 +1020,44 @@ int
 unit::forall(UNIT target, bool userfn(unit *patiens))
 {
 	unit *tmpu;
-	int n=0;
+	int n = 0;
 
-	if(!this)return(warn("NULL->forall"),0);
-	if (target==depth) n+=(int) userfn(this);
-	else for(tmpu=firstborn;tmpu;tmpu=tmpu->next)
+	if (!this) return shriek(862, "NULL->forall"),0;
+	if (target == depth) n += (int) userfn(this);
+	else for (tmpu = firstborn; tmpu; tmpu = tmpu->next)
 	{
 		tmpu->sanity();
-		n+=(tmpu->forall(target, userfn));
+		n += (tmpu->forall(target, userfn));
 	}       //for(;;)
-	return(n);
+	return n;
 }
 /****************************************************************************
  unit::effective    sum up either F,I,T for this unit
+		if cfg->sseg_mul[(quantity)] is true, multiply up.
  ****************************************************************************/
 
 int
 unit::effective(FIT_IDX which)
 {
-	DEBUG(0,2,fprintf(stddbg,"computing unit::effective, level %d, f=%d\n", depth, f);)
-	int my = which  ?  which==2 ? t : i  :  f;
-	my *= cfg->sseg_weight[depth];
-	return father ? father->effective(which)+my : my;
+	DEBUG(0,2,fprintf(STDDBG,"computing unit::effective, level %d, f=%d\n", depth, f);)
+
+	if (cfg->pros_mul[which]) {
+		int product = 1 << 10;
+		for (unit *u = this; u; u = u->father) {
+			int w = cfg->pros_weight[u->depth];
+			if (w > 10) shriek(462, "Weight absurd in unit::effective");
+			int x = which  ?  which==2 ? u->t : u->i  :  u->f;
+			for ( ; w; w--) product += product * x / cfg->pros_neutral[which];
+		}
+		return product * cfg->pros_neutral[which] >> 10;
+	} else {
+		int sum = 0;
+		for (unit *u = this; u; u = u->father) {
+			int x = which  ?  which==2 ? u->t : u->i  :  u->f;
+			sum += x * cfg->pros_weight[depth];
+		}
+		return sum + cfg->pros_neutral[which];
+	}
 } 
 
 /****************************************************************************
@@ -1059,8 +1088,8 @@ int
 unit::index(UNIT what, UNIT where)
 {
 	int i=0;
-	if (what > where) shriek("Bad sequence of arguments to unit::index");
-	if (what < depth) shriek("Underindexing in unit::index %d",what);
+	if (what > where) shriek(862, "Bad sequence of arguments to unit::index");
+	if (what < depth) shriek(862, fmt("Underindexing in unit::index %d",what));
 	unit *lookfor = ancestor(what);
 	unit *lookin = ancestor(where);
 	unit *tmpu;
@@ -1161,11 +1190,33 @@ unit::sanity()
 void
 unit::insane(const char *token)
 {
-	if (cfg->colored) fprintf(stdshriek,"\033[00;32mSanity check of \033[01;32m%s\033[00;32m failed. cont=%d depth=%d\033[37m. This is a bug; contact the authors.\n", token,cont,depth); 
-	else fprintf(stdshriek,"Sanity check of %s failed. cont=%d depth=%d. This is a bug; contact the authors.\n", token,cont,depth); 
+	if (cfg->colored) fprintf(cfg->stdshriek,"\033[00;32mSanity check of \033[01;32m%s\033[00;32m failed. cont=%d depth=%d\033[37m. This is a bug; contact the authors.\n", token,cont,depth); 
+	else fprintf(cfg->stdshriek,"Sanity check of %s failed. cont=%d depth=%d. This is a bug; contact the authors.\n", token,cont,depth); 
 	user_pause();
     
     	if (father) father->fout(NULL);
 }
 
 #include "nnet.cc"
+
+#include "slab.h"
+
+slab<sizeof(unit)> unit_slab;
+
+void *
+unit::operator new(size_t size)
+{
+	return unit_slab.alloc();
+}
+
+void
+unit::operator delete(void *ptr)
+{
+	unit_slab.release(ptr);
+}
+
+void shutdown_units()
+{
+	unit_slab.shutdown();
+}
+

@@ -1,0 +1,3 @@
+#! /bin/sh
+
+ls -l --full-time --sort=time $* | awk '/-rw/{printf("%s %s %s %s\n",$10,$7,$8,$9);exit;}'

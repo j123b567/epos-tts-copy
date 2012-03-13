@@ -1,5 +1,5 @@
 /*
- *	ss/src/nnet.cc
+ *	epos/src/nnet.cc
  *	(c) 1997 geo@ff.cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
@@ -47,8 +47,8 @@ unit::nnet_out(const char *filename, const char *dirname)      //NULL means stdo
 //		fputs(cfg->footer_xscr,outf);
 		if(filename)fclose(outf);
 	} else {
-		warn("Neuronet output is disabled.");
-	};
+		shriek(463, "Neuronet output is disabled.");	// FIXME, error code
+	}
 }
 
 /****************************************************************************
@@ -77,7 +77,7 @@ unit::nnet_dump(FILE *handle)        //this one does the real job
 			tmpu->Next(U_PHONE)->Next(U_PHONE)->nnet_type(),
 			tmpu->Next(U_PHONE)->Next(U_PHONE)->Next(U_PHONE)->nnet_type()
 		);
-	};
+	}
 }
 
 float
@@ -92,7 +92,7 @@ unit::nnet_type()
 		case NN_SONOR:  return 2.0;
 		case NN_PUNCTUATION:
 		case NN_NOTHING:return 3.0;
-	};
-	shriek("Please apply nnet rules before calling nnet_dump() %c", cont);
+	}
+	shriek(463, fmt("Please apply nnet rules before calling nnet_dump() %c", cont));
 	return 0;
 }

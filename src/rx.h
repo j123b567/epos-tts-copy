@@ -5,7 +5,7 @@
  *   This file was without any modification taken out of the GNU C Library,
  *   where it has been distributed under the LGPL version 2 license as regex.h.
  *   Then this file was placed under the GNU General Public License using
- *   Section 3 of the GNU Library Public License and incorporated into ss.
+ *   Section 3 of the GNU Library Public License and incorporated into Epos.
  *
  *   rx.h is (C) 1985,89,90,91,92,93,95,96,97 Free Software Foundation, Inc.
  *

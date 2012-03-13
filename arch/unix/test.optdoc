@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# Checks whether all available options are documented
+
+dir=./Epos.OT.tmp
+
+if [ -d $dir ]; then
+	rm -r $dir
+fi
+mkdir -p $dir
+
+srcopts=`cat options.cc | grep '^OPTION\|^LNG_OPTION\|^INV_OPTION' | awk -F\" '{ printf("%s ", $2); }' `
+for i in $srcopts; do
+	echo -n > $dir/$i
+#	ls $dir/$i
+done
+
+docopts=`awk ' /<tag>--/{print }'<../doc/english/options.sgml |cut -c8-60|sed 's/&lowbar;/_/g' \
+	| sed 's/\([^ <]*\)[ <].*/\1/g'`
+for i in $docopts; do
+	if rm $dir/$i 2>/dev/null; then 
+		echo -n >/dev/null
+	else
+		echo Phantom documented: $i
+	fi
+done
+
+echo Undocumented:
+for i in `(cd $dir; ls)`; do
+	echo Undocumented: $i
+	rm -r $dir/$i
+done

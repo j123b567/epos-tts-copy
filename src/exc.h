@@ -1,6 +1,52 @@
-// still mostly in the design phase
+/*
+ *	epos/src/exc.h
+ *	(c) geo@ff.cuni.cz
+ *
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-class exception {};
-	class illegal_data : public exception {};
-		class old_style_exc : public exception {};	/* shriek() called */
-	class doom : public exception {};	/* wild pointers found and worse   */
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License in doc/COPYING for more details.
+ *	
+ *	This file contains a few class decls for the exception hierarchy:
+ *
+ *	exception	- the base for exception inheritance, not used directly
+ *	command_failed	- a TTSCP command fails, no problem
+ *	connection_lost - a connection related problem, a whole TTSCP
+ *				session is terminated for sanity
+ *	fatal_error	- all connections should be terminated, the server aborts
+ */
+
+#ifndef EXCEPTION_ALREADY_DECLARED
+#define EXCEPTION_ALREADY_DECLARED
+struct exception
+{
+	int code;
+	const char *msg;
+	exception(int code, const char *msg);
+};
+
+#define MUTE_EXCEPTION	0	/* code of MUTE_EXCEPTION invalidates the message */
+
+#endif
+
+#ifndef DERIVE_EXCEPTION
+#define DERIVE_EXCEPTION(base, derived) \
+struct derived : public base\
+{\
+	derived();\
+	derived(int n, const char *message);\
+};
+#endif
+
+
+DERIVE_EXCEPTION(exception, command_failed)
+DERIVE_EXCEPTION(exception, connection_lost)
+DERIVE_EXCEPTION(exception, fatal_error)	/* wild pointers found and worse   */
+
+
+#undef DERIVE_EXCEPTION

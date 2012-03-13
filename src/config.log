@@ -1,0 +1,47 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:548: checking for g++
+configure:579: checking whether the C++ compiler (g++  ) works
+configure:593: g++ -o conftest    conftest.C  1>&5
+configure:619: checking whether the C++ compiler (g++  ) is a cross-compiler
+configure:624: checking whether we are using GNU C++
+configure:648: checking whether g++ accepts -g
+configure:696: checking for ld
+configure:726: checking for main in -lstdc++
+configure:769: checking for regcomp in -lc
+configure:819: checking for regcomp in -lrx
+configure:869: checking for regcomp in -lregex
+configure:955: checking for a BSD compatible install
+configure:1005: checking how to run the C++ preprocessor
+configure:1042: checking for ANSI C header files
+configure:1152: checking for strings.h
+configure:1192: checking for string.h
+configure:1232: checking for io.h
+configure:1272: checking for rx.h
+configure:1312: checking for regex.h
+configure:1352: checking for errno.h
+configure:1392: checking for wait.h
+configure:1432: checking for unistd.h
+configure:1472: checking for signal.h
+configure:1512: checking for sys/soundcard.h
+configure:1552: checking for sys/audio.h
+configure:1592: checking for sys/stat.h
+configure:1632: checking for sys/ioctl.h
+configure:1672: checking for sys/socket.h
+configure:1712: checking for sys/select.h
+configure:1752: checking for sys/time.h
+configure:1792: checking for netdb.h
+configure:1832: checking for netinet/in.h
+configure:1872: checking for linux/kd.h
+configure:1911: checking for strerror
+configure:1911: checking for strdup
+configure:1911: checking for fork
+configure:1911: checking for strcasecmp
+configure:1911: checking for stricmp
+configure:1967: checking for inline
+configure:2007: checking for working const
+configure:2083: checking for terminate
+configure:2117: checking for built-in bool
+configure:2151: checking for explicit template instatiations
+configure:2185: checking for socklen_t

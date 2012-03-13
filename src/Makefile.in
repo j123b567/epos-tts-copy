@@ -1,0 +1,207 @@
+# Makefile.in should be processed by configure to yield Makefile
+
+OBJ=.o
+SRC=.cc
+COPY=cp
+CC=@CXX@
+LNK=@CXX@
+LDOPTS=-L/lib -L/usr/local/lib -L/usr/lib
+OTHERLIBS=@LIBS@
+export WPP386=-xs
+
+
+# Want an external debugging lib? Download dmalloc and uncomment the following.
+# DMALLOC_STATUS=-DWANT_DMALLOC
+ifeq ($(DMALLOC_STATUS), -DWANT_DMALLOC)
+  DMALLOC_LINK_OPT=-ldmalloc -L/usr/local/lib
+endif
+#HOMEMADE_STRDUP=-DHOMEMADE_STRDUP
+
+#add -pg for profiling, -ggdb for gdb debugging
+
+CFLAGS=@CFLAGS@
+FLAGS=$(DMALLOC_STATUS) $(HOMEMADE_STRDUP) $(CFLAGS)
+
+# SS     = ss
+
+prefix = @prefix@
+LIBDIR = @prefix@/lib/epos
+# LIBNAME = libepos.so.$(shell ../aux/makever)
+CFGDIR = $(LIBDIR)/cfg
+
+SHELL = /bin/sh
+
+HEADERS=common.h defaults.h elements.h parser.h rule.h text.h interf.h hash.h synth.h voice.h exc.h
+MOREHEADERS=waveform.h ktdsyn.h lpcsyn.h tcpsyn.h slab.h navel.h rx.h client.h agent.h
+SOURCES=parser.cc elements.cc rule.cc block.cc text.cc interf.cc exc.cc hash.cc hashtmpl.cc synth.cc waveform.cc voice.cc say.cc options.cc nnet.cc monolith.cc daemon.cc agent.cc ttscp.cc ktdsyn.cc lpcsyn.cc tcpsyn.cc rx.c
+DOSSOURCES=epos.cpp config.dos README.dos
+MODULES=parser.o elements.o rule.o text.o interf.o hash.o synth.o ktdsyn.o lpcsyn.o tcpsyn.o voice.o waveform.o
+TARGETS=epos say
+DOSES=  dos1250 dos1252 dospc2 dosil1 dosil2 doskam doskoi8 dosascii dosmac dosvga
+
+# the compilation proper may also depend on this makefile.
+# Linking always does.
+
+# MAKEFILE=
+MAKEFILE=Makefile
+
+.PHONY: all monolith mh install clean distclean tgz dist distdoc cfgsync date gdb pg dos $(DOSES)
+
+all: $(TARGETS)
+
+install : all $(SHELL) ../arch/unix/makeinst
+	@$(SHELL) ../arch/unix/makeinst /usr/lib $(LIBDIR) ../cfg
+#	install -m 0755 -o bin -g bin $(TARGETS) $(EXEDIR)
+#	install -m 0644 -o bin -g bin $(LIBRARY) $(LIBDIR)
+
+
+
+clean:  $(SHELL) ../arch/unix/listtmp
+	@if [ `cat $(CFGDIR)/epos.ini $(CFGDIR)/fixed.ini 2>/dev/null | grep 'use_debug *on\|use_debug *yes\|memory_low *on\|memory_low *yes'|wc -l` -ne 0 ];\
+		 then echo Debugging option seems to be set; fi
+	@rm -fr ../dos
+	@rm -f `$(SHELL) ../arch/unix/listtmp $(LIBDIR) $(TARGETS)`
+
+distclean: clean
+	@rm -f config.h Makefile config.cache
+	@cp -f ../arch/unix/Makefile.dummy Makefile
+
+config.h.in: configure.in ../arch/unix/acconfig.h
+	@rm -f config.h.in
+	autoheader -l ../arch/unix
+
+configure: configure.in config.h.in
+	autoconf
+
+Makefile: configure config.h Makefile.in
+	@./configure
+
+
+say	: say.o Makefile ../cfg/cfg/default.ini
+	@echo Building the client...
+	$(LNK) -o $@ say.o $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
+	@echo Type \"make install\" to install cfg files to $(LIBDIR)
+
+monolith mh: $(MODULES) monolith.o client.o $(MODULES) Makefile ../cfg/cfg/default.ini
+	$(LNK) -o eposmh monolith.o client.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
+
+# static  : $(MODULES) monolith.o say.o Makefile ../cfg/cfg/default.ini
+#	$(LNK) -o say say.o $(LIBNAME) $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
+#	$(LNK) -o say say.o $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
+
+
+# $(LIBNAME)  : $(HEADERS) $(MODULES) Makefile ../cfg/cfg/default.ini
+#	$(LNK) -shared -o $@ $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) -Wl,-soname,$(LIBNAME) $(FLAGS)
+
+epos:	Makefile $(HEADERS) $(MODULES) daemon.o agent.o ttscp.o client.o
+	@echo Building the daemon...
+# replace MODULES with LIBNAME in the following line to produce a shared daemon
+	$(LNK) -o $@ daemon.o agent.o ttscp.o client.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
+#	@../arch/unix/rerunepos
+
+tgz: distclean $(SHELL) ../arch/unix/maketgz cfgsync
+	@echo Building a .tgz package...
+	@$(SHELL) ../arch/unix/maketgz
+
+dist: distdoc tgz
+
+distdoc:
+	@$(MAKE) -C ../doc/english dist
+
+cfgsync: ../arch/unix/distcfg
+	@$(SHELL) ../arch/unix/distcfg
+
+date: $(SHELL) ../arch/unix/makedate
+	@echo -n 'Source files last modified '
+	@$(SHELL) ../arch/unix/makedate
+
+../cfg/cfg/default.ini: options.cc ../arch/unix/makedflt $(SHELL)
+	@$(SHELL) ../arch/unix/makedflt $@
+
+gdb: $(SHELL)
+	@$(SHELL) ../arch/unix/addcflag ggdb
+
+pg: $(SHELL)
+	@$(SHELL) ../arch/unix/addcflag pg
+
+dos:
+	@echo
+	@echo You must also specify how to encode Czech characters. Possible targets:
+	@echo  $(DOSES)
+	@echo 
+
+$(DOSES): dos% :$(HEADERS) $(SOURCES) /usr/lib/cstocs/%.enc clean $(SHELL) ../arch/unix/cstodos cfgsync
+	@echo Building a DOS distribution.
+	@$(SHELL) ../arch/unix/cstodos $* "$(HEADERS) $(MOREHEADERS) $(SOURCES)" "$(DOSSOURCES)"
+
+$(SHELL):
+	@echo You should already have bash installed.
+	@if which bash >/dev/null; ln -s `which bash` $(SHELL); fi
+	@if [ -f $(SHELL) ]; then echo I\'ve tried to install it now.; fi
+
+
+$(CFGDIR)/fixed.ini:
+	#mkdir -p $(CFGDIR)
+	#@cp -f $(CFGDIR)/fixed.ini $(CFGDIR)/fixed.old.ini 2>/dev/null
+	#cp -f cfg/fixed.ini $(CFGDIR)
+
+config.h: config.h.in configure
+	sh ./configure
+
+say.o: say.cc client.cc $(HEADERS) $(MAKEFILE) options.cc $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ say.cc
+
+monolith.o: monolith.cc $(HEADERS) $(MAKEFILE) options.cc $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ monolith.cc
+
+daemon.o: daemon.cc $(HEADERS) agent.h $(MAKEFILE) options.cc $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ daemon.cc
+
+agent.o: agent.cc $(HEADERS) agent.h navel.h $(MAKEFILE) options.cc $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ agent.cc
+
+ttscp.o: ttscp.cc $(HEADERS) agent.h $(MAKEFILE) options.cc $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ ttscp.cc
+
+client.o: client.cc $(MAKEFILE) options.cc $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ client.cc
+
+parser.o: common.h parser.h interf.h parser.cc options.cc $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ parser.cc
+
+interf.o: common.h interf.h interf.cc exc.cc options.cc $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ interf.cc
+
+hash.o: hash.h hash.cc hashtmpl.cc defaults.h slab.h $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ hash.cc
+
+rule.o: $(HEADERS) rule.cc block.cc options.cc $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ rule.cc
+
+elements.o: $(HEADERS) elements.cc nnet.cc options.cc $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ elements.cc
+
+text.o: common.h defaults.h hash.h interf.h options.cc $(MAKEFILE) text.cc $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ text.cc
+
+synth.o: synth.h synth.cc interf.h options.cc ktdsyn.h lpcsyn.h $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ synth.cc
+
+waveform.o: waveform.h waveform.cc interf.h options.cc $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ waveform.cc
+
+voice.o: voice.h waveform.h voice.cc interf.h options.cc $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ voice.cc
+
+ktdsyn.o: ktdsyn.h waveform.h synth.h ktdsyn.cc interf.h options.cc $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ ktdsyn.cc
+
+lpcsyn.o: lpcsyn.h waveform.h synth.h lpcsyn.cc interf.h options.cc $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ lpcsyn.cc
+
+lpcsyn.cc lpcsyn.h:
+	@if [ ! -f $@ ]; then if [ -f ../../$@ ]; then ln ../../$@ .; else echo "">$@; fi; else touch $@; fi
+
+tcpsyn.o: tcpsyn.h tcpsyn.cc client.h waveform.h interf.h options.cc $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ tcpsyn.cc
+
