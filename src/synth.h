@@ -1,6 +1,6 @@
 /*
  *	epos/src/synth.h
- *	(c) 1998-99 Jirka Hanika, geo@cuni.cz
+ *	(c) 1998-01 Jirka Hanika, geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

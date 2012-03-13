@@ -1,6 +1,6 @@
 /*
  *	epos/src/daemon.cc
- *	(c) 1998-99 geo@cuni.cz
+ *	(c) 1998-01 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -89,6 +89,12 @@ class wsa_init			/* initialise winsock before main() is entered  */
 } wsa_init_instance;
 
 #endif
+
+#ifdef HAVE_WINSVC_H
+int start_nt_service();
+#endif
+
+const bool is_monolith = 0;
 
 
 #define DARK_ERRLOG 2	/* 2 == stderr; for global stdshriek and stddbg output */
@@ -472,7 +478,7 @@ void server_crashed(char *, a_ttscp *a, int why_we_crashed)
 
 inline void lest_already_running()
 {
-	if (just_connect_socket(0, cfg->listen_port) > -1) {
+	if (running_at_localhost()) {
 		cfg->pwdfile = NULL;
 		shriek(872, "Already running\n");
 	}
@@ -482,10 +488,16 @@ inline void lest_already_running()
 #endif
 }
 
-int main(int argc, char **argv)
+void init_thrown_exception(int errcode)
+{
+	ctrl_conns->forall(server_crashed, errcode);
+	if (cfg->pwdfile) remove(cfg->pwdfile);
+}
+
+int start_unix_daemon()
 {
 	try {
-		epos_init(argc, argv);
+		epos_init();
 		lest_already_running();
 		switch (my_fork()) {
 			case -1: server();
@@ -497,17 +509,25 @@ int main(int argc, char **argv)
 		}
 
 	} catch (any_exception *e) {
-
 		/* handle all known uncatched exceptions here */
-		ctrl_conns->forall(server_crashed, e->code);
-		if (cfg->pwdfile) remove(cfg->pwdfile);
+		init_thrown_exception(e->code);
 		return 1;
 	} catch (...) {
-
 		/* handle all unknown uncatched exceptions here */
-		ctrl_conns->forall(server_crashed, 869);
-		if (cfg->pwdfile) remove(cfg->pwdfile);
+		init_thrown_exception(869);
 		return 2;
 	}
+}
+
+
+int main(int argc, char **argv)
+{
+	argc_copy = argc, argv_copy = argv;
+#ifdef HAVE_WINSVC_H
+	int k = start_nt_service();
+	if (!k) return 0;
+	if (k != ERROR_FAILED_SERVICE_CONTROLLER_CONNECT) return k;
+#endif
+	return start_unix_daemon();
 }
 

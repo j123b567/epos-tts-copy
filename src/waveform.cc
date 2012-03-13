@@ -58,6 +58,8 @@
 	#include <io.h>		/* open, (ioctl,) ... */
 #endif
 
+int localsound = -1;
+
 #ifndef SNDCTL_DSP_SYNC
 	#ifndef SOUND_PCM_SYNC
 		#ifndef FORGET_SOUND_IOCTLS
@@ -303,8 +305,6 @@ static inline void reset_soundcard(int fd)
 
 #ifdef HAVE_MMSYSTEM_H
 
-extern int localsound;
-
 static const inline bool ioctlable(int fd)
 {
 	return fd == localsound && fd != -1;
@@ -449,6 +449,9 @@ wavefm::attach()
 	d = open(output, O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK | O_BINARY, MODE_MASK);
 #else
 	d = open(output, O_RDWR | O_CREAT | O_TRUNC | O_BINARY);
+#endif
+#ifdef	HAVE_MMSYSTEM_H
+	localsound = d;
 #endif
 	if (d == -1) shriek(445, fmt("Failed to %s %s", strncmp(output, "/dev/", 5)
 			? "create output file" : "open audio device", output));

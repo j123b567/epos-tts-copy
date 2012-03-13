@@ -139,6 +139,9 @@
 /* Defining this is necessary with any DOS/NT version */
 #define FORGET_SOUND_IOCTLS 1
 
-/* Define is using mmsystem.lib for output */
+/* Define if using mmsystem.lib for output */
 #define HAVE_MMSYSTEM_H  1
+
+/* Define if Epos should run as an NT service */
+#define HAVE_WINSVC_H  1
 

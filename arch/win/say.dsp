@@ -65,7 +65,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x405 /d "_DEBUG"
 # ADD RSC /l 0x405 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -88,6 +88,10 @@ LINK32=link.exe
 
 SOURCE=.\say.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\startsrv.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -95,6 +99,10 @@ SOURCE=.\say.cpp
 # Begin Source File
 
 SOURCE=.\common.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\service.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

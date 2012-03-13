@@ -1,6 +1,6 @@
 
 /*
- *	(c) 1998-99 Jirka Hanika <geo@cuni.cz>
+ *	(c) 1998-01 Jirka Hanika <geo@cuni.cz>
  *
  *	This single source file src/say.cc, but NOT THE REST OF THIS PACKAGE,
  *	is considered to be in Public Domain. Parts of this single source file may be
@@ -20,6 +20,12 @@
 #define THIS_IS_A_TTSCP_CLIENT
 
 #include "config.h"	/* You can usually remove this item */
+
+#ifdef HAVE_WINSVC_H
+	bool start_service();
+#else
+	bool start_service() { return true; }
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -296,6 +302,8 @@ int main(int argc, char **argv)
 #ifdef HAVE_WINSOCK2_H
 	if (WSAStartup(MAKEWORD(2,0), (LPWSADATA)scratch)) shriek(464, "No winsock");
 #endif
+	start_service();		/* Windows NT etc. only */
+
 	ctrld = connect_socket(0, TTSCP_PORT);
 	ch = get_handle(ctrld);
 	datad = connect_socket(0, TTSCP_PORT);

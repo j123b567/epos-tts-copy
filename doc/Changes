@@ -1,5 +1,6 @@
 
 
+
 RECENT CHANGES can be tracked at the BOTTOM END.  The rest doesn't qualify
 for an exciting story, just skip it.
 
@@ -1068,4 +1069,20 @@ for an exciting story, just skip it.
 	- pre-set hooks allowed to return a new value, pre_init_f added
 	- memory leak in cow_free fixed (not freeing voice->syn etc.)
 	- wavefm::translate_data() fixed (zeroed data bug)
+
+2.4.58 from 2.4.57	19.6.01
+	- written the NT service code from scratch
+	- removed some garbage and updated arch/unix/listtmp
+	- added the Portability documentation to the docs
+	- updated the WELCOME file
+	
+2.4.59 from 2.4.58	22.6.01
+	- NT related fixes, made most files 8+3 file naming convention compliant
+	- say is now able to start the service if privileged enough on NT
+	- Epos now installs as an interactive process by default
+	- monolith code fixed under windows
+	- documentation adjustments
+	- hash.cc split to hash.cc and hashd.cc, the latter includes the former
+	- global is_monolith flag instead of a #define
+	- only options accepted on Epos server command line
 

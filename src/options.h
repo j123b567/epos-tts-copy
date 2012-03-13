@@ -112,6 +112,7 @@ void list_voices();
 void shutdown_cfgs();
 void shutdown_langs();
 
+extern int argc_copy;
+extern char **argv_copy;
+
 #define DQUOT          '"'            //used when parsing the .ini file
-
-

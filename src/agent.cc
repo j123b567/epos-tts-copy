@@ -1,6 +1,6 @@
 /*
  *	epos/src/agent.cc
- *	(c) 1998-99 geo@cuni.cz
+ *	(c) 1998-01 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -448,7 +448,7 @@ class a_io : public agent
 
 #define LOCALSOUNDAGENT "localsound"
 
-int localsound = -1;
+extern int localsound;
 
 socky int special_io(const char *name, DATA_TYPE intype)
 {

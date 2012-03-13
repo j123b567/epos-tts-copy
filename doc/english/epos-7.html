@@ -309,7 +309,108 @@ or be used as a study material. This client tries to be as ugly as possible
 and to crash any crashable server.  Adding some ugly tests to this piece of
 code might raise the average code quality of Epos significantly.
 <P>
-<H2><A NAME="ss7.5">7.5 More information</A>
+<H2><A NAME="ss7.5">7.5 Portability</A>
+</H2>
+
+<P>
+<P>Epos is written to be as portable as possible.  It is however also
+written with UNIX developer's tastes, and it is also partly true
+of this documentation.  The following should give you an approximate
+look at the degree of support for some most common operating systems.
+<P>
+<H3>Linux</H3>
+
+<P>
+<P>The primary development OS.  The most of the testing is done
+under Debian and Red Hat distributions.  Please report
+to us any compilation issues which may be distribution related,
+these will be the most easy ones to solve.
+<P>
+<H3>Other UNIX clonesEpos is ported to other unicesfrom time to time as well, but there may be minor incompatibilitiesin recent code.  In this documentation, references to UNIX should beread as "tested on Linux, implemented using POSIX compliant interfacesand expected to be easy to get working on any other UNIX clone".</H3>
+
+<P>
+<P>Epos uses the <CODE>autoconf</CODE> package to avoid portability pitfalls
+within the UNIX world.  Features like <CODE>syslog</CODE> are welcomed
+and used, but only if the corresponding system header file is detected
+by <CODE>autoconf</CODE>.
+<P>
+<H3>QNX</H3>
+
+<P>
+<P>On the QNX operating system, Epos can be controlled not only over
+a TCP-based TTSCP implementation, but also using a QNX specific
+interprocess communication interface.  See <CODE>src/qnxipc.cc</CODE>
+for details; be however aware that this code has never been completely
+debugged becasuse of a drop in our motivation.  You could help debug
+this easily if you really need this and provide us with a QNX machine.
+<P>
+<H3>Windows NT, Windows 2000</H3>
+
+<P>
+<P>See the <CODE>arch/win</CODE> directory for architectural differences from UNIX.
+Be aware of the following three differences of Epos's behavior
+on these operating systems:  the <CODE>mmsystem</CODE> (Microsoft Multimedia System)
+library is used instead of <CODE>/dev/dsp</CODE> for speech output;
+Epos compiles and runs as an NT service, instead of a UNIX-style
+daemon; you can use registry to locate the configuration files.
+In order to make the last two features available, it is necessary
+to build and run the <CODE>instserv</CODE> utility before running Epos.
+<P>
+<P>
+<P>You should use the Visual C++ compiler for compiling Epos,  but you
+don't need it for running Epos.  The Borland C++ Builder and Watcom C++
+used to work a long time ago, too.  Ask us for help with these compilers
+if necessary.  Please refer to the <CODE>WELCOME</CODE> file on
+how to proceed step by step with Visual C++.
+<P>
+<H3>Windows CE</H3>
+
+<P>
+<P>The port is planned soon, but not available at the moment.  Ask us if you
+need it.
+<P>
+<H3>Windows 95, 98 etc.</H3>
+
+<P>
+<P>We don't support these DOS successors very strongly now,
+but these ports used to work.  If you want to try out,
+you should probably comment out the <CODE>HAVE_WINSVC_H</CODE> line
+in <CODE>src/config.h</CODE> after running <CODE>arch/win/configure.bat</CODE>.
+This will force Epos to compile not as a Windows NT service, but
+as an ordinary UNIX-style daemon.  In fact, the way Epos is written,
+it will decide to run as a daemon if it can't connect to the service
+controller anyway.
+<P>The same holds for MS DOS, but as MS DOS offers no sound playback interface,
+you'll have to comment out portions of source code here and there to make
+Epos e.g. produce wave files.  Good luck and don't even try to use 16-bit
+compilers, please.
+<P>
+<H3>Other OSes</H3>
+
+<P>
+<P>Please contact the authors for advice with any OS significantly different from
+the UNIX and Windows families.  However, the general requirements are:
+<P>
+<UL>
+<LI> Architecture: 32bit little endian</LI>
+<LI> Reliable and complete C++ compiler</LI>
+<LI> Standard C library, preferably including regular expressions</LI>
+<LI> Regular expression library (or Epos supplies one)</LI>
+<LI> 8-bit ASCII based character set</LI>
+</UL>
+<P>Note that the architectural requirements are only a guideline and are enforced
+rather for lack of energy for debugging Epos on every perverse 36-bit machine
+with PDP byte ordering.  Epos supports big endian architectures, but the
+corresponding code still needs to be tested.  The integers and pointers can
+be any size not less than 32 bits as long as the integers are not longer than
+pointers.  If they were, a single code change would do the port.
+<P>A bourne-compatible shell is helpful, as it allows to run a configure
+script.  Otherwise you have to write a <CODE>src/config.h</CODE> file by hand
+as we have done with the Windows port.  A plain old <CODE>make</CODE> utility
+helps the compilation process if your OS can emulate a UNIX development
+environment a little bit.
+<P>
+<H2><A NAME="ss7.6">7.6 More information</A>
 </H2>
 
 <P>

@@ -1,6 +1,6 @@
 /*
  *	epos/src/options.cc
- *	(c) 1996-99 geo@cuni.cz
+ *	(c) 1996-01 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -652,14 +652,17 @@ const char *format_option(const char *name)
 	return format_option(o);
 }
 
+int argc_copy = 0;		// these get filled by the args to main()
+char **argv_copy = NULL;
+
 void parse_cmd_line()
 {
 	char *ar;
 	char *j;
 	register char *par;
 
-	for(int i=1; i<argc; i++) {
-		j = ar = argv[i];
+	for(int i=1; i<argc_copy; i++) {
+		j = ar = argv_copy[i];
 		switch(strspn(ar, CMD_LINE_OPT)) {
 		case 3:
 			ar+=3;
@@ -674,9 +677,9 @@ void parse_cmd_line()
 				*par=0;
 				set_option_or_die(ar, par+1);
 				*par=CMD_LINE_VAL;
-			} else	if (i+1==argc || strchr(CMD_LINE_OPT, *argv[i+1])) 
+			} else	if (i+1==argc_copy || strchr(CMD_LINE_OPT, *argv_copy[i+1])) 
 					set_option_or_die(ar, "");
-				else set_option_or_die(ar, argv[++i]);
+				else set_option_or_die(ar, argv_copy[++i]);
 			break;
 		case 1:
 			for (j = ar+1; *j; j++) switch (*j) {
@@ -706,6 +709,7 @@ void parse_cmd_line()
 			}
 			break;
 		case 0:
+			if (!is_monolith) shriek(814, "Only options allowed at Epos server command line");
 			if (cfg->input_text && cfg->input_text!=ar) {
 				if (!cfg->warnings) break;
 				if (cfg->paranoid) shriek(814, "Quotes forgotten on the command line?");
@@ -789,6 +793,11 @@ static inline void load_languages(const char *list)
 	free(tmp);
 }
 
+void set_base_dir(char *basedir)
+{
+	cfg->base_dir =  strdup(basedir);
+}
+
 static inline void version()
 {
 	fprintf(cfg->stdshriek, "This is Epos version %s, bug reports to \"%s\" <%s>\n", VERSION, MAINTAINER, MAIL);
@@ -798,7 +807,7 @@ static inline void dump_help()
 {
 	int i,j,k;
 
-	printf("usage: %s [options] ['Text to be processed']\n", argv[0]);
+	printf("usage: %s [options] ['Text to be processed']\n", argv_copy[0]);
 	printf(" -b  bare format (no frills)\n");
 //	printf(" -d  show segments\n");
 //	printf(" -e  show phones\n");

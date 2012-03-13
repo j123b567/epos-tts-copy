@@ -92,7 +92,7 @@ SOURCE=./hash.cpp
 
 !ELSEIF  "$(CFG)" == "eposm - Win32 Debug"
 
-# ADD CPP /Od /D "MONOLITH"
+# ADD CPP /Od
 
 !ENDIF 
 
@@ -192,6 +192,10 @@ SOURCE=./rule.h
 # Begin Source File
 
 SOURCE=./rx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\service.h
 # End Source File
 # Begin Source File
 

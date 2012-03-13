@@ -32,14 +32,12 @@ external files can be referenced either by the rules file, or a configuration
 file, such as segment inventories or dictionaries.
 
 Most of these files have to be processed before any actual TTS processing
-has finished. That's why Epos is implemented as a background process;
-it reserves a TCP/IP port for any communication with client applications.
-Epos uses a custom, quite generic protocol for TTS data flow control, 
-called TTSCP.
-The Epos daemon binary is called <tt/epos/; a simple client named <tt/say/
-has been provided.  This client instructs the daemon to process the text
-sent by the client and to write the resulting waveform into <tt>/dev/dsp</tt>,
-which is hopefully a sound card device.
+has finished. That's why Epos is implemented as a background process, i.e.
+as a daemon under UNIX-like OSes and as a service on Windows NT and similar OSes.
+Epos reserves a TCP/IP port for any communication with client applications
+using a custom, quite generic protocol for TTS data flow control, 
+called TTSCP.  A simple TTSCP client utility named <tt/say/ has been provided
+with Epos, but there are many more specialized TTSCP clients in existence.
 
 Epos currently supports three main speech generation algorithms.  Two ones
 employ segment concatenation in the time domain; these have been contributed by

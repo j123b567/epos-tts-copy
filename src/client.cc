@@ -1,5 +1,5 @@
 /*
- *	(c) 1998-99 Jirka Hanika <geo@cuni.cz>
+ *	(c) 1998-01 Jirka Hanika <geo@cuni.cz>
  *
  *	This single source file src/client.cc, but NOT THE REST OF THIS PACKAGE,
  *	is considered to be in Public Domain. Parts of this single source file may be
@@ -35,9 +35,10 @@ struct pseudoconfiguration
 	int asyncing;
 	int scratch;
 	int paranoid;
+	int listen_port;
 };
 
-pseudoconfiguration pseudocfg = {1, SCRATCH_SPACE, 0};
+pseudoconfiguration pseudocfg = {1, SCRATCH_SPACE, 0, TTSCP_PORT};
 
 pseudoconfiguration *cfg = &pseudocfg;
 
@@ -149,6 +150,14 @@ int connect_socket(unsigned int ipaddr, int port)
 		shriek(474, "Protocol not recognized");
 	}
 	return sd;
+}
+
+bool running_at_localhost()
+{
+	int j = just_connect_socket(0, cfg->listen_port);
+	if (j == -1) return false;
+	close(j);
+	return true;
 }
 
 char *get_handle(int sd)

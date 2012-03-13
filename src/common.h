@@ -27,7 +27,7 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@cuni.cz"
-#define VERSION     "2.4.57"
+#define VERSION     "2.4.59"
 
 #include "config.h"
 
@@ -87,8 +87,6 @@ enum FIT_IDX {Q_FREQ, Q_INTENS, Q_TIME};
 #define BOOLstr "false:true:off:on:no:yes:disabled:enabled:-:+:n:y:0:1:non::"
 #define LIST_DELIM	 ':'
 
-// enum UNIT {U_DIPH, U_PHONE, U_SYLL, U_WORD, U_COLON, U_SENT, U_TEXT, U_INHERIT, U_DEFAULT, U_ILL=255, U_VOID=127};
-// #define UNITstr "segment:phone:syll:word:colon:sent:text:inherit:default:"
 typedef char UNIT;
 #define UNIT_MAX 12
 #define U_ILL		127
@@ -96,10 +94,10 @@ typedef char UNIT;
 #define U_INHERIT	125
 #define U_VOID		120
 
-
-// #define unuse(x) if (((1&(int)(x))*(1&(int)(x)))<0) shriek(862, "I'm drunk");
 extern int unused_variable;
 #define unuse(x) (unused_variable = (int)(x));
+
+extern const bool is_monolith;
 
 struct file;
 struct option;
@@ -109,13 +107,11 @@ class stream;
 
 #include "defaults.h"
 #include "exc.h"
-// #include "slab.h"
 #include "hash.h"
 #include "text.h"
 #include "voice.h"
 #include "interf.h"             //See interf.h and even interf.cc for other headerities
 #include "options.h"
-//#include "client.h"
 #include "parser.h"
 #include "unit.h"
 #include "rule.h"              //See rules.h for additional #defines and enums

@@ -1,6 +1,6 @@
 /*
  *	epos/src/interf.cc
- *	(c) 1996-99 geo@cuni.cz
+ *	(c) 1996-01 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ void shriek(int code, const char *s)
 #ifdef HAVE_SYSLOG_H
 	if (cfg->use_syslog)
 		if (cfg->log_codes) syslog(LOG_DAEMON | severity(code), "%3d %s", code, s);
-		else syslog(LOG_DAEMON | severity(code), s);
+		else syslog(LOG_DAEMON | severity(code), "%s", s);
 #else
 	FILE *hackfile = fopen("hackfile","w");
 	if (hackfile) {
@@ -574,10 +574,6 @@ void shutdown_file_cache()
 	file_cache = NULL;
 }
 
-
-int argc=0;
-char **argv=NULL;
-
 static inline void release(char **buffer)
 {
 	if (*buffer) free(*buffer);
@@ -607,25 +603,6 @@ static inline void compile_rules()
 		Takes nearly as much time as killing and restarting
  *	epos_catharsis(): to release as much as possible, but leave a way back
  */
-
-void epos_init(int argc_, char**argv_)	 //Some global sanity checks made here
-{
-	static const char * CFG_FILE_OPTION = "--cfg_file";
-	register int optlen=strlen(CFG_FILE_OPTION);
-	register char *result;
-	
-	argc=argc_; argv=argv_;
-
-	if ((result=getenv(CFG_FILE_ENVIR_VAR))) cfg->inifile=result;
-	for (int i=1; i<argc-1; i++) if (!strncmp(argv[i], CFG_FILE_OPTION, optlen)) {
-		switch (argv[i][optlen]) {
-			case 0:	  cfg->inifile=argv[++i]; break;
-			case '=': cfg->inifile=argv[i]+optlen+1; break;
-			default:  /* another option, most likely a bug */;
-		}
-	}
-	epos_init();
-}
 
 
 void epos_init()	 //Some global sanity checks made here

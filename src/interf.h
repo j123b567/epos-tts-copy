@@ -30,9 +30,6 @@ enum _DEBUG_AREA_ {_INTERF_, _RULES_, _ELEM_, _SUBST_, _ASSIM_, _SPLIT_,
 #define DEBUG_AREAstr "interf:rules:elem:subst:assim:split::parser::synth:cfg:daemon:"
 
 
-extern int argc;
-extern char** argv;
-
 void epos_init(int argc, char**argv);
 void epos_init();
 void epos_reinit();

@@ -1,5 +1,5 @@
 /*
- *	(c) 1998-99 Jirka Hanika <geo@cuni.cz>
+ *	(c) 1998-01 Jirka Hanika <geo@cuni.cz>
  *
  *	This single source file src/client.h, but NOT THE REST OF THIS PACKAGE,
  *	is considered to be in Public Domain. Parts of this single source file may be
@@ -29,7 +29,8 @@
  */
 
 int just_connect_socket(unsigned int ipaddr, int port);	// returns -1 if not connected
-int connect_socket(unsigned int ipaddr, int port);		// as above, check protocol, shriek if bad
+int connect_socket(unsigned int ipaddr, int port);	// as above, check protocol, shriek if bad
+bool running_at_localhost();
 
 /*
  *	getaddrbyname() converts an Internet host name (or address in the dotted

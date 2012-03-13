@@ -1,6 +1,6 @@
 /*
  *	epos/src/monolith.cc
- *	(c) 1996-99 geo@cuni.cz
+ *	(c) 1996-01 geo@cuni.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
  */
 
 #include "common.h"
+
+const bool is_monolith = 1;
 
 #ifdef HAVE_UNISTD_H		// fork() only
 	#include <unistd.h>
@@ -58,13 +60,12 @@ int submain()
 int main(int argc, char **argv)
 {
 	try {
-		epos_init(argc, argv);
+		argc_copy = argc, argv_copy = argv;
+		epos_init();
 		submain();
 		epos_done();
 		return 0;
-	} catch (any_exception *e) {	// this one is preferred, however.
-//	} catch (old_style_exc *e) {	// this one is required by the g++ bugware
-//		printf("*****************\n");
+	} catch (any_exception *e) {
 		return 4;
 	}
 }

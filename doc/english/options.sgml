@@ -4,17 +4,18 @@
 
 Most aspects of the operation can be customized by changing options.
 This can be enforced by TTSCP commands, in configuration files and
-on the command line. Basically, an option is an option name/option value
+on the command line.  Basically, an option is an option name/option value
 pair. There are a few possible option types: number, string, yes/no,
 character, and a few enumerated types.
 
 Almost all individual options are documented in <ref id="indivopts"
-name="this document">. 
-The reliable list of all built-in long options can be found in <tt>src/options.lst</tt>.
-(See approximately line 320 and below. Every line represents at most one
-option for every option class as explained below. The option name is
-quoted; its semantics is usually explained following the option.)
-You can also list their names and types using <tt>epos -H</tt>.
+name="this document">.  If you strongly suspect this section of
+documentation to be out-of date, the reliable list of all built-in
+long options can be found in <tt>src/options.lst</tt>.  (See approximately
+line 320 and below. Every line represents at most one option for every
+option class as explained below. The option name is quoted; its
+semantics is usually explained following the option.)  You can also
+list the option names and types using <tt>epos -H</tt>.
 
 <sect1> Option classes
 <p>
@@ -76,6 +77,12 @@ at configure/compile time or
 with the <tt>--base&lowbar;dir</tt> option on the command line). By convention,
 configuration file names have the ".ini" suffix.
 
+(On a Windows NT-like operating system, you can use the
+<tt>HKEY_LOCAL_MACHINE&bsol;SOFTWARE&bsol;Epos&bsol;Setup</tt>
+registry key to set the value of <tt>Path</tt> to a path leading
+to the configuration files.  This value can still be overridden
+by the command line.)
+
 Unless overridden, three files in <tt>/usr/lib/epos/cfg</tt> will be processed
 to setup the global configuration: <tt>fixed.ini</tt>, <tt>epos.ini</tt> and
 either <tt>ansi.ini</tt> or <tt>rtf.ini</tt> (depending on the preferred
@@ -92,9 +99,6 @@ are located under <tt>/usr/lib/epos/lng/*/*.ini</tt>, voice configuration files
 under <tt>/usr/lib/epos/inv/*/*.ini</tt>, where <tt>*</tt> represents any string
 listed in the list of languages (or voices for a language). Go see the real
 files under <tt>/usr/lib/epos/cfg/*.ini</tt> for an example.
-
-If a <tt>EPOSCFGFILE</tt> environment variable is set upon the main program startup,
-its value is a file name to be parsed instead of <tt>epos.ini</tt>.
 
 <sect2> Configuration file format overview
 <p>

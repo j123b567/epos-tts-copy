@@ -6,15 +6,22 @@ targets=$2
 echo tmp>tmp~
 echo tmp~
 
-for i in *.o *.a *~ *.bak *.wav $targets core a.out gmon.out matlab.in tmp.0* DEADJOE dmalloc hackfile config.status libepos.so.* said.* say epos eposm vrfy; do
+for i in *.o *.a *.wav $targets core a.out gmon.out matlab.in tmp.0* dmalloc hackfile config.status libepos.so.* said.* say epos eposm vrfy; do
 	if [ -f $i ]; then
 		echo $i
 	fi
 done
 
+find .. -name DEADJOE
+find .. -name \*~
+find .. -name \*.bak
+find .. -name 0\?tmp
+
 if [ -d $libdir ]; then
 	find $libdir -name \*.old
 	find $libdir -name \*.local
 	find $libdir -name \*~
+	find $libdir -name 0\?tmp
+	find $libdir -name DEADJOE
 fi
-find .. -name \*~
+

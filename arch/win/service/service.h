@@ -1,64 +1,54 @@
-////////////////////////////////////////////////////////////////////////////
-// CNTService Class
+/*
+ *	epos/src/service.h
+ *	(c) geo@cuni.cz
+ *
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-#ifndef CNTSERVICE_H
-#define CNTSERVICE_H
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License in doc/COPYING for more details.
+ *
+ *	This file declares the common information for instserv.exe
+ *	and epos.exe if running as an NT service.  For clarity, and
+ *	to keep this port as maintainance-free as possible, the very
+ *	few interfaces to Epos proper are re-declared here, so that
+ *	service.cpp doesn't include any other common Epos code.
+ */
 
-#include <winsvc.h>
+/* NT service */
 
-class CNTService
-{
-public:
+#define SERVICE_NAME  "ttscp"
+#define SERVICE_DISPLAY_NAME "Text-to-Speech system Epos"
 
-//  Constructor/Destructor
+/* Registry subkey to locate configuration files */
 
-    CNTService();
-    ~CNTService();
+#define EPOS_CFG_HKEY	HKEY_LOCAL_MACHINE
+#define EPOS_CFG_SUBKEY "SOFTWARE\\Epos\\Setup"
+#define EPOS_CFG_VALUE	"Path"
 
-public:
 
-//  Stuff from the entry call to AfxWinMain
+#ifdef  SERVER_SIDE_CODE
 
-    HINSTANCE hInstance;
-    HINSTANCE hPrevInstance;
-    LPTSTR lpCmdLine;
-    int nCmdShow;
+/* What the service code must necessarily know about Epos internals */
+void epos_init();
+extern volatile bool server_shutting_down;
+void server();
+bool running_at_localhost();
+void lest_already_running();
+void set_base_dir(char *);
 
-//  Things we need to track for the service
+#include "exc.h"
 
-    HANDLE hServDoneEvent;
-    SC_HANDLE schService;
-    SC_HANDLE schSCManager;
-    SERVICE_STATUS ssStatus;            // current status of the service
-    SERVICE_STATUS_HANDLE sshStatusHandle;
-    BOOL fService;
-    HANDLE threadHandle;
-// ZS 14.7.1998
-	DWORD threadID;
-    DWORD dwGlobalErr;
+/* A nice macro to provide troubleshooting hints to the user.
+ * Feel free to comment it out.
+ */
 
-//  Declare the routines.
+#define MBOX(x)  MessageBox(NULL, x, "TTS service Epos", MB_OK)
 
-    int AFXAPI AfxWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-                          LPTSTR lpCmdLine, int nCmdShow);
+#endif	// SERVER_SIDE_CODE
 
-    VOID StopService(VOID);
-    VOID InstallService(LPCTSTR serviceName);
-    VOID RemoveService(LPCTSTR serviceName);
-    BOOL ReportStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode,
-                      DWORD dwCheckPoint, DWORD dwWaitHint);
-    long CNTService::RegOpenKey(HKEY  *hKey);
-    long CNTService::RegCloseKey(HKEY  hKey);
-} ;
 
-////////////////////////////////////////////////////////////////////////////
-//  We only allow one per application so CNTSERVICE_DEF should only be defined
-//  in service.cpp
-
-#ifdef CNTSERVICE_DEF
-    CNTService theService;
-#else
-    extern CNTService theService;
-#endif
-
-#endif // CNTSERVICE_H

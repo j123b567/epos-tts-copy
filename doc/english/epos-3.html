@@ -17,16 +17,17 @@
 <P>
 <P>Most aspects of the operation can be customized by changing options.
 This can be enforced by TTSCP commands, in configuration files and
-on the command line. Basically, an option is an option name/option value
+on the command line.  Basically, an option is an option name/option value
 pair. There are a few possible option types: number, string, yes/no,
 character, and a few enumerated types.
 <P>Almost all individual options are documented in 
-<A HREF="#indivopts">this document</A>. 
-The reliable list of all built-in long options can be found in <CODE>src/options.lst</CODE>.
-(See approximately line 320 and below. Every line represents at most one
-option for every option class as explained below. The option name is
-quoted; its semantics is usually explained following the option.)
-You can also list their names and types using <CODE>epos -H</CODE>.
+<A HREF="#indivopts">this document</A>.  If you strongly suspect this section of
+documentation to be out-of date, the reliable list of all built-in
+long options can be found in <CODE>src/options.lst</CODE>.  (See approximately
+line 320 and below. Every line represents at most one option for every
+option class as explained below. The option name is quoted; its
+semantics is usually explained following the option.)  You can also
+list the option names and types using <CODE>epos -H</CODE>.
 <P>
 <H2><A NAME="ss3.1">3.1 Option classes</A>
 </H2>
@@ -85,6 +86,11 @@ These are located under <CODE>/usr/lib/epos</CODE> (unless overidden
 at configure/compile time or
 with the <CODE>--base_dir</CODE> option on the command line). By convention,
 configuration file names have the ".ini" suffix.
+<P>(On a Windows NT-like operating system, you can use the
+<CODE>HKEY_LOCAL_MACHINE\SOFTWARE\Epos\Setup</CODE>
+registry key to set the value of <CODE>Path</CODE> to a path leading
+to the configuration files.  This value can still be overridden
+by the command line.)
 <P>Unless overridden, three files in <CODE>/usr/lib/epos/cfg</CODE> will be processed
 to setup the global configuration: <CODE>fixed.ini</CODE>, <CODE>epos.ini</CODE> and
 either <CODE>ansi.ini</CODE> or <CODE>rtf.ini</CODE> (depending on the preferred
@@ -101,8 +107,6 @@ are located under <CODE>/usr/lib/epos/lng/*/*.ini</CODE>, voice configuration fi
 under <CODE>/usr/lib/epos/inv/*/*.ini</CODE>, where <CODE>*</CODE> represents any string
 listed in the list of languages (or voices for a language). Go see the real
 files under <CODE>/usr/lib/epos/cfg/*.ini</CODE> for an example.
-<P>If a <CODE>EPOSCFGFILE</CODE> environment variable is set upon the main program startup,
-its value is a file name to be parsed instead of <CODE>epos.ini</CODE>.
 <P>
 <H3>Configuration file format overview</H3>
 

@@ -1,14 +1,16 @@
-# Run this script before opening the Visual C++ project file
+
+rem         Run this script before opening the Visual C++ project file
 
 call convert.bat
 
 cd ..\..\src
 
 move agent.cc agent.cpp
-move client.cc client.cpp
+if not exist client.cpp move client.cc client.cpp
 move daemon.cc daemon.cpp
 move unit.cc unit.cpp
-move hash.cc hash.cpp
+if not exist hash.cpp move hash.cc hash.cpp
+move hashd.cc hashd.cpp
 move interf.cc interf.cpp
 move options.cc options.cpp
 move ktdsyn.cc ktdsyn.cpp
@@ -25,16 +27,22 @@ move ttscp.cc ttscp.cpp
 move voice.cc voice.cpp
 move waveform.cc waveform.cpp
 
+rem        Do not rename exc.cc, block.cc, hashtmpl.cc etc. which are #included by other files
+rem        ...but you need both client.cc and client.cpp as it is invoked
+rem           both directly and indirectly, the same for hash.cc and hash.cpp
+
+if not exist client.cc echo #include "client.cpp" > client.cc
+if not exist hash.cc echo #include "hash.cpp" > hash.cc
+
 del config.h
 copy ..\arch\win\config.in .\config.h
 copy ..\arch\win\epos.dsp .
 copy ..\arch\win\eposm.dsp .
 copy ..\arch\win\say.dsp .
+copy ..\arch\win\instserv.dsp .
 copy ..\arch\win\epos.dsw .
 
 copy ..\arch\win\service\*.* .
-
-if not exist client.cc echo #include "client.cpp" > client.cc
 
 cd ..\cfg\cfg
 
