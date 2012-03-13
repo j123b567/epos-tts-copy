@@ -74,11 +74,13 @@ struct textlink {
 	int line;
 };
 
-text::text(const char *filename, const char *dirname, const char *description, bool warnings)
+text::text(const char *filename, const char *dirname, const char *treename,
+				const char *description, bool warnings)
 {
 //	if (!_directive_prefices) 
 //		_directive_prefices = str2hash(DIRECTIVEstr, MAX_DIRECTIVE_LEN);
 	dir = dirname;
+	tree = treename;
 	tag = description;
 	base = strdup(filename);
 	warn = warnings;
@@ -101,7 +103,7 @@ text::subfile(const char *filename)
 	if (!filename || !*filename) {
 		current->f=stdin;
 	} else { 
-		char *pathname=compose_pathname(filename, dir);
+		char *pathname=compose_pathname(filename, dir, tree);
 		DEBUG(2,1,fprintf(STDDBG,"Text preprocessor opening %s\n", pathname);)
 		current->f=fopen(pathname, "r", tag);
 		free(pathname);

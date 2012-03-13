@@ -27,7 +27,7 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@ff.cuni.cz"
-#define VERSION     "2.4.8"
+#define VERSION     "2.4.14"
 
 #include "config.h"
 
@@ -53,7 +53,7 @@
 
 #ifdef WANT_DMALLOC
 	#include <dmalloc.h>  // Unimportant debugging hack. Throw it out.
-#endif			      // new and delete are replaced in interf.cc !
+#endif			      // new and delete are overloaded in interf.cc !
 
 #ifndef  IGNORE_REGEX_RULES
 	#define WANT_REGEX    // About always, we want to use the regex code

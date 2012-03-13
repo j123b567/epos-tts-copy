@@ -53,7 +53,8 @@
 agent::agent(DATA_TYPE typein, DATA_TYPE typeout)
 {
 	in = typein, out = typeout;
-	next = NULL, inb = outb = NULL;
+	next = prev = NULL, inb = NULL;
+	pendin = pendout = NULL; pendcount = 0;
 	c = NULL;
 	DEBUG(1,11,fprintf(STDDBG, "Creating a handler, intype %i, outtype %i\n", typein, typeout);)
 }
@@ -63,16 +64,41 @@ agent::~agent()
 //	DEBUG(1,11,fprintf(STDDBG, "Handler deleted.\n");)
 }
 
+inline void
+agent::unquench()
+{
+	if (inb || pendin) schedule();
+	/* can not unquench input agents */
+}
+
 void
 agent::timeslice()
 {
 	c->enter();
-	if (inb || in == T_NONE) {
-		run();
-	} else {
-		/* We may take this path legally after an intr command */
-		DEBUG(2,11,fprintf(STDDBG, "No input of type %i; shrugging off\n", in);)
+	if (next && next->pendcount > cfg->pend_max) {
+		DEBUG(1,11,fprintf(STDDBG, "(satiated)\n");)
+		c->leave();
+		return;
 	}
+	if (!inb && in != T_NONE) {
+		if (!pendin) {
+			/* We may take this path legally after an intr command */
+			DEBUG(2,11,fprintf(STDDBG, "No input of type %i; shrugging off\n", in);)
+			c->leave();
+			return;
+		}
+		pend_ll *tmp = pendin;
+		inb = tmp->d;
+		pendin = tmp->next;
+		delete tmp;
+		if (pendcount-- == cfg->pend_min) prev->unquench();
+		if (!pendin) {
+			prev->pendout = NULL;
+			if (pendcount) shriek(862, "pending count incorrect");
+		}
+	}
+	run();
+	if (pendcount && !inb) schedule();
 	c->leave();
 }
 
@@ -82,28 +108,41 @@ agent::apply(int)
 	return false;	// except for the input agent, agents can't start a task
 }
 
-void
-agent::relax()
+inline void do_relax(void *ptr, DATA_TYPE type)
 {
-	if (inb) switch (in) {
+	if (ptr) switch(type) {
 		case T_NONE:	break;
-		case T_INPUT:	free(inb); break;
+		case T_INPUT:	free(ptr); break;
 		case T_STML:	
-		case T_TEXT:	free(inb); break;
-		case T_UNITS:	delete ((unit *)inb); break;
-		case T_DIPHS:	free(inb); break;
-		case T_WAVEFM:	delete((wavefm *)inb); break;
+		case T_TEXT:	free(ptr); break;
+		case T_UNITS:	delete ((unit *)ptr); break;
+		case T_DIPHS:	free(ptr); break;
+		case T_WAVEFM:	delete((wavefm *)ptr); break;
 	}
-	inb = NULL;
-	if (outb) outb = NULL, shriek(462, "outb used?!");
 }
 
 void
-agent::finis()
+agent::relax()
+{
+	do_relax(inb, in);
+	inb = NULL;
+	for (pend_ll *p = pendout; p != NULL; ) {
+		do_relax(p->d, out);
+		pend_ll *n = p->next;
+		next->pendcount--;
+		delete p;
+		p = n;
+	}
+	pendout = next->pendin = NULL;
+	if (next->pendcount) shriek(862, "pending count incorrect");
+}
+
+void
+agent::finis(bool err)
 {
 	agent *a = next;
 	while (a->next) a = a->next;
-	a->finis();
+	a->finis(err);
 }
 
 void agent::brk()
@@ -114,19 +153,24 @@ void agent::brk()
 }
 
 void
-agent::pass()
+agent::pass(void *ptr)
 {
-	if (!outb) shriek(862, "Nothing to pass");
+	if (!ptr) shriek(862, "Nothing to pass");
 	if (!next) shriek(862, "Nowhere to pass to");
 		// FIXME: if (already next->inb)
-	next->inb = outb;
-	outb = NULL;
-	next->schedule();
+	if (pendout || next->inb) {
+		pendout = (pendout ? pendout->next : next->pendin) = new pend_ll(ptr, NULL);
+		next->pendcount++;
+	} else {
+		next->inb = ptr;
+		next->schedule();
+	}
 }
 
 class a_ascii : public agent
 {
 	virtual void run();
+	virtual const char *name() { return "raw"; };
    public:
 	a_ascii() : agent(T_TEXT, T_UNITS) {};
 };
@@ -134,16 +178,17 @@ class a_ascii : public agent
 void
 a_ascii::run()
 {
-	outb = str2units((char *)inb);
+	void *r = str2units((char *)inb);
 	free(inb);
 	inb = NULL;
-	pass();
+	pass(r);
 }
 
 
 class a_stml : public agent
 {
 	virtual void run();
+	virtual const char *name() { return "stml"; };
    public:
 	a_stml() : agent(T_STML, T_UNITS) {};
 };
@@ -158,6 +203,7 @@ a_stml::run()
 class a_rules : public agent
 {
 	virtual void run();
+	virtual const char *name() { return "rules"; };
    public:
 	a_rules() : agent(T_UNITS, T_UNITS) {};
 };
@@ -165,21 +211,22 @@ class a_rules : public agent
 void
 a_rules::run()
 {
-	outb = inb;
+	void *r = inb;
 	inb = NULL;
-	this_lang->ruleset->apply((unit *)outb);
-	pass();
+	this_lang->ruleset->apply((unit *)r);
+	pass(r);
 }
 
 
 class a_print : public agent
 {
 	virtual void run();
+	virtual const char *name() { return "print"; };
    public:
 	a_print() : agent(T_UNITS, T_TEXT) {};
 };
 
-#define UGLY_TMP_CONSTANT	65534		// FIXME
+#define UGLY_TMP_CONSTANT	6553400		// FIXME
 
 void
 a_print::run()
@@ -187,10 +234,10 @@ a_print::run()
 	char * s = (char *)malloc(UGLY_TMP_CONSTANT + 1);
 	*((unit *)inb)->gather(s, s + UGLY_TMP_CONSTANT, true /* (incl. ssegs) */ ) = 0;
 
-	outb = s;
+	void *r = s;
 	delete (unit *) inb;
 	inb = NULL;
-	pass();
+	pass(r);
 }
 
 #undef UGLY_TMP_CONSTANT
@@ -198,6 +245,7 @@ a_print::run()
 class a_diphs : public agent
 {
 	virtual void run();
+	virtual const char *name() { return "diphs"; };
 	int position;
    public:
 	a_diphs() : agent(T_UNITS, T_DIPHS) {position = 0;};
@@ -216,17 +264,84 @@ a_diphs::run()
 		delete root;
 		inb = NULL;
 		position = 0;
-	}
+	} else schedule();
 	d->code = n;
 	DEBUG(1,11,fprintf(STDDBG, "agent diphs generated %d diphones\n", n);)
-	outb = d;
-	pass();
+	pass(d);
 }
 
+
+class a_chunk : public agent
+{
+	char *bm;
+	virtual void run();
+	virtual const char *name() { return "chunk"; };
+   public:
+	a_chunk() : agent(T_TEXT, T_TEXT) { bm = NULL; };
+};
+
+inline char *utt_break(char *t)		/* returns ptr past the last char */
+{
+	char *r = t;
+	do {
+		r += strcspn(r, ".?");
+		r += strspn(r, ".?");
+	} while (!strchr(WHITESPACE, r[0]));
+	if (!r[0]) return NULL;
+	return r;
+}
+
+void a_chunk::run()
+{
+	if (!bm) {
+		bm = (char *)inb;
+	}
+	char *tmp = bm;
+	bm = utt_break(bm);
+	if (bm && *bm) {
+		char h = bm[0];
+		bm[0] = 0;
+		pass(strdup(tmp));
+		bm[0] = h;
+		schedule();
+	} else {
+		pass(strdup(tmp));
+		free(inb);
+		inb = NULL;
+	}
+}
+
+class a_join : public agent
+{
+	char *heldout;
+	virtual void run();
+	virtual const char *name() { return "join"; };
+   public:
+	a_join() : agent(T_TEXT, T_TEXT) { heldout = NULL; };
+};
+
+void
+a_join::run()
+{
+	char *b;
+	char *last = (char *)inb;
+	if (heldout) {
+		b = (char *)malloc(strlen(heldout) + strlen(last) + 1);
+		strcpy(b, heldout);
+		strcat(b, last);
+		free(last);
+		free(heldout); heldout = NULL;
+	} else b = last;
+
+	if (utt_break(b)) {
+		pass(b);
+	} else heldout = b;
+}
 
 class a_synth : public agent
 {
 	virtual void run();
+	virtual const char *name() { return "synth"; };
    public:
 	a_synth() : agent(T_DIPHS, T_WAVEFM) {};
 };
@@ -251,10 +366,9 @@ a_synth::run()
 	this_voice->syn->syndiphs(this_voice, (diphone *)inb + 1, ((diphone*)inb)->code, wfm);
 	DEBUG(1,11,fprintf(STDDBG, "a_synth processes %d diphones\n", ((diphone *)inb)->code);)
 
-	outb = wfm;
 	free(inb);
 	inb = NULL;
-	pass();
+	pass(wfm);
 }
 
 /******** not finished, misconcepted
@@ -279,10 +393,9 @@ a_label::run()
 		if (offs > UGLY_TMP_CONSTANT - 32) shriek(461, "Out of buffer space");
 	}
 
-	outb = s;
 	delete (unit *) inb;
 	inb = NULL;
-	pass();
+	pass(s);
 }
 
 ******/
@@ -290,6 +403,7 @@ a_label::run()
 template <DATA_TYPE TYPE> class a_type : public agent
 {
 	virtual void run();
+	virtual const char *name() { return "type spec"; };
    public:
 	a_type() : agent(TYPE, TYPE) {};
 };
@@ -297,9 +411,9 @@ template <DATA_TYPE TYPE> class a_type : public agent
 template <DATA_TYPE TYPE> void
 a_type<TYPE>::run()
 {
-	outb = inb;
+	void *outb = inb;
 	inb = NULL;
-	pass();
+	pass(outb);
 }
 
 class a_io : public agent
@@ -354,6 +468,7 @@ class a_input : public a_io
 	int offset;
 
 	virtual void run();
+	virtual const char *name() { return "input"; };
    protected:
 	virtual bool apply(int size);
    public:
@@ -394,22 +509,21 @@ void a_input::run()
 				w = new wavefm(this_voice);
 				w->become(inb, offset);
 				free(inb);
-				outb = w;
 				inb = NULL; toread = offset = 0;
-				pass();
+				pass(w);
 				return;
 			case T_TEXT:
 			case T_STML:
 			case T_UNITS:
 			default: ;	/* otherwise no problem, FIXME: shorten */
 		}
-		outb = inb;
-		((char *)outb)[offset] = 0;
-		DEBUG(2,11,fprintf(STDDBG, "Read and about to process %s\n", (char *)outb);)
+		void *dta = inb;
+		((char *)dta)[offset] = 0;
+		DEBUG(2,11,fprintf(STDDBG, "Read and about to process %s\n", (char *)dta);)
 		inb = NULL;
 		toread = 0;	// superfluous
 		offset = 0;	// superfluous
-		pass();
+		pass(dta);
 	} else block(socket);
 }
 
@@ -432,6 +546,7 @@ class a_output : public a_io
 {
 	virtual int insize() = 0;
 	virtual void run();
+	virtual const char *name() { return "output"; };
 	bool foreground() {return ((stream *)next)->foreground(); };
 	int written;
    protected:
@@ -450,13 +565,15 @@ a_output::run()
 		written += now_written;
 	} else {
 		written = ywrite(socket, (char *)inb, size);
-		if (written) report(true, size);
+		if (written) {
+			report(true, size);
+			report(false, written);
+		}
 	}
 	if (written == size) {
 		written = 0;
-		reply("200 output OK");
 		relax();
-		finis();
+		finis(false);
 	} else push(socket);
 }
 
@@ -527,12 +644,12 @@ oa_wavefm::run()
 	} else {
 		if (w->written) report(false, w->written);
 		w->detach(socket);
-		DEBUG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n, ", w->written_bytes());)
+		DEBUG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n", w->written_bytes());)
 		attached = false;
 		delete w;
 		inb = NULL;
-		reply("200 output OK");
-		finis();
+//		reply("200 output OK");
+		finis(false);
 	}
 }
 
@@ -546,13 +663,13 @@ oa_wavefm::brk()
 		report(false, w->written_bytes());
 		w->brk();
 		if (attached) w->detach(socket);
-		DEBUG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n, ", w->written_bytes());)
+		DEBUG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n", w->written_bytes());)
 		attached = false;
 		delete w;
 		inb = NULL;
 		reply("401 user break");
 	}
-	finis();
+	finis(true);
 }
 
 
@@ -561,9 +678,9 @@ oa_wavefm::brk()
  *	stream agent itself. stream->head is an input agent.
  */
 
-enum agent_type {AT_UNKNOWN, AT_ASCII, AT_DIPHS, AT_PRINT, AT_RULES, AT_STML, AT_SYNTH,
+enum agent_type {AT_UNKNOWN, AT_CHUNK, AT_JOIN, AT_ASCII, AT_DIPHS, AT_PRINT, AT_RULES, AT_STML, AT_SYNTH,
 		 AT_T_TEXT, AT_T_STML, AT_T_UNITS, AT_T_DIPHS, AT_T_WAVEFM};
-const char *agent_type_str = ":raw:diphs:print:rules:stml:synth:[t]:[s]:[i]:[d]:[w]:";
+const char *agent_type_str = ":chunk:join:raw:diphs:print:rules:stml:synth:[t]:[s]:[i]:[d]:[w]:";
 
 agent *make_agent(char *s, agent *preceding)
 {
@@ -582,7 +699,9 @@ agent *make_agent(char *s, agent *preceding)
 	{
 		case AT_UNKNOWN: shriek(861, "Agent type bug.");
 		case AT_ASCII: return new a_ascii;
+		case AT_CHUNK: return new a_chunk;
 		case AT_DIPHS: return new a_diphs;
+		case AT_JOIN:  return new a_join;
 		case AT_PRINT: return new a_print;
 		case AT_RULES: return new a_rules;
 		case AT_STML:  return new a_stml;
@@ -626,10 +745,12 @@ stream::stream(char *s, context *pc) : agent(T_NONE, T_NONE)
 		s = ++tmp;
 		if (!l) head = a;
 		else l->next = a;
+		a->prev = l;
 		l = a;
 	} while((tmp = strchr(s, LIST_DELIM)));
 	a = make_agent(s, a); a->c = c;
 	l->next = a;
+	a->prev = l;
 	a->next = this;
 	if (head->next != this) head->out = head->next->in;	/* adjust a_input type */
 //	ncc.release();
@@ -674,8 +795,17 @@ stream::run()
 }
 
 void
-stream::finis()
+stream::finis(bool err)
 {
+	DEBUG(2,11,fprintf(STDDBG, "submitted a subtask\n");)
+	for (agent *a = head; a != this; a = a->next) {
+		if (a->inb || a->pendin) {
+			DEBUG(2,11,fprintf(STDDBG, "more subtasks are pending\n");)
+			return;
+		}
+	}
+	DEBUG(2,11,fprintf(STDDBG, "this has been the last subtask\n");)
+	if (!err) reply("200 output OK");
 	if (callbk) callbk->schedule();
 	else shriek(862, "no callback");
 	callbk = NULL;
@@ -684,6 +814,7 @@ stream::finis()
 class a_disconnector : public agent
 {
 	virtual void run();
+	virtual const char *name() { return "disconnector"; };
 	a_protocol **to_delete;
 	int last;
 	int max;
@@ -804,13 +935,6 @@ a_ttscp::a_ttscp(int sd_in, int sd_out) : a_protocol()
  *	therefore, be careful with using cfg etc.
  */
 
-//static void kill_my_data_conns(char *, a_ttscp *a, void *me)
-//{
-//	if (a->ctrl == me) {
-//		disconnector.disconnect(a);
-//	}
-//}
-
 a_ttscp::~a_ttscp()
 {
 	c->enter();
@@ -842,19 +966,6 @@ a_ttscp::brk()
 	if (c->config->current_stream)
 		c->config->current_stream->brk();
 }
-
-/*
-
-void
-a_ttscp::brkall()		// FIXME: replace this method
-{
-	c->enter();
-	brk();
-	c->leave();
-	if (next) next->brkall();
-}
-
-*/
 
 int
 a_ttscp::run_command(char *cmd)
@@ -1002,7 +1113,7 @@ agent *sched_sel()
 	sched_tail = sched_tail->prev;
 	delete tmp;
 	runnable_agents--;
-	DEBUG(1,11,fprintf(STDDBG, "Running a queued agent\n");)
+	DEBUG(1,11,fprintf(STDDBG, "Agent %s\n", r->name());)
 	return r;
 }
 

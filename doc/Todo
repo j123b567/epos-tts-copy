@@ -3,20 +3,13 @@ Bugs
 - better prosody modelling for monosyllaba
 - we should free some option value strings (for the master context and monolith)
 - very long colons crash in occasional colon-wide substitution rules
-- ktd reportedly can't stand longer texts
-- debug SGML conversions in doc/english; Zdenek (&ecaron); also
-  "warning: indent cannot be negative" for some tables in sgml2txt
-- the cowing scheme mixes calls to new/delete and malloc/free
-  sometimes the con/de-structors are necessary, sometimes must be avoided :-(
-- inserting rules (not phones) may go madly looping
-  (eating up all memory); why? What should they do anyway?
 - make cmd line options for epos, say and eposm consistent: -n, --input_file...
   and document the result
 - asyncing - 445 cannot open /dev/dsp  asyncing off - break does not work imm
-- lpcsyn::kyu is used before initialised
-- problems with longer texts
 
 Features
+- parsing rules (e.g. for angle/square brackets,
+  dots as opposed to periods, dollar signs)
 - grammatical marking
 - ordinal numerals
 - Roman numerals
@@ -27,9 +20,9 @@ Features
 - mbrola
 - esd
 - Seela database (sp.? German morphology)
-- utterance chunking
 - pause/resume in TTSCP
 - t i adjustment option
+- arbitrary option side effect handlers
 
 Inventory omissions
 - unknown diphone - no. 19 (consonant---r)
@@ -41,12 +34,10 @@ Inventory omissions
 - check whether ptacek97 handles diphtongs correctly
 
 Optimisations
-- turn "setl language" into a normal set option
-- get rid of strdup() in format_option, then eliminate get_named_cfg()
+- ptdsyn and ktdsyn should not access the filesystem during normal operation
 
 Miscelannea
 - QNX port
 - make install not robust (cfg not there, no binaries...)
-
 
 

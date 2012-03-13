@@ -11,11 +11,10 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License in doc/COPYING for more details.
+ *
+ *	This is an extremely simplified version of the slab allocator.
+ *	It never gives up memory which it has (meta)allocated.
  */
-
-#ifndef SLAB_FRAGMENT_SIZE
-#define SLAB_FRAGMENT_SIZE 8192
-#endif
 
 class slab_free_list
 {
@@ -26,9 +25,9 @@ template <int size> class slab
 {
 	slab_free_list *tail;		// free cell list
 	slab_free_list *slices;		// list of malloced blocks
-	
+	int fragment_size;		// number of slots to be allocated
    public:
-	inline slab();
+	inline slab(int frag_size);
 	inline ~slab();
 	inline void shutdown();
 	inline void *alloc();
@@ -36,10 +35,11 @@ template <int size> class slab
 };
 
 template <int size>
-inline slab<size>::slab()
+inline slab<size>::slab(int fs)
 {
 	tail = NULL;
 	slices = NULL;
+	fragment_size = fs;
 }
 
 /*
@@ -61,7 +61,7 @@ inline void slab<size>::shutdown()
 
 	for (tmp = tail; tmp; tmp = tmp->n) cells++;
 	for (tmp = slices; tmp; ) {
-		cells -= SLAB_FRAGMENT_SIZE - 1;
+		cells -= fragment_size - 1;
 		tmp2 = tmp;
 		tmp = tmp->n;
 		free(tmp2);
@@ -77,8 +77,8 @@ inline void *slab<size>::alloc()
 	void *slot;
 
 	if (!tail) {
-		void *more = malloc(size * SLAB_FRAGMENT_SIZE);
-		for (int i=1; i < SLAB_FRAGMENT_SIZE; i++) this->release(i*size +(char *)more);
+		void *more = malloc(size * fragment_size);
+		for (int i=1; i < fragment_size; i++) this->release(i*size +(char *)more);
 		((slab_free_list *) more)->n = slices;
 		slices = (slab_free_list *) more;
 	}
@@ -93,5 +93,24 @@ inline void slab<size>::release(void *ptr)
 	slab_free_list *slot = (slab_free_list *)ptr;
 	slot->n = tail;
 	tail = slot;
+}
+
+#define SLABIFY(type, slab_name, slice_sz, shutdown_handler)	\
+					\
+slab<sizeof(type)> slab_name(slice_sz);	\
+					\
+void * type::operator new(size_t size)	\
+{					\
+	return slab_name.alloc();	\
+}					\
+					\
+void type::operator delete(void *ptr)	\
+{					\
+	slab_name.release(ptr);		\
+}					\
+					\
+void shutdown_handler()			\
+{					\
+	slab_name.shutdown();		\
 }
 

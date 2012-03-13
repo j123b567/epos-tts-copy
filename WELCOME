@@ -31,6 +31,14 @@ unusual), go to /usr/lib/epos/lng/czech/czech.ini and swap the words
 "kadlec" and "rvq" in the "voices" option. This will make Epos speak
 using a poor quality built-in voice.
 
+System requirements:
+
+ Any decent C++ compiler (gcc is not decent, egcs 1.1 is decent)
+ If using the GNU assembler, gas version 2.9 or newer is recommended
+	otherwise Epos will compile incorrectly and may segfault
+	at the moment the first exception is thrown
+	(gas is often named /usr/bin/as and comes with binutils)
+
 More info:
 
  1. read doc/Intro

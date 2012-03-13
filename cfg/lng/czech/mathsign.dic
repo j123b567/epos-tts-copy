@@ -1,5 +1,5 @@
 
-# pøíklad øe¹ení jednoduchých znaèek
+# pøíklad øe¹ení jednoduchých znaèek; dolar a støí¹ka tu být nesmìjí
 
 +	~plus~
 \-	~a¾~
@@ -8,7 +8,6 @@
 /	~lomeno~
 @	~zavináè~
 ;	~støedník~
-$$	~dolar~
 (	~závorka~
 )	~závorku~uzavøít~
 [	~hranatá~závorka~
@@ -17,11 +16,11 @@ $$	~dolar~
 }	~slo¾enou~uzavøít~
 &	~et~
 *	~hvìzdièka~
-^^	~støí¹ka~
 %	~procent~
 _	~podtr¾ítko~
 '	~apostrof~
 "	~uvozovky~
 `	~zpìtný~apostrof~
 \\	~zvrácené~lomítko~
-
+<	~men¹í~
+>	~vìt¹í~

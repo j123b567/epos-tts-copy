@@ -45,7 +45,7 @@ DOSES=  dos1250 dos1252 dospc2 dosil1 dosil2 doskam doskoi8 dosascii dosmac dosv
 # MAKEFILE=
 MAKEFILE=Makefile
 
-.PHONY: all monolith mh install clean distclean tgz dist distdoc cfgsync date gdb pg dos $(DOSES)
+.PHONY: all monolith mh install clean distclean tgz dist distdoc cfgsync date gdb pg dos $(DOSES) okay
 
 all: $(TARGETS)
 
@@ -105,7 +105,7 @@ epos:	Makefile $(HEADERS) $(MODULES) hash.o daemon.o agent.o ttscp.o client.o
 	$(LNK) -o $@ daemon.o agent.o ttscp.o client.o hash.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
 #	@../arch/unix/rerunepos
 
-tgz: distclean $(SHELL) ../arch/unix/maketgz cfgsync
+tgz: distclean $(SHELL) ../arch/unix/maketgz /usr/lib/epos/version cfgsync
 	@echo Building a .tgz package...
 	@$(SHELL) ../arch/unix/maketgz
 
@@ -150,6 +150,14 @@ $(CFGDIR)/fixed.ini:
 	#mkdir -p $(CFGDIR)
 	#@cp -f $(CFGDIR)/fixed.ini $(CFGDIR)/fixed.old.ini 2>/dev/null
 	#cp -f cfg/fixed.ini $(CFGDIR)
+
+okay: /usr/lib/epos/version
+	@echo Version stamp is okay.
+
+/usr/lib/epos/version: common.h
+	@echo Updating version stamp.
+	@cat common.h | grep '#define.*VERSION' | cut -f 2 -d\" > /usr/lib/epos/version
+
 
 config.h: config.h.in configure
 	@sh ./configure

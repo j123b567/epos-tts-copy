@@ -28,7 +28,7 @@
 
 #define RATIO_TOTAL	   100	  // 100 % (unit::smooth percent sum)
 
-#define MAX_GATHER       256            // Maximum word size (for buffer allocation)
+#define MAX_GATHER       16384          // Maximum word size (for buffer allocation)
 #define SMOOTH_CQ_SIZE    16		// max smooth request length, see unit::smooth()
 
 
@@ -125,6 +125,7 @@ class unit
 };
 
 extern char * _subst_buff;
+extern char * _gather_buff;
 extern unit * _unit_just_unlinked;
 
 void shutdown_units();

@@ -207,7 +207,7 @@ int main(int argc, char **argv)
 {
 	if (argc != 1) shriek("No arguments allowed");
 #ifdef HAVE_WINSOCK2_H
-	if (WSAStartup(0x200, (LPWSADATA)scratch)) shriek(464, "No winsock");
+	if (WSAStartup(MAKEWORD(2,0), (LPWSADATA)scratch)) shriek(464, "No winsock");
 #endif
 	init();
 //	sputs("intr\r\n", ctrld);

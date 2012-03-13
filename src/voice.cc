@@ -83,6 +83,8 @@ inline void mark_voice(int) {};
 #define CONFIG_LANG_DESCRIBE
 option langoptlist[] = {
 	#include "options.lst"
+
+	{"L:voice" + 2, O_VOICE, OS_LANG, A_PUBLIC, A_PUBLIC, 0},
 	{NULL}
 };
 
@@ -92,6 +94,10 @@ option voiceoptlist[] = {
 	{NULL}
 };
 
+
+#include "slab.h"
+
+SLABIFY(lang, lang_slab, 2, shutdown_langs)
 
 #define CONFIG_LANG_INITIALIZE
 lang::lang(const char *filename, const char *dirname) : cowabilium()
@@ -244,11 +250,14 @@ lang::add_soft_opts(const char *names)
 void
 lang::compile_rules()
 {
-	lang *tmp = this_lang;
-	this_lang = this;
+	int tmp = cfg->default_lang;
+//	lang *tmp = this_lang;
+//	this_lang = this;
+	if (!lang_switch(name)) shriek(862, "cannot lang_switch to myself");
 	DEBUG(3,10,fprintf(STDDBG,"Compiling %s language rules, hash dir %s\n", name, hash_dir);)
 	ruleset = new rules(rules_file, rules_dir);
-	this_lang = tmp;
+//	this_lang = tmp;
+	cfg->default_lang = tmp;
 }
 
 

@@ -16,6 +16,9 @@
 
 #include "common.h"
 
+#include "slab.h"
+SLABIFY(configuration, cfg_slab, 2, shutdown_cfgs)
+
 #define CMD_LINE_OPT	"-"
 #define CMD_LINE_VAL	'='
 
@@ -50,8 +53,8 @@ void cow(cowabilium **p, int size, int extraoffset, int extrasize)
 	cowabilium **ptr = p;
 
 	if (!*p) {
-		if (p == (cowabilium **)&this_lang) shriek(814, "Language-specific option not supported on the cmd line");
-		if (p == (cowabilium **)&this_voice) shriek(814, "Voice-specific option not supported on the cmd line");
+//		if (p == (cowabilium **)&this_lang) shriek(814, "Language-specific option not supported on the cmd line");
+//		if (p == (cowabilium **)&this_voice) shriek(814, "Voice-specific option not supported on the cmd line");
 		shriek(861, "cow()ing a NULL");
 	}
 
@@ -148,6 +151,8 @@ configuration *cfg = &master_cfg;
 #define CONFIG_DESCRIBE
 option optlist[]={
         #include "options.lst"
+
+	{"C:language" + 2, O_LANG, OS_CFG, A_PUBLIC, A_PUBLIC, 0},
 	{NULL}
 };
 
@@ -192,11 +197,9 @@ void make_option_set()
 	for (o = voiceoptlist; o->optname; o++) option_set->add(o->optname-2, o);
 
 	option_set->remove("languages");	// FIXME
-	option_set->remove("language");
-	option_set->remove("voices");
 	option_set->remove("voices");
 
-	text *t = new text(cfg->allow_file, cfg->ini_dir, NULL, true);
+	text *t = new text(cfg->allow_file, cfg->ini_dir, "", NULL, true);
 	if (!t->exists()) {
 		delete t;
 		return;		/* if no allow file, ignore it */
@@ -258,8 +261,6 @@ void parse_cfg_str(char *val)
 	*netto=0;
 }
 
-//FIXME: wild typing follows
-
 bool set_option(option *o, char *val, void *base)
 {
 	if (!o) return false;
@@ -308,16 +309,17 @@ bool set_option(option *o, char *val, void *base)
 			DEBUG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to \"%s\"\n",o->optname,val);)
 			*(char**)locus = strdup(val);	// FIXME: should be forever if monolith etc. (maybe)
 			break;
-//		case O_FILE:
-//			parse_cfg_str(val, o->optname);
-//			DEBUG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to \"%s\"\n",o->optname,val);)
-//			*(char**)locus=freadin(val, cfg->ini_dir, "rt", "config file content");
-//			break;
 		case O_CHAR:
 			parse_cfg_str(val);
 			if (val[1]) shriek(447, fmt("Multiple chars given for a CHAR option %s", o->optname));
 			else *(char *)locus=*val;
 //			DEBUG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to \"%s\"\n",o->optname,val);)
+			break;
+		case O_LANG:
+			if (!lang_switch(val)) shriek(443, "unknown language");
+			break;
+		case O_VOICE:
+			if (!voice_switch(val)) shriek(443, "unknown voice");
 			break;
 		default: shriek(462, fmt("Bad option type %d", (int)o->opttype));
 	}
@@ -362,8 +364,12 @@ static inline bool set_option(char *name, char *value)
 
 static inline void set_option_or_die(char *name, char *value)
 {
-	if (set_option(name, value)) return;
-	shriek(814, fmt("Unknown option %s", name));
+	option *o = option_struct(name, NULL);
+	if (!o) shriek(814, fmt("Unknown option %s", name));
+	if (!cfg->langs && o->structype != OS_CFG) return;
+
+	if (set_option(o, value)) return;
+	shriek(814, fmt("Bad value %s for option %s", value, name));
 }
 
 /*
@@ -381,7 +387,6 @@ bool lang_switch(const char *value)
 		if (!strcmp(cfg->langs[i]->name, value)) {
 			if (!cfg->langs[i]->n_voices)		// FIXME
 				shriek(462, "Switch to a mute language unimplemented");
-//			else this_voice = *cfg->langs[i]->voices;
 			cfg->default_lang = i;
 			return true;
 		}
@@ -390,6 +395,8 @@ bool lang_switch(const char *value)
 
 bool voice_switch(const char *value)
 {
+	cow((cowabilium **)&(this_lang), sizeof(lang), VOICES_OFFSET, VOICES_LENGTH);	//new
+
 	for (int i=0; i < this_lang->n_voices; i++)
 		if (!strcmp(this_lang->voices[i]->name, value)) {
 			this_lang->default_voice = i;
@@ -403,27 +410,31 @@ char *format_option(option *o, void *base)
 	char *locus = (char *)base + o->offset;
 	switch(o->opttype) {
 		case O_BOOL:
-			return strdup(*(bool *)locus ? "on" : "off");
+			return *(bool *)locus ? "on" : "off";
 		case O_DBG_AREA:
-			return strdup(enum2str(*(int *)locus, DEBUG_AREAstr));
+			return enum2str(*(int *)locus, DEBUG_AREAstr);
 		case O_MARKUP:
-			return strdup(enum2str(*(int *)locus, OUT_MLstr));
+			return enum2str(*(int *)locus, OUT_MLstr);
 		case O_SYNTH:
-			return strdup(enum2str(*(int *)locus, STstr));
+			return enum2str(*(int *)locus, STstr);
 		case O_UNIT:
-			return strdup(enum2str(*(int *)locus, UNITstr));
+			return enum2str(*(int *)locus, UNITstr);
 		case O_INT:
 			sprintf(scratch, "%d", *(int *)locus);
-			return strdup(scratch);
+			return scratch;
 		case O_STRING: 
-			return strdup(*(char **)locus);
+			return *(char **)locus;
 		case O_CHAR:
 			scratch[0] = *(char *)locus;
 			scratch[1] = 0;
-			return strdup(scratch);
+			return scratch;
+		case O_LANG:
+			return (char *)this_lang->name;
+		case O_VOICE:
+			return (char *)this_voice->name;
 		default: shriek(462, fmt("Bad option type %d", (int)o->opttype));
 	}
-	return "(impossible value)";
+	return NULL; /* unreachable */
 }
 
 char *format_option(option *o)
@@ -432,35 +443,19 @@ char *format_option(option *o)
 		case OS_CFG:   return format_option(o, cfg);
 		case OS_LANG:  return format_option(o, this_lang);
 		case OS_VOICE: return format_option(o, this_voice);
-	}
-	return "?!";
-}
-
-char *get_named_cfg(const char *name)
-{
-	void *address;
-	option *o = option_struct(name, this_lang && this_lang->soft_options
-				? this_lang->soft_options : (hash_table<char, option>*)NULL);
-	if (!o) {
-		shriek(442, fmt("Not returning empty string for nonexistant option %s", name));	//FIXME?
-		return "";
-	}
-
-	switch (o->structype) {
-		case OS_CFG:	address = cfg;		break;
-		case OS_LANG:	address = this_lang;	break;
-		case OS_VOICE:	address = this_voice;	break;
 		default: shriek(861, "Bad option class");
 	}
+	return NULL; /* unreachable */
+}
 
-	*(char **)&address += o->offset;
-
-	switch (o->opttype) {
-		case O_STRING:	return *(char **)address;
-//		case O_BOOL:	return *(bool *)address ? "=" : "!=";
-		default:	shriek(861, fmt("cfg::named_item not implemented for %s (not a string)", name));
-				return NULL; /* unreachable */
+char *format_option(const char *name)
+{
+	option *o = option_struct(name, this_lang->soft_options);
+	if (!o) {
+		shriek(442, fmt("Not returning empty string for nonexistant option %s", name));	//FIXME?
+		return NULL; /* unreachable */
 	}
+	return format_option(o);
 }
 
 void parse_cmd_line()
@@ -543,7 +538,7 @@ void load_config(const char *filename, const char *dirname, const char *what,
 	char *line = (char *)malloc(cfg->max_line + 2) + 2;
 	line[-2] = "CLV"[type];
 	line[-1] = ':';
-	text *t = new text(filename, dirname, what, true);
+	text *t = new text(filename, dirname, "", what, true);
 	while (t->getline(line)) {
 		char *value = split_string(line);
 		if (value && *value) {
@@ -638,6 +633,15 @@ static inline void dump_help()
 	exit(0);
 }
 
+void check_cfg_version(const char *filename)
+{
+	file *f = claim(filename, "", "", "r", NULL);
+	if (!f) shriek(843, "Configuration files not installed or very old");
+	if (strncmp(f->data, VERSION, strlen(VERSION)) && cfg->paranoid)
+		shriek(843, "Configuration version bad");
+	unclaim(f);
+}
+
 void config_init()
 {
 	const char *mlinis[] = {"","ansi.ini","rtf.ini", NULL};
@@ -648,6 +652,8 @@ void config_init()
 
 	load_config(cfg->fixedfile);
 	parse_cmd_line();
+
+	check_cfg_version("version");
 
 	load_config(mlinis[cfg->ml]);
 	load_config(cfg->inifile);

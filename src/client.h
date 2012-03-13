@@ -18,16 +18,6 @@
 
 
 /*
- *	The sgets() and sputs() routines provide a slow get line and put line
- *	interface, especially on TTSCP control connections. They are suitable
- *	for the client. They block until receipt data, which is a problem for
- *	tcpsyn.
- */
-
-int sgets(char *buffer, int buffer_size, int sd);
-int sputs(const char *buffer, int sd);
-
-/*
  *	The just_connect_socket() routine returns -1 if it cannot return a connected
  *	socket. The connect_socket() routine additionally checks if the remote side
  *	announces the TTSCP protocol of an acceptable version and calls shriek(4xx)
@@ -148,7 +138,8 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 
 	inline void async_close(int fd)
 	{
-		if(close(fd)) shriek(465,"Error on close()");
+		if (fd == -1 && !cfg->paranoid) return;		// FIXME
+		if(close(fd) && closesocket(fd)) shriek(465,"Error on close()");
 		return;
 	}
 
@@ -168,3 +159,17 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 
 #endif	// HAVE_UNISTD_H
 
+/*
+ *	The sgets() and sputs() routines provide a slow get line and put line
+ *	interface, especially on TTSCP control connections. They are suitable
+ *	for the client. They block until a line is received, which is a problem for
+ *	tcpsyn.
+ */
+
+int sgets(char *buffer, int buffer_size, int sd);
+
+inline int sputs(const char *buffer, int sd)
+{
+	if (!buffer) return 0;
+	return ywrite(sd, buffer, strlen(buffer));
+}

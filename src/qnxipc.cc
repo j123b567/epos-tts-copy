@@ -46,8 +46,9 @@
 void qipc_proxy_crashed(char *reason)
 {
 	FILE *hackfile = fopen("hackfile","a");
-	fprintf(hackfile, " qipc_proxy_crashed: ");
+	fprintf(hackfile, "qipc_proxy_crashed: ");
 	fprintf(hackfile, reason);
+	fprintf(hackfile, "\n");
 	fclose(hackfile);
 
 	abort();
@@ -108,7 +109,7 @@ void qipc_proxy_init()
 	pipe(bcmd);
 	pipe(data);
 	pipe(bdat);
-	switch(my_fork()) {
+	switch(fork()) {		/* even if --forking is off */
 		case -1: qipc_proxy_crashed("fork");
 		case  0: close(cmds[0]); close(bcmd[1]); close(data[0]); close(bdat[1]);
 			 qipc_proxy_setup(cmds[1], bcmd[0], data[1], bdat[0]);

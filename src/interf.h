@@ -111,7 +111,11 @@ struct diphone {
 };
 
 
-#define DQUOT          '"'            //used when parsing the .ini file
+#define DQUOT		'"'            //used when parsing the .ini file
+#define ESCAPE		'\\'
+#define EXCL		'!'
+#define PSEUDOSPACE	'\377'
+
 
 extern char *esctab;
 

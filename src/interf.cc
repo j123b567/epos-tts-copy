@@ -232,19 +232,25 @@ UNIT str2enum(const char *item, const char *list, int dflt)
 	return U_ILL;
 }
 
-char _enum2str_buff[20];
+#define MAX_SYMBOLIC 32
+
+char _enum2str_buff[MAX_SYMBOLIC];
 
 char *enum2str(int item, const char *list)
 {
 	const char *i;
-	char *b=_enum2str_buff;
+//	char *b=_enum2str_buff;
+	int j = 0;
 	for(i=list; *i && item+1; i++) {
 		if (*i==LIST_DELIM) {
 			item--;
-			*b=0;
-			b=_enum2str_buff;
+			_enum2str_buff[j] = 0;
+			j = 0;
+		} else {
+			_enum2str_buff[j++] = *i;
+			if (j >= MAX_SYMBOLIC)
+				shriek(461, fmt("Symbolic %.20s... too long", _enum2str_buff));
 		}
-		else *b++ = *i;
 	}
 	if (*i && item>0) shriek(446, fmt("enum2str should stringize %d",item));
 	return _enum2str_buff;
@@ -451,6 +457,7 @@ file *claim(const char *filename, const char *dirname, const char *treename, con
 	}
 
 	f = fopen(pathname, flags, description);
+	if (!f && !description) return NULL;
 	if (fseek(f, 0, SEEK_END)) tmp = cfg->dev_txtlen;
 	else tmp = ftell(f) + 1;
 	data = (char *)malloc(tmp);
@@ -505,6 +512,21 @@ static inline void release(char **buffer)
 	*buffer = NULL;
 }
 
+
+static inline void compile_rules()
+{
+	int tmp = cfg->default_lang;
+	_next_rule_line = (char *)malloc(cfg->max_line+1);
+	for (int i=0; i<cfg->n_langs; i++) {
+		cfg->default_lang = i;
+		if (cfg->langs[i]->n_voices)
+			cfg->langs[i]->compile_rules();
+	}
+	free(_next_rule_line); _next_rule_line = NULL;
+	cfg->default_lang = tmp;
+}
+
+
 /*
  *	epos_init(): to bring up everything (from a "main() {" state)
  *	epos_done(): to release everything just before exit() (no need to
@@ -536,8 +558,6 @@ void epos_init(int argc_, char**argv_)	 //Some global sanity checks made here
 
 void epos_init()	 //Some global sanity checks made here
 {
-	int i;
-
 	if (!cfg->loaded)	cfg->stddbg = stdout,
 				cfg->stdshriek = stderr;
 	if (sizeof(int)<4*sizeof(char) || sizeof(int *)<4*sizeof(char)) 
@@ -562,12 +582,11 @@ void epos_init()	 //Some global sanity checks made here
 		cfg->stdshriek = fopen(cfg->stdshriek_file, "w", "error messages");
 		
 	if (!_subst_buff) _subst_buff = (char *)malloc(MAX_GATHER+2);
+	if (!_gather_buff) _gather_buff = (char *)malloc(MAX_GATHER+2);
 	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)malloc(cfg->max_line+1); 
 	if (!scratch) scratch = (char *)malloc(cfg->scratch+1);
 	
-	_next_rule_line = (char *)malloc(cfg->max_line+1);
-	for (i=0; i<cfg->n_langs; i++) cfg->langs[i]->compile_rules();
-	free(_next_rule_line); _next_rule_line = NULL;
+	compile_rules();
 
 	DEBUG(1,10,fprintf(STDDBG,"struct configuration is %d bytes\n", sizeof(configuration));)
 	DEBUG(1,10,fprintf(STDDBG,"struct lang is %d bytes\n", sizeof(lang));)
@@ -600,8 +619,11 @@ void epos_done()
 	config_release();
 	shutdown_hashing();
 	shutdown_units();
+	shutdown_langs();
+	shutdown_cfgs();
 
 	release(&_subst_buff);
+	release(&_gather_buff);
 	release(&_resolve_vars_buff);
 	release(&scratch);
 	

@@ -29,6 +29,16 @@ That's why switching the language automatically switches the voice
 to the voice defined as default for this particular language.
 (It is however possible to use the same configuration file to setup
 a similarly sounding voice for every language if desired.)
+It is also important to distinguish between a voice and an inventory.
+An <em/inventory/ is a set of speaker-dependent files used
+to base a <em/voice/, that is, a mode of speech, on.  Multiple
+different voices may use the same inventory, and may even sound
+quite different depending on various configuration options.
+The average user may expect to be able to modify the voice dependent
+configuration files, but not inventory files.  Also, the inventories
+may often be distributed externally to Epos, while sample voices
+based on them may either be included with Epos, or with the
+diphone inventory, or their creation may be left to the user.
 
 A set of voice options should completely describe a voice.
 A set of language options should completely describe a language,
@@ -75,7 +85,7 @@ values used by a given installation and rarely or never changes, while
 <tt>epos.ini</tt> contains less permanent parameters and temporary values.
 The global parameters include a list of <em>languages</em>, or language
 configurations which will be parsed when the global configuration is set up.
-Every language <tt>.ini</tt> file in turn contains a list of voices to be
+Every language <tt>.ini</tt> file in turn contains a list of <em>voices</em> to be
 configured for this particular language. Language configuration files
 are located under <tt>/usr/lib/epos/lng/*/*.ini</tt>, voice configuration files
 under <tt>/usr/lib/epos/inv/*/*.ini</tt>, where <tt>*</tt> represents any string
@@ -108,7 +118,7 @@ The available escape sequences are listed in <ref id="escapes" name="the table o
 <tabular ca="|l|l|l|l|">
 <hline>
 	<label id="escapes">
-	escape sequence	| interpreted as  | ASCII code, decimal | example@
+	escape sequence	| interpreted as  | ASCII code | example@
 <hline>
 	&bsol;n  |  newline       |  10  |@
 	&bsol;t  |  tab           |   9  |@
@@ -423,6 +433,19 @@ engineering dilemmata.
 	either the ANSI escape sequences (ISO 6429) or the Rich Text
 	Format; they use colors to distinguish between symbols of different
 	levels of description.
+<tag>--pend_max <sl/n/ <tag>
+	The maximum number of subtasks waiting in an input queue for
+	a single agent.  If this limit is reached, the preceding
+	agent stops processing further input until only <tt/pend_min/
+	subtasks are left in the queue.  Setting this limit higher
+	will consume additional memory, as more processing can happen
+	in advance, but setting it too low may cause unnecessary delays.
+<tag>--pend_min <sl/n/ <tag>
+	The minimum desired number of subtasks waiting in an input
+	queue for a single agent.  If the queue length decrements
+	to this limit and the preceding agent has enough input
+	to process, it resumes operation.  This limit should
+	be set roughly to half the <tt/pend_max/ value.
 <tag>--memory&lowbar;low</tag>
 	Turn on if you're very low on memory. This mode sacrifices speed
 	for a little bit of saved memory. Basically, turning this on
@@ -766,22 +789,25 @@ option is thence language dependent.
    <tabular ca="|l|l|">
 	<tt>none</tt>		| voice is mute @
 	<tt>internet</tt>	| voice uses a remote speech synthesis using TCP/IP@
-	<tt>lpc-int</tt>	| voice uses a LPC synthesis (integer diphone inventory)@
-	<tt>lpc-float</tt>	| voice uses a LPC synthesis (float diphone inventory)@
-	<tt>lpc-vq</tt>		| voice uses a LPC synthesis (vector quantified diphone inventory)@
+	<tt>lpc-int</tt>	| voice uses a LPC synthesis (integer based)@
+	<tt>lpc-float</tt>	| voice uses a LPC synthesis (floating point based)@
+	<tt>lpc-vq</tt>		| voice uses a LPC synthesis (vector quantified)@
 	<tt>ktd</tt>		| voice uses a time domain synthesis (Zdenek Kadlec)@
 	<tt>ptd</tt>		| voice uses a time domain synthesis (Martin Petriska)@
    </tabular>
    </table>
 	This option may influence other voice dependent options quite significantly,
 	as some of them are speech synthesis type dependent.
-<tag>--remote_server <sl/hostname&lsqb;:port&rsqb;/</tag>
+<tag>--location <sl/hostname&lsqb;:port&rsqb;/ </tag>
 	If this speech synthesis is of the <tt/internet/ type,
 	this option can be used to set the hostname of the remote
 	server.  If the server is listening on a non-standard port number
 	(currently the standard port is considered to be 8778), the
 	host name may be followed by a colon and the port number
-	requested. This option doesn't affect other synthesis types.
+	requested.  For other synthesis types, this is a directory
+	name which holds inventory related files (in the "inv"
+	subtree), and is subject to normal file naming conventions,
+	as described in <ref id="file-naming" name="file naming">.
 <tag>--models <sl/filename/</tag>
 	The value is a file name. The file contains the diphone inventory
 	proper. Its format is speech synthesis type dependent.
@@ -797,11 +823,6 @@ option is thence language dependent.
 <tag>--codebook <sl/filename/</tag>
 	The value is a file name. The file contains the code book for
 	the vector quantified LPC speech synthesis (<tt/lpc-vq/ type only).
-<tag>--invent_dir <sl/dirname/</tag>
-	The voice dependent value is a directory name.
-	The directory shall contain the diphone inventory file (or files)
-	used by the voice.  The global (default) value at the same time
-	serves as the base name for looking up newly constructed voices.
 <tag>--init_f <sl/percentage/</tag>
 	The auditory neutral integer value for the fundamental frequency.
 	The typical value is 100.
@@ -894,7 +915,7 @@ of those adjustments themselves.
 
 
 
-<sect2> File naming
+<sect2> File naming <label id="file-naming">
 <p>
 In Epos, most of the files ever opened are located in a single directory tree
 (usually <tt>/usr/lib/epos</tt>); the files of the same type -- and related
@@ -991,15 +1012,33 @@ cd src
 	The value is a global directory name, not a language dependent one.
 	It serves as the base directory for looking up the newly constructed
 	languages.
+<tag>--voice_base_dir <sl/dirname/</tag>
+	The value is a global directory name, not a language dependent one.
+	It serves as the base directory for looking up the newly constructed
+	voices.  It is however only used for configuration files, not
+	for inventories.  A language dependent subdirectory name is
+	appended to it.
+<tag>--inv_base_dir <sl/dirname/</tag>
+	The value is a global directory name, not a language dependent one.
+	It serves as the base directory for looking up inventories and
+	related data.  A voice dependent subdirectory name (the <tt/location/
+	option) is appended to it.
+<tag>--ttscp_help_dir <sl/dirname/</tag>
+	The value is a directory name.  In this directory, TTSCP help files
+	for individual TTSCP commands and other help topics are located.
+	The contents of these files is sent to the TTSCP control connection
+	in reply to a corresponding <tt/help/ command.
 <tag>--wav_dir <sl/dirname/</tag>
 	The value is a global directory name.
 	Any waveform files created by Epos without explicit directory
 	specification will be created in this directory.
+	Applies only to the monolithic Epos.
 <tag>--matlab_dir <sl/dirname/</tag>
 	The value is a global directory name.
 	An input file for the experimental neural networks will be created
 	in the directory when the <tt/neuronet/ option is on.  Its name
 	is specified by the <tt/nnet_file/ option.
+	Applies only to the monolithic Epos.
 
 </descrip>
 

@@ -11,7 +11,7 @@
 #define HAVE_STRERROR 1
 
 /* Define if you have the stricmp function.  */
-#define HAVE_STRICMP
+/* #undef HAVE_STRICMP */
 
 /* Define if you have the <errno.h> header file.  */
 #define HAVE_ERRNO_H 1

@@ -48,7 +48,7 @@ with "mi mì se si ho mu ti tì"
 @include "trans.rul"
 
 #
-#  Následující pravidla o¹etøují tøi teèky a pomlèku.
+#  Následující pravidla o¹etøují tøi teèky, støedník a pomlèku.
 #
 
 inside	\~	sent
@@ -56,6 +56,7 @@ inside	\~	sent
    6x	regress  0>\#(!_0)	sent	; vlo¾ení pausy po tøech teèkách
 }
 regress  \~>.(!_!)	sent	sent
+regress  \;>.(!_!)	sent	sent
 regress  ->,(!_!)	sent	colon
 
 if   naive_prosody

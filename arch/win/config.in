@@ -47,7 +47,7 @@
 /* #undef HAVE_STRCASECMP */
 
 /* Define if you have the strdup function.  */
-#define HAVE_STRDUP 1
+/* #undef HAVE_STRDUP */
 
 /* Define if you have the strerror function.  */
 #define HAVE_STRERROR 1

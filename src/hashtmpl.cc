@@ -28,12 +28,13 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
  */
 
 #ifndef HASH_IS_SLABBING
-#define HASH_IS_SLABBING
+	#define HASH_IS_SLABBING
+	#define HASH_SLAB_FRAGMENT_SIZE  8192
 #endif
 
 #ifndef HASH_CANNOT_READ_FILES
-#define HASH_CAN_READ_FILES
-#include "defaults.h"         //Comment out if doesn't exist
+	#define HASH_CAN_READ_FILES
+	#include "defaults.h"         //Comment out if doesn't exist
 #endif
 
 #include "hash.h"
@@ -44,7 +45,7 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
 #include <errno.h>
 
 #ifdef WANT_DMALLOC
-#include <dmalloc.h>          // Unimportant debugging hack. Throw it out.
+	#include <dmalloc.h>          // Unimportant debugging hack. Throw it out.
 #endif
 
 #define key_t  hash_key_t
@@ -91,7 +92,7 @@ slab <hsearchtree_size> *hash_tree_slab = 0;
 inline void *tree_alloc()
 {
 	if (!hash_tree_slab) {
-		hash_tree_slab = new slab<hsearchtree_size>;
+		hash_tree_slab = new slab<hsearchtree_size>(HASH_SLAB_FRAGMENT_SIZE);
 	}
 	return hash_tree_slab->alloc();
 }

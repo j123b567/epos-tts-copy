@@ -8,3 +8,5 @@ Necessary changes to the sgml-tools:
 
 
 (maybe maybe not)
+
+nsgmls reports line numbers in epos.sgml

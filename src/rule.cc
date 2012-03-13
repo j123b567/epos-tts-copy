@@ -18,6 +18,23 @@
 
 #include "common.h"
 
+#define DIPH_BUFF_SIZE  1000 //unimportant
+
+#define OPCODEstr "subst:regex:postp:prep:diphones:prosody:contour:progress:regress:insert:syll:smooth:raise:debug:if:inside:with:{:}:[:]:<:>:nothing:error:"
+enum OPCODE {OP_SUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_DIPH, OP_PROSODY, OP_CONTOUR, OP_PROGRESS, OP_REGRESS, 
+	OP_INSERT, OP_SYLL, OP_SMOOTH, OP_RAISE, OP_DEBUG, OP_IF, OP_INSIDE, OP_WITH,
+	OP_BEGIN, OP_END, OP_CHOICE, OP_CHOICEND, OP_SWITCH, OP_SWEND, OP_NOTHING, OP_ERROR};
+		/* OP_BEGIN, OP_END and other OP's without parameters should come last
+		   OP_ERROR would abort the compilation (never used)			*/
+enum RULE_STATUS {RULE_OK, RULE_IGNORED, RULE_BAD=-1};
+
+
+
+rule *next_rule(text *file, hash *vars, int *count);	// count is an out-parameter
+extern char * _rules_buff;
+
+
+
 #define DEFAULT_SCOPE    U_WORD
 #define DEFAULT_TARGET   U_PHONE
 
@@ -196,7 +213,7 @@ hash *literal_hash(char *s)
 hashing_rule::hashing_rule(char *param) : rule(NULL)
 {
 	if (*param == DQUOT) raw = strdup(param);
-	else raw = compose_pathname(param, this_lang->hash_dir);
+	else raw = compose_pathname(param, this_lang->hash_dir, cfg->lang_base_dir);
 	dict = NULL;
 	allow_id = false;
 }
@@ -924,7 +941,7 @@ r_with::r_with(char *param, text *file, hash *vars) : cond_rule(param, file, var
 	char *old = raw;
 
 	if (*raw == DQUOT) raw = strdup(raw);
-	else raw = compose_pathname(raw, this_lang->hash_dir);
+	else raw = compose_pathname(raw, this_lang->hash_dir, cfg->lang_base_dir);
 
 	free(old);
 	dict = NULL;

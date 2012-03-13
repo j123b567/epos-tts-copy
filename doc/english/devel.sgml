@@ -196,7 +196,7 @@ Classes not beginning in <tt/r_/ can be considered abstract.
 <p>
 
 Epos can be configured to support multiple simultaneous TTSCP connections
-and excepting bugs, no single unauthorized connection should be able to
+and except for bugs, no single unauthorized connection should be able to
 create a Denial of Service situation, such as long delays in processing
 other connections.  To achieve this, Epos uses a simple cooperative multitasking
 facility called <em/agents/. An agent (process) is an entity, which is responsible
@@ -226,6 +226,16 @@ Most agents are organized into streams of interconnected agents. See the
 Other agents are responsible for individual TTSCP connections, for accepting new
 connections and other tasks. A special agent is used for deleting other
 agents when they need to delete themselves.
+
+The <tt/chunk/ agent may perform utterance chunking, that is, splitting the
+text being processed at convenient points, such as after a period or at end
+of paragraph.  Such chunks travel through the rest of the stream independently
+and they are queued between consecutive agents if necessary.  Such a queue
+(if non-empty) is a linked list starting with <tt/pendin/ of the latter
+agent while the end is pointed to by <tt/pendout/ of the former agent.
+The <tt/pendcount/ member of the latter agent stores the current number
+of data chunks in the queue, which is used for sanity checking and
+flow control. FIXME: more
 
 The current agents are:
 

@@ -20,7 +20,7 @@
 
 enum OPT_STRUCT { OS_CFG, OS_LANG, OS_VOICE };
 enum ACCESS { A_PUBLIC, A_AUTH, A_ROOT, A_NOACCESS };
-enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SYNTH, O_CHANNEL, O_DBG_AREA, O_INT, O_CHAR, O_STRING};
+enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SYNTH, O_CHANNEL, O_DBG_AREA, O_INT, O_CHAR, O_STRING, O_LANG, O_VOICE };
 								//various types of options
 #define CONFIG_DECLARE
 struct configuration : public cowabilium	//Some description & defaults can be found in options.lst
@@ -38,6 +38,9 @@ struct configuration : public cowabilium	//Some description & defaults can be fo
 
 	configuration();
 	void shutdown();	// destructor of some sort
+
+	void *operator new(size_t size);
+	void operator delete(void *ptr);
 };
 
 /*	Visual C++ 6.0 and Watcom C 10.6 generate incorrect code for
@@ -79,12 +82,12 @@ void config_init();
 void config_release();
 
 // void process_options(hash *tab, option *list, void *base);
-char *get_named_cfg(const char *option_name);
+// char *get_named_cfg(const char *option_name);
 option *option_struct(const char *name, hash_table<char, option> *softopts);
 bool set_option(option *o, char *value);
 bool set_option(option *o, char *value, void *whither);
-char *format_option(option *name);	// will malloc some space
-char *format_option(const char *name);	// will malloc some space
+char *format_option(option *name);	// may return scratch etc.
+char *format_option(const char *name);  // ditto
 
 bool lang_switch(const char *name);
 bool voice_switch(const char *name);
@@ -98,6 +101,9 @@ void load_config(const char *filename, const char *dirname, const char *what,
 
 void list_languages();
 void list_voices();
+
+void shutdown_cfgs();
+void shutdown_langs();
 
 #define DQUOT          '"'            //used when parsing the .ini file
 

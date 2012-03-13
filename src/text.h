@@ -27,6 +27,7 @@ class text
 {
 	textlink *current;      // the byte to be parsed next
 	const char *dir;
+	const char *tree;
 	const char *tag;	// describes the contents of this text to user
 	char *base;     	// the filename given to the constructor
 	bool warn;		// whether to heed or ignore #warn
@@ -36,7 +37,8 @@ class text
 	void superfile();
 	void done();		// shriek if some input left
   public:
-  	text(const char *filename, const char *dirname, const char *description, bool warnings);
+  	text(const char *filename, const char *dirname, const char *treename,
+			const char *description, bool warnings);
 				// if description == NULL, please test exists() afterwards
 	~text();
 	bool exists();		// always true except when no description given to constructor

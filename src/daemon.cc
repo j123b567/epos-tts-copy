@@ -74,6 +74,22 @@
 	inline void qipc_proxy_init() {};
 #endif
 
+
+#ifdef HAVE_WINSOCK2_H
+class wsa_init			/* initialise winsock before main() is entered  */
+{
+   public:
+	wsa_init()		/* global constructor */
+	{
+		char scratch[14227];
+		if (WSAStartup(MAKEWORD(2,0), (LPWSADATA)scratch))
+			shriek(464, "No winsock");
+	};
+} wsa_init_instance;
+
+#endif
+
+
 #define DARK_ERRLOG 2	/* 2 == stderr; for global stdshriek and stddbg output */
 
 // int session_uid = UID_SERVER;
@@ -323,9 +339,6 @@ static void daemonize()
 	master_context = new context(-1, DARK_ERRLOG);
 	accept_conn = new a_accept();
 	qipc_proxy_init();
-#ifdef HAVE_WINSOCK2_H
-	if (WSAStartup(0x200, (LPWSADATA)scratch)) shriek(464, "No winsock");
-#endif
 }
 
 #undef UNIX

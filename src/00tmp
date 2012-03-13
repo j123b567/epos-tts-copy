@@ -1,0 +1,4 @@
+	_next_rule_line = (char *)malloc(cfg->max_line+1);
+	for (i=0; i<cfg->n_langs; i++) cfg->langs[i]->compile_rules();
+	free(_next_rule_line); _next_rule_line = NULL;
+

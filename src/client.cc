@@ -34,9 +34,10 @@ struct pseudoconfiguration
 {
 	int asyncing;
 	int scratch;
+	int paranoid;
 };
 
-pseudoconfiguration pseudocfg = {1, SCRATCH_SPACE};
+pseudoconfiguration pseudocfg = {1, SCRATCH_SPACE, 0};
 
 pseudoconfiguration *cfg = &pseudocfg;
 
@@ -158,14 +159,6 @@ char *get_handle(int sd)
 	}
 	return strdup(scratch + 8);
 }
-
-int sputs(const char *buffer, int sd)
-{
-//	printf("Sending: %s", buffer);
-	if (!buffer) return 0;
-	return ywrite(sd, buffer, strlen(buffer));
-}
-
 
 void xmit_option(char *name, char *value, int sd)
 {

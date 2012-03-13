@@ -292,7 +292,7 @@ rules::rules(const char *filename, const char *dirname)
 
 	if (!cfg->loaded) epos_init();
 	
-	file=new text(filename,dirname,"rules",false);
+	file=new text(filename, dirname, cfg->lang_base_dir, "rules", false);
 	vars = new hash(cfg->vars|1);
 	DEBUG(3,1,fprintf(STDDBG,"Rules shall be taken from %s\n",filename);)
 	
@@ -313,9 +313,8 @@ rules::rules(const char *filename, const char *dirname)
 
 rules::~rules()
 {
-	DEBUG(2,1,fprintf(STDDBG,"Rules are being deleted\n");)
+	DEBUG(2,1,fprintf(STDDBG,"Deleting rules\n");)
 	delete body;
-	DEBUG(3,1,fprintf(STDDBG,"Rules have been deleted\n");)
 }
 
 /****************************************************************
@@ -434,7 +433,7 @@ next_rule(text *file, hash *vars, int *count)
 		if (get_words(str+1, word, 4)!=2) diatax("Illegal group assignment");
 		if (tmp) vars->add(word[0], word[1]);
 		else if (strcasecmp(word[1], "external")) diatax("'=' probably forgotten");
-			else vars->add(word[0], get_named_cfg(word[0]));
+			else vars->add(word[0], format_option(word[0]));
 		goto next_line;
 	}
 

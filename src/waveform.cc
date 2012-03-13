@@ -13,7 +13,7 @@
     GNU General Public License in doc/COPYING for more details.
  *
  */
- 
+
 #include "common.h"
 #include "client.h"
 
@@ -92,7 +92,7 @@ wavefm::wavefm(voice *v)
 	hdr.numchan = 1;
 	hdr.sf1 = samp_rate; hdr.sf2 = stereo ? hdr.sf1 : 0;
 	hdr.avr1 = 2 * samp_rate; hdr.avr2 = stereo ? hdr.avr1 : 0;
-	hdr.wlenB = samp_size_bytes; hdr.wlenb = v->samp_size;	// FIXME ?
+	hdr.wlenB = samp_size_bytes; hdr.wlenb = v->samp_size;
 	hdr.xnone = 0x010;
 	hdr.written_bytes = 0;
 	hdr.flen = hdr.written_bytes + 0x24;
@@ -126,9 +126,8 @@ wavefm::~wavefm()
 #endif
 
 #ifndef SNDCTL_DSP_GETFMTS
+#ifdef SOUND_PCM_GETFMTS
 #define SNDCTL_DSP_GETFMTS	SOUND_PCM_GETFMTS
-#ifndef SOUND_PCM_GETFMTS
-#error The sound card ioctls seem to be broken or absent, remove this #error
 #endif
 #endif
 
@@ -146,6 +145,9 @@ wavefm::~wavefm()
 
 #ifndef SNDCTL_DSP_SYNC
 #define SNDCTL_DSP_SYNC		SOUND_PCM_SYNC
+#ifndef SOUND_PCM_SYNC
+#error The sound card ioctls seem to be broken or absent, remove this #error
+#endif
 #endif
 
 #ifndef SNDCTL_DSP_RESET
@@ -157,19 +159,19 @@ wavefm::~wavefm()
 const static inline bool ioctlable(int fd)
 {
 	int tmp;
-	return !ioctl (fd, SNDCTL_DSP_GETFMTS, &tmp);
+	return !ioctl (fd, SNDCTL_DSP_GETBLKSIZE, &tmp);
 }
 
 static inline void set_samp_size(int fd, int samp_size_bits)
 {
 	if (!ioctl (fd, SNDCTL_DSP_SETFMT, &samp_size_bits))
 		return;
-//   #ifdef SNDCTL_DSP_GETFMTS
+   #ifdef SNDCTL_DSP_GETFMTS
 	int mask = (unsigned int)-1;
 	ioctl (fd, SNDCTL_DSP_GETFMTS, &mask);
 	DEBUG(3,9,fprintf(STDDBG,"Hardware format mask is 0x%04x\n", mask);)
 	if (!(samp_size_bits & mask)) shriek(439, "Sampling rate not supported");
-//   #endif
+   #endif
 }
 
 static inline void set_samp_rate(int fd, int samp_rate)
@@ -265,7 +267,7 @@ wavefm::ioctl_attach()
 	set_samp_rate(fd, samp_rate);
 	set_samp_size(fd, samp_size_bytes << 3);
 	set_nonblocking(fd);
-	buff_size = get_blksize(fd);
+	if (!buff_size) buff_size = get_blksize(fd);
 }
 
 void
@@ -328,8 +330,9 @@ wavefm::attach()
 void
 wavefm::detach()
 {
+	int from_fd = fd;
 	detach(fd);
-	async_close(fd);
+	async_close(from_fd);
 	fd = -1;
 }
 

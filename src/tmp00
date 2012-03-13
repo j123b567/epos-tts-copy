@@ -301,10 +301,10 @@ OPTION (always_dbg, "always_debug",INT, 3)      // Always debug this level and u
 OPTION (limit_dbg,  "limit_debug", INT, 0)      // Never debug under this level, unless focussed
 
 OPTION (loaded, "",               BOOL, false)  // Do we have already compiled the .ini files?
-OPTION (fixedfile,"fixed_ini_file",STR, "fixed.ini")
-OPTION (inifile, "cfg_file",       STR, "epos.ini")	// What is our favourite .ini file?
-OPTION (token_esc, "",             STR, "nt[eE\\ #;@~.-mX")	// Escape sequences usable in the .ini files
-OPTION (value_esc, "",             STR, "\n\t\033\033\033\\\377#;@\1\2\3\4\037")
+OPTION (fixedfile,"fixed_ini_file",STR, )
+OPTION (inifile, "cfg_file",       STR, )	// What is our favourite .ini file?
+OPTION (token_esc, "",             STR, )	// Escape sequences usable in the .ini files
+OPTION (value_esc, "",             STR, )
 OPTION (slash_esc, "",            CHAR, '/')	// Path separator ('/' or '\') .ini escape seq
 
 OPTION (hash_full, "hashes_full",  INT, 100)    // How full should a hash table become?
@@ -313,7 +313,7 @@ OPTION (lowmemory, "memory_low",  BOOL, false)  // Should we free hash tables af
 OPTION (forking, "forking",	  BOOL, false)  // (UNIX only) Detach using a child process?
 OPTION (asyncing, "asyncing",	  BOOL, false)  // (UNIX only) Close files using a child process?
 OPTION (colored, "colored",       BOOL, false)  // Use the color escape sequences?
-OPTION (languages, "languages",     STR, "")	// Which languages to provide?
+OPTION (languages, "languages",     STR, )	// Which languages to provide?
 OPTION (ml, "markup_language",  MARKUP, ML_NONE)// Are these ANSI escape seqs or the RTF ones?
 OPTION (version, "version",	  BOOL, false)	// Print version info to stdshriek on startup?
 OPTION (help, "help",		  BOOL, false)	// Print help on stdshriek and exit on startup?
@@ -338,20 +338,20 @@ OPTION (dev_txtlen,"dev_text_len", INT, 50000)  // How much data can we expect f
 
 OPTION (eof_char, "end_of_file",  CHAR, '\033') // Which key should terminate user input?
 
-OPTION (base_dir, "base_dir",      STR, "/usr/lib/epos")  // base path to everything
-LNG_OPTION (rules_dir, rules_dir, "rules_dir", STR, ".")  // path to the rules and banner files
-LNG_OPTION (hash_dir, hash_dir, "hash_dir",    STR, ".")  //  to the dictionaries
-LNG_OPTION (input_dir, input_dir, "input_dir", STR, ".")  //  to the input file
-// INV_OPTION (invent_dir, inv_dir, "invent_dir", STR, ".")  //  to the diphone inventories
-LNG_OPTION (pros_dir, pros_dir, "prosody_dir", STR, ".")  //  to the prosody files
-OPTION (pseudo_root_dir, "pseudo_root_dir",STR, "root")	  //  to the virtual file tree
-OPTION (help_dir, "ttscp_help_dir",    STR, "ttscp/help") //  to the ttscp help topics
-OPTION (lang_base_dir, "lang_base_dir",    STR, "lng")    //  to the language descriptions
-OPTION (voice_base_dir, "voice_base_dir",  STR, "voice")  //  to the voice descriptions
-OPTION (inv_base_dir, "inv_base_dir",  STR, "inv")	  //  to the diphone inventories
-OPTION (ini_dir, "ini_dir",	   STR, "cfg")  //      to fixed.ini
-OPTION (matlab_dir, "matlab_dir",  STR, ".")	//      where to store nnet output
-OPTION (wav_dir, "wav_dir",        STR, ".")	//      where to store .wav files
+OPTION (base_dir, "base_dir",      STR, )  // base path to everything
+LNG_OPTION (rules_dir, rules_dir, "rules_dir", STR, )  // path to the rules and banner files
+LNG_OPTION (hash_dir, hash_dir, "hash_dir",    STR, )  //  to the dictionaries
+LNG_OPTION (input_dir, input_dir, "input_dir", STR, )  //  to the input file
+// INV_OPTION (invent_dir, inv_dir, "invent_dir", STR, )  //  to the diphone inventories
+LNG_OPTION (pros_dir, pros_dir, "prosody_dir", STR, )  //  to the prosody files
+OPTION (pseudo_root_dir, "pseudo_root_dir",STR, )	  //  to the virtual file tree
+OPTION (help_dir, "ttscp_help_dir",    STR, ) //  to the ttscp help topics
+OPTION (lang_base_dir, "lang_base_dir",    STR, )    //  to the language descriptions
+OPTION (voice_base_dir, "voice_base_dir",  STR, )  //  to the voice descriptions
+OPTION (inv_base_dir, "inv_base_dir",  STR, )	  //  to the diphone inventories
+OPTION (ini_dir, "ini_dir",	   STR, )  //      to fixed.ini
+OPTION (matlab_dir, "matlab_dir",  STR, )	//      where to store nnet output
+OPTION (wav_dir, "wav_dir",        STR, )	//      where to store .wav files
 LNG_OPTION (input_file, input_file, "input_file",  STR, NULL)   // relative filename of the input text
 OPTION (input_text, "",            STR, NULL)			// the input text itself
 LNG_OPTION (rules_file, rules_file, "rules_file",  STR, NULL)   // relative filename of the rules text
@@ -371,7 +371,7 @@ OPTION (diph_raw,"show_raw_diphs",BOOL, false)  // show_diphones including dipho
 OPTION (wav_file, "wave_file",     STR, NULL)	// File to write .wav into if play_diphones
 OPTION (imm_diph,"immed_diphones",BOOL, false)  // Should we output them after a DIPHONES rule?
 
-INV_OPTION (inv_name, name, "name",	   STR, "(unnamed)")
+INV_OPTION (inv_name, name, "name",	   STR, )
 INV_OPTION (inv_type, type, "type",       TYPE, S_NONE)	// Int, float, vector quantified...
 INV_OPTION (inv_ct,channel, "channel", CHANNEL, CT_MONO)// (unused; not stereo)
 INV_OPTION (inv_counts, counts, "counts",  STR, NULL)	// File with the model counts for every diphone?
@@ -392,13 +392,13 @@ OPTION (wav_hdr, "wave_header",	  BOOL, false)  // Should .wav output contain .w
 
 OPTION (daemon_log, "daemon_log",  STR, NULL)	// Log file of daemon.cc activities (TTSCP server)
 OPTION (pwdfile, "server_pwd_file",STR, NULL)	// File to store the server passwd for TTSCP auth
-OPTION (allow_file, "allow_options_file", STR, "allowed.ini") // options anonymous may change
+OPTION (allow_file, "allow_options_file", STR, ) // options anonymous may change
 OPTION (db_size, "diph_buff_size", INT, 511)	// max n of diphones to be synthesized at once
 OPTION (buffer_size, "buffer_size",INT, 8192)	// buffer size for wave files
 OPTION (max_net_cmd, "max_net_cmd",INT, 16384)  // Max TCP command length
 OPTION (listen_port, "listen_port",INT, TTSCP_PORT) // TCP port where the daemon should listen
-//INV_OPTION (inv_rserv, remote_server, "remote_server", STR, "epos.ure.cas.cz:8779")	// IP host name [:port]
-INV_OPTION (inv_loc, loc, "location", STR, "")	// IP host name [:port]
+//INV_OPTION (inv_rserv, remote_server, "remote_server", STR, )	// IP host name [:port]
+INV_OPTION (inv_loc, loc, "location", STR, )	// IP host name [:port]
 // OPTION (sd, "",		   INT, 0)	// network socket of the current session
 						// (can also be used to detect the daemon mode)
 OPTION (sd_in, "",		   INT, -1)	// current input network socket
@@ -407,10 +407,10 @@ OPTION (sd_out, "",		   INT, -1)	// current output network socket
 OPTION (pend_min, "pend_min",	   INT, 3)	// FIXME: non-functional
 OPTION (pend_max, "pend_max",	   INT, 7)	// FIXME: non-functional
 
-LNG_OPTION (std_voices, voice_names, "voices", STR, "")	// voices supported for this language
-LNG_OPTION (sft_opts, soft_option_names, "soft_options", STR, "")
+LNG_OPTION (std_voices, voice_names, "voices", STR, )	// voices supported for this language
+LNG_OPTION (sft_opts, soft_option_names, "soft_options", STR, )
 				// language-specific voice options supported for this language
-LNG_OPTION (fallback_voice, fallback_voice, "fallback_voice", STR, "")
+LNG_OPTION (fallback_voice, fallback_voice, "fallback_voice", STR, )
 				// voice to be used when the current one fails at run time
 
 // OPTION (ktd_pitch, "ktd_pitch",    INT, 100)
@@ -422,10 +422,10 @@ LNG_OPTION (fallback_voice, fallback_voice, "fallback_voice", STR, "")
 OPTION (relax_input,"relax_input",BOOL, false)  // Survive unknown characters on input
 OPTION (dflt_char, "default_char",CHAR, ' ')	// Replace them with this char
 
-// OPTION (header_xscr, "header", FILE, "")     // Header and footer printed
-// OPTION (footer_xscr, "footer", FILE, "")     //   in unit::fout()
-OPTION (header_xscr, "header",     STR, "")     // Header and footer printed
-OPTION (footer_xscr, "footer",     STR, "")     //   in unit::fout()
+// OPTION (header_xscr, "header", FILE, )     // Header and footer printed
+// OPTION (footer_xscr, "footer", FILE, )     //   in unit::fout()
+OPTION (header_xscr, "header",     STR, )     // Header and footer printed
+OPTION (footer_xscr, "footer",     STR, )     //   in unit::fout()
 
 LNG_OPTION (syll_hack, syll_hack, "suppress_side_syll",  BOOL,  false)   
 						// Try to avoid initial pseudo-syllables,
@@ -434,22 +434,22 @@ LNG_OPTION (limit_syll_hack, syll_thr, "limit_side_syll", CHAR, 'a')
 						// What sonority the initial phone must have
 						// in order to become syllable peak? (Example)
 
-OPTION (normal_col, "normal_color",   STR, "")
-OPTION (curul_col, "curr_rule_color", STR, "")
-OPTION (shriek_col, "fatal_color",    STR, "")
-// OPTION (warn_col, "warning_color",    STR, "")
+OPTION (normal_col, "normal_color",   STR, )
+OPTION (curul_col, "curr_rule_color", STR, )
+OPTION (shriek_col, "fatal_color",    STR, )
+// OPTION (warn_col, "warning_color",    STR, )
 
 OPTION (shriek_art, "shriek_art",     INT, 0)	// Number of picture printed on fatal errors
 
-OPTION (comma, "comma", 	      STR, "\n")// Delimiter character for generated lists
+OPTION (comma, "comma", 	      STR, )// Delimiter character for generated lists
 
 LNG_OPTIONAGGR (const char *perm[U_TEXT+1])
-LNG_OPTIONITEM (perm[U_PHONE], "perm_phone", STR, "")
-LNG_OPTIONITEM (perm[U_SYLL], "perm_syll", STR, "")
-LNG_OPTIONITEM (perm[U_WORD], "perm_word", STR, "")
-LNG_OPTIONITEM (perm[U_COLON], "perm_colon", STR, "")
-LNG_OPTIONITEM (perm[U_SENT], "perm_sent", STR, "")
-LNG_OPTIONITEM (perm[U_TEXT], "perm_text", STR, "")
+LNG_OPTIONITEM (perm[U_PHONE], "perm_phone", STR, )
+LNG_OPTIONITEM (perm[U_SYLL], "perm_syll", STR, )
+LNG_OPTIONITEM (perm[U_WORD], "perm_word", STR, )
+LNG_OPTIONITEM (perm[U_COLON], "perm_colon", STR, )
+LNG_OPTIONITEM (perm[U_SENT], "perm_sent", STR, )
+LNG_OPTIONITEM (perm[U_TEXT], "perm_text", STR, )
 LNG_OPTIONAGGRENDS
 
 OPTIONAGGR (int pros_weight[U_TEXT+1])
@@ -486,43 +486,43 @@ OPTION (out_prefix, "prefix",   BOOL, false)    // Content char precedes the off
 OPTION (out_swallow__, "swallow_underbars", BOOL, true) // Skip underbars to be printed?
 
 OPTIONAGGR (const char *out_opening[U_TEXT+1])
-OPTIONITEM (out_opening[U_DIPH],"",STR,"")
-OPTIONITEM (out_opening[U_PHONE],"begin_phone",STR,"")
-OPTIONITEM (out_opening[U_SYLL],"begin_syll",STR,"")
-OPTIONITEM (out_opening[U_WORD],"begin_word",STR,"")
-OPTIONITEM (out_opening[U_COLON],"begin_colon",STR,"")
-OPTIONITEM (out_opening[U_SENT],"begin_sent",STR,"")
-OPTIONITEM (out_opening[U_TEXT],"begin_text",STR,"")
+OPTIONITEM (out_opening[U_DIPH],"",STR,)
+OPTIONITEM (out_opening[U_PHONE],"begin_phone",STR,)
+OPTIONITEM (out_opening[U_SYLL],"begin_syll",STR,)
+OPTIONITEM (out_opening[U_WORD],"begin_word",STR,)
+OPTIONITEM (out_opening[U_COLON],"begin_colon",STR,)
+OPTIONITEM (out_opening[U_SENT],"begin_sent",STR,)
+OPTIONITEM (out_opening[U_TEXT],"begin_text",STR,)
 OPTIONAGGRENDS
 
 OPTIONAGGR (const char *out_separ[U_TEXT+1])
-OPTIONITEM (out_separ[U_DIPH],"",STR,"")
-OPTIONITEM (out_separ[U_PHONE],"separ_phone",STR,"")
-OPTIONITEM (out_separ[U_SYLL],"separ_syll",STR,"")
-OPTIONITEM (out_separ[U_WORD],"separ_word",STR,"")
-OPTIONITEM (out_separ[U_COLON],"separ_colon",STR,"")
-OPTIONITEM (out_separ[U_SENT],"separ_sent",STR,"")
-OPTIONITEM (out_separ[U_TEXT],"",STR,"")
+OPTIONITEM (out_separ[U_DIPH],"",STR,)
+OPTIONITEM (out_separ[U_PHONE],"separ_phone",STR,)
+OPTIONITEM (out_separ[U_SYLL],"separ_syll",STR,)
+OPTIONITEM (out_separ[U_WORD],"separ_word",STR,)
+OPTIONITEM (out_separ[U_COLON],"separ_colon",STR,)
+OPTIONITEM (out_separ[U_SENT],"separ_sent",STR,)
+OPTIONITEM (out_separ[U_TEXT],"",STR,)
 OPTIONAGGRENDS
 
 OPTIONAGGR (const char *out_closing[U_TEXT+1])
-OPTIONITEM (out_closing[U_DIPH],"",STR,"")
-OPTIONITEM (out_closing[U_PHONE],"close_phone",STR,"")
-OPTIONITEM (out_closing[U_SYLL],"close_syll",STR,"")
-OPTIONITEM (out_closing[U_WORD],"close_word",STR,"")
-OPTIONITEM (out_closing[U_COLON],"close_colon",STR,"")
-OPTIONITEM (out_closing[U_SENT],"close_sent",STR,"")
-OPTIONITEM (out_closing[U_TEXT],"close_text",STR,"")
+OPTIONITEM (out_closing[U_DIPH],"",STR,)
+OPTIONITEM (out_closing[U_PHONE],"close_phone",STR,)
+OPTIONITEM (out_closing[U_SYLL],"close_syll",STR,)
+OPTIONITEM (out_closing[U_WORD],"close_word",STR,)
+OPTIONITEM (out_closing[U_COLON],"close_colon",STR,)
+OPTIONITEM (out_closing[U_SENT],"close_sent",STR,)
+OPTIONITEM (out_closing[U_TEXT],"close_text",STR,)
 OPTIONAGGRENDS
 
 OPTIONAGGR (const char *out_color[U_TEXT+1])
-OPTIONITEM (out_color[U_DIPH],"color_diphone",STR,"")
-OPTIONITEM (out_color[U_PHONE],"color_phone",STR,"")
-OPTIONITEM (out_color[U_SYLL],"color_syll",STR,"")
-OPTIONITEM (out_color[U_WORD],"color_word",STR,"")
-OPTIONITEM (out_color[U_COLON],"color_colon",STR,"")
-OPTIONITEM (out_color[U_SENT],"color_sent",STR,"")
-OPTIONITEM (out_color[U_TEXT],"color_text",STR,"")
+OPTIONITEM (out_color[U_DIPH],"color_diphone",STR,)
+OPTIONITEM (out_color[U_PHONE],"color_phone",STR,)
+OPTIONITEM (out_color[U_SYLL],"color_syll",STR,)
+OPTIONITEM (out_color[U_WORD],"color_word",STR,)
+OPTIONITEM (out_color[U_COLON],"color_colon",STR,)
+OPTIONITEM (out_color[U_SENT],"color_sent",STR,)
+OPTIONITEM (out_color[U_TEXT],"color_text",STR,)
 OPTIONAGGRENDS
 
 

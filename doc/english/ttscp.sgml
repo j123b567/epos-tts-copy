@@ -1,11 +1,13 @@
 
-<sect>Text-To-Speech Control Protocol  (TTSCP)  (version 1) <label id="ttscp">
+<sect>Text-To-Speech Control Protocol  (TTSCP)  (version 0) <label id="ttscp">
 <p>
 
 TTSCP is a client-server connection-oriented,
 both human- and machine-readable communication protocol,
 remotely similar to the File Transfer Protocol in spirit.
-It is designed to work atop TCP, but any reliable
+TTSCP is offered as a standard interface for controlling
+generic speech processing applications, not only Text-To-Speech ones.
+It is primarily designed to run atop TCP, but any reliable
 connection-oriented underlying protocol should theoretically
 work as well.
 
@@ -214,17 +216,24 @@ Each command generates one or more "replies", the last reply
 indicating completion and sometimes also some command-specific
 information.
 
-<sect2>appl <label id="appl-cmd">
+<sect2> <tt> appl </tt> <label id="appl-cmd">
 <p>
 
 Apply the current data processing stream (see the <ref id="strm-cmd" name="strm command">
 to some data. The parameter is a decimal number specifying the number
 of bytes to be processed.
 
-Before the completion reply, a 122 reply is received by the client.
-It is followed by a decimal number on a line by itself, preceded
-with a single space. This is the number of bytes written by the output
-module. This intermediate reply should be sent as soon as the number
+Before the completion reply, zero or more 122 replies are received
+by the client, every one followed by a decimal number on a line
+by itself, preceded with a single space. This is the number of
+bytes written by the output module per task.  Usually, if the <tt/appl/
+command generates a single successful task only, there shall be exactly
+one such reply, but if e.g. the <ref id="chunk-mod" name="chunk"> module has split the
+input text into more independent parts, multiple outputs and
+multiple 122 replies may appear; if e.g. the <ref id="join-mod" name="join"> module has
+been employed, there may be no 122 reply at all if the text being
+processed is considered unterminated.
+Such an intermediate reply should be sent as soon as the number
 of bytes to be sent is known to the TTSCP server to avoid certain
 deadlock scenarios caused by an insufficient buffer capacity between
 the server and the client. The number of bytes actually sent may
@@ -232,17 +241,27 @@ be even smaller in case of a user break or another unexpected situation;
 it shall never be larger and it shall be exactly the number of bytes
 sent by the server upon a successful completion reply.
 
-Before the completion reply, one or more 123 replies are received
+Before the completion reply, one or more 123 replies for every 122 reply
+are received
 by the client. Every 123 reply is followed by a decimal number
 on a line by itself, preceded with a single space.  This is the
 number of bytes actually successfully written by the output module.
 This intermediate reply should be sent as soon as the data is
-sent.  When the client eventually receives a completion reply,
+sent.  When the client eventually receives a successful completion reply,
 the sum of byte counts received with 123 replies shall match
 the number of bytes sent by the server.
 
-The relative ordering of 122 and 123 replies is not specified by
-the TTSCP.
+For every 122 reply, there shall be a corresponding sequence of 123 replies
+such that no unrelated 122 or 123 replies intervene.  The sum of byte counts
+received with these 123 replies shall match the byte count received with
+the 122 reply.  In other words, the replies relating to different subtasks
+must preserve the time ordering.  If an error condition prematurely terminates
+the <tt/appl/ command processing, this behavior is not required for
+the last subtask whose processing has begun, independent of whether
+its 122 reply has been received by the client.
+
+The relative ordering of 122 and 123 replies for the same subtask
+is not specified by the TTSCP.
 
 The completion response code is received when all the modules have
 finished processing and data has been output by the output module.
@@ -251,7 +270,7 @@ e.g. a sound card, or may be delayed by the network.
 
 Using <tt/appl/ before the first <tt/strm/ command is forbidden.
 
-<sect2>intr
+<sect2> <tt> intr </tt>
 <p>
 
 Interrupt an active stream. The parameter is a control connection
@@ -264,7 +283,7 @@ The server will reply a 401 completion code to the interrupted
 connection, whereas a 200 completion code will acknowledge
 a successful <tt/intr/ command.
 
-<sect2>data
+<sect2> <tt> data </tt>
 <p>
 
 Turn this control connection into a data connection. The parameter
@@ -288,7 +307,7 @@ TTSCP control connection state and more commands may be submitted.
 The data connection becomes valid at receipt of a 200 response code to
 this command.
 
-<sect2>delh
+<sect2> <tt> delh </tt>
 <p>
 
 Terminate a specified data connection. The parameter is the data connection handle
@@ -296,26 +315,26 @@ to be terminated, as returned by a former <tt/data/ command on that connection.
 If successful, the connection is disconnected by the server and the data connection
 handle is forgotten.
 
-<sect2>done
+<sect2> <tt> done </tt>
 <p>
 
 Issued as the last command in a session. The client may exit just
 after sending this command. The server should reply with error
 code 600.
 
-<sect2>down
+<sect2> <tt> down </tt>
 <p>
 
 Stop the server. Quit pending sessions. May disappear in the future.
 
-<sect2>help
+<sect2> <tt> help </tt>
 <p>
 
 Request for TTSCP syntax help. The server response is undefined
 except for the proper error code termination (class 2 or 4).
 
 Suggested behavior is to reply with "441 help yourself"
-or with no more than 24 lines of command resume.
+or a brief list of commands with explanation.
 If a parameter is given, the server may supply more 
 specific information, such as verbose description of a single
 command.
@@ -324,7 +343,7 @@ The usual completion reply rules apply. Specifically, care
 must be taken lest the help text contain a line beginning
 with a digit.
 
-<sect2>pass
+<sect2> <tt> pass </tt>
 <p>
 
 Attempts to validate an account, as given by a previous "user"
@@ -337,17 +356,7 @@ TTSCP port.)
 The password is a string of alphanumeric characters, dashes and
 underlines, no more than 250 bytes long.
 
-<sect2>reap
-<p>
-
-Internal implementation only. This command is not required
-in any TTSCP implementation. On UNIX, this command is used to
-kill a thread specified by a pid given by its parameter.
-The session must be validated to UID&lowbar;SERVER before.
-
-Will be removed in future.
-
-<sect2>setg
+<sect2> <tt> setg </tt>
 <p>
 
 Globally set a server configuration parameter. The parameter is
@@ -371,7 +380,7 @@ where applicable, but the set of useful configuration parameters
 seems to be impossible to specify in advance.
 Any comment on this issue is welcome.
 
-<sect2>setl
+<sect2> <tt> setl </tt>
 <p>
 
 Set a server configuration parameter. The parameter is a whitespace-separated
@@ -395,7 +404,7 @@ where applicable, but the set of useful configuration parameters
 seems to be impossible to specify in advance.
 Any comment on this issue is welcome.
 
-<sect2>show
+<sect2> <tt> show </tt>
 <p>
 
 Show a configuration parameter value. The parameter is an option
@@ -406,7 +415,7 @@ Subject to change.
 available languages, as well as available voices for the current
 language.
 
-<sect2>strm <label id="strm-cmd">
+<sect2> <tt> strm </tt> <label id="strm-cmd">
 <p>
 
 Prepare a data flow stream. The parameter is a colon-separated sequence
@@ -426,7 +435,28 @@ by the <ref id="appl-cmd" name = "appl"> command.
 The stream lasts until the next strm command or termination of
 the TTSCP connection, then it is deleted.
 
-<sect3> Input and output modules
+<sect2> <tt> user </tt>
+<p>
+
+Should precede all TTSCP exchanges. Its parameter is "anonymous"
+or a local or configured user account name. Some other user names
+may acquire special meaning. We'll see.
+
+Unless the account requires no authentication, this command
+should be immediately followed by a proper pass command;
+otherwise the session may be refused to issue most or all
+other commands.
+
+If no <tt/user/ command is issued, "user anonymous" is assumed.
+
+If the user doesn't exist, anonymous access is granted.
+
+The <tt/user/ command is still not implemented properly and
+its semantics may change.
+
+<sect1> TTSCP modules
+
+<sect2> Input and output modules
 <p>
 
 The input and output modules follow the same syntax conventions.
@@ -435,7 +465,7 @@ is a data connection handle. If it begins with a slash, it is
 an absolute file name.  Such absolute file names however form a name
 space distinct from that of the underlying system.  In Epos, the
 name space is a single directory defined by the <tt/pseudo_root_dir/
-option.  It must be impossible to escape from the name space by inserting
+option.  It must be impossible to escape from this name space by inserting
 parent directory references in a file name or otherwise.
 
 
@@ -446,12 +476,12 @@ module are determined by the respective adjacent modules. If input and
 output modules are directly connected, it is assumed that the data is
 a plain text.
 
-Some data types can not be sent or received or only with certain limitations.
-This is not too well documented.
+The TSR data type can not be sent or received, and may thus be totally
+implementation and architecture dependent.
 
 
 
-<sect3> Processing modules
+<sect2> Processing modules
 <p>
 
 At the moment there are only few modules implemented that do a real 
@@ -460,21 +490,78 @@ processing. All of them have fixed names and types.
 <table loc="h">
 <tabular ca="|l|l|l|l|">
 <hline>
- name	  | input data format | output data format | semantics@
+ name	  | input format | output format | notes@
 <hline>
- raw	  | plain text	 | text structure	| parses the text@
- stml	  | STML text	 | text structure	| parses STML@
- rules	  | text structure | text structure	| written-to-spoken conversion@
- print	  | text structure | plain text		| drops suprasegmental information@
- diphs	  | text structure | diphones		| extracts the diphone layer if any@
- synth	  | diphones	 | waveform		| speech synthesis proper@
+ chunk	  | plain text	| plain text		| splits text@
+ join	  | plain text	| plain text		| joins texts@
+ raw	  | plain text	| TSR			| parses text@
+ stml	  | STML text	| TSR			| parses STML@
+ rules	  | TSR		| TSR			| @
+ print	  | TSR		| plain text		| @
+ diphs	  | TSR		| diphones		| extract diphones@
+ synth	  | diphones	 | waveform		| speech synthesis@
 <hline>
 </tabular>
 <caption> Available processing modules </caption>
 </table>
 
+<sect3> <tt> chunk </tt> module <label id="chunk-mod">
+<p>
+The text is split into parts convenient for latter processing.
+These parts usually correspond at least to whole utterances;
+it is correct not to split the text at all, but care must be
+taken not to cause a split which significantly alters the
+final rendering of the text.
 
-<sect3> Explicit data type specifications
+<sect3> <tt> join </tt> module <label id="join-mod">
+<p>
+It is customary to use the <tt/join/ module just after a <tt/chunk/ module.
+If this module receives two consecutive texts such that the <tt/chunk/
+module would not split their concatenation between them, the <tt/join/ module
+may merge them to a single text, that is, it may silently drop the first
+subtask and prepend the text to the text acquired later.  This delay
+may cross the boundary of an <tt/appl/ command.
+
+<sect3> <tt> raw </tt> module
+<p>
+The input text is converted in a language dependent way to the TSR,
+assuming it is a plain text without any specific TTS escape sequences
+or other special formatting conventions.  Except for tokenization
+and whitespace reduction the conversion should not try to process
+the text, especially not in a language dependent way; this goal
+doesn't seem to be always feasible.
+
+<sect3> <tt> rules </tt> module
+<p>
+The voice dependent TTS or other rules are applied to a TSR.
+
+<sect3> <tt> print </tt> module
+<p>
+The TSR is converted to a plain text representation, suitable as a 
+user-readable output.  The conversion should be as straightforward
+as possible and should not emit any special formatting character
+sequences.  Ideally, the successive application of the <tt/raw/ and
+<tt/print/ modules should not significantly alter the text.
+
+<sect3> <tt> diphs </tt> module
+<p>
+This module extracts the diphone layer from the input TSR into
+the linear diphone stream format; the rest of TSR is discarded.
+
+There may be an implementation-dependent limit on the size
+of the diphone stream produced.  If more diphones should be produced,
+the module may emit more subtasks; see the <ref id="appl-cmd" 
+name="appl"> command for discussion concerning subtask reporting.
+t
+
+<sect3> <tt> synth </tt> module
+<p>
+The input diphone stream is synthesised in a voice dependent way.
+
+
+
+
+<sect2> Explicit data type specifications
 <p>
 
 Sometimes an ambiguity concerning the type of data passed at a certain point
@@ -517,32 +604,6 @@ brackets.  The following letters represent the available data types:
 The data formats are described in <ref id="formats"
 name="the data formats subsection">.
 
-<sect2>trans
-<p>
-
-The parameter is a plain text. The server should process it and
-reply with its (phonetic) transcription.
-
-This command is obsolete and will disappear in the future.
-
-<sect2>user
-<p>
-
-Should precede all TTSCP exchanges. Its parameter is "anonymous"
-or a local or configured user account name. Some other user names
-may acquire special meaning. We'll see.
-
-Unless the account requires no authentication, this command
-should be immediately followed by a proper pass command;
-otherwise the session may be refused to issue most or all
-other commands.
-
-If no <tt/user/ command is issued, "user anonymous" is assumed.
-
-If the user doesn't exist, anonymous access is granted.
-
-The <tt/user/ command is still not implemented properly and
-its semantics may change.
 
 
 
@@ -580,7 +641,7 @@ code | error type | suggested action @
 0xx | reserved  | (server queries client?) @
 1xx | still OK | informative only @
 2xx | OK, command completed | transmit another command @
-3xx | warning, server still trying | notify user / ignore @
+3xx | reserved | notify user / ignore @
 4xx | command failed | transmit another command @
 5xx | reserved | ignore @
 6xx | connection terminated | notify user if unexpected @
@@ -709,7 +770,7 @@ meanings in future TTSCP descriptions. Any comment is welcome.
 462	| unimplemented feature@
 463	| input triggered configuration bug@
 464	| input triggered OS incompatibility@
-465	| i/o problem : error on close()
+465	| i/o problem : error on close()@
 471	| tcpsyn received invalid waveform@
 472	| unresolved remote tcpsyn server@
 473	| unreachable remote tcpsyn server@
@@ -726,6 +787,7 @@ meanings in future TTSCP descriptions. Any comment is welcome.
 814	| bad command line@
 841	| cannot open necessary configuration file@
 842	| no voices configured@
+843	| up-to-date configuration files not found@
 861	| internal error: impossible branch of execution@
 862	| internal error: invariance violation@
 863	| internal error: buffer overflow@

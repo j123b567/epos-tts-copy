@@ -24,6 +24,10 @@
 
 unit EMPTY;
 
+#include "slab.h"
+
+SLABIFY(unit, unit_slab, 1024, shutdown_units)
+
 /****************************************************************************
  This constructor will construct a unit at the "layer" level, 
  using the input from the parser
@@ -344,7 +348,8 @@ unit::gather(char *buffer_now, char *buffer_end, bool suprasegm)
  	      returns: whether the substition really occured
  ****************************************************************************/
 
-char *_subst_buff=NULL;
+char *_subst_buff = NULL;
+char *_gather_buff = NULL;
 
 inline void
 unit::subst(char *subst_buff)
@@ -410,7 +415,6 @@ unit::subst(hash *table, unsigned int safe_grow, char *prefix, char *prefix_end,
 bool
 unit::subst(hash *table, SUBST_METHOD method)
 {
-	char    gatbuff[MAX_GATHER+2];
 	char   *tail;
 	char   *strend;
 	char   *strrealend;
@@ -421,34 +425,34 @@ unit::subst(hash *table, SUBST_METHOD method)
 	if ((method & M_LEFT) && !prev) return false;
 	if ((method & M_RIGHT) && !next) return false;
 	for (int i=cfg->multi_subst; i; i--) {
-		*gatbuff='^';
-		strend=gather(gatbuff+1, gatbuff+MAX_GATHER, (method&M_PROPER)!=M_EXACT);
+		*_gather_buff='^';
+		strend=gather(_gather_buff+1, _gather_buff+MAX_GATHER, (method&M_PROPER)!=M_EXACT);
 		if (!strend) return false;	// gather overflow
 		*strend=0;
-		safe_grow = gatbuff - strend + MAX_GATHER;
+		safe_grow = _gather_buff - strend + MAX_GATHER;
 		// if (safe_grow>300) shriek("safe_grow");	// fixme
-		DEBUG(1,3,fprintf(STDDBG,"inner unit::subst %s, method %d\n", gatbuff+1, method);)
+		DEBUG(1,3,fprintf(STDDBG,"inner unit::subst %s, method %d\n", _gather_buff+1, method);)
 		sanity();
 		if ((method & M_PROPER) == M_EXACT) {
-			if (subst(table, safe_grow, NULL,NULL,gatbuff+1,NULL,NULL)) goto break_home;
+			if (subst(table, safe_grow, NULL,NULL,_gather_buff+1,NULL,NULL)) goto break_home;
 		}
 		if (strend[-1]==cont) --strend;
 		*strend='$';*++strend=0;
 		if (method & M_END)
-			for(tail=gatbuff;*tail && tail-gatbuff<MAX_GATHER;tail++)
-				if(subst(table, safe_grow, gatbuff+1,tail, tail, NULL,NULL)) goto break_home;
+			for(tail=_gather_buff;*tail && tail-_gather_buff<MAX_GATHER;tail++)
+				if(subst(table, safe_grow, _gather_buff+1,tail, tail, NULL,NULL)) goto break_home;
 		if (method & M_BEGIN)
-			for(tail=strend;tail>gatbuff;tail--) {
+			for(tail=strend;tail>_gather_buff;tail--) {
 				tail[0]=tail[-1];tail[-1]=0;
-				if(subst(table, safe_grow, NULL,NULL,gatbuff, tail, strend)) goto break_home;
+				if(subst(table, safe_grow, NULL,NULL,_gather_buff, tail, strend)) goto break_home;
 			}
 		if (method & M_SUBSTR) {
-			for(strrealend=strend;strend!=gatbuff; strend--) {
+			for(strrealend=strend;strend!=_gather_buff; strend--) {
 				strend[1]=*strend;
 				*strend=0;
-				tail=gatbuff<strend-table->longest?strend-table->longest:gatbuff;
+				tail=_gather_buff<strend-table->longest?strend-table->longest:_gather_buff;
 				for(;tail<strend;tail++) 
-					if(subst(table,safe_grow, gatbuff+1,tail,tail,strend+1,strrealend)) 
+					if(subst(table,safe_grow, _gather_buff+1,tail,tail,strend+1,strrealend)) 
 						goto break_home;
 			}
 		}
@@ -461,7 +465,7 @@ unit::subst(hash *table, SUBST_METHOD method)
 			return unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS), true;
 		if (method & M_ONCE) return true;
 	}
-	shriek(463, fmt("Infinite substitution loop detected on \"%s\"", gatbuff));
+	shriek(463, fmt("Infinite substitution loop detected on \"%s\"", _gather_buff));
 	sanity();
 	return true;
 }
@@ -486,52 +490,51 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 {
 	if (target == U_PHONE) return subst(table, method);
 
-	char    buff[MAX_GATHER+2];
 	char	*r;
 	unit	*u;
 	unit	*v;
 	int len, i, j , n;
 	
-	*buff='^';
+	*_gather_buff='^';
 	u = v = LeftMost(target);
 	for (i = 1; u != &EMPTY; i++) {
-		buff[i] = u->cont;
+		_gather_buff[i] = u->cont;
 		u = u->Next(target);
 		if (i == MAX_GATHER && cfg->paranoid) shriek(863, "Too huge word relabelled");
 	}
-	buff[i]='$'; buff[++i]=0; len=i;
+	_gather_buff[i]='$'; _gather_buff[++i]=0; len=i;
 
 	sanity();
 	if ((method & M_LEFT) && !prev) return false;
 	if ((method & M_RIGHT) && !next) return false;
 	for (n=cfg->multi_subst; n; n--) {
-		DEBUG(1,3,fprintf(STDDBG,"unit::relabel %s, method %d\n", buff+1, method);)
+		DEBUG(1,3,fprintf(STDDBG,"unit::relabel %s, method %d\n", _gather_buff+1, method);)
 		sanity();
 		if ((method & M_PROPER) == M_EXACT) {
-			buff[--len] = 0; len--;
-			if ((r = table->translate(buff + 1))) {
+			_gather_buff[--len] = 0; len--;
+			if ((r = table->translate(_gather_buff + 1))) {
 				if (cfg->paranoid && strlen(r) - len)
-					shriek(462, fmt("Substitute length differs: '%s' to '%s'", buff + 1, r));
-				strcpy(buff + 1, r);
+					shriek(462, fmt("Substitute length differs: '%s' to '%s'", _gather_buff + 1, r));
+				strcpy(_gather_buff + 1, r);
 				goto commit;
 			}
 		}
 		if (method & M_SUBSTR) {
 			for (i = len; i; i--) {
-				char tmp = buff[i];
-				buff[i] = 0;
+				char tmp = _gather_buff[i];
+				_gather_buff[i] = 0;
 				j = i > table->longest ? i - table->longest : 0;
 				for (; j<i; j++) {
-					if ((r = table->translate(buff+j))) {
+					if ((r = table->translate(_gather_buff+j))) {
 						j += !j;
-						buff[i] = tmp;
+						_gather_buff[i] = tmp;
 						if (cfg->paranoid && strlen(r) - i + j + !tmp)
-							shriek(462, fmt("Substitute length differs: '%s' to '%s'", buff+j, r));
-						memcpy(buff+j, r, strlen(r));
+							shriek(462, fmt("Substitute length differs: '%s' to '%s'", _gather_buff+j, r));
+						memcpy(_gather_buff+j, r, strlen(r));
 						goto break_home;
 					}
 				}
-				buff[i] = tmp;
+				_gather_buff[i] = tmp;
 			}
 		}
 		if (n == cfg->multi_subst) return false; else goto commit;
@@ -539,13 +542,13 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 		break_home:
 		if (method & M_ONCE) goto commit;
 	}
-	shriek(463, fmt("Infinite substitution loop detected on \"%s\"", buff));
+	shriek(463, fmt("Infinite substitution loop detected on \"%s\"", _gather_buff));
 	sanity();
 
 commit:
 	DEBUG(1,3,fprintf(STDDBG,"inner unit::relabel has made the subst, relinking l/r, method %d\n", method);)    
 	for (i = 1; v != &EMPTY; i++) {
-		v->cont = buff[i];
+		v->cont = _gather_buff[i];
 		v = v->Next(target);
 	}
 	sanity();
@@ -559,8 +562,8 @@ commit:
 #ifdef WANT_REGEX
 
 #ifdef __QNX__			// FIXME! Hacked to death.
-#define rm_so  rm_sp - gatbuff
-#define rm_eo  rm_ep - gatbuff
+#define rm_so  rm_sp - _gather_buff
+#define rm_eo  rm_ep - _gather_buff
 #endif
 
 /****************************************************************************
@@ -570,21 +573,21 @@ commit:
 void
 unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 {
-	char    gatbuff[MAX_GATHER+2];
+//	char    _gather_buff[MAX_GATHER+2];
 	char   *strend;
 	int	i,j,k,l;
 	
 	sanity();
 	for (i=cfg->multi_subst; i; i--) {
-		strend=gather(gatbuff, gatbuff+MAX_GATHER, true);
+		strend=gather(_gather_buff, _gather_buff+MAX_GATHER, true);
 		if (!strend) return;	// gather overflow
 		*strend=0;
-		DEBUG(1,3,fprintf(STDDBG,"unit::regex %s, subexps=%d\n", gatbuff, subexps);)
-		if (regexec(regex, gatbuff, subexps+1, subexp, 0)) return;
+		DEBUG(1,3,fprintf(STDDBG,"unit::regex %s, subexps=%d\n", _gather_buff, subexps);)
+		if (regexec(regex, _gather_buff, subexps+1, subexp, 0)) return;
 		sanity();
-		DEBUG(1,3,fprintf(STDDBG,"unit::regex matched %s\n", gatbuff);)
+		DEBUG(1,3,fprintf(STDDBG,"unit::regex matched %s\n", _gather_buff);)
 		
-		for (k = 0; k < subexp[0].rm_so; k++) _subst_buff[k] = gatbuff[k];
+		for (k = 0; k < subexp[0].rm_so; k++) _subst_buff[k] = _gather_buff[k];
 		
 		for (j = 0; ; j++) {
 			if (repl[j]==ESCAPE && repl[j+1]>='0' && repl[j+1]<='9') {
@@ -593,7 +596,7 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 					shriek(463, fmt("Index %d too big in regex replacement", index));
 				for (l = subexp[index].rm_so; l < subexp[index].rm_eo; l++) {
 					if (l<0) shriek(463, "regex - alternative not taken, sorry");
-					_subst_buff[k++] = gatbuff[l];
+					_subst_buff[k++] = _gather_buff[l];
 				}
 				j++;
 				continue;
@@ -603,11 +606,11 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 			k++;
 		}
 
-		for (l = subexp[0].rm_eo; (_subst_buff[k] = gatbuff[l]); k++,l++);
+		for (l = subexp[0].rm_eo; (_subst_buff[k] = _gather_buff[l]); k++,l++);
 
 		subst(_subst_buff);
 	}
-	shriek(463, fmt("Infinite regex replacement loop detected on \"%s\"", gatbuff));
+	shriek(463, fmt("Infinite regex replacement loop detected on \"%s\"", _gather_buff));
 	sanity();
 	return;
 }
@@ -1185,25 +1188,4 @@ unit::insane(const char *token)
 }
 
 #include "nnet.cc"
-
-#include "slab.h"
-
-slab<sizeof(unit)> unit_slab;
-
-void *
-unit::operator new(size_t size)
-{
-	return unit_slab.alloc();
-}
-
-void
-unit::operator delete(void *ptr)
-{
-	unit_slab.release(ptr);
-}
-
-void shutdown_units()
-{
-	unit_slab.shutdown();
-}
 

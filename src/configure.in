@@ -11,7 +11,7 @@ CCC="g++ c++ cc++ gcc cc"
 AC_PROG_CXX
 if test $GXX = yes; then 
 	if $CXX -v 2>&1 | grep -q egcs
-		then CFLAGS="-Wall -Wunused -pipe -gstabs -fdefer-pop"
+		then CFLAGS="-Wall -Wunused -pipe -gstabs+ -fdefer-pop"
 		else CFLAGS="-Wall -Wunused -pipe -fhandle-exceptions"
 	fi
 	else CFLAGS=-O

@@ -32,6 +32,8 @@ const char *WHITESPACE = " \t";
 
 const char *output_file = "/dev/dsp";
 
+#define STDIN_BUFF_SIZE  550000
+
 int ctrld, datad;		/* file descriptors for the control and data connections */
 char *data = NULL;
 
@@ -88,7 +90,7 @@ void say_data()
 	if (!data) data = "No.";
 	sputs("strm $", ctrld);
 	sputs(dh, ctrld);
-	sputs(":raw:rules:diphs:synth:", ctrld);
+	sputs(":chunk:raw:rules:diphs:synth:", ctrld);
 	sputs(output_file, ctrld);
 	sputs("\r\n", ctrld);
 	sputs("appl ", ctrld);
@@ -204,7 +206,11 @@ void send_cmd_line(int argc, char **argv)
 					break;
 				default : shriek("Unknown short option");
 			}
-			if (j==ar+1) send_option("input_file", "");	//dash only
+			if (j==ar+1) {			//dash only
+				if (data) free(data);
+				data = (char *)malloc(STDIN_BUFF_SIZE);
+				fread(data,1,STDIN_BUFF_SIZE,stdin);
+			}
 			break;
 		case 0:
 			if (data) {
@@ -225,7 +231,7 @@ void send_cmd_line(int argc, char **argv)
 int main(int argc, char **argv)
 {
 #ifdef HAVE_WINSOCK2_H
-	if (WSAStartup(0x200, (LPWSADATA)scratch)) shriek(464, "No winsock");
+	if (WSAStartup(MAKEWORD(2,0), (LPWSADATA)scratch)) shriek(464, "No winsock");
 #endif
 	ctrld = connect_socket(0, TTSCP_PORT);
 	ch = get_handle(ctrld);
@@ -267,8 +273,16 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+#ifndef HAVE_STRDUP
 
-#ifndef HAVE_TERMINATE	/* the only item which needs to have included "config.h" */
+char *strdup(const char*src)
+{
+	return strcpy((char *)malloc(strlen(src)+1), src);
+}
+
+#endif   // ifdef HAVE_STRDUP
+
+#ifndef HAVE_TERMINATE
 
 void terminate(void)
 {

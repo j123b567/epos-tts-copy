@@ -785,10 +785,49 @@ for an exciting story, just skip it.
 	- new option "show_labels"
 
 
-2.4.8 from 2.4.7	2.3.99
+2.4.8 from 2.4.7	 2.3.99
 	- fixed cow (failing to cow configuration->langs & lang->voices lists
 		and a pointer aliasing bug, cf. the next item)
 	- this_lang and this_voice variables changed to macros; referencing
 		them is now slower, while the context switch is faster
 	- NT adjustments, arch/dos/config.h.in
+
+
+2.4.9 from 2.4.8	10.3.99
+	- get_named_cfg & format_option unified, simplified, accelerated
+	- slab fragment size made slab-local
+	- fixed a 2.4.7 bug - long waveforms trunca being written to /dev/dsp
+	- additional ASCII characters permitted for Czech
+	- say can accept text through stdin
+	- pending data queues within streams
+
+
+2.4.10 from 2.4.9	15.3.99
+	- utterance chunking and joining
+	- some language dependent directory options now use the "lng" treename
+	- somewhat documented existing TTSCP modules in doc/english/ttscp.sgml
+	- some time sharing debugging
+	- slabbing langs and cfgs (very poorly)
+
+
+2.4.11 from 2.4.10	22.3.99
+	- fixed a reschedule bug
+	- sound ioctl adjustments to work on qnx
+	- added a proper cow() to voice_switch()
+	- language, voice made regular special typed options
+
+
+2.4.12 from 2.4.11	29.3.99
+	- QNX, NT and error-on-close fixes
+	- version stamps: /usr/lib/epos/version
+	- language and voice dependent options on the command line
+
+
+2.4.13 from 2.4.12	31.3.99
+	- NT fix (WSAStartup moved to a global constructor)
+	- data cmd: cannot refer to the present connection
+
+2.4.14 from 2.4.13	10.5.99
+	- say.cc fixes (strdup, pseudoconfiguration::paranoid)
+	- NT fix: async_close also attempts closesocket()
 

@@ -141,16 +141,16 @@ static inline int do_set(char *param, context *real)
 		} else reply ("451 Access denied", real);
 	} else {
 		if (!param) param = "";
-		if (!strcmp("language", param)) {
-			if (lang_switch(value)) reply ("200 OK", real);
-			else reply ("443 unknown language", real);
-			return PA_NEXT;
-		}
-		if (!strcmp("voice", param)) {
-			if (voice_switch(value)) reply ("200 OK", real);
-			else reply ("443 unknown voice", real);
-			return PA_NEXT;
-		}
+//		if (!strcmp("language", param)) {
+//			if (lang_switch(value)) reply ("200 OK", real);
+//			else reply ("443 unknown language", real);
+//			return PA_NEXT;
+//		}
+//		if (!strcmp("voice", param)) {
+//			if (voice_switch(value)) reply ("200 OK", real);
+//			else reply ("443 unknown voice", real);
+//			return PA_NEXT;
+//		}
 		reply("442 No such option", real);
 	}
 	return PA_NEXT;
@@ -298,23 +298,21 @@ int do_show(char *param)
 
 	if (o) {
 		if (access_level(this_context->uid) >= o->readable) {
-			char *tmp = format_option(o);
-			reply(tmp);
-			free(tmp);
+			reply(format_option(o));
 			reply("200 OK");
 		} else reply("451 Access denied");
 	} else {
 		if (!param) param = "";
-		if (!strcmp("language", param)) {
-			reply(this_lang->name);
-			reply("200 OK");
-			return PA_NEXT;
-		}
-		if (!strcmp("voice", param)) {
-			reply(this_voice->name);
-			reply("200 OK");
-			return PA_NEXT;
-		}
+//		if (!strcmp("language", param)) {
+//			reply(this_lang->name);
+//			reply("200 OK");
+//			return PA_NEXT;
+//		}
+//		if (!strcmp("voice", param)) {
+//			reply(this_voice->name);
+//			reply("200 OK");
+//			return PA_NEXT;
+//		}
 		if (!strcmp("languages", param)) {
 			int bufflen = 0;
 			for (i=0; i < cfg->n_langs; i++) bufflen += strlen(cfg->langs[i]->name) + strlen(cfg->comma);
@@ -396,6 +394,10 @@ int cmd_data(char *param, a_ttscp *a)
 	a_ttscp *ctrl = ctrl_conns->translate(param);
 	if (!ctrl) {
 		reply("444 invalid ctrl connection handle");
+		return PA_NEXT;
+	}
+	if (ctrl == a) {
+		reply("444 cannot control myself");
 		return PA_NEXT;
 	}
 

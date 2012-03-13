@@ -175,7 +175,7 @@ parser::chrlev(unsigned char c)
 DEBUG(4,7,{	if (c>127) fprintf(cfg->stdshriek,"Seems you're mixing two Czech character encodings?\n");
 		fprintf(cfg->stdshriek,"Fatal: parser dumps core.\n%s\n",(char *)current-2);
 })
-		shriek(431, fmt("Parsing an unhandled character - ASCII code %d", (unsigned int) c));
+		shriek(431, fmt("Parsing an unhandled character  '%c' - ASCII code %d", (unsigned int) c, (unsigned int) c));
 	}
 	return(CHRLEV[c]);
 }

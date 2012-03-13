@@ -64,6 +64,9 @@ struct lang : public cowabilium
 	void add_voice(const char  *voice_name);
 	void add_voices(const char *voice_names);
 	void compile_rules();		// could be made delayed....
+
+	void *operator new(size_t size);
+	void operator delete(void *ptr);
 };
 
 

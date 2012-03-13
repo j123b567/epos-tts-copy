@@ -72,6 +72,13 @@ class stream;
 
 enum DATA_TYPE {T_NONE, T_INPUT, T_TEXT, T_STML, T_UNITS, T_DIPHS, T_WAVEFM};
 
+struct pend_ll
+{
+	void *d;
+	pend_ll *next;
+	pend_ll(void *id, pend_ll *inext) { d = id; next = inext; };
+};
+
 class agent
 {
 	friend stream;
@@ -79,16 +86,22 @@ class agent
 	virtual void run() = 0;	/* run until out of input			*/
    protected:
 	void *inb;
-	void *outb;
+//	void *outb;
+	pend_ll *pendout;
+	pend_ll *pendin;
+	int pendcount;
 	agent *next;
+	agent *prev;
 	virtual bool apply(int size);	/* process <size> data from input to output	*/
-	virtual void finis();	/* tell the stream apply() has finished	*/
+	virtual void finis(bool err);	/* tell the stream apply() has finished	*/
 	void schedule();	/* add this agent to the run queue	*/
 	void block(int fd);	/* schedule other agents until fd has more data */
 	void push(int fd);	/* schedule other agents until fd can absorb more data */
+	void unquench();	/* no more queue overfull */
 	void relax();		/* free inb and outb properly		*/
-	void pass();		/* called when enough outb to be passed along	*/
+	void pass(void *);	/* called with data to be passed along	*/
    public:
+	virtual const char * name() = 0;
 	context *c;
 	DATA_TYPE in;
 	DATA_TYPE out;
@@ -101,6 +114,11 @@ class agent
 /*
  *	A stream is a linked list of agents, one of them being the
  *	stream agent itself. stream->head is an input agent.
+ *	stream->next links the agents together; a linked list
+ *	starting with next->pendin and ending with this->pendout
+ *	may contain pending data to be processed by next.
+ *	The length of this linked list must correspond to 
+ *	next->pendcount, which is used for flow control.
  */
 
 class stream : public agent
@@ -108,7 +126,8 @@ class stream : public agent
 	agent *callbk;	/* variable */
 	agent *head;	/* fixed    */
 	virtual void run();
-	virtual void finis();
+	virtual const char* name() { return "stream"; };
+	virtual void finis(bool err);
    public:
 	stream(char *, context *);
 	virtual ~stream();
@@ -135,7 +154,7 @@ class a_protocol : public agent
 class a_ttscp : public a_protocol
 {
 	virtual int run_command(char *);
-
+	virtual const char *name() { return "ttscp"; };
    public:
 	a_ttscp *ctrl;
 	hash_table<char, a_ttscp> *deps;
@@ -144,15 +163,12 @@ class a_ttscp : public a_protocol
 	virtual ~a_ttscp();
 	virtual void brk();
 	virtual void disconnect();
-
-//	void brkall();		/* FIXME: should never be used; remove */
 };
-
-//extern a_ttscp *ctrl_conns;
 
 class a_accept : public agent
 {
 	virtual void run();
+	virtual const char *name() { return "accept"; };
 	sockaddr_in ia;
    public:
 	a_accept();
