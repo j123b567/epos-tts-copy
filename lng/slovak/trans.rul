@@ -16,7 +16,7 @@ $SONANT    = JLֵRְMNׂG	; do not use after nk-> Nk
 $nonsonant = $voiced$voiceless
 $consonant = $nonsonant$sonant
 $diphtong  = גלשפ
-$vowel     = aeiouyביםףת‎פה$diphtong
+$vowel     = aeiouyביםףת‎ה$diphtong
 $sonority  = 0<'$nonsonant<$nasal<l<rאוj<$vowel
 
 $everywhere = !_!
@@ -80,7 +80,11 @@ progress  Q>_($everywhere)	sent	colon
 progress  Q>:($everywhere)	text	sent
 
 # subst     syll.dic		;this is done for Czech, but rather not for Slovak
-regress   0>'(0_$vowel)		colon
+
+if glottal_stop
+{
+	regress   0>'(0_$vowel)		colon
+}
 
 with "mעa ma mne mi mne mnou nבs nבm nami vבs vבm vami\
 	jeho neho mu nemu עom nםm nich nimi עou nej עu jeho jemu jej"	word
@@ -151,11 +155,11 @@ progress  n>N(!_kg)
 
 if  diphtongs
 {
-	progress  aeu>גלש(i_!)
-	progress  i>0(!_גלש)
+	regress  aeu>גלש(i_!)
+	regress  i>0(!_גלש)
 }
 if !diphtongs
 {
-	progress  0>u(!_פ)
-	progress  פ>o(!_!)
+	regress  0>u(!_פ)
+	regress  פ>o(!_!)
 }
