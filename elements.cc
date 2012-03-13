@@ -2,6 +2,16 @@
  *	ss/src/elements.cc
  *	(c) 1996-98 geo@ff.cuni.cz
  *
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License in doc/COPYING for more details.
+ *
  */
 
 #include "common.h"
@@ -44,7 +54,7 @@ unit::unit(UNIT layer, int content)
 	i=0;
 	t=0;
 	scope=false;
-	DEBUG(2,2,fprintf(stddbg,"New unit %u, content %d\n", layer, content);)
+	DEBUG(1,2,fprintf(stddbg,"New unit %u, content %d\n", layer, content);)
 }
 
 /****************************************************************************
@@ -90,9 +100,9 @@ unit::write_diphs(diphone *whither, int first, int n)
 	for (m=0; m<n && tmpu!=&EMPTY; m++, tmpu=tmpu->Next(U_DIPH)) {
 		tmpu->sanity();
 		whither[m].code=tmpu->cont;
-		whither[m].f=cfg.f_neutral+tmpu->effective(Q_FREQ);
-		whither[m].e=cfg.i_neutral+tmpu->effective(Q_INTENS);
-		whither[m].t=cfg.t_neutral+tmpu->effective(Q_TIME);
+		whither[m].f=cfg->f_neutral+tmpu->effective(Q_FREQ);
+		whither[m].e=cfg->i_neutral+tmpu->effective(Q_INTENS);
+		whither[m].t=cfg->t_neutral+tmpu->effective(Q_TIME);
 	};
 	scope=tmpscope;
 	iucache=this; ifcache=first+m; ocache=tmpu;
@@ -108,10 +118,10 @@ void
 unit::fout(char *filename)      //NULL means stdout
 {
 	FILE *outf;
-	if (filename) outf=fopen(filename,"wt"); else outf=stdout;
-	fputs(cfg.header_xscr,outf);
+	if (filename) outf=fopen(filename,"wt"); else outf = stddbg;
+	fputs(cfg->header_xscr,outf);
 	fdump(outf);
-	fputs(cfg.footer_xscr,outf);
+	fputs(cfg->footer_xscr,outf);
 	if(filename)fclose(outf);
 }
 
@@ -127,39 +137,39 @@ unit::fdump(FILE *handle)        //this one does the real job
 	sanity();
 	if (depth==U_PHONE) {
 		colorize (depth,handle);
-		if (cont!=NO_CONT||!cfg.out_swallow__) fputc(cont,  handle);
+		if (cont!=NO_CONT||!cfg->out_swallow__) fputc(cont,  handle);
 		colorize(-1, handle);
 		return;
 	};
-	if (cfg.out_prefix && !(cont==NO_CONT && cfg.out_swallow__)) {
+	if (cfg->out_prefix && !(cont==NO_CONT && cfg->out_swallow__)) {
 		colorize(depth,handle);   //If you wanna disable this, go to interf.cc::colorize()   
 		fputc(cont, handle);
 		colorize(-1,handle);
 	};
-	if (cfg.out_verbose) {
+	if (cfg->out_verbose) {
 		colorize(depth,handle);   //If you wanna disable this, go to interf.cc::colorize()   
-		fputs(cfg.out_opening[depth],handle);
+		fputs(cfg->out_opening[depth],handle);
 		colorize(-1,handle);
 	};
 	if ((tmpu=firstborn)) {
 		tmpu->fdump(handle);
 		tmpu=tmpu->next;
 		while(tmpu) {
-			if (cfg.out_verbose) {
+			if (cfg->out_verbose) {
 				colorize(depth-1,handle);	
-				fputs(cfg.out_separ[depth-1],handle);
+				fputs(cfg->out_separ[depth-1],handle);
 				colorize(-1,handle);
 			};
 			tmpu->fdump(handle);
 			tmpu=tmpu->next;
 		};
 	};
-	if (cfg.out_verbose) {
+	if (cfg->out_verbose) {
 		colorize(depth,handle);
-		fputs(cfg.out_closing[depth],handle);
+		fputs(cfg->out_closing[depth],handle);
 		colorize(-1,handle);
 	} else fputc(' ',handle);	
-	if (cfg.out_postfix && !(cont==NO_CONT && cfg.out_swallow__)) { 
+	if (cfg->out_postfix && !(cont==NO_CONT && cfg->out_swallow__)) { 
 		colorize(depth,handle);   //If you wanna disable this, go to interf.cc::colorize()   
 		fputc(cont, handle);
 		colorize(-1,handle);
@@ -270,7 +280,7 @@ char *
 unit::gather(char *buffer_now, char *buffer_end, bool suprasegm)
 {    
 	unit *tmpu;
-	DEBUG(0,3,fprintf(stddbg,"Chroust! %d %s\n", buffer_end-buffer_now, buffer_now-3);)
+//	DEBUG(0,3,fprintf(stddbg,"Chroust! %d %s\n", buffer_end-buffer_now, buffer_now-3);)
 	for(tmpu=firstborn;tmpu && buffer_now<buffer_end;tmpu=tmpu->next) 
 		buffer_now=tmpu->gather(buffer_now, buffer_end, suprasegm);
 	if(cont!=NO_CONT && (depth==U_PHONE || suprasegm)) {
@@ -298,7 +308,7 @@ unit::subst(char *subst_buff)
 	parsie=new PARSER(subst_buff);
 	DEBUG(0,3,fprintf(stddbg,"innermost unit::subst - parser is ready\n");)
 	tmpu=new unit(depth,parsie);
-	if (cfg.paranoid) parsie->done();
+	if (cfg->paranoid) parsie->done();
 	sanity();
 	if (firstborn && !tmpu->firstborn) {
 		unlink(M_DELETE);
@@ -350,7 +360,7 @@ unit::subst(hash *table, unsigned int safe_grow, char *prefix, char *prefix_end,
  unit::subst  (outer - implements the various subst "methods")
  ****************************************************************************/
 
-void
+bool
 unit::subst(hash *table, SUBST_METHOD method)
 {
 	char    gatbuff[MAX_GATHER+2];
@@ -361,9 +371,9 @@ unit::subst(hash *table, SUBST_METHOD method)
 	unsigned int safe_grow;		/* Bytes that can be added in situ */
 	
 	sanity();
-	if ((method & M_LEFT) && !prev) return;
-	if ((method & M_RIGHT) && !next) return;
-	for (int i=cfg.multi_subst; i; i--) {
+	if ((method & M_LEFT) && !prev) return false;
+	if ((method & M_RIGHT) && !next) return false;
+	for (int i=cfg->multi_subst; i; i--) {
 		*gatbuff='^';
 		strend=gather(gatbuff+1, gatbuff+MAX_GATHER, (method&M_PROPER)!=M_EXACT);
 		*strend=0;
@@ -394,16 +404,17 @@ unit::subst(hash *table, SUBST_METHOD method)
 						goto break_home;
 			}
 		}
-		return;
+		return false;
     
 		break_home:
 		DEBUG(1,3,fprintf(stddbg,"inner unit::subst has made the subst, relinking l/r, method %d\n", method);)
 		sanity();
 		if (method & (M_LEFT | M_RIGHT)) unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS);
+		if (method & M_ONCE) return true;
 	};
 	warn("Infinite substitution loop detected on \"%s\"", gatbuff);
 	sanity();
-	return;
+	return true;
 }
 
 
@@ -423,7 +434,7 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 	int	i,j,k,l;
 	
 	sanity();
-	for (i=cfg.multi_subst; i; i--) {
+	for (i=cfg->multi_subst; i; i--) {
 		strend=gather(gatbuff, gatbuff+MAX_GATHER, true);
 		*strend=0;
 		DEBUG(1,3,fprintf(stddbg,"unit::regex %s, subexps=%d\n", gatbuff, subexps);)
@@ -499,7 +510,7 @@ unit::split(unit *before)
 {
 	unit *clone=new unit(*this);
 
-	DEBUG(2,5,fprintf(stddbg,"Splitting in %c before %c, clone is %c\n", cont, before->inside(), clone->cont);
+	DEBUG(1,5,fprintf(stddbg,"Splitting in %c before %c, clone is %c\n", cont, before->inside(), clone->cont);
 		fout(NULL);)
 	clone->scope=false;
 	if(!(lastborn=before->prev))
@@ -538,8 +549,8 @@ char syll_pending;
 void
 unit::syll_break(char *sonor, unit *before)
 {
-	if (cfg.syll_hack && prev==father->firstborn 
-		&& sonor[prev->inside()]<sonor[cfg.limit_syll_hack]) return;
+	if (this_lang->syll_hack && prev==father->firstborn 
+		&& sonor[prev->inside()]<sonor[this_lang->syll_thr]) return;
 	father->split(before);
 	syll_pending=0;
 }
@@ -636,7 +647,7 @@ unit::smooth(UNIT target, int *recipe, int n, int rec_len, FIT_IDX what)
 	unit *u, *v;
 	int cq_wrap, j, k, avg;
 	
-	DEBUG(2,2,fprintf(stddbg, "unit::smooth (%d:%d) %d %d ...\n", n, rec_len, recipe[0], recipe[1]);)
+	DEBUG(1,2,fprintf(stddbg, "unit::smooth (%d:%d) %d %d ...\n", n, rec_len, recipe[0], recipe[1]);)
 	u=v=LeftMost(target);
 	for (j=0; j<n; j++) smooth_cq[j] = FIT(u, what);
 	for (; j<rec_len && u->Next(target)!=&EMPTY; j++, u=u->Next(target)) smooth_cq[j] = FIT(u, what);
@@ -770,7 +781,7 @@ unit *_unit_just_unlinked=NULL;		//used by unlink(), ::ss_done(), sanity()
 void
 unit::unlink(REPARENT rmethod)
 {
-	DEBUG(2,2,fprintf(stddbg,"unlinking depth=%d\n",depth);)
+	DEBUG(1,2,fprintf(stddbg,"unlinking depth=%d\n",depth);)
 	sanity();
 	if (next) next->prev=prev;
 		else if (father) father->lastborn=prev;
@@ -832,7 +843,7 @@ unit::forall(UNIT target, bool userfn(unit *patiens))
 int
 unit::effective(FIT_IDX which)
 {
-	DEBUG(1,2,fprintf(stddbg,"computing unit::effective, level %d, f=%d\n", depth, f);)
+	DEBUG(0,2,fprintf(stddbg,"computing unit::effective, level %d, f=%d\n", depth, f);)
 	int my=which  ?  which==2 ? t : i  :  f;
 	return father? father->effective(which)+my : my;
 } 
@@ -941,7 +952,7 @@ unit::Prev(UNIT target)
 void
 unit::sanity()
 {
-	if (cfg.trusted) return;    
+	if (cfg->trusted) return;    
 	if (this==NULL)             EMPTY.insane ("this non-NULL");
 //	if (!firstborn && depth>U_PHONE)  insane ("having content");
 	if (this==_unit_just_unlinked) return;
@@ -956,7 +967,7 @@ unit::sanity()
 	if (depth==U_TEXT && father)      insane("TEXT.father");
 	if (cont<0 || cont>255&&depth>U_DIPH) insane("content"); 
 
-        if (cfg.allpointers) return;
+        if (cfg->allpointers) return;
 	if (prev && (unsigned long int) prev<0x8000000) insane("prev");
 	if (next && (unsigned long int) next<0x8000000)  insane("next");
 	if (firstborn && (unsigned long int) firstborn<0x8000000) insane("firstborn");
@@ -966,7 +977,7 @@ unit::sanity()
 void
 unit::insane(const char *token)
 {
-	if (cfg.colored) fprintf(stdshriek,"\033[00;32mSanity check of \033[01;32m%s\033[00;32m failed. cont=%d depth=%d\033[37m. This is a bug; contact the authors.\n", token,cont,depth); 
+	if (cfg->colored) fprintf(stdshriek,"\033[00;32mSanity check of \033[01;32m%s\033[00;32m failed. cont=%d depth=%d\033[37m. This is a bug; contact the authors.\n", token,cont,depth); 
 	else fprintf(stdshriek,"Sanity check of %s failed. cont=%d depth=%d. This is a bug; contact the authors.\n", token,cont,depth); 
 	user_pause();
     

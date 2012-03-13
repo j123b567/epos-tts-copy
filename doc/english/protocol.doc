@@ -1,0 +1,190 @@
+
+<sect1>Text-To-Speech Control Protocol  (TTSCP)  (pre-version 1)
+<p>
+
+The following commands are used for communication with ssd the daemon.
+Any party may quit the session, but must advise the other one.
+Every command is given by an example, together with a typical server
+response. 
+
+<verb>
+	TTSCP spoken here
+hello	user@host.domain.net
+	3xx user not found
+	2xx but go ahead
+set option on
+	2xx OK
+say
+	1xx Text OK
+	2xx OK
+trans Data to transcribe
+	1xx Transcription being sent
+	...
+	2xx OK
+done
+	600
+</verb>
+
+The "hello" and "done" commands may become mandatory, the rest may
+be freely used between them. For the interaction with a human, the
+"help" command is available.
+
+The "break" command currently stops the speech output for all
+the voices. This will change in the future.
+
+It is legal to use "anonymous" instead of the address in the hello
+command: "hello anonymous". It is also legal to switch users
+with additional hello commands. This may cause context switches.
+
+It is advised to check the greeting string received to begin in 
+"preTTSCP" or "TTSCP ". If it doesn't, the client or possibly the
+server may be obsolete.
+
+<sect2>commands
+
+<sect3>break
+<p>
+
+Stop writing Signal into devices as soon as possible.
+(This command may disappear in the future.)
+
+<sect3>done
+<p>
+
+Issued as the last command in a session. The client may exit just
+after sending this command. The server should reply with error
+code 600.
+
+<sect3>hello
+<p>
+
+Should precede all TTSCP exchanges. Its parameter is "anonymous"
+or a local or configured user account name. Some other user names
+may acquire special meaning. We'll see.
+
+Unless the account requires no authentication, this command
+should be immediately followed by a proper password command;
+otherwise the session may be refused to issue most or all
+other commands.
+
+If no hello command is issued, "hello anonymous" is assumed.
+
+The hello command is still not implemented properly and
+its semantics may change.
+
+<sect3>help
+<p>
+
+Request for TTSCP syntax help. The server response is undefined
+except for the proper error code termination (class 2 or 4).
+
+Suggested behaviour is to reply with "442 help yourself"
+or with no more than 24 lines of command resume.
+If a parameter is given, the server may supply more 
+specific information, such as verbose description of a single
+command.
+
+<sect3>passwd
+<p>
+
+Attempts to validate an account, as given by a previous "hello"
+command. If no valid hello command was ever received, the internal
+server password may be used. This may enable some internal commands
+such as "reap".
+
+The password format is as yet unspecified. Work in progress.
+
+<sect3>reap
+<p>
+
+Internal implementation only. This command is not required
+in any TTSCP implementation. On UNIX, this command is used to
+kill a thread specified by a uid given by its parameter.
+The session must be validated to UID_SERVER before.
+
+<sect3>say
+<p>
+
+The parameter is a Text. The server should process it and
+write the Signal to a device as configured.
+
+<sect3>set
+<p>
+
+Set a server configuration parameter. The parameter is of the form
+"option=value". The server may ignore this command altogether
+with an error code 441. In any case, this setting should never
+alter the execution environment of existing and/or future sessions.
+
+If the option name is "language", the command will attempt to
+switch the language. The same goes for "voice".
+
+<sect3>show
+<p>
+
+Show a configuration parameter value. The parameter is an option
+name. The server may ignore this command with error code 441.
+
+<sect3>shutdown
+<p>
+
+Stop the server. Quit pending sessions. May disappear in the future.
+
+<sect3>trans
+<p>
+
+The parameter is a Text. The server should process it and
+reply with a (phonetic) Transcription.
+
+
+
+
+<sect2>response codes
+<p>
+
+Still not specified. The following classes are likely to be established:
+
+0xx  reserved  (server queries client?)
+1xx  OK, server starts requested transmission
+2xx  OK, client should transmit another command
+3xx  warning, server still trying
+4xx  command failed, client should tx
+5xx  reserved
+6xx  fatal problem, connection terminated (600 - reply for "done")
+7xx  reserved  (server crash with a dump?)
+8xx  reserved  (server crash?)
+
+The client is expected to send another command whenever it receives
+a 2xx or a 4xx response, not to send otherwise. The client should
+treat the connection as terminated, whenever it receives any response
+with code 5xx or higher. It may also quit at any time just after
+sending a "done" command to the server.
+
+The messages accompanying 3xx and higher response codes are likely
+to be interesting to the user if any. Any message without an error
+code is a data flow primarily meant for the user if any; a sequence
+of these may occur only after some 1xx response, except for debugging
+messages if on.
+
+At the moment, some error codes contain letters. Later, all of
+them will consist of digits only and will be space-terminated.
+
+111	daemon talks
+121	transcription follows
+141	option value follows
+
+200	daemon is happy and ready
+211	access granted
+212	anonymous access granted
+
+360	command ignored (possibly not fully implemented)
+
+411	command not recognized
+441	no such option
+442	help not available
+
+600	session ended normally
+690	session terminated because of an old-style error (shriek())
+
+800	server shutting down as requested by client
+

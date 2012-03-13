@@ -2,6 +2,16 @@
  *	ss/src/parser.cc
  *	(c) 1996-98 geo@ff.cuni.cz
  *
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License in doc/COPYING for more details.
+ *
  */
 
 #include"common.h"
@@ -14,20 +24,20 @@
 
 simpleparser::simpleparser(const char *filename, int mode)
 {
-	if (!cfg.loaded) ss_init();
+	if (!cfg->loaded) ss_init();
 	if (!filename || !*filename) {
 		register signed char c;
 		int i=0;
-		text=(Char *)malloc(cfg.dev_txtlen+1);
+		text=(Char *)malloc(cfg->dev_txtlen+1);
 		if(!text) shriek("Parser: Out of memory");
 		do text[i++]=c=getchar(); 
-			while(c!=-1 && c!=cfg.eof_char && i<cfg.dev_txtlen);
+			while(c!=-1 && c!=cfg->eof_char && i<cfg->dev_txtlen);
 		text[--i]=0;
 		txtlen=i;
 	} else { 
 		text = mode
 			? (unsigned char *) strdup(filename)
-			: (unsigned char *) freadin(filename, cfg.input_dir);
+			: (unsigned char *) strdup(freadin(filename, this_lang->input_dir, "rt", "input text"));
 		txtlen=strlen((char *)text);
 	}
 	DEBUG(2,7,fprintf(stddbg,"Allocated %u bytes for the main parser\n", txtlen);)
@@ -36,7 +46,7 @@ simpleparser::simpleparser(const char *filename, int mode)
 
 simpleparser::simpleparser(const char *str)
 {
-	if (!cfg.loaded) ss_init();
+	if (!cfg->loaded) ss_init();
 	DEBUG(1,7,fprintf(stddbg,"Parser for %s is to be built\n",str);)
 	text=(Char *)strdup(str);
 	txtlen=strlen((char *)text);
@@ -119,6 +129,7 @@ simpleparser::regist(UNIT u, const char *list)
 		if (CHRLEV[*s]!=U_ILL && CHRLEV[*s]!=u)
 			shriek("Ambiguous syntactic function of %c",*s);
 		CHRLEV[*s]=u;
+		TRANSL_INPUT[*s] = (Char)*s;
 	};
 };
 
@@ -138,30 +149,19 @@ void
 simpleparser::initables(SYMTABLE table)
 {
 	int c;
-	for(c=0;c<256;c++)TRANSL_INPUT[c]=(Char)c;
-	for(c=1;c<256;c++)CHRLEV[c]=U_ILL;*CHRLEV=U_TEXT;
+//	if (cfg->relax_input) for (c=1; c<256; c++) TRANSL_INPUT[c] = cfg->dflt_char;
+	for(c=0; c<256; c++) TRANSL_INPUT[c] = (Char)c;
+	for(c=1; c<256; c++) CHRLEV[c] = U_ILL;*CHRLEV = U_TEXT;
 	switch (table) {
 	case ST_ROOT:
-		alias(cfg.lowercase,cfg.uppercase);
 		alias("   ","\n\r\t");
-		regist(U_PHONE, cfg.lowercase);
-		regist(U_SYLL,"|");
-		regist(U_WORD," ~");
-		regist(U_COLON,",-");
-		regist(U_SENT,":.!?");
-		regist(U_PHONE,"'%");
-		break;
 	case ST_RAW:
-		regist(U_PHONE, cfg.lowercase);
-		regist(U_PHONE, cfg.uppercase);
-		regist(U_PHONE,"'%");
-		regist(U_SYLL,"|");
-		regist(U_WORD," ~");
-		regist(U_COLON,",-");
-		regist(U_SENT,":.!?");
+		for (UNIT u = U_PHONE; u < U_TEXT; u = (UNIT)(u+1))
+			regist(u, this_lang->perm[u]);
+		regist(U_WORD, " ");
 		break;
 	case ST_EMPTY:
-		for(c=1;c<256;c++)CHRLEV[c]=U_VOID;*CHRLEV=U_TEXT;
+		for(c=1; c<256; c++) CHRLEV[c] = U_VOID; *CHRLEV = U_TEXT;
 		break;
 	default: shriek("Garbage passed to simpleparser::initables, %d", table);
 	};

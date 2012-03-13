@@ -2,6 +2,16 @@
  *	ss/src/hash.cc
  *	(c) 1994-98 geo@ff.cuni.cz (Jirka Hanika)
  *
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License in doc/COPYING for more details.
+ *
  *	This version of hash::hash can handle tricky comments acceptably,
  *	i.e. a comment must begin with a COMMENT_LINES character, which
  *	must either be preceded by a WHITESPACE one or come as the first
@@ -17,12 +27,21 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
  *
  */
 
+#ifndef HASH_IS_SLABBING
+#define HASH_IS_SLABBING
+#endif
+
+#ifndef HASH_CANNOT_READ_FILES
+#define HASH_CAN_READ_FILES
 #include "defaults.h"         //Comment out if doesn't exist
+#endif
+
 #include "hash.h"
 
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #ifdef WANT_DMALLOC
 #include <dmalloc.h>          // Unimportant debugging hack. Throw it out.
@@ -36,11 +55,19 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
 
 #define DOWNSIZE_HESITATE 8 // Downsizing should be less frequent for very small tables
 
+#define unconst(x) (const_cast<key_t *>(x))
+
 #define key_t_is_string (sizeof(key_t)==1)
 #define data_t_is_string (sizeof(data_t)==1)
-#define keycmp(x,y) (key_t_is_string?strcmp(x,y):memcmp(x,y,sizeof(key_t)))
-#define keydup(x) (key_t_is_string?(key_t*)strdup((char *)(x)):(key_t *)memcpy(malloc(sizeof(key_t)), x, sizeof(key_t)));
-#define datadup(x) (data_t_is_string?(data_t*)strdup((char *)(x)):(data_t *)memcpy(malloc(sizeof(data_t)), x, sizeof(data_t)));
+#define keyhash(x)    (key_t_is_string  ? 0 /* unreachable */ : (unsigned int) *unconst(key))
+#define keycmp(x,y)   (key_t_is_string  ? strcmp((char *)x, (char *)y)  : *unconst(x)-*unconst(y))
+#define keydodup(x)   (key_t_is_string  ? (key_t*)strdup((char *)(x))   : new key_t(*x))
+#define datadodup(x)  (data_t_is_string ? (data_t *)strdup((char *)(x)) : new data_t(*x))
+
+#define keydup(x)	(dupkey  ? keydodup(x)  : const_cast<key_t *>(x))
+#define datadup(x)	(dupdata ? datadodup(x) : const_cast<data_t *>(x))
+#define keydel(x)	(dupkey  ? delete(x)	: (void)(x))
+#define datadel(x)	(dupdata ? delete(x)	: (void)(x))
 
 #pragma warn -rch
 
@@ -52,12 +79,61 @@ struct hsearchtree {
 	short int height;
 };
 
+
+#ifdef HASH_IS_SLABBING
+
+#include "slab.h"
+
+#define hsearchtree_size sizeof(hsearchtree<char, char>)
+template class slab <hsearchtree_size>;
+
+slab <hsearchtree_size> *hash_tree_slab;
+
+inline void *tree_alloc()
+{
+	if (!hash_tree_slab) {
+		hash_tree_slab = new slab<hsearchtree_size>;
+	}
+	return hash_tree_slab->alloc();
+}
+
+inline void tree_delete(void *tree) 
+{
+	hash_tree_slab->release(tree);
+	return;
+}
+
+void shutdown_hashing()
+{
+	if (hash_tree_slab) delete hash_tree_slab;
+}
+
+#else
+
+inline void * tree_alloc()	/* build some slab here */
+{
+	return malloc(sizeof (hsearchtree<char, char>));
+}
+
+inline void tree_delete(void *tree) 
+{
+	free(tree);
+}
+
+void shutdown_hashing()
+{
+}
+
+#endif
+
 #if (0) //try #ifdef DEBUG_HASH if you wanna shriek()
 #define push(x) (_hash_sp>=_HASH_DEPTH?shriek("push %s%d","",_hash_sp):NULL,_hash_stk[_hash_sp++]=(x))
 #define pop (_hash_sp<1?shriek("pop %s%d","",_hash_sp):NULL,*_hash_stk[--_hash_sp])
 #else
 
-#define push(x) (_hash_stk[_hash_sp++]=(x))
+#define UNTYPED(x) ((hsearchtree<void, void> **)(x))
+#define UNTYPED_LVALUE(x) (*(hsearchtree<void, void> **)(&x))
+#define push(x) (_hash_stk[_hash_sp++]=(UNTYPED(x)))
 #define pop (*_hash_stk[--_hash_sp])
 
 #endif // unconditional conditional
@@ -81,8 +157,8 @@ struct hsearchtree {
 inline void
 balance()		/* Looking for params? To be found on the _hash_stk */
 {
-	hsearchtree <char, char> *tree;
-	hsearchtree <char, char> **ptree;
+	hsearchtree <void, void> *tree;
+	hsearchtree <void, void> **ptree;
 
 	while (_hash_sp) {
 		ptree=&pop;
@@ -111,8 +187,8 @@ printf("hash::balance Gonna balance at %s:\n", tree->key);
 					tree=(*ptree)->l;
 					tree->height=heightof(tree->l)+1;
 					(*ptree)->height=tree->height+1;
-				};
-			};
+				}
+			}
 		}
 		else if (tree->r && tree->r->height>=tree->height) {
 			tree->height++;
@@ -139,18 +215,16 @@ printf("hash:: balance Gonna balance at %s:\n", tree->key);
 					tree->height=heightof(tree->r)+1;
 					(*ptree)->height=tree->height+1;
 				
-				};
-			};
+				}
+			}
 			
 		}
 		else _hash_sp=0;
-	};
+	}
 }
 
 int _hash_sp = 0;
-hsearchtree <char, char> **_hash_stk[_HASH_DEPTH+1];
-
-
+hsearchtree <void, void> **_hash_stk[_HASH_DEPTH+1];
 
 
 
@@ -164,6 +238,7 @@ hash_table<key_t, data_t>::hash_table(int size)
 #ifdef DEBUG_HASH
 printf("hash::hash: sized %d\n", size);
 #endif
+	dupkey = dupdata = true;
 	if (!size) size++;
 	capacity=size;
 	maxdep=longest=items=0;
@@ -186,6 +261,7 @@ hash_table<key_t, data_t>::hash_table(hash_table *parent)
 {
 	int i;
 
+	dupkey = dupdata = true;
 	capacity = parent->capacity;
 	ht = (hsearchtree<key_t, data_t> **)calloc(capacity,
 				sizeof(hsearchtree<key_t, data_t> *));
@@ -237,6 +313,7 @@ hash::hash(const char *filename,
 	char *tmp;
 	free(ht);
 
+	dupkey = dupdata = true;
 	buff=(char *)malloc(hash_max_line);
 
 #ifdef DEBUG_HASH
@@ -248,9 +325,9 @@ printf("hash::hash: using file %s\n", filename);
 	perc_optimal=perc_full;
 	
 	if((hashfile=fopen(filename, "rt"))==NULL) {
+		ht = (hsearchtree<char, char> **)calloc(sizeof(int *), 1);
+		capacity = 0;
 		if (not_found == ANYWAY) {
-			ht = (hsearchtree <char, char> **) malloc(1);
-			capacity = 0;
 			items = -1;
 			goto fail;
 		}
@@ -259,7 +336,7 @@ printf("hash::hash: using file %s\n", filename);
 	while (fgets(buff, hash_max_line, hashfile)) if (!strspn(buff+strspn(buff,WHITESPACE),COMMENT_LINES)) l++;
 	capacity=l*100/perc_full|1;
 	cfg_rehash(perc_downsize, perc_upsize, max_tree_depth);
-	ht=(hsearchtree<char, char> **)calloc(capacity,sizeof(hsearchtree<char, char>));
+	ht=(hsearchtree<char, char> **)calloc(capacity,sizeof(hsearchtree<char, char>*));
 	rewind(hashfile);
 	l=0;
 	while (l++,fgets(buff, hash_max_line, hashfile)) {
@@ -274,8 +351,8 @@ printf("hash::hash: using file %s\n", filename);
 		if (*tmp) *tmp++=0;		//terminate the key and go on
 		value=tmp+=strspn(tmp, WHITESPACE);
 		if (!*value) switch ((int)no_data) {
-			case DATA_EQUALS_KEY: value=key; break;
-			case DATA_OBLIGATORY: shriek("No value specified in %s, line %d",filename,l);
+			case (int)DATA_EQUALS_KEY: value=key; break;
+			case (int)DATA_OBLIGATORY: shriek("No value specified in %s, line %d",filename,l);
 			default: value=no_data;
 		}
 		else if (!multi_data && tmp[strcspn(tmp,WHITESPACE)]) 
@@ -388,7 +465,7 @@ hash::update(char *filename, bool keep_backup, bool remove_removed)
 			tmp += strlen(tmp);
 			strncpy(tmp, *appendix ? appendix : "\n", hash_max_line + buff - tmp);
 			free(appendix);
-			free(remove(key));
+			keydel(remove(key));
 		} else if (remove_removed) continue;
 		*zero = holdchar;
 		if (fputs(buff, _outfile)==EOF) result = 1;
@@ -415,7 +492,6 @@ hash::update(char *filename, bool keep_backup, bool remove_removed)
  	the other cases are expected to be optimized out.
  ****************************************************************************/
 
-
 template <class key_t, class data_t>
 inline int 
 hash_table<key_t, data_t>::fn(const key_t *key)
@@ -423,9 +499,11 @@ hash_table<key_t, data_t>::fn(const key_t *key)
 	unsigned int j=0;              //should be long for big tables
 	const char *p;
 	
-	if (key_t_is_string) for(p=key;*p;p++)j=23*j+*p;
-	else if (sizeof (key_t)%sizeof(int)) for(p=key;p<key+1;p++)j=73*j+*p;
-	else for(p=key;p<key+1;p+=sizeof(int))j=233+*(unsigned int *)p;
+	if (key_t_is_string) for (p = (char *)key; *p; p++) j = 23*j+*p;
+	else j = keyhash(key);
+
+//	else if (sizeof (key_t)%sizeof(int)) for (p=(char *)key;p<(char *)(key+1);p++) j=73*j+*p;
+//	else for (p=(char *)key;p<(char *)(key+1);p+=sizeof(int)) j=233+*(unsigned int *)p;
 
 #ifdef POWER_OF_TWO
 	return(j & hash_fn_mask);
@@ -450,25 +528,25 @@ if (_hash_sp) shriek("Hash stack dirty! %s%d","",_hash_sp);
 #endif
 	register int result;
 	hsearchtree<key_t, data_t> *tree;
-	*_hash_stk=ht+fn(key);_hash_sp=1;
-	for(tree=(**_hash_stk);tree;) {
-		if(!(result=keycmp(key,tree->key))) {          //key already there
+	*_hash_stk=UNTYPED(ht+fn(key));_hash_sp=1;
+	for(UNTYPED_LVALUE(tree)=(**_hash_stk);tree;) {
+		if(!(result=keycmp(key, tree->key))) {          //key already there
 #ifdef DEBUG_HASH
 printf("hash::add %s already there, old value \"%s\"\n",key, tree->data);
 #endif		
-			free(tree->data);
+			datadel(tree->data);
 			tree->data=datadup(value);
 			_hash_sp=0;
 			return;
 		};
-		tree=*push(result>0?&tree->l:&tree->r);
+		tree=(hsearchtree<key_t, data_t> *)*push(result>0?&tree->l:&tree->r);
 	};
-	if(key_t_is_string && longest<(result=strlen(key))) longest=result;
+	if(key_t_is_string && longest<(result=strlen((char *)key))) longest=result;
 
 	/* "tree=new hsearchtree;" would confuse DMALLOC */
-	tree=(hsearchtree <key_t, data_t> *)malloc(sizeof(hsearchtree<key_t, data_t>));
+	tree=(hsearchtree <key_t, data_t> *)tree_alloc();
 	
-	pop=tree;
+	pop=(hsearchtree<void, void> *)tree;
 	tree->l=tree->r=NULL; tree->height=0;
 	tree->key=keydup(key);
 	tree->data=value==NULL?(data_t *)NULL:datadup(value);
@@ -529,7 +607,7 @@ printf("hash::remove \"%s\"\n",key);
 #ifdef DEBUG_HASH
 printf("hash::remove %s is there, value \"%s\"\n",key, (*tree)->data);
 #endif		
-	free(here->key);
+	keydel(here->key);
 	val=here->data;
 	while (here->l && here->r) {	// "if" should be enough
 		for (xchg=&here->l; (*xchg)->r; xchg=&(*xchg)->r) push(xchg);
@@ -541,12 +619,12 @@ printf("hash::remove %s is there, value \"%s\"\n",key, (*tree)->data);
 	}
 	if (here->l) *tree=here->l; else *tree=here->r;
 	while (_hash_sp) {
-		there=pop;
+		UNTYPED_LVALUE(there)=pop;
 		if      (there->l && there->l->height>=there->height) there->height++;
 		else if (there->r && there->r->height>=there->height) there->height++;
 		else _hash_sp=0;	// if no changes there, break out.
 	};
-	delete here;
+	tree_delete (here);
 #ifdef DEBUG_HASH
 printf("Rehash? (%d of %d)\n",items, min_items);
 #endif
@@ -596,9 +674,9 @@ hash_table<key_t, data_t>::dissolvetree(hsearchtree<key_t, data_t> *tree)
 	if (tree!=NULL) {
 		dissolvetree(tree->l);
 		dissolvetree(tree->r);
-		free(tree->key);
-		free(tree->data);
-		delete(tree);
+		keydel(tree->key);
+		datadel(tree->data);
+		tree_delete(tree);
 	}
 }
 
@@ -761,10 +839,11 @@ hash::listtree(hsearchtree <char, char> *tree, int indent)
 	};
 };
 
-
+#undef unconst
 
 #undef key_t_is_string 
 #undef data_t_is_string
+#undef keyhash
 #undef keycmp
 #undef keydup
 #undef datadup
@@ -772,3 +851,15 @@ hash::listtree(hsearchtree <char, char> *tree, int indent)
 #undef push
 #undef pop
 #undef heightof
+
+/* -------- cut here -------- */
+
+struct freadin_file
+{
+	char *data;
+	int ref_count;
+	~freadin_file();
+};
+
+template class hash_table<char, freadin_file>;
+template class hash_table<char, char>;

@@ -55,7 +55,8 @@ src/block.cc   (.cc)    works together with rule.cc, class block, class rules.
 src/interf.h   (.cc)	interface routines	
 src/text.h     (.cc)	text file preprocessor (handles #include etc.)
 src/synth.h    (.cc)    diphones-to-speech synthesis
-src/config.cc		list of various runtime options. Gets #included thrice.
+...
+src/config.cc		list of various runtime options. Gets #included nine times.
 src/ss.cc		an example main() code. Not present in a DLL.
 
 aux			things that don't fit elsewhere, scripts et alia

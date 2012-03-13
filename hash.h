@@ -2,15 +2,25 @@
  *	ss/src/hash.h
  *	(c) geo@ff.cuni.cz
  *
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License in doc/COPYING for more details.
+ *
  *	Hash tables are quite independent of any other file. 
  *	You'll need just defaults.h - or not even that
  *
- *      This is hash.* v2.0
+ *      This is hash.* v2.2
  *
  *	In case you want to debug or profile the hash table code,
  *	go to the beginning of hash.cc and enable the appropriate
  *	#define there. The reason why we're not putting it here
- *	is obvious when using make.
+ *	is not to unleash make dependencies.
  *
  *	See hash.doc for a general howto.
  *
@@ -49,7 +59,7 @@
 template <class key_t, class data_t>
 struct hsearchtree;
 
-extern hsearchtree<char, char> ** _hash_stk [_HASH_DEPTH+1];
+extern hsearchtree<void, void> ** _hash_stk [_HASH_DEPTH+1];
 extern int _hash_sp;
 
 
@@ -75,6 +85,8 @@ class hash_table
 	int perc_optimal;
 	int perc_too_sparse;
 	int perc_too_dense;
+	int dupkey;
+	int dupdata;
 	int longest;                     //the longest "key" ever inside (meaningless if key_t is not char)
 	     hash_table(int size);
 	     hash_table(hash_table<key_t, data_t> *);	// moderately slow copy constructor
@@ -120,6 +132,7 @@ class hash: public hash_table<char, char>
 		const char *not_found_message);
 					// message to be printed if file not found
 					// (%s may represent the filename)
+					// use ANYWAY to continue anyway (with items == -1)
 
 	int	write(char *filename, bool keep_backup);	// non-destructive save
 	int	update(char *filename, bool keep_backup, bool remove_removed);
@@ -135,5 +148,19 @@ class hash: public hash_table<char, char>
 
 #undef key_t		// a stupid name collision with linux kernel 2.1.?? include/types.h
 #undef data_t		//   requires this creeping attitude
+
+inline unsigned int
+contiguous_hash_fn(void *ptr, int size)		// a hash function for contiguous keys
+{
+	const char *p;
+	unsigned int j = 0;
+
+	if (size % sizeof(int)) for (p=(char *)ptr;p<(char *)ptr + size;p++) j=173*j+*p;
+	else for (p=(char *)ptr; p<(char *)ptr + size; p += sizeof(int))
+		j = 233*j + *(unsigned int *)p;
+	return j;
+}
+
+void shutdown_hashing();
 
 #endif                     //__hash_tables

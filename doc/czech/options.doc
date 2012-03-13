@@ -4,6 +4,8 @@ je možné modifikovat jeho chování prakticky v každém ohledu. To se
 dìje pomocí nastavování konfiguraèních parametrù. Ty je možné zadávat
 na pøíkazové øádce nebo v konfiguraèních souborech.
 
+Tento soubor je zastaralý jako tento soubor.
+
 
 Konfiguraèní soubory
 --------------------
@@ -30,6 +32,10 @@ Typy jednotlivých parametrù, jejich identifikátory v textu programu,
 jejich struèný popis a pod. lze nalézt v souboru src/options.cc. Tento 
 soubor je celkem èitelný i pro neprogramátory. Je též vhodné podívat se
 dovnitø do souborù cfg/ss*.ini. 
+
+
+Lokální parametry
+-----------------
 
 
 Pøíkazová øádka
