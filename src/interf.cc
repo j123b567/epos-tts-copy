@@ -90,6 +90,7 @@ int errors = 0;
 
 void shriek(int code, const char *s) 
 {	/* Art (c) David Miller */
+	int l_errno = errno;
 	if (cfg->shriek_art == 1) fprintf(cfg->stdshriek,
 "              \\|/ ____ \\|/\n"
 "              \"@'/ ,. \\`@\"\n"
@@ -105,6 +106,7 @@ void shriek(int code, const char *s)
 	if (cfg->use_syslog)
 		if (cfg->log_codes) syslog(LOG_DAEMON | severity(code), "%3d %s", code, s);
 		else syslog(LOG_DAEMON | severity(code), "%s", s);
+	unuse(l_errno);
 #else
 	FILE *h = fopen("epos.err","w");
 	if (h) {
@@ -224,6 +226,7 @@ char *split_string(char *param)
 FILE *
 fopen(const char *filename, const char *flags, const char *reason)
 {
+//	printf("%s   %s\n", filename, reason);
 	FILE *f;
 	const char *message;
 
@@ -611,6 +614,7 @@ static inline void compile_rules()
 		if (cfg->langs[i]->n_voices) try {
 			cfg->langs[i]->compile_rules();
 		} catch (any_exception *e) {
+			unuse(e->code);
 			errors++;
 		}
 		if (errors > 0) shriek(811, fmt("Rules for %s cannot be compiled", cfg->langs[i]->name));

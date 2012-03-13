@@ -46,7 +46,7 @@ char scratch[SCRATCH_SPACE + 2];
 
 #endif
 
-
+#define PUBLIC_TTSCP_SERVER   "epos.ure.cas.cz"
 
 #include "client.h"
 
@@ -133,6 +133,13 @@ int just_connect_socket(unsigned int ipaddr, int port)
 	sockaddr_in addr;
 	int sd;
 
+	if (!port) {
+		sd = just_connect_socket(ipaddr, TTSCP_PORT);
+		if (sd == -1) sd = just_connect_socket(ipaddr, TTSCP_PORT + 1);
+		if (sd == -1) sd = just_connect_socket(getaddrbyname(PUBLIC_TTSCP_SERVER), TTSCP_PORT + 1);
+		if (sd == -1) sd = just_connect_socket(getaddrbyname(PUBLIC_TTSCP_SERVER), TTSCP_PORT);
+		return sd;
+	}
 
 	sd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sd == -1) shriek(464, "No socket\n");

@@ -11,11 +11,11 @@ $nasal     = mnòN
 $NASAL     = MQÒW
 $sonant    = jlr$nasal
 $SONANT    = JLR$NASAL
-$short     = aeiouyì
-$long      = áéíóúýì
+$short     = aeiouuyì
+$long      = áéíóúùýì
 $diphtong  = OAE
 $vowel     = $short$long$diphtong
-$VOWEL     = AEIOUYÁÉÍÓÚÝÌ
+$VOWEL     = AEIOUUYÁÉÍÓÚÙÝÌ
 $consonant = $voiced$voiceless$sonant
 $everywhere= !_!
 $numbers   = 1234567890
@@ -55,14 +55,14 @@ regress \d>\ (!_!)		word	word
 
 if	roman
 {
-	@include  "roman.rul"
+	@include  "../slovak/roman.rul"
 }
  
 regex    /^([vVsSzZkK][~\ ]\{0,2\})\$/\W\1/
 regress  lr>\X\Y(0_!)
 near  *!\Wlr$vowel$VOWEL	word	phone
 {
-	regress ${lower_case}>${upper_case}(!_!) word
+	regress ${lower_case}\X\Y>${upper_case}LR(!_!) word
 	subst abbrurl.dic			 word
 }
 regress  \W>0(!_!)

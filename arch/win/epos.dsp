@@ -99,6 +99,14 @@ SOURCE=.\daemon.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\encoding.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\function.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\hashd.cpp
 # End Source File
 # Begin Source File
@@ -195,7 +203,15 @@ SOURCE=.\defaults.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\encoding.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\exc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\function.h
 # End Source File
 # Begin Source File
 

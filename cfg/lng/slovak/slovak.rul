@@ -27,6 +27,7 @@ if    phr_break
 	inside	\#	phone
 	{
 		contour   t/-65   phone
+		contour   i/-99   phone
 	}
 	5x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
 }

@@ -8,6 +8,9 @@ cd ..\..\src
 move agent.cc agent.cpp
 if not exist client.cpp move client.cc client.cpp
 move daemon.cc daemon.cpp
+move encoding.cc encoding.cpp
+move function.cc function.cpp
+move daemon.cc daemon.cpp
 move unit.cc unit.cpp
 if not exist hash.cpp move hash.cc hash.cpp
 move hashd.cc hashd.cpp

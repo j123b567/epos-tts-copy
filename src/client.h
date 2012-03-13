@@ -21,7 +21,8 @@
  *	The just_connect_socket() routine returns -1 if it cannot return a connected
  *	socket. The connect_socket() routine additionally checks if the remote side
  *	announces the TTSCP protocol of an acceptable version and calls shriek(4xx)
- *	if it doesn't.
+ *	if it doesn't.  Use 0 for address for localhost, 0 for port to attempt to
+ *	locate a public TTSCP server if no local one can be found.
  *
  *	Byte order: host byte order for the port number, network byte order for the addr.
  *	This is because the address has typically been acquired through gethostbyname(),

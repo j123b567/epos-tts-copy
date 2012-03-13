@@ -25,9 +25,10 @@
 #ifndef EPOS_COMMON_H
 #define EPOS_COMMON_H
 
-#define MAINTAINER  "Jirka Hanika"
-#define MAIL        "geo@cuni.cz"
-#define VERSION     "2.4.71"
+#define MAINTAINER  		"Jirka Hanika"
+#define MAIL        		"geo@cuni.cz"
+#define VERSION     		"2.4.73"
+#define TTSCP_PORT		 8778
 
 #include "config.h"
 
@@ -76,7 +77,6 @@ char *strdup(const char *);
    }
 #endif
 
-#define TTSCP_PORT	8778
 
 
 enum SYMTABLE {ST_ROOT, ST_RAW, ST_EMPTY};

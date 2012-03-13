@@ -3,7 +3,7 @@
  * 	(c) 2000-2001 Petr Horak, petr.horak@click.cz
  * 	(c) 2001 Jirka Hanika, geo@cuni.cz
  *
- *	tdpsyn version 1.2 (5.11.2001)
+ *	tdpsyn version 2.1 (8.11.2001)
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 int hamkoe(int winlen, unsigned short *data, int e, int e_base)
 {
 	int i;
-	float fn;
+	double fn;
 	fn = 2 * pii / (winlen - 1);
 	for (i=0; i < winlen; i++) {
 		data[i] = (unsigned short)((0.53999 - 0.46 * cos(fn * i)) * e / e_base * (1 << HAMMING_PRECISION));
@@ -161,12 +161,17 @@ void tdpsyn::synseg(voice *, segment d, wavefm *w)
 	origlen = avpitch * diph_len[d.code];
 	pitchlen = pitch * diph_len[d.code];
 	newlen = origlen * 100 / d.t;
-	diflen = (newlen - origlen) / diph_len[d.code];
+	diflen = (newlen - origlen) / diph_len[d.code] % pitch;
 //	printf("\navp=%d oril=%d newl=%d difl=%d| l:%d t:%f(%f) e:%f\n",avpitch,origlen,newlen,diflen,pitch,tim_k,(double)d.t/100,ene_k);
 //	printf("\navp=%d L=%d oril=%d pil=%d tk:%f newl=%d difl=%d| %d (%d)\n",avpitch,pitch,origlen,pitchlen,tim_k,newlen,diflen,diph_len[d.code],d.code);
 
 	hamkoe(2 * maxwin + 1, wwin, d.e, 100);
+//	step = 1;
 	step = abs((newlen - origlen) / diph_len[d.code] / pitch) + 1;
+//	diflen %= pitch;
+//	while (diflen > pitch) { step++; diflen -= pitch; }	// !!
+//	while (-diflen > pitch) { step++; diflen += pitch; }	// !!
+//	if (step != step2) shriek(999, fmt("steps %d %d", step, step2));
 	for (j = 1; j <= diph_len[d.code]; j += step) {
 		memcpy(out_buff + max_frame - pitch, out_buff + max_frame, pitch * sizeof(*out_buff));
 		memset(out_buff + max_frame, 0, max_frame * sizeof(*out_buff));

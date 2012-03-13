@@ -530,6 +530,7 @@ next_rule(text *file, hash *vars, int *count)
 		if (e->code / 10 != 81) throw e;
 	}
 	shriek(811, "Too many errors");
+	return NULL;
 }
 
 rule *

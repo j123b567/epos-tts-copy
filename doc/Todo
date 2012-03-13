@@ -8,8 +8,6 @@ Features
   dots as opposed to periods, dollar signs)
 - grammatical marking
 - properly cased ordinal numerals
-- Roman numerals
-- URLs, email addresses...
 - STML parser
 - language dependent options on the server command line
 - asynchronous, more robust tcpsyn
@@ -20,11 +18,9 @@ Features
 - pause/resume in TTSCP
 - t i adjustment option
 - TCP wrappers & auth config & /etc/epos.users
-- unicode
 - reasonable logging
 - investigate the optimum pause lengths
 - integrate the neural network stuff
-- all rule and config file syntax errors should be reported in a single run
 
 Inventory omissions
 - unknown segment - no. 19 (consonant---r)
