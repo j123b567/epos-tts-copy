@@ -292,11 +292,14 @@ Using <tt/appl/ before the first <tt/strm/ command is forbidden.
 <sect2> <tt> intr </tt>
 <p>
 
-Interrupt an active stream. The parameter is a control connection
-handle and controls the connection to be interrupted.
+Interrupt a single <tt/appl/ command in progress. The parameter is a control connection
+handle and specifies the connection which issued
+the command to be interrupted.
 
 The server should try to discard as much pending data as possible,
 including e.g. waveform data already written to a sound card.
+If however multiple <tt/appl/ commands have been sent simultaneously,
+only the one in progress will be interrupted.
 
 The server will reply a 401 completion code to the interrupted
 connection, whereas a 200 completion code will acknowledge

@@ -46,6 +46,9 @@
 /* Define if your regex library defines the REG_EEND and REG_ESIZE error codes */
 #undef HAVE_REG_EEND
 
+/* Define if regmatch_t in your regex library contains the rm_so member */
+#undef HAVE_RM_SO
+
 /* Define if you have <unistd.h>.  */
 #undef HAVE_UNISTD_H
 

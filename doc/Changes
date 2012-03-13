@@ -894,7 +894,7 @@ for an exciting story, just skip it.
 	- a small fix in lng/czech/prosody.rul - penults always off-falling
 	- a few minor fixes
 
-2.4.30 from 2.4.29	3.10.99
+2.4.30 from 2.4.29	 3.10.99
 	- new autoconf test - HAVE_REG_EEND
 	- arch/unix/Makefile.dummy made even more dummy
 	- Makefile made urmake compatible
@@ -905,8 +905,15 @@ for an exciting story, just skip it.
 	- added a security section to the documentation
 	- commented out the mark_voice() debugging thing in waveform.cc
 
-2.4.31 from 2.4.30	6.10.99
+2.4.31 from 2.4.30	 6.10.99
 	- waveform stuff survives no sound ioctls found without FORGET_SOUND_IOCTLS
 	- minor fix to say.cc to avoid fopen(NULL)
 	- oa_wavefm::run() modified to run until EAGAIN (not just end of ophase)
+
+2.4.32 from 2.4.31	11.10.99
+	- removed superfluous explicit hash_table<char, char> instantiation
+	- removed and fixed most FIXMEs (in src/*.cc)
+	- properly escaped line-initial hash chars standing for pauses
+		in lng/*/traditnl.dph (discarded as comments until now)
+
 

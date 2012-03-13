@@ -186,16 +186,16 @@ int sync_finish_command(int ctrld)
 			case '4': // printf("%s\n", scratch+strspn(scratch, "0123456789x "));
 				  return ERROR_CODE;
 			case '6': if (!strncmp(scratch, "600 ", 4)) {
-					  return 0;	// exit(0); FIXME
+					  return 0;
 				  } /* else fall through */
 			case '8': // printf("%s\n", scratch+strspn(scratch, "0123456789x "));
-				  return ERROR_CODE ; // exit(2); FIXME
+				  return ERROR_CODE;
 
 			case '5':
 			case '7':
 			case '9':
-			case '0': printf("%s\n", scratch); // shriek("Unhandled response code");
-								// FIXME!!
+			case '0': // printf("%s\n", scratch);
+				  shriek(474, "Unhandled response code");
 			default : ;
 		}
 		printf("%s\n", scratch+strspn(scratch, "0123456789 "));

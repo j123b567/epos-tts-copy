@@ -286,10 +286,13 @@ e.g. a sound card, or may be delayed by the network.
 <H3><CODE> intr </CODE></H3>
 
 <P>
-<P>Interrupt an active stream. The parameter is a control connection
-handle and controls the connection to be interrupted.
+<P>Interrupt a single <CODE>appl</CODE> command in progress. The parameter is a control connection
+handle and specifies the connection which issued
+the command to be interrupted.
 <P>The server should try to discard as much pending data as possible,
 including e.g. waveform data already written to a sound card.
+If however multiple <CODE>appl</CODE> commands have been sent simultaneously,
+only the one in progress will be interrupted.
 <P>The server will reply a 401 completion code to the interrupted
 connection, whereas a 200 completion code will acknowledge
 a successful <CODE>intr</CODE> command.

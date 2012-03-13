@@ -29,7 +29,7 @@
 #ifdef HAVE_TEMPL_INST
 
 template class hash_table<char, file>;
-template class hash_table<char, char>;
+// template class hash_table<char, char>;
 template class hash_table<char, option>;
 #ifndef MONOLITH
 	template class hash_table<char, a_ttscp>;
@@ -38,7 +38,7 @@ template class hash_table<char, option>;
 #else	// else it is WatcomC
 
 extern hash_table<char, file> *_dummy_freadin_hash_tmpl_inst;	// remove this one asterisk if Watcom barfs, else remove this comment
-extern hash_table<char, char> *_dummy_char_hash_tmpl_inst;
+// extern hash_table<char, char> *_dummy_char_hash_tmpl_inst;
 extern hash_table<char, option> *_dummy_option_hash_tmp_inst;
 #ifndef MONOLITH
 	extern hash_table<char, a_ttscp> *_dummy_a_ttscp_hash_tmp_inst;	// used by daemon only

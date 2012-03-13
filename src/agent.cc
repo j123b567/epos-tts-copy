@@ -80,6 +80,8 @@ void
 agent::timeslice()
 {
 	c->enter();
+	DEBUG(1,11,fprintf(STDDBG, "Timeslice for %s\n", name());)
+	DEBUG(0,11,fprintf(STDDBG, "pendcount %d, next->pendcount %d, pend_max %d\n", pendcount, next ? next->pendcount : -42, cfg->pend_max);)
 	if (next && next->pendcount > cfg->pend_max) {
 		DEBUG(1,11,fprintf(STDDBG, "(satiated)\n");)
 		c->leave();
@@ -138,8 +140,10 @@ inline void do_relax(void *ptr, DATA_TYPE type)
 void
 agent::relax()
 {
-	do_relax(inb, in);
-	inb = NULL;
+	if (inb) {
+		do_relax(inb, in);	/* branch likely */
+		inb = NULL;
+	}
 	if (!next) return;
 	for (pend_ll *p = next->pendin; p != NULL; ) {
 		do_relax(p->d, out);
@@ -161,9 +165,15 @@ agent::finis(bool err)
 	a->finis(err);
 }
 
+/*
+ *	There is a slight difference between relax() and brk().  Both discard all
+ *	pending input.  In addition, oa_wavefm::brk()  (only) discards any
+ *	waveform already written to the sound card;
+ *	relax() would call sync_soundcard() instead.
+ */
+
 void agent::brk()
 {
-//	if (inb) reply("401 user break");
 	relax();
 	DEBUG(1,11,fprintf(STDDBG, "interrupting an agent, intype %i, outtype %i\n", in, out);)
 }
@@ -173,7 +183,6 @@ agent::pass(void *ptr)
 {
 	if (!ptr) shriek(862, "Nothing to pass");
 	if (!next) shriek(862, "Nowhere to pass to");
-		// FIXME: if (already next->inb)
 	if (pendout || next->inb) {
 		pendout = (pendout ? pendout->next : next->pendin) = new pend_ll(ptr, NULL);
 		next->pendcount++;
@@ -380,7 +389,7 @@ a_synth::run()
 		try {
 			this_voice->syn = setup_synth(this_voice);
 		} catch (command_failed *e) {
-			if (e->code / 10 == 47 && this_lang->fallback_voice) {	// FIXME: ugly
+			if (e->code / 10 == 47 && this_lang->fallback_voice) {	// 47x codes are network errors
 				voice_switch(this_lang->fallback_voice);
 				delete e;
 				run();
@@ -517,10 +526,7 @@ void a_input::run()
 				inb = NULL; toread = offset = 0;
 				pass(w);
 				return;
-			case T_TEXT:
-			case T_STML:
-			case T_UNITS:
-			default: ;	/* otherwise no problem, FIXME: shorten */
+			default: ;	/* otherwise no problem */
 		}
 		void *dta = inb;
 		((char *)dta)[offset] = 0;
@@ -540,7 +546,6 @@ a_input::mktask(int size)
 	toread = size;
 	inb = xmalloc(size + 1);
 	offset = 0;
-//	schedule();
 	block(socket);
 	DEBUG(1,11,fprintf(STDDBG, "Apply task has been scheduled\n");)
 	return true;
@@ -581,7 +586,7 @@ a_output::run()
 	}
 	if (written == size) {
 		written = 0;
-		relax();		// FIXME CHECKME
+		relax();
 		finis(false);
 	} else push(socket);
 }
@@ -678,10 +683,7 @@ oa_wavefm::brk()
 		if (attached) w->detach(socket);
 		DEBUG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n", w->written_bytes());)
 		attached = false;
-		delete w;
-		inb = NULL;
-//		w = NULL; relax();
-//		reply("402 user break");
+		relax();
 	}
 	finis(true);
 }
@@ -817,7 +819,7 @@ stream::finis(bool err)		// FIXME: simplify
 		if (a->inb || a->pendin) {
 			DEBUG(2,11,fprintf(STDDBG, "more subtasks are pending\n");)
 			if (err) {
-				relax();
+				a->relax();
 				DEBUG(2,11,fprintf(STDDBG, "subtasks discarded\n");)
 				if  (callbk) callbk->schedule();
 				else shriek(862, "double fault - no callback");
@@ -930,7 +932,6 @@ a_ttscp::a_ttscp(int sd_in, int sd_out) : a_protocol()
 {
 	c = new context(sd_in, sd_out);
 	c->enter();
-//	cow_claim();	//FIXME: rethink 
 	
 	handle = (char *)malloc(cfg->handle_size + 1);
 	do make_rnd_passwd(handle, cfg->handle_size);
@@ -1064,9 +1065,7 @@ void make_nonblocking(int f)
 
 a_accept::a_accept() : agent(T_NONE, T_NONE)
 {
-//	static socklen_t sia = sizeof(sockaddr);	// __QNX__ wants signed :-(
 	static sockaddr_in sa;
-//	static sockaddr_in ia;
 	
 	char one = 1;
 

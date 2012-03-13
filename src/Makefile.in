@@ -8,8 +8,7 @@ LNK=@CXX@
 LDOPTS=-L/lib -L/usr/local/lib -L/usr/lib
 OTHERLIBS=@LIBS@
 
-# The following line may be deleted if using some other compiler than Watcom C.
-
+# The following line may be deleted if using any other compiler than Watcom C.
 export WPP386=-xs
 
 

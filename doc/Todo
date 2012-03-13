@@ -37,11 +37,13 @@ Inventory omissions
 - check whether ptacek97 handles diphtongs correctly
 
 Optimisations
-- ptdsyn and ktdsyn should not access the filesystem during normal operation
+- sync_soundcard() should be replaced with an asyncro thing
+- ktdsyn and ptdsyn should not access the filesystem during normal operation
 - ptdsyn should also avoid fopen()
 - eliminate class connection_lost
 - static options (not changeable with setl, not cowed)
 - free some option value strings (for the master context and monolith)
+- initialiser lists instead of constructor code
 
 Miscelannea
 - QNX port
@@ -51,4 +53,3 @@ Miscelannea
 
 Should Check
 - behavior of intr with something other than oa_wavefm (may miss 123 or 122)
-- the difference if any between brk() and relax()

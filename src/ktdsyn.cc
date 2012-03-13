@@ -40,7 +40,7 @@ ktdsyn::ktdsyn (voice *v)
 {
 	FILE *f;
 	char * pathname = compose_pathname("useky.dat", v->loc, cfg->inv_base_dir);
-	f = fopen (pathname, "rt", "ktd useky");	// FIXME
+	f = fopen (pathname, "rt", "ktd segments");
 	free(pathname);
 //	if (!f) shriek(841, "Cannot open file useky.dat");
 	po_u = 0;
@@ -131,7 +131,7 @@ int ktdsyn::op_psl (char *msub, sample2_t * psl)
 	FILE *f_psl;
 
 	if ((f_psl = fopen (msub, "rb")) == NULL) {
-		fprintf (stderr, "Nemozem otvorit subor %s\n", msub);	// FIXME
+		fprintf (stderr, "Missing segment file %s\n", msub);
 		return -1;
 	}
 	fread (psl, sizeof (sample2_t), 8000, f_psl);

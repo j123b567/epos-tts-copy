@@ -78,7 +78,31 @@ AC_CACHE_CHECK("for glibc regex error codes",
 if test "$epos_cv_symb_regeend" = yes; then
    AC_DEFINE(HAVE_REG_EEND)
 fi
-	
+
+AC_CACHE_CHECK("for regmatch_t.rm_so",
+   epos_cv_struct_rm_so,
+   AC_TRY_COMPILE(
+	#include <sys/types.h>
+	#ifdef HAVE_RX_H
+	#include <rx.h>
+	#else
+	#ifdef HAVE_REGEX_H
+	#include <regex.h>
+	#else
+	#include "rx.h"
+	#endif
+	#endif
+	,
+	regmatch_t rt;
+	rt.rm_so;
+	return 0;,
+	epos_cv_struct_rm_so=yes,
+	epos_cv_struct_rm_so=no)
+)
+if test "$epos_cv_struct_rm_so" = yes; then
+   AC_DEFINE(HAVE_RM_SO)
+fi
+
 
 AC_CACHE_CHECK("for terminate",
    epos_cv_fn_terminate,

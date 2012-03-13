@@ -170,7 +170,7 @@ tcpsyn::tcpsyn(voice *v)
 
 	unsigned int a = getaddrbyname(serv_id);
 	
-	cd = tcpsyn_connect_socket(a, port);	/* adjust both, FIXME */
+	cd = tcpsyn_connect_socket(a, port);
 	dd = tcpsyn_connect_socket(a, port);
 	DEBUG(1,9,fprintf(STDDBG, "tcpsyn uses port %d ctrl fd %d data fd %d\n", port, cd, dd);)
 

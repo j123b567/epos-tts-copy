@@ -341,14 +341,14 @@ unit::gather(char *buffer_now, char *buffer_end, bool suprasegm)
 //	DEBUG(0,3,fprintf(STDDBG,"Chroust! %d %s\n", buffer_end - buffer_now, buffer_now - 3);)
 	for (tmpu = firstborn;tmpu && buffer_now < buffer_end; tmpu = tmpu->next) {
 		buffer_now = tmpu->gather(buffer_now, buffer_end, suprasegm);
-		if (!buffer_now) return NULL;	// FIXME: slow and ugly
+		if (!buffer_now) return NULL;
 	}
 	if (cont != NO_CONT && (depth == cfg->phone_level || suprasegm)) {
 		if(buffer_now >= buffer_end) 
 			return NULL;
-		if (depth < cfg->phone_level) 	// FIXME CHECKME!
+		if (depth < cfg->phone_level) 
 			// shriek(811, "Cannot gather diphonized units (reorder rules)");
-			return buffer_now;	// FIXME
+			return buffer_now;
 		*(buffer_now++) = (char)cont; 
 	}
 	return buffer_now;
@@ -628,9 +628,9 @@ commit:
 
 #ifdef WANT_REGEX
 
-#ifdef __QNX__			// FIXME! Hacked to death.
-#define rm_so  rm_sp - _gather_buff	// warning: unexpected associativity
-#define rm_eo  rm_ep - _gather_buff
+#ifndef HAVE_RM_SO			// __QNX__ is slightly incompatible
+#define rm_so  rm_sp - _gather_buff	
+#define rm_eo  rm_ep - _gather_buff	// nota bene associvitatem!
 #endif
 
 /****************************************************************************

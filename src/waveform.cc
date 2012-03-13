@@ -56,6 +56,7 @@
 #endif
 
 #ifndef SNDCTL_DSP_SYNC
+
 #ifndef SOUND_PCM_SYNC
 #define FORGET_SOUND_IOCTLS
 #endif
@@ -332,7 +333,7 @@ wavefm::detach(int)
 {
 	while (flush()) ;		// FIXME: think slow network write
 	DEBUG(2,9,fprintf(STDDBG,"Detaching waveform %s\n", ""););
-	sync_soundcard(fd);
+	sync_soundcard(fd);		// FIXME: necessary, but unwanted
 	if (cfg->wav_hdr && !ioctlable(fd)) write_header();
 //	mark_voice(-1);
 	fd = -1;
@@ -498,7 +499,6 @@ wavefm::flush()
 	ooffset += written;
 
 	DEBUG(2,9,fprintf(STDDBG, "Flushing the signal to device\n");)
-//	written_bytes += written;				// FIXME !!! cannot work
 	hdr.total_length += written;
 	return true;
 }

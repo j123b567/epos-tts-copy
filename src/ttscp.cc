@@ -116,20 +116,6 @@ int cmd_intr(char *param, a_ttscp *a)
 	return PA_NEXT;
 }
 
-/******
-
-int cmd_transcribe(char *param, a_ttscp *)
-{
-	reply("121 Transcription being sent");
-	unit *root = str2units(param);
-	this_lang->ruleset->apply(root);
-	if (cfg->trans) root->fout(NULL);
-	reply("200 OK");
-	return PA_NEXT;
-}
-
-****/
-
 static inline int do_set(char *param, context *real)
 {
 	char *value = split_string(param);
@@ -142,16 +128,6 @@ static inline int do_set(char *param, context *real)
 		} else reply ("451 Access denied", real);
 	} else {
 		if (!param) param = "";
-//		if (!strcmp("language", param)) {
-//			if (lang_switch(value)) reply ("200 OK", real);
-//			else reply ("443 unknown language", real);
-//			return PA_NEXT;
-//		}
-//		if (!strcmp("voice", param)) {
-//			if (voice_switch(value)) reply ("200 OK", real);
-//			else reply ("443 unknown voice", real);
-//			return PA_NEXT;
-//		}
 		reply("442 No such option", real);
 	}
 	return PA_NEXT;
