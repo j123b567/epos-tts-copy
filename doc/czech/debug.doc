@@ -71,8 +71,6 @@ Hodnota "area" je jedna z následujících:
 5 elements - syllablify, diphs & split methods
 7 parser
 9 synthesis
-10 configuration, languages, voices
-11 daemon
 
 V souboru interf.h bych ale doporuèoval reprezentovat hodnoty "area" pomocí tam vypsaných
 symbolických jmen - výhradnì kvùli krátkodobé èitelnosti. Èíselné hodnoty zde uvedené

@@ -18,9 +18,7 @@ extern const char* COMMENT_LINES;    // these characters can start a comment
 extern const char* WHITESPACE;       // i.e. space and tab
 extern int hash_max_line;		     //maximum line length in i/o files
 
-#ifndef HASH_CAN_READ_FILES
 #define HASH_CAN_READ_FILES      // just to make clear that we've included this file
-#endif
 
 #ifdef  bool
 #define true 	1

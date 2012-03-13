@@ -2,16 +2,6 @@
  *	ss/src/rules.h
  *	(c) geo@ff.cuni.cz
  *
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License in doc/COPYING for more details.
- *
  *	This file defines how a rules file should be parsed. 
  */
 
@@ -21,9 +11,9 @@
 #define EXCL		'!'
 #define PSEUDOSPACE	'\377'
 
-#define OPCODEstr "subst:regex:postp:prep:diphones:prosody:progress:regress:insert:syll:smooth:raise:debug:if:inside:with:{:}:[:]:error:"
+#define OPCODEstr "subst:regex:postp:prep:diphones:prosody:progress:regress:insert:syll:smooth:raise:debug:if:inside:{:}:[:]:error:"
 enum OPCODE {OP_SUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_DIPH, OP_PROSODY, OP_PROGRESS, OP_REGRESS, 
-	OP_INSERT, OP_SYLL, OP_SMOOTH, OP_RAISE, OP_DEBUG, OP_IF, OP_INSIDE, OP_WITH,
+	OP_INSERT, OP_SYLL, OP_SMOOTH, OP_RAISE, OP_DEBUG, OP_IF, OP_INSIDE,
 	OP_BEGIN, OP_END, OP_CHOICE, OP_CHOICEND, OP_ERROR};
 		/* OP_BEGIN, OP_END and other OP's without parameters should come last
 		   OP_ERROR would abort the compilation (never used)			*/
@@ -45,7 +35,7 @@ class rules
 	int  current_rule;      //currently processed rule (in apply())
 	r_block *body;		//contains pointers to the individual rules
 	
-	rules(const char *filename, const char *dirname);
+	rules(const char *filename, int to_be_ignored);
 	~rules();
 	void apply(unit *root);
 	void debug();       //dumps all rules

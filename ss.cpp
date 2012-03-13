@@ -8,11 +8,9 @@
 #pragma warn -ccc
 #pragma warn -rch
 
-#define bool int
-
 #define inline /* Borland can't handle inline */
 
-#include "monolith.cc"
+#include "ss.cc"
 #include "hash.cc"
 #include "interf.cc"
 #include "parser.cc"
@@ -20,5 +18,3 @@
 #include "rule.cc"
 #include "text.cc"
 #include "synth.cc"
-#include "ktdsyn.cc"
-#include "voice.cc"

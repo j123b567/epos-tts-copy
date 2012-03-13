@@ -165,8 +165,8 @@ Individual rule types
 There are two kinds of rules - rules whose parameter is a filename
 (of a file which holds specific, possibly very large data), and rules
 whose parameter describes the rule in itself. In the following enumeration,
-the rules which refer to some file are mostly presented first. All of them
-use a generic file structure. The file consists of multiple lines, whose
+the rules which refer to some file are presented first. All of them use
+a generic file structure. The file consists of multiple lines, whose
 order is not significant; it may contain comments according to hash.doc.
 Every line consists of two words separated by whitespace and the words
 will hence be called "replacee" and "replacer", respectively.
@@ -296,15 +296,7 @@ INSIDE	- Apply a rule or a block of rules within certain units only.
   is processed separately, therefore the following rule's scope may
   be at most that of the INSIDE rule itself.
 
-WITH	- Apply a rule or a block of rules for a list of units.
-  In contrast with the preceding rule type, this refers not only
-  to the token at the scope level (such as space), but to the whole
-  structure (such as the string of phones delimited by the space).
-  
-  The parameter is a filename; the file should list the strings
-  subject to the following rule, such as special words.
-
-IF	- Apply a rule or a block of rules only if a condition (given
+IF	- Apply a rule of a block of rules only if a condition (given
   by the parameter) is met. The condition must currently be specified
   as a string comparison test - "string1==string2". The following rule
   is applied only if the strings are identical after the macro expansions.

@@ -2,18 +2,8 @@
  *	ss/src/nnet.cc
  *	(c) 1997 geo@ff.cuni.cz
  *
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License in doc/COPYING for more details.
- *
  *	These procedures provide the input to the MATLAB-implemented 
- *	neural networks by Jana Tuckova. Their corresponding header
+ *	neural networks by doc. Jana Tuckova. Their corresponding header
  *	file is elements.h and this file gets included by elements.cc.
  */
 
@@ -36,15 +26,15 @@ void
 unit::nnet_out(const char *filename, const char *dirname)      //NULL means stdout
 {
 	FILE *outf;
-	if (cfg->neuronet) {
+	if (cfg.neuronet) {
 		if (filename) {
 			filename = compose_pathname(filename, dirname);
 			outf=fopen(filename,"wt");
 		} else outf=stdout;
 
-//		fputs(cfg->header_xscr,outf);
+//		fputs(cfg.header_xscr,outf);
 		nnet_dump(outf);
-//		fputs(cfg->footer_xscr,outf);
+//		fputs(cfg.footer_xscr,outf);
 		if(filename)fclose(outf);
 	} else {
 		warn("Neuronet output is disabled.");

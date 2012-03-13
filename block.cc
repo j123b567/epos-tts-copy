@@ -2,16 +2,6 @@
  *	ss/src/block.cc
  *	(c) 1996-98 geo@ff.cuni.cz
  *
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License in doc/COPYING for more details.
- *
  *	This file is never compiled on its own, it gets included
  *	at the end of rule.cc
  *
@@ -100,14 +90,14 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 	char *began_in = strdup(file->current_file);
 	int   began_at = file->current_line;
 
-	l = cfg->rules;
+	l = cfg.rules;
 	rulist=(rule **)malloc(sizeof(rule *) * l);
 	n_rules = 0; again = 1;
 	while((rulist[n_rules] = --again ? rulist[n_rules-1]
 					 : next_rule(file, vars, &again)) > END_OF_RULES) {
 //		rulist[n_rules]->set_dbg_tag(file);
 		if (++n_rules == l) {
-			l+=cfg->rules;
+			l+=cfg.rules;
 			rulist = (rule **)realloc(rulist, sizeof(rule *) * l);
 		}
 	}
@@ -164,8 +154,8 @@ block_rule::apply_current(unit *root)
 		u->scope = true;
 		DEBUG(0,1,fprintf(stddbg, "rules::apply current_rule %d\n", current_rule);)
 #ifdef DEBUGGING
-		if (cfg->use_dbg) current_debug_tag = r->dbg_tag;
-		if (cfg->showrule) fprintf(stdwarn,"[%s] %s %s\n",
+		if (cfg.use_dbg) current_debug_tag = r->dbg_tag;
+		if (cfg.showrule) fprintf(stdwarn,"[%s] %s %s\n",
 			r->dbg_tag,
 			enum2str(r->code(), OPCODEstr), r->raw);
 #endif
@@ -177,7 +167,7 @@ block_rule::apply_current(unit *root)
 		u = tmp_next;
 	}
 	
-	if (cfg->pausing) {
+	if (cfg.pausing) {
 		debug();
 		root->fout(NULL);
 		user_pause();
@@ -189,9 +179,9 @@ block_rule::debug()
 {
 	int i;
 	for(i=0;i<n_rules;i++) {
-		if (i==current_rule) color(stddbg, cfg->curul_col);
-		if (i==current_rule || cfg->r_dbg_sh_all) rulist[i]->debug();
-		if (i==current_rule) color(stddbg, cfg->normal_col);
+		if (i==current_rule) color(stddbg, cfg.curul_col);		
+		if (i==current_rule || cfg.r_dbg_sh_all) rulist[i]->debug();
+		if (i==current_rule) color(stddbg, cfg.normal_col);
 	}
 }
 
@@ -246,17 +236,19 @@ r_choice::apply(unit *root)
 
 #pragma argsused
 
-rules::rules(const char *filename, const char *dirname)
+rules::rules(const char *filename, int to_be_ignored)
 {
+	unuse(to_be_ignored);
+
 	text *file;
 	hash *vars;
 
-	DEBUG(0,0,if (cfg->loaded) fprintf(stddbg,"Configuration already loaded when constructing rules\n");)
+	DEBUG(0,0,if (cfg.loaded) fprintf(stddbg,"Configuration already loaded when constructing rules\n");)
 
-	if (!cfg->loaded) ss_init();
+	if (!cfg.loaded) ss_init();
 	
-	file=new text(filename,dirname,false);
-	vars = new hash(cfg->vars|1);
+	file=new text(filename,cfg.rules_dir,false);
+	vars = new hash(cfg.vars|1);
 	DEBUG(3,1,fprintf(stddbg,"Rules shall be taken from %s\n",filename);)
 	
 	body = new r_block(file, vars);
@@ -315,7 +307,7 @@ rule_weight(const char *word, text *file)
 	}
 	if ((word[i]|('a'-'A'))=='x' && !word[i+1] && i) {
 		if (!result) diatax("Zero weight");
-		if (result > cfg->mrw) diatax("Weight too large");
+		if (result > cfg.mrw) diatax("Weight too large");
 		return result;	// shriek if 0 ?
 	}
 	return 0;
@@ -352,7 +344,7 @@ resolve_vars(char *line, hash *vars, text *file)
 		} else *dest++ = *src++;
 	};
 	*dest=0;
-	strncpy(line+1, _resolve_vars_buff,cfg->max_line);          //Copy it back
+	strncpy(line+1, _resolve_vars_buff,cfg.max_line);          //Copy it back
 }
 
 
@@ -385,7 +377,7 @@ next_rule(text *file, hash *vars, int *count)
 	
 	if(!file->getline(str)) return END_OF_RULES;
 	
-	DEBUG(1,1,fprintf(stddbg,"str2rule should parse: %s\n",str);)
+	DEBUG(1,1,fprintf(stddbg,"DEBUG: str2rule should parse: %s\n",str);)
 	if(!str[strspn(str,WHITESPACE)]) goto next_line;
 	if (*str && strchr(str+1,DOLLAR))
 		resolve_vars(str, vars, file);			   //Var reference found?
@@ -396,7 +388,7 @@ next_rule(text *file, hash *vars, int *count)
 		if (get_words(str+1, word, 4)!=2) diatax("Illegal group assignment");
 		if (tmp) vars->add(word[0], word[1]);
 		else if (strcasecmp(word[1], "external")) diatax("'=' probably forgotten");
-			else vars->add(word[0], get_named_cfg(word[0]));
+			else vars->add(word[0], cfg.named_item(word[0]));
 		goto next_line;
 	}
 
@@ -452,7 +444,6 @@ next_rule(text *file, hash *vars, int *count)
 	case OP_DEBUG:   result = new r_debug(word[param]); break;
 	case OP_IF:	 result = new r_if(word[param], file, vars); break;
 	case OP_INSIDE:	 result = new r_inside(word[param], file, vars); break;
-	case OP_WITH:	 result = new r_with(word[param], file, vars); break;
 	case OP_BEGIN:	 result = new r_block(file, vars); break;
 	case OP_END:	 return END_OF_BLOCK;
 	case OP_CHOICE:  result = new r_choice(file, vars); break;

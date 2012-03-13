@@ -2,16 +2,6 @@
  *	ss/src/rule.cc
  *	(c) 1996-98 geo@ff.cuni.cz
  *
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License in doc/COPYING for more details.
- *
  *	This file includes block.cc at the very last line.
  *
  */
@@ -128,7 +118,7 @@ rule::check_children()
 const char *
 rule::debug_tag()
 {
-	char *wholetag=(char *)FOREVER(malloc(cfg->max_line));
+	char *wholetag=(char *)FOREVER(malloc(cfg.max_line));
 
 #ifdef DEBUGGING
 	char *tmp;
@@ -157,7 +147,7 @@ rule::apply(unit *root)
 
 hashing_rule::hashing_rule(char *param) : rule(NULL)
 {
-	raw = compose_pathname(param, this_lang->hash_dir);
+	raw = compose_pathname(param, cfg.hash_dir);
 	dict = NULL;
 	allow_id = false;
 }
@@ -171,7 +161,7 @@ hashing_rule::~hashing_rule()
 inline void
 hashing_rule::load_hash()
 {
-	if (!dict) dict = new hash(raw, cfg->hash_full,
+	if (!dict) dict = new hash(raw, cfg.hash_full,
 		0, 200, 3, (char *) allow_id, false, "dictionary %s not found");
 }
 
@@ -251,7 +241,7 @@ r_subst::apply(unit *root)
 {
 	load_hash();
 	root->subst(dict, method);
-	if (cfg->lowmemory) {
+	if (cfg.lowmemory) {
 		DEBUG(2,2,fprintf(stddbg,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict = NULL;
@@ -288,17 +278,17 @@ r_diph::r_diph(char *param) : hashing_rule(param)
 void
 r_diph::apply(unit *root)
 {
-	if (!cfg->use_diph) return;
+	if (!cfg.use_diph) return;
 	load_hash();
 	root->diphs(target, dict);
-	if (cfg->lowmemory) {
+	if (cfg.lowmemory) {
 		DEBUG(2,2,fprintf(stddbg,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict=NULL;
 	}
 
-	DEBUG(1,2,fprintf(stddbg,"Diphones w%s be dumped just after the DIPHONES rule\n", cfg->imm_diph?"ill":"on't");)
-	if (cfg->imm_diph) {
+	DEBUG(2,2,fprintf(stddbg,"Diphones w%s be dumped just after the DIPHONES rule\n", cfg.imm_diph?"ill":"on't");)
+	if (cfg.imm_diph) {
 		static diphone d[DIPH_BUFF_SIZE];   //every item is 16 bytes long
 		
 		int i=DIPH_BUFF_SIZE;
@@ -340,7 +330,7 @@ r_prosody::apply(unit *root)
 	load_hash();
 	DEBUG(1,1,fprintf(stddbg,"entering rules::sseg()\n");)
 	root->sseg(target, dict);
-	if (cfg->lowmemory) {
+	if (cfg.lowmemory) {
 		DEBUG(2,2,fprintf(stddbg,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict = NULL;
@@ -390,7 +380,7 @@ r_smooth::r_smooth(char *param) : rule(param)
 	if (tmp) list[l++]+=tmp*sgn, total+=tmp*sgn;
 	if (total!=RATIO_TOTAL)
 		shriek ("Smooth percentages don't add up to 100%% (%d%%)", total);
-	if (cfg->paranoid) {
+	if (cfg.paranoid) {
 		for (tmp=max=0; tmp<l; tmp++)
 			if (list[tmp]>max) max=list[tmp];
 		if (max!=list[n]) warn("Oversmooth, max weight is given elsewhere");
@@ -466,7 +456,7 @@ r_regress::r_regress(char *param) : rule(param)
 	*right++=0;
 	fn=strchr(right,ASSIM_DELIM4);if(!fn) shriek("Bad param%s", debug_tag());
 	*fn++=0;if(*fn) shriek("Strange appendix to param%s", debug_tag());
-	DEBUG(1,4,fprintf(stddbg,"Parsed assim param \"%s>%s(%s_%s)\"\n",aff,eff,left,right);)
+	DEBUG(2,4,fprintf(stddbg,"Parsed assim param \"%s>%s(%s_%s)\"\n",aff,eff,left,right);)
 	fn=fntab(aff,eff);ltab=booltab(left);rtab=booltab(right);
 	free(aff);
 	
@@ -689,7 +679,6 @@ r_regex::~r_regex()
 {
 	free(matchbuff);
 	regfree(&regex);
-	free(repl);
 }
 
 void
@@ -794,53 +783,6 @@ r_inside::apply(unit *root)
 {
 	if (affected[(unsigned char)root->cont]) then->apply(root);
 }
-
-/************************************************
- r_with   The following rule class will apply
- 	  its subordinated rule (block of rules)
- **	  inside the units whose subordinates
- **	  form a string found in the parameter file
- ************************************************/
-
-
-class r_with: public cond_rule
-{
-	virtual OPCODE code() {return OP_WITH;};
-	hash *dict;
-   public:
-		r_with(char *param, text *file, hash *vars);
-		~r_with();
-	virtual void apply(unit *root);
-};
-
-r_with::r_with(char *param, text *file, hash *vars) : cond_rule(param, file, vars)
-{
-	char *pathname = compose_pathname(raw, this_lang->hash_dir);
-	free(raw); raw = pathname;
-	dict = NULL;
-}
-
-r_with::~r_with()
-{
-	if (dict) delete dict;
-}
-
-void
-r_with::apply(unit *root)
-{
-	if (!dict) dict = new hash(raw, cfg->hash_full,
-		0, 200, 3, DATA_EQUALS_KEY, false, "dictionary %s not found");
-
-	if (root->subst(dict, M_ONCE)) then->apply(root);
-}
-
-
-/************************************************
- r_if     The following rule class will apply
- 	  its subordinated rule (block of rules)
- **	  if a global condition holds
- ************************************************/
-
 
 class r_if: public cond_rule
 {

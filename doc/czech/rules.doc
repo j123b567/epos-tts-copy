@@ -198,17 +198,6 @@ Typ_pravidla INSIDE   Provede následující pravidlo nebo blok pravidel
                       pravidlo následující po INSIDE smí mít rozsah
                       nanejvýš stejný jako pravidlo INSIDE.
                       
-Typ_pravidla WITH     Provede následující pravidlo nebo blok pravidel
-                      jen pro ty èásti textu, které jsou shodné
-                      s nìkterou položkou slovníku urèenou parametrem.
-                      
-                      Parametrem je tedy slovník (napøíklad výèet
-                      urèitých slovních tvarù, je-li rozsahem slovo).
-
-                      Stejnì jako u pravidla INSIDE nesmí být rozsah
-                      podøízeného pravidla vìtší než rozsah pravidla WITH.
-
-                      
 Typ_pravidla IF       Provede následující pravidlo nebo blok pravidel
                       tehdy, je-li splnìna podmínka daná parametrem.
                       
