@@ -12,6 +12,8 @@ regex	/([0-9])\ ([0-9][0-9][0-9])/\1\2/	colon
 regex	/^(0*)0/\1nula|/	word
 
 #	/\m/minus/	colon
+# regex   /\$/~dolar~/    colon  ; tohle mi nejde
+regex   /\\^/~støí¹ka~/   colon
 subst	mathsign.dic	colon
 
 regex	/([0-9])x/\1krát|/	colon
