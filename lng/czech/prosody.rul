@@ -59,7 +59,9 @@ regress  ~>\ (!_!)	colon  word
 #  opakovanì tak dlouho, dokud se text neustálí, nebo dokud program
 #  neztratí trpìlivost (s vìènì zacykleným pravidlem).
 #
-#  Nakonec se zamete (v¹echny doèasné znaèky se sma¾ou).
+#  Nakonec se zamete (v¹echny doèasné znaèky se sma¾ou). Pøi té¾e
+#  pøíle¾itosti zanikne znaèka \X, která pøípadnì blokovala zapojení
+#  taktu do tohoto pøilepování.
 #
 
 subst	"^mmmmm,mmmxm  ^mmmmmm,mmmxmm  ^mmmmmmm,mmmmxmm"	colon  word
@@ -68,7 +70,7 @@ subst   "pmm,pxm  qmmm,qxmm  pmmm,pxmm  tmmmm,tmmxm  qmmmm,qxmxm  dmmmmm,dmmxmm 
 
 postp	"m"		  word  word
 
-regress  mdtqpxf>\ (!_!)   word  word
+regress  mdtqpxf\X>\ (!_!)   word  word
 
 #
 # zkracování isolovaných a ostatních taktù podle poètu slabik - ipcz

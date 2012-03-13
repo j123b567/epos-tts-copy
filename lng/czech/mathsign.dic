@@ -7,7 +7,6 @@
 =	~rovná~se~
 /	~lomeno~
 @	~zavináè~
-;	~støedník~
 (	~závorka~
 )	~závorku~uzavøít~
 [	~hranatá~závorka~
@@ -24,3 +23,4 @@ _	~podtr¾ítko~
 \\	~zvrácené~lomítko~
 <	~men¹í~
 >	~vìt¹í~
+\#	~kód~

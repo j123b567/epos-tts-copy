@@ -34,7 +34,7 @@
  {
 	inside   :   sent
 	{
-		prosody   $prosody/wh.dic		sent	syll
+		prosody   $prosody/wh.dic	sent	syll
 	}
 #	prosody   ${prosody}/fadeoutp.dic	sent	phone
 	prosody   ${prosody}/fadeouts.dic	sent	syll
