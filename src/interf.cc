@@ -62,7 +62,7 @@
 
 char *scratch = NULL;
 
-char *esctab = NULL;
+charxlat *esctab = NULL;
 
 int unused_variable;
 
@@ -86,6 +86,7 @@ int severity(int code)
 }
 #endif
 
+int errors = 0;
 
 void shriek(int code, const char *s) 
 {	/* Art (c) David Miller */
@@ -105,10 +106,10 @@ void shriek(int code, const char *s)
 		if (cfg->log_codes) syslog(LOG_DAEMON | severity(code), "%3d %s", code, s);
 		else syslog(LOG_DAEMON | severity(code), "%s", s);
 #else
-	FILE *hackfile = fopen("hackfile","w");
-	if (hackfile) {
-		fprintf(hackfile, s);
-		fclose(hackfile);
+	FILE *h = fopen("epos.err","w");
+	if (h) {
+		fprintf(h, "%s\nerrno=%d (%s)\n", s, l_errno, strerror(l_errno));
+		fclose(h);
 	}
 #endif
 	command_failed *xcf;
@@ -123,7 +124,8 @@ void shriek(int code, const char *s)
 			throw new connection_lost (code, s);
 
 		case 8 :
-			printf("Abnormal condition: %s (code %d)\n", s, code);
+//			printf("Abnormal condition: %s (code %d)\n", s, code);
+			errors++;
 			if (errno && EAGAIN) printf("Current errno value: %d (%s)\n", errno, strerror(errno));
 			throw new fatal_error (code, s);
 
@@ -171,6 +173,13 @@ char *fmt(const char *s, int i, int j)
 	sprintf(error_fmt_scratch, s, i, j);
 	return error_fmt_scratch;
 }
+
+char *fmt(const char *s, const char *t, int i, const char *u)
+{
+	sprintf(error_fmt_scratch, s, t, i, u);
+	return error_fmt_scratch;
+}
+
 
 char *fmt(const char *s, const char *t, const char *u, const char *v)
 {
@@ -231,7 +240,7 @@ fopen(const char *filename, const char *flags, const char *reason)
 		OOM_HANDLER;
 	if (!f && reason) shriek(445, fmt(message, reason, filename, strerror(errno)));
 	if (cfg->paranoid && f && *flags == 'r') {
-		if (!fread(&message, 1, 1, f))
+		if (reason && !fread(&message, 1, 1, f))
 			shriek(445, fmt(message, reason, filename, "maybe a directory"));
 		fseek(f, 0, SEEK_SET);
 	}
@@ -355,6 +364,7 @@ unit *str2units(const char *text)
 }
 
 
+#ifdef CLASSIC_BOOLTAB
 
 char *fntab(const char *s, const char *t)
 {
@@ -367,6 +377,11 @@ char *fntab(const char *s, const char *t)
 	if(!t[1]) for (tmp=0; s[tmp]; tmp++) tab[(unsigned char)s[tmp]]=*t;
 	else for (tmp=0;s[tmp]&&t[tmp];tmp++) tab[(unsigned char)(s[tmp])]=t[tmp];
 
+	int ids = 0;
+	DEBUG(1,0,for (tmp = 0; tmp < 256; tmp++) if ((unsigned char)tab[tmp] == tmp) ids++;\
+	int globs = t[1] ? 0 : strlen(s);\
+	int rest = 256 - ids - globs;\
+	fprintf(STDDBG, "Adding a function, %d ids, %d being mapped to %c, and %d nontrivials\n", ids, globs, t[1] ? '#' : t[0], rest);)
 	return(tab);
 }
 
@@ -387,6 +402,8 @@ bool *booltab(const char *s)
 	}
 	return(tab);
 }
+
+#endif
 
 /*
  * be slow and robust
@@ -591,8 +608,12 @@ static inline void compile_rules()
 	_next_rule_line = (char *)xmalloc(cfg->max_line+1);
 	for (int i=0; i<cfg->n_langs; i++) {
 		cfg->default_lang = i;
-		if (cfg->langs[i]->n_voices)
+		if (cfg->langs[i]->n_voices) try {
 			cfg->langs[i]->compile_rules();
+		} catch (any_exception *e) {
+			errors++;
+		}
+		if (errors > 0) shriek(811, fmt("Rules for %s cannot be compiled", cfg->langs[i]->name));
 	}
 	free(_next_rule_line); _next_rule_line = NULL;
 	cfg->default_lang = tmp;
@@ -630,8 +651,8 @@ void epos_init()	 //Some global sanity checks made here
 #ifdef HAVE_TIME_H
 	srand(time(NULL));	// randomize
 #endif
-
-	if (!esctab) esctab = FOREVER(fntab(cfg->token_esc, cfg->value_esc));
+	load_default_charset();
+	if (!esctab) esctab = new charxlat(cfg->token_esc, cfg->value_esc, false);
 
 	config_init();
 
@@ -673,8 +694,11 @@ void epos_catharsis()
 	// one a_protocol may be lost here, see agent.cc
 
 	cfg->shutdown();
+	delete esctab; esctab = NULL;
 
 	shutdown_file_cache();
+	
+	shutdown_enc();
 	
 #ifdef HAVE_SYSLOG_H
 	closelog();
@@ -754,6 +778,7 @@ bool debug_wanted(int lev, /*_DEBUG_AREA_*/ int area)
 void debug_prefix(int lev, int area)
 {
 	unuse(lev); unuse(area);
+	color(STDDBG, cfg->normal_col);
 	if (current_debug_tag) fprintf(STDDBG, "[%s] ", current_debug_tag);
 //	if (this_lang && this_lang->name) printf("%s ", this_lang->name);
 }

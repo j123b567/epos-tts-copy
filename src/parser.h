@@ -51,6 +51,7 @@ class parser
  *	Special tokens added to ASCII instead of some absurd ctrl chars:
  *	DOTS	 ...	\~
  *	DECPOINT 1.3	\.
+ *	URLDOT   .com	\d
  *	RANGE	 1-3	\-
  *	MINUS	  -3	\m
  *	
@@ -74,8 +75,9 @@ class parser
 
 #define DOTS	 1
 #define DECPOINT 2
-#define	RANGE	 3
-#define MINUS	 4
+#define URLDOT   3
+#define	RANGE	 4
+#define MINUS	 5
 
 #define _INTERNAL1	31
 #define _INTERNAL2	30

@@ -48,6 +48,7 @@ class text
 	
 	char *current_file;
 	int   current_line;
+	int   charset;
 };
 
 #endif                    //#ifndef EPOS_TEXT

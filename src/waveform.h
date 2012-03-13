@@ -140,6 +140,19 @@ class wavefm
 		buffer[hdr.buffer_idx] = sample;
 		hdr.buffer_idx ++;
 	}
+	
+	inline void sample(SAMPLE *b, int count)
+	{
+		while (buff_size < hdr.buffer_idx + count) {
+			int avail = buff_size - hdr.buffer_idx;
+			sample(b, avail);
+			b += avail;
+			count -= avail;
+			flush();
+		}
+		memcpy(buffer + hdr.buffer_idx, b, count * sizeof (SAMPLE));
+		hdr.buffer_idx += count;
+	}
 
 	void label(int position, char *label, const char *note);
 

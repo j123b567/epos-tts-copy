@@ -31,6 +31,8 @@ if    phr_break
 	5x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
 }
 
+regress |>0(!_!)	colon	phone
+
 if    slovak_dph
 	segments  slovak.dph	colon
 if    !slovak_dph

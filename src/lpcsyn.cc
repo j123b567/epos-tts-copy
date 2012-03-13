@@ -309,7 +309,7 @@ lpcint::lpcint(voice *v) : lpcsyn(v)
 #if 0
 	if (cfg->ti_adj) { //Needs some more hacking before use -- twice in this file
 //	    kor_t = (short int *)freadin("korekce.set", v->inv_dir, "rb", "integer inventory");
-		shriek(462, "Remove the comment above this message and hack the line to claim()/unclaim(), then remove this shriek()");
+		shriek(462, "Remove the comment above this message and adapt the line to claim()/unclaim(), then remove this shriek()");
 	    kor_i = (short int *)(v->n_segs*2 + (char *)kor_t);
 	}
 #endif

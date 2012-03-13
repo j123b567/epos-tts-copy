@@ -15,6 +15,7 @@ $short     = aeiouyì
 $long      = áéíóúýì
 $diphtong  = OAE
 $vowel     = $short$long$diphtong
+$VOWEL     = AEIOUYÁÉÍÓÚÝÌ
 $consonant = $voiced$voiceless$sonant
 $everywhere= !_!
 $numbers   = 1234567890
@@ -31,12 +32,41 @@ $letter = ${lower_case}${upper_case}
 #  Nìkteré významy teèky, jako napø. desetinná teèka, u¾ vyøe¹il parser,
 #  a to nezávisle na jazyce.  Ty tedy není nutno brát v potaz.
 
-inside .  sent
+#inside .  sent
+#{
+#	regex /([0123456789])\$/\1\Z/	word
+#}
+#regex  /(\Z)\\.([${lower_case}])/\1\2/	text
+#regex  /\Z(\\.)([${upper_case}])/\1\2/	text
+
+regex    /\\((.\{1,12\})\\)/v~závorce~\1/				colon
+regex    /"(.\{1,12\})"/v~uvozovkách~\1/					colon
+
+#  \d u¾ vydìlil parser, provizornì jako znak slovní úrovnì.  Úseky mezi
+#  výskyty tohoto znaku (napø. teèka v URL) se hláskují, pokud neobsahují
+#  samohlásku nebo slabikotvornou souhlásku.  Tato pravidla se mohou chovat
+#  nerozumnì v kombinaci s velkými písmeny.
+
+inside \d  word
 {
-	regex /([0123456789])\$/\1\Z/	word
+	regress 0>\d(!_0)
 }
-regex  /(\Z)\\.([${lower_case}])/\1\2/	text
-regex  /\Z(\\.)([${upper_case}])/\1\2/	text
+regress \d>\ (!_!)		word	word
+
+if	roman
+{
+	@include  "roman.rul"
+}
+ 
+regex    /^([vVsSzZkK][~\ ]\{0,2\})\$/\W\1/
+regress  lr>\X\Y(0_!)
+near  *!\Wlr$vowel$VOWEL	word	phone
+{
+	regress ${lower_case}>${upper_case}(!_!) word
+	subst abbrurl.dic			 word
+}
+regress  \W>0(!_!)
+regress  \X\Y>lr(0_!)
 
 # rùzné zkratky
 
@@ -47,7 +77,7 @@ subst   short.dic
 #   Stejnì tak jednotlivé písmeno pøed nebo za cifrou nebo
 #   speciálním znakem nebo hláskovanou èástí slova.
 
-regress  ${upper_case}>${lower_case}(0_${lower_case})			word
+regress  ${upper_case}>${lower_case}(!letter_${lower_case})			word
 regress  ${upper_case}>${lower_case}(0_${lower_case})			colon
 regress	 ${lower_case}>${upper_case}(0_!${lower_case})			colon
 regress  ${lower_case}>${upper_case}(!${lower_case}_!$letter)		colon
@@ -188,10 +218,6 @@ regress  ${upper_case}>${lower_case}($everywhere)			colon
 	regress   0>d(!_DÏ)		; rozkládá se zde dz, d¾ (representované Z,®)
 	regress   DÏ>z¾(!_!)		; na d-z, d-¾, pokud následuje vokál.
  }
-
-# progress  0>~($vowel_0) syll	; Oznaèení otevøených vokalických slabik tildou
-# raise     ~:!		 syll	; FIXME!!!! slabikotvorné
-# progress  ~>0($vowel_0) syll
 
 # Následující odstavec má za cíl oznaèit v¹echny otevøené slabiky tildou.
 #   Ve zavøených slabikách se objeví pøíznak "C" (coda), ten se pak posune

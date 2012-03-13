@@ -168,6 +168,26 @@ main <tt>.ini</tt> file. These includes can be nested to any finite depth; if no
 relative path is specified, the directory which holds the topmost file is used for
 the lookup.
 
+<sect2> Character encoding
+<p>
+
+Sometimes it is not convenient or possible to encode all configuration files
+in the same character encoding.  For example, character encoding may be
+language dependent.  But it is even possible for different lines of the
+same file to use different encodings.  You can switch character encodings
+for the same file using the <tt>&commat;charset</tt> directive.
+Charset name must be specified as a parameter and it must be enclosed in
+parentheses.  Epos attempts to load the corresponding unicode character
+mapping file and immediately switches the charset number for the current
+file.  Please note two differences from the <tt/charset/ option:
+the directive only affects the current "logical" file (including included
+files as well as any files it has been included from using the
+<tt>&commat;include</tt> directive), whereas the option doesn't affect it at
+all, but it affects all subsequent files (e.g. for the given language).
+
+<sect2> Other directives
+<p>
+
 Two more directives, <tt>@warn</tt> and <tt>@error</tt> with obvious semantics
 are available for diagnostic purposes.
 
@@ -929,12 +949,26 @@ employ reasonably high values.
 	amount of data which will be read for processing.  This is not necessary
 	when reading from a file, because the length of a file can be known in
 	advance and it is always finite.
-<tag>--hashes&lowbar;full <sl/percentage/</tag>
+<tag>--hash_search <sl/n/</tag>
+	Trade-off.  Controls how many multipliers are tried out when
+	constructing a perfect hash table, for each table size.
+	The search begins at 1 and continues up to <sl/n/.
+	If the table still has collisions, hash table size is
+	increased by one and the search restarts.  This is iterated
+	until a perfect hash table is found.  As we only use perfect hash
+	tables for representing constant sets and functions, they are only
+	constructed during Epos startup.  Setting this option to a small
+	value (such as 17) speeds up Epos startup, while larger values
+	can sometimes arrive at a smaller table, thus saving some memory.
+<tag>--hashes_full <sl/percentage/</tag>
 	Trade-off. Controls how full should a hash table ideally be.
 	The hash tables used in Epos
 	are actually quite robust performance-wise, so that even values
 	like 1000, that is, ten data items per a hash table slot, result
 	in near-optimal speed. Values somewhere below 100 are the best bet.
+<tag>--max_errors <sl/count/</tag>
+	Sanity check limit.  If more than <sl/count/ of errors in a rules file
+	is found, Epos quits parsing the file.
 <tag>--max_line_len <sl/characters/</tag>
 	Hard limit. Maximum line length in a text-oriented input file.
 	Longer lines are truncated.
@@ -1239,7 +1273,7 @@ cd src
 </verb>
 </tscreen>
 
-<label id="pseudorootdir-option">n
+<label id="pseudorootdir-option">
 <tag>--pseudo_root_dir <sl/dirname/</tag>
 	The value is a directory name.  Sets the path prepended
 	to any file name referenced in the TTSCP <ref id="strm-cmd"

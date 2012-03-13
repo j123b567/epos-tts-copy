@@ -589,6 +589,8 @@ void a_input::run()
 	}
 	offset += res;
 	if (offset == toread) {
+		void *dta = inb;
+		((char *)dta)[offset] = 0;
 		switch (out) {
 			case T_DIPHS:
 				if ((((segment *)inb)->code + 1) * (int)sizeof(segment) != offset)
@@ -603,10 +605,10 @@ void a_input::run()
 				inb = NULL; toread = offset = 0;
 				pass(w);
 				return;
+			case T_TEXT:
+				encode_string((char *)inb, this_lang->charset, false);
 			default: ;	/* otherwise no problem */
 		}
-		void *dta = inb;
-		((char *)dta)[offset] = 0;
 		DEBUG(2,11,fprintf(STDDBG, "Read and about to process %s\n", (char *)dta);)
 		inb = NULL;
 		toread = 0;	// superfluous
@@ -632,14 +634,16 @@ a_input::mktask(int size)
 class a_output : public a_io
 {
 	virtual int insize() = 0;
+	virtual void decode() {};
 	virtual void run();
 	virtual const char *name() { return "output"; };
 	bool foreground() {return ((stream *)next)->foreground(); };
 	int written;
+	bool decoded;
    protected:
 	void report(bool total, int written);
    public:
-	a_output(const char *par, DATA_TYPE i) : a_io(par, i, T_NONE) {written = 0;};
+	a_output(const char *par, DATA_TYPE i) : a_io(par, i, T_NONE) {written = 0; decoded = false;};
 };
 
 void
@@ -650,6 +654,11 @@ a_output::run()
 		return;
 	}
 	int size = insize();
+	if (!decoded) {
+		decode();
+		decoded = true;
+	}
+	
 	if (written) {
 		int now_written = ywrite(socket, (char *)inb + written, size - written);
 		report(false, now_written);
@@ -663,6 +672,7 @@ a_output::run()
 	}
 	if (written == size) {
 		written = 0;
+		decoded = false;
 		relax();
 		finis(false);
 	} else push(socket);
@@ -685,6 +695,9 @@ class oa_ascii : public a_output
 {
 	virtual int insize() {
 		return strlen((char *)inb);
+	}
+	virtual void decode() {
+		decode_string((char *)inb, this_lang->charset);
 	}
    public:
 	oa_ascii(const char *s): a_output(s, T_TEXT) {};
@@ -982,6 +995,8 @@ void a_protocol::run()
 		disconnect();
 		return;
 	}
+
+	encode_string(buffer, this_lang->charset, false);	// FIXME (alloc->true)
 
 	if ((int)strlen(buffer) >= cfg->max_net_cmd)
 		shriek(413, "Received command is too looong");

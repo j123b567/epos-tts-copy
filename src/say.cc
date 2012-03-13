@@ -43,6 +43,8 @@ const char *WHITESPACE = " \t\r";
 
 const char *output_file = NULL;
 
+const char *charset = "8859-2";
+
 bool chunking = false;
 bool show_segments = false;
 bool wavfile = false;
@@ -318,6 +320,7 @@ int main(int argc, char **argv)
 {
 #ifdef HAVE_WINSOCK
 	if (WSAStartup(MAKEWORD(2,0), (LPWSADATA)scratch)) shriek(464, "No winsock");
+	charset = "cp1250";
 #endif
 	start_service();		/* Windows NT etc. only */
 
@@ -328,6 +331,10 @@ int main(int argc, char **argv)
 	sputs(ch, datad);
 	sputs("\r\n", datad);
 	free(ch);
+	sputs("setl charset ",ctrld);
+	sputs(charset, ctrld);
+	sputs("\r\n", ctrld);
+	get_result(ctrld);
 	send_cmd_line(argc, argv);
 	dh = get_handle(datad);
 	get_result(datad);
@@ -349,8 +356,8 @@ int main(int argc, char **argv)
 	}
 /// #endif
 
-	say_data();
 	if (!wavstdout) trans_data();
+	say_data();
 //	printf("\n");
 	sputs("delh ", ctrld);
 	sputs(dh, ctrld);

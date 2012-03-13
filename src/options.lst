@@ -55,6 +55,7 @@
 #define MARKUP OUT_ML
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
+#define CHARSET    int
 #define DEBUG_AREA _DEBUG_AREA_
 
 #define OPTION(member,name,type,default) type member;
@@ -108,6 +109,7 @@
 #define MARKUP O_MARKUP
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
+#define CHARSET    O_CHARSET
 #define DEBUG_AREA O_DBG_AREA
 
 #define OPTION(member,name,type,default) {"C:" name + 2, type, OS_CFG, A_PUBLIC, A_PUBLIC, true, false, (int)&((configuration *)NULL)->member},
@@ -163,6 +165,7 @@
 #define MARKUP OUT_ML
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
+#define CHARSET    int
 #define DEBUG_AREA _DEBUG_AREA_
 
 #define OPTIONAGGR(x)
@@ -194,6 +197,7 @@
 #define MARKUP O_MARKUP
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
+#define CHARSET    O_CHARSET
 #define DEBUG_AREA O_DBG_AREA
 
 #define OPTIONAGGR(x)
@@ -251,6 +255,7 @@
 #define MARKUP OUT_ML
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
+#define CHARSET    O_CHARSET
 #define DEBUG_AREA _DEBUG_AREA_
 
 // #define LNG_OPTIONAGGR(x) OPTIONAGGR(x)
@@ -275,6 +280,7 @@
 #define MARKUP O_MARKUP
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
+#define CHARSET    O_CHARSET
 #define DEBUG_AREA O_DBG_AREA
 
 // #define LNG_OPTIONAGGR(x) OPTIONAGGR(x)
@@ -340,11 +346,13 @@ OPTION (limit_dbg,  "limit_debug", INT, 0)      // Never debug under this level,
 OPTION (loaded, "",               BOOL, false)  // Do we have already compiled the .ini files?
 OPTION (fixedfile,"fixed_ini_file",STR, "fixed.ini")
 OPTION (inifile, "cfg_file",       STR, "epos.ini")	// What is our favourite .ini file?
-OPTION (token_esc, "",             STR, "nrt[eE\\ #;@~.-mXYZWVU")  // Escape sequences usable in the .ini files
-OPTION (value_esc, "",             STR, "\n\r\t\033\033\033\\\377#;@\1\2\3\4\037\036\035\034\032\031")
+OPTION (token_esc, "",             STR, "nrt[eE\\ #;@~.d-mXYZWVU")  // Escape sequences usable in the .ini files
+OPTION (value_esc, "",             STR, "\n\r\t\033\033\033\\\377#;@\1\2\3\4\5\037\036\035\034\032\031")
 OPTION (slash_esc, "",            CHAR, '/')	// Path separator ('/' or '\') .ini escape seq
 
 OPTION (hash_full, "hashes_full",  INT, 100)    // How full should a hash table become?
+OPTION (max_errors, "max_errors",  INT, 16)	// How many rule file syntax errors to report?
+OPTION (max_nest, "max_nest",      INT, 16)	// How many @include directives may be nested?
 OPTION (multi_subst,"multi_subst", INT, 100)    // How many substs should apply to a word?
 OPTION (lowmemory, "memory_low",  BOOL, false)  // Should we free hash tables after first use?
 OPTION (forking, "forking",	  BOOL, false)  // (UNIX only) Detach using a child process?
@@ -370,6 +378,8 @@ OPTION (allpointers,"ptr_trusted",BOOL, true)   // When sanity checking, allow a
 OPTION (vars, "variables",         INT, 43)     // About how many variables in the rules?
 OPTION (rules, "rules_in_block",   INT, 32)	// About how many rules in a block?
 OPTION (mrw, "max_rule_weight",    INT, 900000)	// Maximum rule weight in a choice?
+OPTION (hash_search, "hash_search",INT, 57)	// number of attempts at constructing
+						// a perfect hashing function
 OPTION (max_line, "max_line_len",  INT, 512)	// How long may an input line be?
 OPTION (scratch, "scratch_size",   INT, 512)	// How long may some temporary strings be?
 OPTION (dev_txtlen,"dev_text_len", INT, 50000)  // How much data can we expect from a device?
@@ -389,6 +399,7 @@ OPTION (lang_base_dir, "lang_base_dir",    STR, "lng")    //  to the language de
 OPTION (voice_base_dir, "voice_base_dir",  STR, "voice")  //  to the voice descriptions
 OPTION (inv_base_dir, "inv_base_dir",  STR, "inv")	  //  to the segment inventories
 OPTION (ini_dir, "ini_dir",	   STR, "cfg")  //      to fixed.ini
+OPTION (unimap_dir, "unimap_dir",  STR, NULL)   //      to unicode maps
 OPTION (matlab_dir, "matlab_dir",  STR, ".")	//      where to store nnet output
 OPTION (wav_dir, "wav_dir",        STR, ".")	//      where to store .wav files
 LNG_OPTION (input_file, input_file, "input_file",  STR, NULL)   // relative filename of the input text
@@ -481,6 +492,7 @@ LNG_OPTION (fallback_voice, fallback_voice, "fallback_voice", STR, "")
 // OPTION (lowercase,"lower_case",    STR, NULL)   // Which characters are accepted as 
 // OPTION (uppercase,"upper_case",    STR, NULL)   // denoting phones
 
+LNG_OPTION (charset, charset, "charset", CHARSET, 0)	// character encoding table index
 OPTION (relax_input,"relax_input",BOOL, true)   // Survive unknown characters on input
 OPTION (dflt_char, "default_char",CHAR, ' ')	// Replace them with this char
 
@@ -617,6 +629,7 @@ OPTIONARRAY (out_color, "color", STR, "", UNIT_MAX)
 #undef MARKUP
 #undef TYPE
 #undef CHANNEL
+#undef CHARSET
 #undef DEBUG_AREA
 
 #undef LNG_OPTIONARRAY

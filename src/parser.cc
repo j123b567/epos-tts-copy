@@ -108,6 +108,7 @@ parser::getchar()
 ***********/
 
 #define IS_DIGIT(x)	((x)>='0' && (x)<='9')
+#define IS_ASCII_LOWER_ALPHA(x) ((x)>='a' && (x)<='z')
 
 unsigned char
 parser::gettoken()
@@ -117,13 +118,17 @@ parser::gettoken()
 	do {
 		switch (token = *current) {
 			case '.':
+				if (IS_DIGIT(current[1])) {
+					token = DECPOINT;
+					break;
+				}
+				if (IS_ASCII_LOWER_ALPHA(current[1])) {
+					token = URLDOT;
+					break;
+				}
 				if (current[1] == '.' && current[2] == '.') {
 					current += 2;
 					token = DOTS;
-					break;
-				}
-				if (IS_DIGIT(current[1])) {
-					token = DECPOINT;
 					break;
 				}
 				break;
@@ -166,10 +171,8 @@ parser::chrlev(unsigned char c)
 	if (current > text+txtlen+1) /*(!current[-1] && c))*/ return(U_VOID);
 	if (CHRLEV[c] == U_ILL)
 	{
-		if (cfg->relax_input) return CHRLEV[cfg->dflt_char];
-DEBUG(3,7,{	if (c>127) fprintf(cfg->stdshriek,"Seems you're mixing two Czech character encodings?\n");
-		fprintf(cfg->stdshriek,"Fatal: parser dumps core.\n%s\n",(char *)current-2);
-})
+		if (cfg->relax_input && CHRLEV[cfg->dflt_char] != U_ILL) return CHRLEV[cfg->dflt_char];
+		DEBUG(2,7,fprintf(cfg->stdshriek,"Fatal: parser dumps core.\n%s\n",(char *)current-2);)
 		shriek(431, fmt("Parsing an unhandled character  '%c' - ASCII code %d", (unsigned int) c, (unsigned int) c));
 	}
 	return(CHRLEV[c]);

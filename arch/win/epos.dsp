@@ -147,6 +147,10 @@ SOURCE=.\tcpsyn.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\tdpsyn.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\text.cpp
 # End Source File
 # Begin Source File
@@ -248,6 +252,10 @@ SOURCE=.\synth.h
 # Begin Source File
 
 SOURCE=.\tcpsyn.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\tdpsyn.h
 # End Source File
 # Begin Source File
 

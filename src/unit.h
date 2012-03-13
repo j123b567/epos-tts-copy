@@ -54,7 +54,7 @@ class unit
     
 	inline bool subst(hash *table, int total_length,
 		char*s1b,char*s1e,char*s2b,char*s3b,char*s3e); //inner, see implem.
-	void syll_break(char *sonority, unit *before);    //Implements the side-syllable hack
+	void syll_break(char *sonority, unit *before);
 	void syllabify(char *sonority);  //May split "father" just before "this", if sonority minimum
 	void sseg(hash *templates, char symbol, int *quantity);
 	void seg(hash *segm_inventory);  //Will create up to one segment. Go see it if curious.
@@ -80,7 +80,7 @@ class unit
 	char *gather(char *buffer_start, char *buffer_end, bool suprasegm);
 	char *gather(int *l, bool delimited, bool suprasegm);	// returns length in *l
              // gather() returns the END of the string (which is unterminated!)
-        void insert(UNIT target, bool backwards, char what, bool *left, bool *right);
+        void insert(UNIT target, bool backwards, char what, charclass *left, charclass *right);
 //	void subst(UNIT target, hash *table, SUBST_METHOD method);
 	inline void subst();          //replace this unit by sb
 	bool subst(hash *table, SUBST_METHOD method);
@@ -88,22 +88,21 @@ class unit
 #ifdef WANT_REGEX
 	void regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl);
 #endif
-	void assim(UNIT target, bool backwards, char *fn, bool *left, bool *right);
-                                      //Will convert cont using fn[256] if left[Next]
-                                      // and right[Prev] are both true. Backwards=regressive. 
+	void assim(UNIT target, bool backwards, charxlat *fn, charclass *left, charclass *right);
 	void split(unit *before);         //Split this unit just before "before"
                                       //not too robust
 	void syllabify(UNIT target, char *sonority);
                                       // Will split units (syllables),
                                       // according to sonority[cont] of "target"
                                       // units (phones) contained there
+	bool contains(UNIT target, charclass *set);
         void sseg(UNIT target, hash *templates);
         			      // Take freq, time or intensity from the hash*
 	void contour(UNIT target, int *recipe, int rec_len,
 			int padd_start, FIT_IDX what, bool additive);
         void smooth(UNIT target, int *ratio, int base, int len, FIT_IDX what);
         void project(UNIT target, int f, int i, int t);
-        void raise(bool *what, bool *when, UNIT whither, UNIT whence);
+        void raise(charclass *what, charclass *when, UNIT whither, UNIT whence);
         			      // Move characters between levels
 	void segs(UNIT target, hash *segm_inventory);
                                       //Will create the segments

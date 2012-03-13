@@ -170,6 +170,27 @@ cause the contents of the <CODE>filename</CODE> file to be inserted at this plac
 main <CODE>.ini</CODE> file. These includes can be nested to any finite depth; if no or
 relative path is specified, the directory which holds the topmost file is used for
 the lookup.
+<P>
+<H3>Character encoding</H3>
+
+<P>
+<P>Sometimes it is not convenient or possible to encode all configuration files
+in the same character encoding.  For example, character encoding may be
+language dependent.  But it is even possible for different lines of the
+same file to use different encodings.  You can switch character encodings
+for the same file using the <CODE>&commat;charset</CODE> directive.
+Charset name must be specified as a parameter and it must be enclosed in
+parentheses.  Epos attempts to load the corresponding unicode character
+mapping file and immediately switches the charset number for the current
+file.  Please note two differences from the <CODE>charset</CODE> option:
+the directive only affects the current "logical" file (including included
+files as well as any files it has been included from using the
+<CODE>&commat;include</CODE> directive), whereas the option doesn't affect it at
+all, but it affects all subsequent files (e.g. for the given language).
+<P>
+<H3>Other directives</H3>
+
+<P>
 <P>Two more directives, <CODE>@warn</CODE> and <CODE>@error</CODE> with obvious semantics
 are available for diagnostic purposes.
 <P>
@@ -857,11 +878,23 @@ playback.
 amount of data which will be read for processing.  This is not necessary
 when reading from a file, because the length of a file can be known in
 advance and it is always finite.
+<DT><B>--hash_search <I>n</I></B><DD><P>Trade-off.  Controls how many multipliers are tried out when
+constructing a perfect hash table, for each table size.
+The search begins at 1 and continues up to <I>n</I>.
+If the table still has collisions, hash table size is
+increased by one and the search restarts.  This is iterated
+until a perfect hash table is found.  As we only use perfect hash
+tables for representing constant sets and functions, they are only
+constructed during Epos startup.  Setting this option to a small
+value (such as 17) speeds up Epos startup, while larger values
+can sometimes arrive at a smaller table, thus saving some memory.
 <DT><B>--hashes_full <I>percentage</I></B><DD><P>Trade-off. Controls how full should a hash table ideally be.
 The hash tables used in Epos
 are actually quite robust performance-wise, so that even values
 like 1000, that is, ten data items per a hash table slot, result
 in near-optimal speed. Values somewhere below 100 are the best bet.
+<DT><B>--max_errors <I>count</I></B><DD><P>Sanity check limit.  If more than <I>count</I> of errors in a rules file
+is found, Epos quits parsing the file.
 <DT><B>--max_line_len <I>characters</I></B><DD><P>Hard limit. Maximum line length in a text-oriented input file.
 Longer lines are truncated.
 <DT><B>--max_net_cmd <I>characters</I></B><DD><P>Hard limit. Maximum TTSCP command length. TTSCP lines longer
@@ -1128,8 +1161,7 @@ cd src
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<A NAME="pseudorootdir-option"></A> n
-<DT><B>--pseudo_root_dir <I>dirname</I></B><DD><P>The value is a directory name.  Sets the path prepended
+<A NAME="pseudorootdir-option"></A> <DT><B>--pseudo_root_dir <I>dirname</I></B><DD><P>The value is a directory name.  Sets the path prepended
 to any file name referenced in the TTSCP 
 <A HREF="epos-4.html#strm-cmd">stream command</A>. This subtree cannot be escaped with
 cute parent-of-root paths, but you can use symlinks to arbitrary

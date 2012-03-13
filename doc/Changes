@@ -1,8 +1,5 @@
 
 
-
-
-
 RECENT CHANGES can be tracked at the BOTTOM END.  The rest doesn't qualify
 for an exciting story, just skip it.
 
@@ -1145,3 +1142,35 @@ for an exciting story, just skip it.
 	- integrated 2.4.66 to 2.4.67 patch (mostly related to tdpsyn and
 		adjustments in Czech and Slovak language configuration)
 	- tdpsyn cleanup
+
+2.4.70 from 2.4.69	internal
+	- added tdpsyn to arch/win/configure.bat, arch/win/epos.dsp
+	- tcpsyn now handles missing diphones based on paranoid the obvious way
+	- added mappings/README
+	- added r-violka and r-machac voices
+	- (Sk) removed |'s before diphonization
+	- (Sk) fixed the v>w rule
+	- (Cz + Sk) fixed the capitalization just after a non-letter spelling bug
+	- backported some code from 2.5 (a 2.5.0 to 2.5.2 patch):
+		- src/function.cc, made *gress (and other) rules use much less memory
+		- hackfile renamed to epos.err (still used only if no syslog)
+		- added encoding.cc, i.e. support for multiple character encodings
+		- URL spelling rules (unpronounceable consonant groups are spelled out)
+		- handling server -D option in a less cleverish way
+		- Makefile on config.h dependency removed
+		- some error messages changed to the file:line format
+		- rules go on parsing after errors
+		- added an undocumented class of errors 88x
+		- fixed an incomplete conditional rule parsing bug
+		- max_errors, max_nest options
+		- lng/czech/numerals.rul fixed (1[234] mili.*)
+
+2.4.71 from 2.4.70	5.11.01
+	- (Cz + Sk) (v zátvorke) "v uvodzovkách" (punctuation rendering for short texts)
+	- (Cz + Sk) fixes for URL spelling rules
+	- tdpsyn.cc now uses memset and memcpy properly instead of initialization loops
+	- added tcpsyn.max_frame; made the out_buffer size fit the segment inventory
+	- faster waveform->sample(SAMPLE *, int) used by tdpsyn
+	- (Cz + Sk) Roman numerals
+	- say first transcribes, then speaks
+	- (Sk) fixed voicing loss in voiced-final + personal pronoun

@@ -27,7 +27,7 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@cuni.cz"
-#define VERSION     "2.4.69"
+#define VERSION     "2.4.71"
 
 #include "config.h"
 
@@ -110,6 +110,7 @@ class stream;
 #include "hash.h"
 #include "text.h"
 #include "voice.h"
+#include "function.h"
 #include "interf.h"             //See interf.h and even interf.cc for other headerities
 #include "options.h"
 #include "parser.h"
@@ -117,6 +118,7 @@ class stream;
 #include "rule.h"              //See rules.h for additional #defines and enums
 #include "waveform.h"
 #include "synth.h"
+#include "encoding.h"
 
 #define MAX_PATHNAME       256	  // only load_language uses this
 

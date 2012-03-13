@@ -1,4 +1,3 @@
-
 /*
  *	epos/src/unit.cc
  *	(c) 1996-99 geo@cuni.cz
@@ -265,14 +264,16 @@ unit::set_father(unit *new_fath)
  ****************************************************************************/
 
 void
-unit::insert(UNIT target, bool backwards, char what, bool *left, bool *right)
+unit::insert(UNIT target, bool backwards, char what, charclass *left, charclass *right)
 {
 	unit *tmpu;
 
 	if (depth == target) {
 		DEBUG(1,4,fprintf(STDDBG,"inner unit::insert %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
-		DEBUG(1,4,fprintf(STDDBG,"   env is %c %c\n",left[Prev(depth)->inside()]+'0',right[Next(depth)->inside()]+'0');)
-		if (left[cont] && right[Next(depth)->cont]) {
+		DEBUG(1,4,fprintf(STDDBG,"   env is %c %c\n",
+				left->ismember(Prev(depth)->inside())+'0',
+				right->ismember(Next(depth)->inside())+'0');)
+		if (left->ismember(cont) && right->ismember(Next(depth)->cont)) {
 			tmpu = new unit(depth, what);
 			tmpu->prev = this;
 			if (next) {
@@ -285,7 +286,7 @@ unit::insert(UNIT target, bool backwards, char what, bool *left, bool *right)
 			tmpu->i = i;
 			tmpu->t = t;
 		}
-		if (!prev && right[cont] && left[Prev(depth)->cont]) {
+		if (!prev && right->ismember(cont) && left->ismember(Prev(depth)->cont)) {
 			tmpu = new unit(depth, what);
 			tmpu->next = this;
 			father->firstborn = tmpu;
@@ -736,17 +737,19 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
  ****************************************************************************/
 
 void 
-unit::assim(UNIT target, bool backwards, char *fn, bool *left, bool *right)
+unit::assim(UNIT target, bool backwards, charxlat *fn, charclass *left, charclass *right)
 {
 	unit *tmpu;
 
 	sanity();
 	if (depth == target) {
 		DEBUG(1,4,fprintf(STDDBG,"inner unit::assim %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
-		DEBUG(1,4,fprintf(STDDBG,"   env is %c %c\n",left[Prev(depth)->inside()]+'0',right[Next(depth)->inside()]+'0');)
-		if (right[Next(depth)->inside()] && left[Prev(depth)->inside()]) {
+		DEBUG(1,4,fprintf(STDDBG,"   env is %c %c\n",
+				left->ismember(Prev(depth)->inside())+'0',
+				right->ismember(Next(depth)->inside())+'0');)
+		if (right->ismember(Next(depth)->inside()) && left->ismember(Prev(depth)->inside())) {
 			if (cont == DELETE_ME) return;
-			cont = (unsigned char)fn[(unsigned char)cont];     // Digital UNIX once had trouble here
+			cont = (unsigned char)fn->xlat(cont);
 			if (cont == DELETE_ME) unlink(M_DELETE);
 			DEBUG(1,4,fprintf(STDDBG,"New contents: %c\n",cont);)
 		}
@@ -838,6 +841,19 @@ unit::syllabify(UNIT target, char *sonor)
 		tmpu->syllabify(sonor);
 		tmpu = tmpu_prev;
 	}
+}
+
+/****************************************************************************
+ unit::contains    returns whether a unit of certain content is contained
+ ****************************************************************************/
+ 
+bool
+unit::contains(UNIT target, charclass *set)
+{
+	for (unit *u = LeftMost(target); u != &EMPTY; u = u->Next(target)) {
+		if (set->ismember((unsigned char)u->cont)) return true;
+	}
+	return false;
 }
 
 /****************************************************************************
@@ -991,18 +1007,18 @@ unit::project(UNIT target, int adjf, int adji, int adjt)
  ****************************************************************************/
 
 void 
-unit::raise(bool *whattab, bool*whentab, UNIT whither, UNIT whence)
+unit::raise(charclass *whattab, charclass *whentab, UNIT whither, UNIT whence)
 {
 	if (whither != depth) shriek(861, "raise bad");
 	unit *tmpu, *tmpbig;
 	DEBUG(1,2,fprintf(STDDBG,"unit::raise moving from %d to %d\n",whence,whither);)
 	if  (whither<=whence) shriek(462, "Raising downwards...huh...");
 	for (tmpbig = LeftMost(whither); tmpbig != &EMPTY; tmpbig = tmpbig->Next(whither)) {
-		if (whentab[tmpbig->cont]) {
+		if (whentab->ismember(tmpbig->cont)) {
 			DEBUG(1,2,fprintf(STDDBG,"unit::raise searching %c\n",tmpbig->cont);)
 			bool tmpscope = scope; scope = true;
 			for (tmpu = LeftMost(whence); tmpu != &EMPTY; tmpu = tmpu->Next(whence)) {
-				if (whattab[tmpu->cont]) {
+				if (whattab->ismember(tmpu->cont)) {
 					DEBUG(0,2,fprintf(STDDBG,"unit::raise found %c\n",tmpu->cont);)
 					tmpbig->cont = tmpu->cont;
 				}
@@ -1287,7 +1303,7 @@ unit::sanity()
 	if (prev && prev->next != this)			insane("prev->next");
 	if (next && next->prev != this)			insane("next->prev");
 	if (depth==cfg->text_level && father)		insane("TEXT.father");
-	if (cont < 0 || cont > 255 && depth > cfg->segm_level)	insane("content"); 
+	if (cont < -128 || cont > 255 && depth > cfg->segm_level)	insane("content"); 
 
         if (cfg->allpointers) return;
 	if (prev && (unsigned long int) prev<0x8000000) insane("prev");

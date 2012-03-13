@@ -46,6 +46,7 @@ void colorize(int level, FILE *handle);  // See this function in interf.cc for v
 
 char *fmt(const char *s, int userval);
 char *fmt(const char *s, int userval, int anotherval);
+char *fmt(const char *s, const char *t, int userval, const char *u);
 char *fmt(const char *s, const char *t, int userval);
 char *fmt(const char *s, const char *t);
 char *fmt(const char *s, const char *t, const char *u);
@@ -68,7 +69,6 @@ FILE *fopen(const char *filename, const char *flags, const char *reason);
 extern void *xmall_ptr_holder;
 #define OOM_HANDLER	(shriek(422, "Out of memory"), (void *)NULL)
 #define xmalloc(x)	(((xmall_ptr_holder = malloc((x)))) ? xmall_ptr_holder : OOM_HANDLER)
-//#define xrealloc(x,y)	(((xmall_ptr_holder = realloc((x),(y)))) ? xmall_ptr_holder : OOM_HANDLER)
 #define xrealloc(x,y)	((((xmall_ptr_holder = realloc((x),(y))))) && (x) ? xmall_ptr_holder : OOM_HANDLER)
 #define xcalloc(x,y)	(((xmall_ptr_holder = calloc((x),(y)))) ? xmall_ptr_holder : OOM_HANDLER)
 
@@ -94,9 +94,9 @@ UNIT str2enum(const char *item, const char *list, int dflt);
 const char *enum2str(int item, const char *list);
 // hash *str2hash(const char *list, unsigned int max_item_len);
 unit *str2units(const char *text);
-char *fntab(const char *s, const char *t); //will calloc and return 256 bytes not freeing s,t
+//char *fntab(const char *s, const char *t); //will calloc and return 256 bytes not freeing s,t
                                        //if len(s)!=len(t), ignore the rest if not cfg.paranoid
-bool *booltab(const char *s);          //will calloc and return 256 bytes not freeing s
+//bool *booltab(const char *s);          //will calloc and return 256 bytes not freeing s
 
 char *compose_pathname(const char *filename, const char *dirname, const char *treename);
 char *compose_pathname(const char *filename, const char *dirname);
@@ -135,7 +135,7 @@ struct segment {
 #define PSEUDOSPACE	'\377'
 
 
-extern char *esctab;
+extern charxlat *esctab;
 
 // extern FILE *stdshriek;
 // extern FILE *stdwarn;

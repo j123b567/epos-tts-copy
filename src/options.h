@@ -20,7 +20,7 @@
 
 enum OPT_STRUCT { OS_CFG, OS_LANG, OS_VOICE };
 enum ACCESS { A_PUBLIC, A_AUTH, A_ROOT, A_NOACCESS };
-enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SYNTH, O_CHANNEL, O_DBG_AREA, O_INT, O_CHAR, O_STRING, O_LANG, O_VOICE };
+enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SYNTH, O_CHANNEL, O_DBG_AREA, O_INT, O_CHAR, O_STRING, O_LANG, O_VOICE, O_CHARSET };
 								//various types of options
 #define CONFIG_DECLARE
 struct configuration : public cowabilium	//Some description & defaults can be found in options.lst

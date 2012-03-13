@@ -129,7 +129,7 @@ class hash: public hash_table<char, char>
 					// message to be printed if file not found
 					// (%s may represent the filename)
 					// use ANYWAY to continue anyway (with items == -1)
-		char *esctab);		// char[256] to translate backslash-escaped chars
+		char esc(char));	// function to translate backslash-escaped chars
 					// NULL if backslash not to be treated special
 
 	int	write(char *filename, bool keep_backup);	// non-destructive save

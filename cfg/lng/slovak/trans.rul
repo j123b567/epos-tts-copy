@@ -5,6 +5,7 @@
 
 $lower_case = aáäbcèdïeéìfghiíjklµåmnòoóôpqrøàs¹t»uúùvwxyız¾
 $upper_case = AÁÄBCÈDÏEÉÌFGHIÍJKL¥ÅMNÒOÓÔPQRØÀS©T«UÚÙVWXYİZ®
+$letter     = ${lower_case}${upper_case}
 
 $labial    = pbmvw
 $voiced    = bdïgvz¾Z®h
@@ -17,6 +18,7 @@ $nonsonant = $voiced$voiceless
 $consonant = $nonsonant$sonant
 $diphtong  = âìùô
 $vowel     = aeiouyáéíóúıä$diphtong
+$VOWEL     = AEIOUYÁÉÍÓÚİÄ
 $sonority  = 0<'$nonsonant<$nasal<l<ràåj<$vowel
 
 $everywhere = !_!
@@ -28,8 +30,37 @@ inside .  sent
 regex  /(\Z)\\.([${lower_case}])/\1\2/	text
 regex  /\Z(\\.)([${upper_case}])/\1\2/	text
 
+regex    /\\((.\{1,12\})\\)/v~zátvorke~\1/				colon
+regex    /"(.\{1,12\})"/v~uvodzovkách~\1/				colon
+
+#  \d u¾ vydìlil parser, provizornì jako znak slovní úrovnì.  Úseky mezi
+#  vıskyty tohoto znaku (napø. teèka v URL) se hláskují, pokud neobsahují
+#  samohlásku nebo slabikotvornou souhlásku.  Tato pravidla se mohou chovat
+#  nerozumnì v kombinaci s velkımi písmeny.
+
+inside \d  word
+{
+	regress 0>\d(!_0)
+}
+regress \d>\ (!_!)		word	word
+
+if	roman
+{
+	@include  "roman.rul"
+}
+ 
+regex    /^([vVsSzZkK][~\ ]\{0,2\})\$/\W\1/
+regress  lr>\X\Y(0_!)
+near  *!\Wlr$vowel$VOWEL	word	phone
+{
+	regress ${lower_case}>${upper_case}(!_!) word
+	subst abbrurl.dic			 word
+}
+regress  \W>0(!_!)
+regress  \X\Y>lr(0_!)
+
 regress	 ${lower_case}>${upper_case}(0_!${lower_case})			colon
-regress  ${upper_case}>${lower_case}(0_${lower_case})			word
+regress  ${upper_case}>${lower_case}(!$letter_${lower_case})		word
 regress  ${upper_case}>${lower_case}(0_${lower_case})			colon
 if	spellout
 {
@@ -60,7 +91,7 @@ progress  0>s(x_!)
 progress  u0>0v(q_!)
 regress   xq>k($everywhere)
 progress  w>v(0_!)
-regress   v>w($vowel_!$sonant)
+regress   v>w($vowel_0$nonsonant)
 
 progress ä>e(!$labial_!)
 
@@ -116,6 +147,7 @@ progress  P>\ ($everywhere)	word	word
 
 
 subst     "^ná¹mu\$,ná¾mu    ^vá¹mu\$,vá¾mu    me\$,Me"	; may merge with main.dic
+regress   Q>0($voiced_!)	colon
 regress   $voiced>$voiceless(!_$voiceless&0')
 regress   $voiceless>$VOICELESS(!_0M)	syll
 regress   M>m(!_!)

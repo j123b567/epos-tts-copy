@@ -740,7 +740,8 @@ wavefm::put_chunk(labl *chunk_template, const char *string)
 	*la = *chunk_template;
 	la->len = sizeof(labl) + varlen - RIFF_HEADER_SIZE;
 	la->cp_name = current_cp;
-	strcpy((char *)(la+1), string);
+	strcpy((char *)(la + 1), string);
+	decode_string((char *)(la + 1), this_lang->charset);
 	((char *)(la+1))[varlen - 1] = 0;	// padding if odd
 	adtlhdr.len += sizeof(labl) + varlen;
 }

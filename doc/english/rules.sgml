@@ -729,6 +729,23 @@ rules with whitespace, but it is strongly recommended for readability.
   is processed separately, therefore the scope of the following rule may
   be at most that of the <tt>inside</tt> rule itself.
 
+<sect2> Type <tt>near</tt>
+<p>
+
+  Apply a rule or a block of rules within units which contain
+  at least one of the specified units.  The parameter is a list
+  of values at the target level, which are looked up in a unit
+  of the scope level; the <ref id="except" name="except">
+  operator may be used.  If an occurence is found, the following
+  rule gets applied to the scope level unit.
+
+  If the parameter begins with an asterisk, the asterisk is treated
+  as an except operator and the test is negated.  In other words,
+  the following rule gets applied, if every target level unit contained
+  meets the set description with the leading asterisk ignored.
+  You can combine asterisk and an extra except operator to get tests of
+  the "contains no characters of this class" type.
+
 <sect2> Type <tt>with</tt> <label id="with-rule">
 <p>
 

@@ -22,8 +22,6 @@
 /*
  *	This is a good place for hash table instantiation needed by both
  *	the monolith and server code.
- *
- *	It is not necessary to instantiate hash_table <char, char>.
  */
 
 #ifdef _MSC_VER

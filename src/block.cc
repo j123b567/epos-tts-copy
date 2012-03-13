@@ -38,7 +38,7 @@ int   global_current_line = 0;
 extern unit EMPTY;
 
 
-#define diatax(x) shriek(811, fmt("%s in file %s line %d", (x), file->current_file, file->current_line))
+#define diatax(x) shriek(811, fmt("%s:%d %s", file->current_file, file->current_line, (x)))
 
 
 class block_rule : public rule
@@ -293,7 +293,8 @@ rules::rules(const char *filename, const char *dirname)
 
 	if (!cfg->loaded) epos_init();
 	
-	file=new text(filename, dirname, cfg->lang_base_dir, "rules", false);
+	file = new text(filename, dirname, cfg->lang_base_dir, "rules", false);
+	file->charset = this_lang->charset;
 	vars = new hash(cfg->vars|1);
 	DEBUG(3,1,fprintf(STDDBG,"Rules shall be taken from %s\n",filename);)
 	
@@ -409,7 +410,7 @@ resolve_vars(char *line, hash *vars, text *file)
 #define str _next_rule_line
 
 rule *
-next_rule(text *file, hash *vars, int *count)
+parse_rule(text *file, hash *vars, int *count)
 {
 	int param = 0;
 	static char **word=(char **)FOREVER(xmalloc(sizeof(char *) * MAX_WORDS_PER_LINE));
@@ -493,6 +494,7 @@ next_rule(text *file, hash *vars, int *count)
 	case OP_DEBUG:   result = new r_debug(word[param]); break;
 	case OP_IF:	 result = new r_if(word[param], file, vars); break;
 	case OP_INSIDE:	 result = new r_inside(word[param], file, vars); break;
+	case OP_NEAR:	 result = new r_near(word[param], file, vars); break;
 	case OP_WITH:	 result = new r_with(word[param], file, vars); break;
 	case OP_BEGIN:	 result = new r_block(file, vars); break;
 	case OP_END:	 return END_OF_BLOCK;
@@ -516,6 +518,35 @@ next_rule(text *file, hash *vars, int *count)
 
 	return result;
 }
+
+rule *
+next_rule(text *file, hash *vars, int *count)
+{
+	static int tmp = -1;
+	if (tmp == -1) tmp = cfg->max_errors;
+	for (; tmp > 0; tmp--) try {
+		return parse_rule(file, vars, count);
+	} catch (any_exception *e) {
+		if (e->code / 10 != 81) throw e;
+	}
+	shriek(811, "Too many errors");
+}
+
+rule *
+next_real_rule(text *file, hash *vars, int *count)
+{
+	try {
+		rule *r = parse_rule(file, vars, count);
+		if (r > END_OF_RULES) return r;
+		if (r < END_OF_RULES) diatax("No rule follows a conditional rule");
+		shriek(811, fmt("No rule follows a conditional rule at the end of %s", file->current_file));
+	} catch (any_exception *e) {
+		if (e->code / 10 != 81) throw e;
+		shriek(881, "Parse error, cannot continue");
+	}
+	return NULL;
+}
+
 
 #undef str
 #undef diatax

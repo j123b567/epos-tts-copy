@@ -800,6 +800,7 @@ code      | error type      | suggested action@
 415	| no or bad stream@
 416	| no parameter allowed@
 417	| parameter missing@
+418	| bad format or encoding@
 421	| output voice busy@
 422	| out of memory@
 423	| nothing to interrupt@
@@ -862,6 +863,7 @@ of errors (internal errors).
 841	| cannot open necessary configuration file@
 842	| no voices configured@
 843	| up-to-date configuration files not found@
+844	| no unicode maps found@
 861	| internal error: impossible branch of execution@
 862	| internal error: invariance violation@
 863	| internal error: buffer overflow@
@@ -870,6 +872,8 @@ of errors (internal errors).
 869	| double fault@
 871	| network unreachable@
 872	| server already running@
+881	| too many syntax errors in rule files@
+882	| infinite include cycle@
 <hline>
 </tabular>
 <caption>

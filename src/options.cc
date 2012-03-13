@@ -424,17 +424,18 @@ void parse_cfg_str(char *val)
 	bool tmp;
 	
 	tmp=0;
-	if (*val==DQUOT && *(brutto=val+strlen(val)-1)==DQUOT && brutto[-1]!=ESCAPE) 
-		tmp=1, *brutto=0;       //If enclosed in double quotes, kill'em.
-	for (netto=val, brutto=val+tmp; *brutto; brutto++,netto++) {
-		*netto=*brutto;
-		if (*brutto==ESCAPE) *netto=esctab[*++brutto];
+	if (*val == DQUOT && *(brutto = val+strlen(val)-1) == DQUOT && brutto[-1] != ESCAPE) 
+		tmp = 1, *brutto = 0;       //If enclosed in double quotes, kill'em.
+	for (netto=val, brutto=val+tmp; *brutto; brutto++, netto++) {
+		*netto = *brutto;
+		if (*brutto == ESCAPE) *netto = esctab->xlat(*++brutto);
 	}				//resolve escape sequences
-	*netto=0;
+	*netto = 0;
 }
 
 template<class T> inline void set_enum_option(option *o, const char *val, char *list, char *locus)
 {
+	parse_cfg_str(const_cast<char *>(val));
 	T tmp = (T)str2enum(val, list, U_ILL);
 	if (tmp == (T)U_ILL)
 		shriek(447, fmt("Can't set %s to %s", o->optname, val));
@@ -443,12 +444,12 @@ template<class T> inline void set_enum_option(option *o, const char *val, char *
 
 bool set_option(option *o, const char *val, void *base)
 {
+	int tmp;
 	if (!o) return false;
 	if (o->action && !(val = invoke_set_action(o, val))) return false;
 	char *locus = (char *)base + o->offset;
 	switch(o->opttype) {
 		case O_BOOL:
-			int tmp;
 			tmp = str2enum(val, BOOLstr, false);
 			if (cfg->paranoid && (!val || tmp == U_ILL)) 
 				shriek(447, fmt("%s is used as a boolean value for %s", val, o->optname));
@@ -511,6 +512,13 @@ bool set_option(option *o, const char *val, void *base)
 			break;
 		case O_VOICE:
 			if (!voice_switch(val)) shriek(443, "unknown voice");
+			break;
+		case O_CHARSET:
+			parse_cfg_str(const_cast<char *>(val));
+			if ((tmp = load_charset(val)) == CHARSET_NOT_AVAILABLE)
+				shriek(447, fmt("Unknown charset %s", val));
+			*(int *)locus = tmp;
+			DEBUG(1,10,fprintf(STDDBG,"Charset set to %i\n",*(int*)locus);)
 			break;
 		default: shriek(462, fmt("Bad option type %d", (int)o->opttype));
 	}
@@ -633,6 +641,8 @@ const char *format_option(option *o, void *base)
 			return (char *)this_lang->name;
 		case O_VOICE:
 			return (char *)this_voice->name;
+		case O_CHARSET:
+			return enum2str(*(int *)locus, charset_list);
 		default: shriek(462, fmt("Bad option type %d", (int)o->opttype));
 	}
 	return NULL; /* unreachable */
@@ -667,9 +677,11 @@ void parse_cmd_line()
 	char *ar;
 	char *j;
 	register char *par;
+	int dees = 0;
 
 	for(int i=1; i<argc_copy; i++) {
 		j = ar = argv_copy[i];
+		encode_string(ar, cfg->charset, true);
 		switch(strspn(ar, CMD_LINE_OPT)) {
 		case 3:
 			ar+=3;
@@ -705,14 +717,28 @@ void parse_cmd_line()
 				case 'v': cfg->version=true; break;
 				case 'D':
 					if (!cfg->use_dbg) cfg->use_dbg=true;
-					else if (cfg->warnings)
-						cfg->always_dbg--;
+					dees++;
+//					else if (cfg->warnings)
+//						cfg->always_dbg--;
 					break;
 				default : shriek(442, fmt("Unknown option -%c, no action taken", *j));
 			}
 			if (!ar[1]) {
 				cfg->input_file = "";   	//dash only
 				if (this_lang) this_lang->input_file = "";
+			}
+			switch (dees) {
+				case 0:
+					break;
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+					if (cfg->always_dbg > 4 - dees) cfg->always_dbg = 4 - dees;
+					break;
+				default:
+					if (cfg->warnings) shriek(814, "Too many dees");
+					else break;
 			}
 			break;
 		case 0:
@@ -833,7 +859,7 @@ static inline void dump_help()
 	k = 0;
 	for (i=0; optlist[i].optname;i++) {
 		if (*optlist[i].optname) {
-			printf("--%s(%c)", optlist[i].optname, "bueeeencs"[optlist[i].opttype]);
+			printf("--%s(%c)", optlist[i].optname, "bueeeencseee"[optlist[i].opttype]);
 			for (j = -(signed int)strlen(optlist[i].optname)-5; j <= 0; j += 26) k++;
 			for (; j>0; j--) printf(" ");
 			if (k >= 3) printf("\n"), k=0;

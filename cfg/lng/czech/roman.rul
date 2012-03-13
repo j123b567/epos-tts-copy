@@ -1,0 +1,19 @@
+near  *ivxlcdmIVXLCDM\Z
+{
+	<
+		nothing
+		{
+			regress  IVXLCDM>ivxlcdm(!_!)
+			near *!cd
+				regex   /(m)([lx])/\10\2/
+				regex   /(m)([vi])/\100\2/
+				regex   /(m)\$/\1000/
+			near *!xl0
+				regex   /([cl])([vi])/\10\2/
+				regex   /([cl])\$/\100/
+			near *!iv0
+				regex	/([xl])\$/\10/
+			subst  ../slovak/roman.dic
+		}
+	>
+}

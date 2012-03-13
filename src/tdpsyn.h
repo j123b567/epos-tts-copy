@@ -36,13 +36,14 @@ class tdpsyn : public synth
 	int *ppulses;
 	int *diph_offs;
 	int *diph_len;
-	int outpos;
 	int difpos;
 	unsigned short *wwin;
 	
 	file *tdi;
 	
 	int average_pitch(int offs, int len);
+	
+	int max_frame;
    public:
 	tdpsyn(voice *);
 	virtual ~tdpsyn(void);
