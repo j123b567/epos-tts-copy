@@ -168,7 +168,7 @@ bool debug_wanted(int lev, /*_DEBUG_AREA_*/ int area);
 void debug_prefix(int lev, int area);
 
 #define DEBUG(xxx,yyy,zzz) {if(debug_wanted(xxx,yyy)) {debug_prefix(xxx,yyy);zzz;fflush(STDDBG);};}
-#define STDDBG  ::cfg->stddbg
+#define STDDBG  cfg->stddbg
 
 #else       // ifndef DEBUGGING
 #define DEBUG(xxx,yyy,zzz) ; 

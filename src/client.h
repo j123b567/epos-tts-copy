@@ -15,7 +15,8 @@
  *	Note: the functions declared here often trash the scratch buffer.
  */
 
-
+#ifndef EPOS_CLIENT_H
+#define EPOS_CLIENT_H
 
 /*
  *	The just_connect_socket() routine returns -1 if it cannot return a connected
@@ -195,3 +196,6 @@ inline int sputs(const char *buffer, int sd)
 	if (!buffer) return 0;
 	return ywrite(sd, buffer, strlen(buffer));
 }
+
+#endif		// EPOS_CLIENT_H
+

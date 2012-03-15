@@ -79,6 +79,7 @@ struct w_ophase;
 
 class wavefm
 {
+   protected:
 	wave_header hdr;
 	cue_header cuehdr;
 	adtl_header adtlhdr;
@@ -119,7 +120,8 @@ class wavefm
 	wavefm(voice *);
 	~wavefm();
 
-	int get_buffer_index() {return hdr.buffer_idx;};
+	int get_buffer_index() { return hdr.buffer_idx; };
+	char *get_buffer_data() {  return (char *)buffer; };
 	int written;		// bytes written by the last flush() only
 
 	bool flush();		// write out at least something
@@ -160,7 +162,3 @@ class wavefm
 
 	inline int written_bytes() { return hdr.total_length + RIFF_HEADER_SIZE; }
 };
-
-
-
-

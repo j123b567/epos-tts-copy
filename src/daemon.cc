@@ -174,11 +174,9 @@ context::enter()
 
 	if (this_context != master_context) shriek(462, "nesting contexts");
 
-//	::this_voice = this_voice;
-//	::this_lang = this_lang;
 	master_context->config = cfg;
 	cfg = config;
-	::this_context = this;
+	this_context = this;
 
 //	session_uid = uid;
 //	config->sd = index;	// should be unnecessary. Why not?
@@ -203,7 +201,7 @@ context::leave()
 //	::this_voice = master_context->this_voice;
 //	::this_lang = master_context->this_lang;
 	cfg = master_context->config;
-	::this_context = master_context;
+	this_context = master_context;
 //	session_uid = master_context->uid;
 	DEBUG(1,11,fprintf(STDDBG, "leave_context(%p)\n", this);)
 }
