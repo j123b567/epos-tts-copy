@@ -130,6 +130,7 @@ class unit
 				      // userfn ^ whether applied
 	int effective(FIT_IDX which_quantity);  //evaluate total F, I or T
 	inline unsigned char inside() { return (unsigned char)cont; };
+	inline unsigned char inside_or_zero() { return cont == ABSENT_CHARACTER ? LITERAL_ZERO : inside(); };
 	unit *ancestor(UNIT level);   // the unit (depth level) wherein this lies
 	int  index(UNIT what, UNIT where);
 	int  count(UNIT what);

@@ -128,6 +128,9 @@ synth::synsegs(voice *v, segment *d, int n, wavefm *w)
 //	if (cfg->label_seg || cfg->label_phones) {
 //		w->label(0, NULL, NULL);
 //	}
+	if (!n) {
+		D_PRINT(3, "No speech segments requested to be synthesized");
+	}
 	for (int i=0; i<n; i++) {
 		x.code = d[i].code;
 		x.t = v->init_t * d[i].t / 100;

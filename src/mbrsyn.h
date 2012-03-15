@@ -26,6 +26,7 @@ class mbrsyn : public synth
    public:
 	mbrsyn(voice *v);
 	~mbrsyn();
+	virtual void synsegs(voice *v, segment *d, int count, wavefm *w);
 	virtual void synssif(voice *v, char *, wavefm *w);
 	void restart_mbrola(voice *);
 };

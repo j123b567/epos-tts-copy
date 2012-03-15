@@ -6,7 +6,7 @@ as an exciting story, just skip it.
 [ Note: some items mention who reported a bug or even did the
 described modification.  The absence of such attribution
 doesn't imply that the work did itself spontaneously.
-Notably Pavel Machek, Mirek Trmac and Milan Zamazal contributed
+Notably Pavel Machek, Daniel Sobe, Mirek Trmac and Milan Zamazal contributed
 in this way much more often than explicitly indicated here.     ]
 
 
@@ -1427,4 +1427,10 @@ in this way much more often than explicitly indicated here.     ]
 2.5.26 from 2.5.25	26.2.05
 	- morphoanalyzer fix - used to be confused by buffer space past the input
 	- DO_PRINTs not allowed by a  make distcheck
+
+2.5.27 from 2.5.26	 9.3.05
+	- better error reporting with MBROLA voices when fed by the traditional segment string
+	- arch/unix/difftgz produces version-to-version diffs of Epos dists
+	- fixed literal zero vs. absent char handling in syll and seg rules and some D_PRINTs
+
 

@@ -908,9 +908,17 @@ r_syll::r_syll(char *param) : rule(param)
 	son=(char *) xmalloc(256);
 	for (i = 0; i < 256; i++) son[i] = NO_SONORITY;
 	for (tmp = param; *tmp && lv; tmp++) {
-		if (*tmp==LESS_THAN) lv++;
-		else son[(unsigned char)(*tmp)]=lv;
-		D_PRINT(0, "Giving to %c sonority %d\n", *tmp, lv);
+		switch (*tmp) {
+			case LESS_THAN:
+				lv++;
+				continue;	
+			case LITERAL_ZERO:
+				*tmp = ABSENT_CHARACTER;
+				// and fall through
+			default:
+				son[(unsigned char)(*tmp)] = lv;
+				D_PRINT(1, "Giving to %c sonority %d\n", *tmp, lv);
+		}
 	}
 	D_PRINT(0, "rules::parse_syll going to call syllabify()\n");
 }

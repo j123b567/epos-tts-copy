@@ -345,7 +345,7 @@ unit::insert(UNIT target, bool backwards, char what, charclass *left, charclass 
 	unit *tmpu;
 
 	if (depth == target) {
-		D_PRINT(1, "inner unit::insert %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());
+		D_PRINT(1, "inner unit::insert %c %c %c\n",Prev(depth)->inside_or_zero(), cont, Next(depth)->inside_or_zero());
 		D_PRINT(1, "   env is %c %c\n",
 				left->ismember(Prev(depth)->inside())+'0',
 				right->ismember(Next(depth)->inside())+'0');
@@ -1413,13 +1413,13 @@ unit::segs(UNIT target, hash *dinven)
 		_d_descr[3]=0;
 		_d_descr[2]=QUESTION_MARK;
 		_d_descr[1]=inside();
-		_d_descr[0]=Prev(depth)->inside();
+		_d_descr[0]=Prev(depth)->inside_or_zero();
 		seg (dinven);
 		_d_descr[0]=QUESTION_MARK;
 		seg (dinven);
-		_d_descr[2]=Next(depth)->inside();
+		_d_descr[2]=Next(depth)->inside_or_zero();
 		seg (dinven);
-		_d_descr[0]=Prev(depth)->inside();
+		_d_descr[0]=Prev(depth)->inside_or_zero();
 		seg (dinven);
 		D_PRINT(1, "unit::segs is done in: %c\n", cont);
 	}

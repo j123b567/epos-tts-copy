@@ -1324,7 +1324,7 @@ option is also language dependent.
 	for the synthesis.
 <tag>--sample&lowbar;size <sl/bits/</tag>
 	Number of bits per sample.  If some kind of a stereo output
-	is turned on, this option set the number of bits per channel.
+	is turned on, this option sets the number of bits per channel.
 	Again, this is related to the quality of recording of the
 	segment inventory.  We currently only support 8 and 16 bits.
 <tag>--sampa&lowbar;alternate <sl/name/</tag>

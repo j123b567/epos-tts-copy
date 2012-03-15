@@ -27,7 +27,7 @@
  *	of configuration parameters and/or any internal wavefm structure
  *	members being pointed to by the buffer being filled, and thus it
  *	doesn't see they're really invariant.  So we just store the samples
- *	in the buffer and we translate the header and/or buffer later
+ *	in the buffer and we translate the header and/or buffer later on
  *	if necessary.  No translation should be needed if you request
  *	a 16-bit monophonic waveform at its "natural" (recorded) sampling
  *	rate.
@@ -149,12 +149,14 @@ class wavefm
 	inline void sample(SAMPLE *b, int count)
 	{
 		while (buff_size < hdr.buffer_idx + count) {
+			D_PRINT(0, "Failed to fit into buffer with %d samples\n", count);
 			int avail = buff_size - hdr.buffer_idx;
 			sample(b, avail);
 			b += avail;
 			count -= avail;
 			flush();
 		}
+		D_PRINT(0, "Successfully buffering at offset %d, count %d\n", hdr.buffer_idx, count);
 		memcpy(buffer + hdr.buffer_idx, b, count * sizeof (SAMPLE));
 		hdr.buffer_idx += count;
 	}

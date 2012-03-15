@@ -128,3 +128,9 @@ mbrsyn::synssif(voice *v, char *b, wavefm *w)
 
 	w->become(wb, offset);
 }
+
+void
+mbrsyn::synsegs(voice *v, segment *d, int n, wavefm *w)
+{
+	shriek(462, "mbrsyn cannot render the legacy SSIF.  Hint: 'say -s'.");
+}

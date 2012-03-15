@@ -418,6 +418,7 @@ wavefm::detach(int)
 	while (flush()) ;		// FIXME: think slow network write
 	D_PRINT(2, "Detaching waveform\n");
 	sync_soundcard(fd);		// FIXME: necessary, but unwanted
+	D_PRINT(0, "Ioctlability of %d is %c\n", fd, '0' + ioctlable(fd));
 	if (cfg->wave_header && !ioctlable(fd)) write_header();
 	fd = -1;
 }
@@ -576,6 +577,8 @@ wavefm::translate()
 
 	int target_size = this_voice->sample_size >> 3;
 	target_size *= (1 + (channel != CT_MONO));
+
+	D_PRINT(1, "Downsampling by %d, each %d byte frame becomes %d bytes\n", downsamp, working_size, target_size);
 	
 //	if (downsamp != 1 && cfg->autofilter) band_filter();	//output is downsampled
 	if (cfg->autofilter) {
@@ -603,6 +606,7 @@ wavefm::translate()
    finis:
 	translated = true;
 	hdr.buffer_idx = (hdr.buffer_idx + 1) / downsamp * target_size;
+	D_PRINT(0, "Setting buffer_idx to %d\n", hdr.buffer_idx);
 }
 
 /*
@@ -695,6 +699,12 @@ wavefm::update_ophase()
 	}
 }
 
+int perverse(int bytes)
+{
+	if (bytes < 20000) return bytes;
+	return 20000;
+}
+
 
 bool
 wavefm::flush()
@@ -714,12 +724,14 @@ wavefm::flush()
 
 	const char *o_buff = get_ophase_buff(&ophases[ophase]) + ooffset;
 	int o_buff_size = get_ophase_len(&ophases[ophase]) - ooffset;
-	written = ywrite(fd, o_buff, o_buff_size);
+
+	written = ywrite(fd, o_buff, perverse(o_buff_size));
 	if (1 > written) return flush_deferred();
 	
 	ooffset += written;
 
-	D_PRINT(2, "Flushing the signal\n");
+	D_PRINT(2, "Flushing the signal, wrote %d bytes out of %d, leaving %d\n", written, o_buff_size, o_buff_size - written);
+
 //	hdr.total_length += written;
 	return true;
 }
@@ -745,6 +757,7 @@ wavefm::write_header()
 		return;		/* devices incapable of lseek() don't need
 				 *	the length field filled in correctly
 				 */
+	D_PRINT(2, "Writing wave file header, %d bytes", sizeof(wave_header));
 	ywrite(fd, &hdr, sizeof(wave_header));         //zapsani prazdne wav hlavicky na zacatek souboru
 }
 
