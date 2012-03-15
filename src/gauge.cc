@@ -156,7 +156,7 @@ void send_requests()
 	FILE *f = fopen("gauge.dic", "r");
 	char buffer[1024];
 	char *result;
-	while (!feof(f)) {
+	while (f && !feof(f)) {
 		fgets(buffer, 1023, f);
 		result = strchr(buffer, ' ');
 		if (!result) continue;
@@ -178,6 +178,7 @@ void gather_results()
 	char buffer[1024];
 	char *result;
 	f = fopen("gauge.dic", "r");
+	if (!f) shriek("Could not open the dictionary");
 	while (1) {
 		fgets(buffer, 1023, f);
 		if (feof(f))
@@ -330,7 +331,7 @@ void send_cmd_line(int argc, char **argv)
  *	main() implements what most TTSCP clients do: it opens two TTSCP connections,
  *	converts one of them to a data connection dependent on the other one.
  *	Then, commands in a file found using the TTSCP_USER environment variable
- *	are transmitted and synthesis and transcription procedures invoked.
+ *	are transmitted and synthesis and gauge procedures invoked.
  *	Last, general cleanup is done (the connections are gracefully closed.)
  *
  *	Note that the connection establishment code is less intuitive than

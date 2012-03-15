@@ -89,6 +89,7 @@ class hashing_rule: public rule
 {
    protected:
 	bool allow_id;
+	char negated;
 	hash *dict;
    public:
 		hashing_rule(char *param);
@@ -226,6 +227,8 @@ static char esc(char x)
 
 hashing_rule::hashing_rule(char *param) : rule(NULL)
 {
+	negated = 0;
+	if (*param == '!') param++, negated = 1;
 	if (*param == DQUOT) raw = strdup(param);
 	else raw = compose_pathname(param, this_lang->hash_dir, cfg->lang_base_dir);
 	dict = NULL;
@@ -241,6 +244,8 @@ hashing_rule::~hashing_rule()
 void
 hashing_rule::verify()
 {
+	if (negated > 1)
+		shriek(811, fmt("%s Unexpected negated dictionary", debug_tag()));
 	if (cfg->paranoid) {
 		load_hash();
 		if (cfg->lowmemory) {
@@ -257,7 +262,7 @@ hashing_rule::load_hash()
 	if (dict) shriek(862, "unwanted load_hash");
 
 	if (*raw != DQUOT) {
-		dict = new hash(raw, cfg->hash_full, 0, 200, 3,
+		dict = new hash(raw, cfg->hash_full, 0, 200, 5,
 			(char *) allow_id, false, "dictionary %s not found", esc);
 	} else dict = literal_hash(raw);
 	if (!dict) shriek(463, fmt("%s Unterminated argument", debug_tag()));	// or out of memory
@@ -309,17 +314,26 @@ class r_postp: public r_subst
 r_subst::r_subst(char *param) : hashing_rule(param)
 {
 	method = M_SUBSTR;
+	negated *= 2;
 }
 
 r_prep::r_prep(char *param) : r_subst(param)
 {
 	method = M_RIGHT;
+	if (negated) {
+		method = (SUBST_METHOD)(method | M_NEGATED);
+		negated = 1;
+	}
 	allow_id = true;
 }
 
 r_postp::r_postp(char *param) : r_subst(param)
 {
 	method = M_LEFT;
+	if (negated) {
+		method = (SUBST_METHOD) (method | M_NEGATED);
+		negated = 1;
+	}
 	allow_id = true;
 }
 
@@ -417,6 +431,7 @@ class r_prosody: public hashing_rule
 
 r_prosody::r_prosody(char *param) : hashing_rule(param)
 {
+	negated *= 2;
 }
 
 /************************************************
@@ -1029,6 +1044,7 @@ class r_with: public cond_rule
 {
 	virtual OPCODE code() {return OP_WITH;};
 	hash *dict;
+	bool negated;
    public:
 		r_with(char *param, text *file, hash *vars);
 		~r_with();
@@ -1038,6 +1054,9 @@ class r_with: public cond_rule
 r_with::r_with(char *param, text *file, hash *vars) : cond_rule(param, file, vars)
 {
 	char *old = raw;
+
+	negated = false;
+	if (*raw == '!') raw++, negated = true;
 
 	if (*raw == DQUOT) raw = strdup(raw);
 	else raw = compose_pathname(raw, this_lang->hash_dir, cfg->lang_base_dir);
@@ -1057,11 +1076,11 @@ r_with::apply(unit *root)
 	if (!dict) {
 		if (*raw == DQUOT) dict = literal_hash(raw);
 		else dict = new hash(raw, cfg->hash_full,
-			0, 200, 3, DATA_EQUALS_KEY, false, "dictionary %s not found", esc);
+			0, 200, 5, DATA_EQUALS_KEY, false, "dictionary %s not found", esc);
 	}
 	if (!dict) shriek(811, fmt("%s Unterminated argument", debug_tag()));	// or out of memory
 
-	if (root->subst(dict, M_ONCE)) then->apply(root);
+	if (root->subst(dict, M_ONCE) ^ negated) then->apply(root);
 }
 
 

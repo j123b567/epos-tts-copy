@@ -553,14 +553,20 @@ unit::subst(hash *table, SUBST_METHOD method)
 			}
 		}
 		cont = separ;
+		if (method & (M_LEFT | M_RIGHT) && method & M_NEGATED) {
+			unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS);
+		}
 		return i != cfg->multi_subst;
     
 		break_home:
 		cont = separ;
 		DEBUG(1,3,fprintf(STDDBG,"inner unit::subst has made the subst, relinking l/r, method %d\n", method);)
 		sanity();
-		if (method & (M_LEFT | M_RIGHT)) 
-			return unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS), true;
+		if (method & (M_LEFT | M_RIGHT)) {
+			if (!(method & M_NEGATED))
+				unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS);
+			return true;
+		}
 		if (method & M_ONCE) return true;
 	}
 	shriek(463, fmt("Infinite substitution loop detected on \"%s\"", gb));

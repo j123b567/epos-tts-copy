@@ -1217,4 +1217,13 @@ for an exciting story, just skip it.
 	- (Win32) fixed missing 2x socky @ client.h
 	- (Win32) fixed missing nonblock.cpp @ configure.bat & epos.dsw
 	
-	 
+2.4.80 from 2.4.79	5.3.03
+	- odd sized translated data bug fixed
+
+2.4.81 from 2.4.80	12.5.03
+	- max AVL tree depth for dictionary-oriented rules increased
+	- added many cross-references, examples and etc. to rules.sgml
+	- (Cz) "pøes" voicing assimilation behavior fixed
+	- negated dictionaries (r_prep, r_postp, r_with), M_NEGATED
+
+

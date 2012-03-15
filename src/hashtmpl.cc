@@ -577,6 +577,7 @@ printf("hash::add %s already there, old value \"%s\"\n",key, tree->data);
 printf("hash::add is OK\n");
 #endif
 	if (items++>max_items || maxdep>=tree_too_deep) rehash();
+	if (! (items % 10000)) printf("%d items            \n", items);
 }
 
 void hash::add_int(const char *key, int value)
@@ -780,7 +781,7 @@ hash_table<key_t, data_t>::rehash(int new_capacity)
 	hsearchtree<key_t, data_t> **htold=ht;
 	int ttdold=tree_too_deep;
 	int i;
-	
+
 #ifdef DEBUG_HASH
 printf("hash::rehash Gonna rehash from %d to %d for %d items\n", capold, new_capacity, items);
 //debug();

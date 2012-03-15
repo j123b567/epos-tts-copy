@@ -140,6 +140,11 @@ The available escape sequences are listed in <ref id="escapes" name="the table o
 	&bsol;-  |  range	      |  (3) |  2-3 people@
 	&bsol;m  |  minus         |  (4) |  -1@
 	&bsol;X  |  temporary     | (31) |@
+	&bsol;Y  |  temporary     | (30) |@
+	&bsol;Z  |  temporary     | (29) |@
+	&bsol;W  |  temporary     | (28) |@
+	&bsol;V  |  temporary     | (27) |@
+	&bsol;U  |  temporary     | (26) |@
 <hline>
 </tabular>
 <caption>Escape sequences used in configuration files</caption>

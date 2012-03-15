@@ -314,6 +314,7 @@ to us any compilation issues which may be distribution related,
 these will be the most easy ones to solve.
 
 <sect2> Other UNIX clones
+<p>
 
 Epos is ported to other unices
 from time to time as well, but there may be minor incompatibilities
@@ -338,7 +339,7 @@ for details; be however aware that this code has never been completely
 debugged becasuse of a drop in our motivation.  You could help debug
 this easily if you really need this and provide us with a QNX machine.
 
-<sect2> Windows NT, Windows 2000
+<sect2> Windows NT, 2000, XP
 <p>
 
 See the <tt>arch/win</tt> directory for architectural differences from UNIX.
@@ -370,21 +371,23 @@ how to proceed step by step with Visual C++.
 File input and output modules are not going to work
 with Windows sockets (whose incompatible implementation
 of the <tt/select/ call doesn't allow file decriptors at all).
-If you enable the <tt/writefs/ option, be aware of serious
+If you do enable the <tt/writefs/ option, be aware of serious
 trouble after the first writing error such as disk full.
-Don't enable the <tt/readfs/ option.
+Don't try to enable the <tt/readfs/ option.
 
 <sect2> Windows CE
 <p>
 
-The port is planned soon, but not available at the moment.  Ask us if you
-need it.  Files specific for this port can be currently found at
+The port was roughly done and found possible, but it is
+not maintained.  Ask us if you need it.  Files specific
+for this port can be currently found at
 <tt>arch/win-ce</tt>.
 
 <p>
 
 An experienced Windows user can get a good estimate of this port's
 behavior from reading the sections on other versions of Windows.
+The same holds for Windows XP embedded.
 
 <sect2> Windows 95, 98 etc.
 <p>
@@ -430,7 +433,7 @@ or you can build the monolithic binary of Epos.
 
 A bourne-compatible shell is helpful, as it allows to run a configure
 script.  Otherwise you have to write a <tt>src/config.h</tt> file by hand
-as we have done with the Windows port.  A plain old <tt>make</tt> utility
+as we have done with the Windows ports.  A plain old <tt>make</tt> utility
 helps the compilation process if your OS can emulate a UNIX development
 environment a little bit.
 

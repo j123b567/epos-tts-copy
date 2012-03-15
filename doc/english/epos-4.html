@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
  <TITLE>               The Epos Speech System: Text-To-Speech Control Protocol  (TTSCP)  (version 0) </TITLE>
  <LINK HREF="epos-5.html" REL=next>
  <LINK HREF="epos-3.html" REL=previous>
@@ -12,9 +12,9 @@
 <A HREF="epos-3.html">Previous</A>
 <A HREF="epos.html#toc4">Contents</A>
 <HR>
-<H2><A NAME="ttscp"></A> <A NAME="s4">4. Text-To-Speech Control Protocol  (TTSCP)  (version 0) </A></H2>
+<H2><A NAME="ttscp"></A> <A NAME="s4">4.</A> <A HREF="epos.html#toc4">Text-To-Speech Control Protocol  (TTSCP)  (version 0) </A></H2>
 
-<P>
+
 <P>TTSCP is a client-server connection-oriented,
 both human- and machine-readable communication protocol,
 remotely similar to the File Transfer Protocol in spirit.
@@ -22,7 +22,7 @@ TTSCP is offered as a standard interface for controlling
 generic speech processing applications, not only Text-To-Speech ones.
 It is primarily designed to run atop TCP, but any reliable
 connection-oriented underlying protocol should theoretically
-work as well.
+work as well.</P>
 <P>The server awaits new connections on a single TCP port.
 There are two types of connections: <EM>control connections</EM>
 used to issue commands by the client and to return status
@@ -32,7 +32,7 @@ Immediately after the underlying connection is opened,
 the server transmits a <EM>session header</EM> (see below)
 and treats the connection as a control connection, until
 the <CODE>data</CODE> command is issued by the client, causing
-it to become a data connection.  
+it to become a data connection.  </P>
 <P>Every TTSCP connection (both a control one and a data one) obtains
 a connection handle from the server inside the session header.
 This handle is a string of alphanumeric characters which
@@ -40,7 +40,7 @@ uniquely identifies the connection and which also serves
 as an access token for it. Other connections can use such
 a handle to interrupt a control connection's task in progress,
 to disconnect any connection, to process data received from
-a data connection etc.
+a data connection etc.</P>
 <P>A <EM>TTSCP session</EM> is a sequence
 of commands, their results and referenced data lasting
 from setting up the control connection until its disconnection
@@ -52,7 +52,7 @@ If a <CODE>done</CODE> command is sent before a preceding command
 has completed, the server will proceed with the
 preceding commands. If a <CODE>600</CODE> or higher error code
 is received as a response to a command and subsequent commands
-have already been sent by the client, they will not be executed.
+have already been sent by the client, they will not be executed.</P>
 <P>A data connection may be silently disconnected by the client
 at any time.  To allow reliable disconnection detection by the
 server, every data connection is attached to an already
@@ -60,7 +60,7 @@ existing control connection (as specified with the <CODE>data</CODE>
 command) and it will be automatically disconnected when
 the control connection is disconnected.  This attachment relation
 doesn't prevent other control connections from referencing this
-data connection using its handle, it only limits its lifetime.
+data connection using its handle, it only limits its lifetime.</P>
 <P>The session header (as sent before a TTSCP session starts)
 is a sequence of lines terminated with an empty line (two consecutive
 linefeed characters with no whitespace intervening).  The first line
@@ -71,9 +71,9 @@ a TTSCP header keyword terminated by a colon and a single space
 and the value associated with the keyword. The client may choose
 not to use these values at all, or to scan only for some header
 keywords.  The last keyword in the header shall be the <CODE>handle</CODE>
-keyword.
+keyword.</P>
 <P>A typical TTSCP session looks like this, with client commands
-unindented and server responses indented.
+unindented and server responses indented.</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -101,26 +101,27 @@ done
         600 goodbye
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>
+</P>
+
 <P>The "user" and "done" commands may become mandatory, the rest may
 be freely used between them. For the interaction with a human, the
-"help" command is available.
+"help" command is available.</P>
 <P>It is legal to use "anonymous" instead of the address in the user
 command: "user anonymous". It is also legal to switch users
-with additional user commands. This may cause context switches.
+with additional user commands. This may cause context switches.</P>
 <P>It is advised to check the greeting string received to begin in 
 "preTTSCP" or "TTSCP ". If it doesn't, the client or possibly the
 server may be obsolete or an unrelated protocol may be used at the
-port.
+port.</P>
 <P>In this document, a "newline" produced by the server or the client should be
 a <CODE>CR LF</CODE> character sequence.  It is allowed for both parties to
 accept a <CODE>LF</CODE> character without a preceding <CODE>CR</CODE> character as a valid
-line separator, but it is never legal to rely on this practice.
-<P>
-<H2><A NAME="ss4.1">4.1 Session header keywords</A>
+line separator, but it is never legal to rely on this practice.</P>
+
+<H2><A NAME="ss4.1">4.1</A> <A HREF="epos.html#toc4.1">Session header keywords</A>
 </H2>
 
-<P>
+
 <P>The set of session header keywords and their sequence may vary between
 TTSCP implementations.  Some lower case keywords are defined by this document;
 in addition, any implementation may supply its own keywords provided
@@ -131,7 +132,7 @@ letters (case sensitive), digits, dashes and underlines;
 however, the values associated with some keywords may contain any printable
 ISO 8859 characters.  There are three mandatory keywords
 (<CODE>protocol</CODE>, <CODE>extensions</CODE> and <CODE>handle</CODE>, in order of appearance
-in the session header).
+in the session header).</P>
 <P>
 <DL>
 <DT><B>extensions</B><DD><P>The value is a whitespace separated list of semi-standard and non-standard
@@ -140,29 +141,30 @@ this document or a future version of this document should be advertised;
 custom or experimental extensions may be advertised provided their
 first two characters are lower case <CODE>x</CODE> and dash, respectively.
 At present, there are no extensions defined, so the list should be empty,
-but this keyword is nevertheless mandatory.
+but this keyword is nevertheless mandatory.</P>
 <DT><B>handle</B><DD><P>The value is a connection handle for this control connection. The handle
 stays valid when the connection is turned into a data connection.  Only 
 lower and upper case letters, digits, dashes and underlines may occur in
 the handle.  This keyword is mandatory and must appear last in the session
-header.
+header.</P>
 <DT><B>protocol</B><DD><P>The value is a decimal number identifying the major TTSCP protocol version.
 The current protocol version number is <CODE>0</CODE> (previous versions had no
 session header).  It is likely that protocol versions unknown to the
 client will be fundamentally incompatible.  It is mandatory to begin the
 session header with this keyword.  It is recommended to check it on the
-client side.
-<DT><B>release</B><DD><P>Server release.  The formatting and interpretation is implementation dependent.
+client side.</P>
+<DT><B>release</B><DD><P>Server release.  The formatting and interpretation is implementation dependent.</P>
 <DT><B>server</B><DD><P>Server name.  Different versions of the same implementation should
-typically use an identical value for this keyword.
+typically use an identical value for this keyword.</P>
 </DL>
-<P>
-<P>
-<H2><A NAME="formats"></A> <A NAME="ss4.2">4.2 Data formats</A>
+</P>
+
+
+<H2><A NAME="formats"></A> <A NAME="ss4.2">4.2</A> <A HREF="epos.html#toc4.2">Data formats</A>
 </H2>
 
-<P>
-<P>The data is passed between modules in one of the following formats:
+
+<P>The data is passed between modules in one of the following formats:</P>
 <P>
 <UL>
 <LI> plain ASCII text</LI>
@@ -171,78 +173,79 @@ typically use an identical value for this keyword.
 <LI> sequence of segments</LI>
 <LI> waveform file</LI>
 </UL>
-<P>
+</P>
+
 <H3>Plain ASCII text</H3>
 
-<P>Traditional.
-<P>
+<P>Traditional.</P>
+
 <H3>STML</H3>
 
-<P>As described in ???. Currently unimplemented.
-<P>
+<P>As described in ???. Currently unimplemented.</P>
+
 <H3>Text structure representation</H3>
 
 <P>Internal text representation, suitable for arbitrary processing, but
 unsuitable for input or output. Before output, it must be converted
 to another format first. For a description, see the 
-<A HREF="epos-2.html#tsr">text structure representation overview</A>.
-<P>Conversion to plain ASCII text dismisses prosody.
-<P>Conversion to plain ASCII text or STML dismisses segment layer if any.
-<P>
+<A HREF="epos-2.html#tsr">text structure representation overview</A>.</P>
+<P>Conversion to plain ASCII text dismisses prosody.</P>
+<P>Conversion to plain ASCII text or STML dismisses segment layer if any.</P>
+
 <H3>Sequence of segments</H3>
 
-<P>
+
 <P>Every segment is a quadruple of segment number, assigned frequency (pitch),
 intensity (volume) and time factor (speed). The initial segment is dummy
 (to be skipped); its segment number contains the total number of segments
 in this sequence. The corresponding prosodic parameters are undefined.
-They should preferably be zero.
+They should preferably be zero.</P>
 <P>This format is going to be replaced by a human readable format with
 the ability to specify multiple pitch points per segment.  For the time
 being, the integer values should be encoded as 32-bit little endian
-integers.  
-<P>
+integers.  </P>
+
 <H3>Waveform</H3>
 
 <P>The traditional MS Windows RIFF <CODE>.wav</CODE> file header and data.
 Two liberties may be taken when waveform data in this format is sent
-via a data connection.
+via a data connection.</P>
 <P>First, the total length of the RIFF form field
 may contain a negative number.  In this case, the length
 of the form shall be determined from the data length as indicated
 in the corresponding TTSCP control connection.  Also, if this
 field contains a positive number, which conflicts with the data
 length indicated in the corresponding TTSCP control connection,
-the recipient may choose any one of them or return a <CODE>435</CODE> error.
+the recipient may choose any one of them or return a <CODE>435</CODE> error.</P>
 <P>Second, if only <CODE>fmt</CODE> and <CODE>data</CODE> chunks are present in the
 RIFF form being sent, and the length of the data chunk is negative,
 the length of the <CODE>data</CODE> chunk shall be determined from the
 total length of the RIFF form. (Epos never actually takes advantage
-of this rule.)
+of this rule.)</P>
 <P>This format allows storing labels (i.e. pointers to specific
 positions within the waveform); Epos does use this feature
 if enabled e.g. using the
-<A HREF="epos-3.html#labelphones-option">label_phones option</A>.
-<P>
-<P>
-<H2><A NAME="ss4.3">4.3 TTSCP Commands</A>
+<A HREF="epos-3.html#labelphones-option">label_phones option</A>.</P>
+
+
+<H2><A NAME="ss4.3">4.3</A> <A HREF="epos.html#toc4.3">TTSCP Commands</A>
 </H2>
 
-<P>
+
 <P>TTSCP commands are newline-terminated strings. Each of them begins
 with a command identifier, some of them may continue with optional
 or mandatory parameters, depending on the particular command.
 Each command generates one or more "replies", the last reply
 indicating completion and sometimes also some command-specific
-information.
-<P>
+information.</P>
+
 <H3><A NAME="appl-cmd"></A> <CODE> appl </CODE> </H3>
 
-<P>
+
 <P>Apply the current data processing stream (see the 
 <A HREF="#strm-cmd">strm command</A>
 to some data. The parameter is a decimal number specifying the number
-of bytes to be processed.
+of bytes to be processed.</P>
 <P>Before the completion reply, zero or more 122 replies are received
 by the client, every one followed by a decimal number on a line
 by itself, preceded with a single space. This is the number of
@@ -261,7 +264,7 @@ deadlock scenarios caused by an insufficient buffer capacity between
 the server and the client. The number of bytes actually sent may
 be even smaller in case of a user break or another unexpected situation;
 it shall never be larger and it shall be exactly the number of bytes
-sent by the server upon a successful completion reply.
+sent by the server upon a successful completion reply.</P>
 <P>Before the completion reply, one or more 123 replies for every 122 reply
 are received
 by the client. Every 123 reply is followed by a decimal number
@@ -270,7 +273,7 @@ number of bytes actually successfully written by the output module.
 This intermediate reply should be sent as soon as the data is
 sent.  When the client eventually receives a successful completion reply,
 the sum of byte counts received with 123 replies shall match
-the number of bytes sent by the server.
+the number of bytes sent by the server.</P>
 <P>For every 122 reply, there shall be a corresponding sequence of 123 replies
 such that no unrelated 122 or 123 replies intervene.  The sum of byte counts
 received with these 123 replies shall match the byte count received with
@@ -278,36 +281,36 @@ the 122 reply.  In other words, the replies relating to different subtasks
 must preserve the time ordering.  If an error condition prematurely terminates
 the <CODE>appl</CODE> command processing, this behavior is not required for
 the last subtask whose processing has begun, independent of whether
-its 122 reply has been received by the client.
+its 122 reply has been received by the client.</P>
 <P>The relative ordering of 122 and 123 replies for the same subtask
-is not specified by the TTSCP.
+is not specified by the TTSCP.</P>
 <P>The completion response code is received when all the modules have
 finished processing and data has been output by the output module.
 Some of the data may however still be being processed by hardware,
-e.g. a sound card, or may be delayed by the network.
-<P>Using <CODE>appl</CODE> before the first <CODE>strm</CODE> command is forbidden.
-<P>
+e.g. a sound card, or may be delayed by the network.</P>
+<P>Using <CODE>appl</CODE> before the first <CODE>strm</CODE> command is forbidden.</P>
+
 <H3><CODE> intr </CODE></H3>
 
-<P>
+
 <P>Interrupt a single <CODE>appl</CODE> command in progress. The parameter is a control connection
 handle and specifies the connection which issued
-the command to be interrupted.
+the command to be interrupted.</P>
 <P>The server should try to discard as much pending data as possible,
 including e.g. waveform data already written to a sound card.
 If however multiple <CODE>appl</CODE> commands have been sent simultaneously,
-only the one in progress will be interrupted.
+only the one in progress will be interrupted.</P>
 <P>The server will reply a 401 completion code to the interrupted
 connection, whereas a 200 completion code will acknowledge
-a successful <CODE>intr</CODE> command.
+a successful <CODE>intr</CODE> command.</P>
 <P>If there is no stream associated with the connection to be interrupted
 or there is no apply command in progress on it, a 423 reply will be
 issued to the interrupting connection and the interrupting connection
-will not be affected.
-<P>
+will not be affected.</P>
+
 <H3><CODE> data </CODE></H3>
 
-<P>
+
 <P>Turn this control connection into a data connection. The parameter
 is the handle of an existing control connection to attach this connection to.
 The sole consequence of this attachment relation is a disconnect of the
@@ -316,120 +319,120 @@ data connection when the specified control connection is disconnected.
 connection handles, to turn one into a data connection and to attach it
 to the other connection.  That way the client obtains a control and a data
 connection which will gracefully shutdown even after the client abruptly
-disconnects.)
+disconnects.)</P>
 <P>The server sends a completion reply for this command (response code 200 if successful).
 After the first newline character following the 200 response code is received,
 no more control information will arrive. Likewise, the client may not send any
 TTSCP commands after the newline-terminated data command.
 If the <CODE>data</CODE> command is not successful because of capacity or other reasons,
 the connection stays in a valid
-TTSCP control connection state and more commands may be submitted.
+TTSCP control connection state and more commands may be submitted.</P>
 <P>The data connection becomes valid at receipt of a 200 response code to
-this command.
-<P>
+this command.</P>
+
 <H3><CODE> delh </CODE></H3>
 
-<P>
+
 <P>Terminate a specified data connection. The parameter is the data connection handle
 to be terminated, as returned by a former <CODE>data</CODE> command on that connection.
 If successful, the connection is disconnected by the server and the data connection
-handle is forgotten.
-<P>
+handle is forgotten.</P>
+
 <H3><CODE> done </CODE></H3>
 
-<P>
+
 <P>Issued as the last command in a session. The client may exit just
 after sending this command. The server should reply with error
-code 600.
-<P>
+code 600.</P>
+
 <H3><CODE> down </CODE></H3>
 
-<P>
-<P>Stop the server. Quit pending sessions. May disappear in the future.
-<P>
+
+<P>Stop the server. Quit pending sessions. May disappear in the future.</P>
+
 <H3><CODE> help </CODE></H3>
 
-<P>
+
 <P>Request for TTSCP syntax help. The server response is undefined
-except for the proper error code termination (class 2 or 4).
+except for the proper error code termination (class 2 or 4).</P>
 <P>Suggested behavior is to reply with "441 help yourself"
 or a brief list of commands with explanation.
 If a parameter is given, the server may supply more 
 specific information, such as verbose description of a single
-command.
+command.</P>
 <P>The usual completion reply rules apply. Specifically, care
 must be taken lest the help text contain a line beginning
-with a digit.
-<P>
+with a digit.</P>
+
 <H3><CODE> pass </CODE></H3>
 
-<P>
+
 <P>Attempts to validate an account, as given by a previous "user"
 command. If no valid "user" command was ever received, the internal
 server password may be used. This may enable some internal commands
 such as "down" or "setg".  (Epos stores this internal password
 in /var/run/epos.pwd while it is listening on the standard
-TTSCP port.)
+TTSCP port.)</P>
 <P>The password is a string of alphanumeric characters, dashes and
-underlines, no more than 250 bytes long.
-<P>
+underlines, no more than 250 bytes long.</P>
+
 <H3><CODE> setg </CODE></H3>
 
-<P>
+
 <P>Globally set a server configuration parameter. The parameter is
 a whitespace-separated "option value" pair. The server may ignore
 this command altogether with an error code 442. The server will
 reply with an error code 412 if the value assigned is illegal,
 or with 451 if the server is configured not to allow to change
-this parameter (may depend on the current authentication status).
+this parameter (may depend on the current authentication status).</P>
 <P>The settings, if successful, will apply to all future connections.
 They will typically not affect existing connections, unless specified
 otherwise. For this reason, this command should be available only
-to authenticated and trusted users.
+to authenticated and trusted users.</P>
 <P>If the option name is "language", the command will attempt to
-switch the default language. The same goes for "voice".
+switch the default language. The same goes for "voice".</P>
 <P>The standardization status of this command is still unclear.  It is definitely
 reasonable to use compatible option names between server implementations
 where applicable, but the set of useful configuration parameters
 seems to be impossible to specify in advance.
-Any comment on this issue is welcome.
-<P>
+Any comment on this issue is welcome.</P>
+
 <H3><CODE> setl </CODE></H3>
 
-<P>
+
 <P>Set a server configuration parameter. The parameter is a whitespace-separated
 "option value" pair. The server may ignore this command altogether
 with an error code 442. In any case, this setting should never
 alter the execution environment of existing and/or future sessions.
 The server will reply with an error code 412 if the value assigned
 is illegal, or with 451 if the server is configured not to allow
-to change this parameter (may depend on the current authentication status).
+to change this parameter (may depend on the current authentication status).</P>
 <P>The settings apply to the current session; use <CODE>setg</CODE> for more
 permanent settings.  Note also that setting some options can have
-arbitrary side-effects.
+arbitrary side-effects.</P>
 <P>If the option name is "language", the command will attempt to
-switch the language. The same goes for "voice".
+switch the language. The same goes for "voice".</P>
 <P>The standardization status of this command is still unclear.  It is definitely
 reasonable to use compatible option names between server implementations
 where applicable, but the set of useful configuration parameters
 seems to be impossible to specify in advance.
-Any comment on this issue is welcome.
-<P>
+Any comment on this issue is welcome.</P>
+
 <H3><CODE> show </CODE></H3>
 
-<P>
+
 <P>Show a configuration parameter value. The parameter is an option
 name. The server may reply with the value of the option requested,
 preceded by a single space character, or it may ignore this command
-with error code 442.
+with error code 442.</P>
 <P><CODE>show languages</CODE> and <CODE>show voices</CODE> may be used for listing
 available languages, as well as available voices for the current
 language.  The language or voice names are given on separate lines
-each.
-<P>
+each.</P>
+
 <H3><A NAME="strm-cmd"></A> <CODE> strm </CODE> </H3>
 
-<P>
+
 <P>Prepare a data flow stream. The parameter is a colon-separated sequence
 of data processing modules; commands such as <CODE>appl</CODE> cause specified
 data to be run through the modules from left to right.
@@ -439,37 +442,37 @@ one to the right. The leftmost module must designate a source (input) module
 for the whole stream, the rightmost one must designate a destination
 for the data produced by the stream. Information on specific data formats
 accepted or produced by the modules can be found 
-<A HREF="#formats">above</A>.
+<A HREF="#formats">above</A>.</P>
 <P>The stream is not automatically active. It processes data only when requested
 by the 
-<A HREF="#appl-cmd">appl</A> command.
+<A HREF="#appl-cmd">appl</A> command.</P>
 <P>The stream lasts until the next strm command or termination of
-the TTSCP connection, then it is deleted.
-<P>
+the TTSCP connection, then it is deleted.</P>
+
 <H3><CODE> user </CODE></H3>
 
-<P>
+
 <P>The <CODE>user</CODE> command is still not implemented properly and
 its semantics may change.  Epos is currently configured
 not to need and not to use it.  The tentative theory of
-TTSCP authentication goes as follows:
+TTSCP authentication goes as follows:</P>
 <P>The <CODE>user</CODE> command should precede all TTSCP exchanges. Its parameter is "anonymous"
 or a local or configured user account name. Some other user names
-may acquire special meaning. We'll see.
+may acquire special meaning. We'll see.</P>
 <P>Unless the account requires no authentication, this command
 should be immediately followed by a proper pass command;
 otherwise the session may be refused to issue most or all
-other commands.
-<P>If no <CODE>user</CODE> command is issued, "user anonymous" is assumed.
-<P>If the user doesn't exist, anonymous access is granted.
-<P>
-<P>
-<H2><A NAME="ss4.4">4.4 TTSCP modules</A>
+other commands.</P>
+<P>If no <CODE>user</CODE> command is issued, "user anonymous" is assumed.</P>
+<P>If the user doesn't exist, anonymous access is granted.</P>
+
+
+<H2><A NAME="ss4.4">4.4</A> <A HREF="epos.html#toc4.4">TTSCP modules</A>
 </H2>
 
 <H3>Input and output modules</H3>
 
-<P>
+
 <P>The input and output modules follow the same syntax conventions.
 If the module name begins with a <CODE>$</CODE>, the rest of the name
 is a data connection handle. If it begins with a slash, it is
@@ -480,31 +483,31 @@ name space is a single directory defined by the
 option.  It must be impossible to escape from such name space by inserting
 parent directory references in a file name or otherwise.  A TTSCP
 implementation can decide to reject some or all file input and output modules
-with a 454 reply.
+with a 454 reply.</P>
 <P>If the module name begins with a <CODE>#</CODE>, the rest of the name is a special
 input/output module identifier.  The only identifier generally supported is
 <CODE>localsound</CODE>, which can only be used as an output module with the <CODE>waveform</CODE>
 type.  Any waveform passed to this module should be played over using the
 local soundcard.  The <CODE>453</CODE> or <CODE>445</CODE> reply may be issued if the
 user is not allowed to use the soundcard, or no local soundcard exists,
-respectively.
+respectively.</P>
 <P>The output data type of an input module and the input data type of an output
 module are determined by the respective adjacent modules. If input and
 output modules are directly connected, it is assumed that the data is
-a plain text.
+a plain text.</P>
 <P>The TSR data type can not be sent or received, and may thus be totally
-implementation and architecture dependent.
-<P>
-<P>
-<P>
+implementation and architecture dependent.</P>
+
+
+
 <H3>Processing modules</H3>
 
-<P>
+
 <P>At the moment there are only few modules implemented that do a real 
-processing. All of them have fixed names and types.
+processing. All of them have fixed names and types.</P>
 <P>
-<CENTER><TABLE BORDER><TR><TD>
-<BR>
+<BR><CENTER>
+<TABLE BORDER><TR><TD>
 name </TD><TD> input format </TD><TD> output format </TD><TD> notes</TD></TR><TR><TD>
 chunk </TD><TD> plain text      </TD><TD> plain text </TD><TD> splits text</TD></TR><TR><TD>
 join </TD><TD> plain text       </TD><TD> plain text </TD><TD> joins texts</TD></TR><TR><TD>
@@ -514,75 +517,76 @@ rules </TD><TD> TSR </TD><TD> TSR </TD><TD> </TD></TR><TR><TD>
 print </TD><TD> TSR </TD><TD> plain text </TD><TD> </TD></TR><TR><TD>
 diphs </TD><TD> TSR </TD><TD> segments </TD><TD> extract segments</TD></TR><TR><TD>
 synth </TD><TD> segments </TD><TD> waveform </TD><TD> speech synthesis</TD></TR><TR><TD>
-
+</TD></TR></TABLE>
 <CAPTION> Available processing modules </CAPTION>
-</TD></TR></TABLE></CENTER>
-<P>
+</CENTER><BR>
+</P>
+
 <H3><A NAME="chunk-mod"></A> <CODE> chunk </CODE> </H3>
 
-<P>
+
 <P>The text is split into parts convenient for latter processing.
 These parts usually correspond at least to whole utterances;
 it is correct not to split the text at all, but care must be
 taken not to cause a split which significantly alters the
-final rendering of the text.
-<P>
+final rendering of the text.</P>
+
 <H3><A NAME="join-mod"></A> <CODE> join </CODE> </H3>
 
-<P>
+
 <P>It is customary to use the <CODE>join</CODE> module just after a <CODE>chunk</CODE> module.
 If this module receives two consecutive texts such that the <CODE>chunk</CODE>
 module would not split their concatenation between them, the <CODE>join</CODE> module
 may merge them to a single text, that is, it may silently drop the first
 subtask and prepend the text to the text acquired later.  This delay
-may cross the boundary of an <CODE>appl</CODE> command.
-<P>
+may cross the boundary of an <CODE>appl</CODE> command.</P>
+
 <H3><CODE> raw </CODE> </H3>
 
-<P>
+
 <P>The input text is converted in a language dependent way to the TSR,
 assuming it is a plain text without any specific TTS escape sequences
 or other special formatting conventions.  Except for tokenization
 and whitespace reduction the conversion should not try to process
 the text, especially not in a language dependent way; this goal
-doesn't seem to be always feasible.
-<P>
+doesn't seem to be always feasible.</P>
+
 <H3><CODE> rules </CODE> </H3>
 
-<P>
-<P>The voice dependent TTS or other rules are applied to a TSR.
-<P>
+
+<P>The voice dependent TTS or other rules are applied to a TSR.</P>
+
 <H3><CODE> print </CODE> </H3>
 
-<P>
+
 <P>The TSR is converted to a plain text representation, suitable as a 
 user-readable output.  The conversion should be as straightforward
 as possible and should not emit any special formatting character
 sequences.  Ideally, the successive application of the <CODE>raw</CODE> and
-<CODE>print</CODE> modules should not significantly alter the text.
-<P>
+<CODE>print</CODE> modules should not significantly alter the text.</P>
+
 <H3><CODE> diphs </CODE> </H3>
 
-<P>
+
 <P>This module extracts the segment layer from the input TSR into
-the linear segment stream format; the rest of TSR is discarded.
+the linear segment stream format; the rest of TSR is discarded.</P>
 <P>There may be an implementation-dependent limit on the size
 of the segment stream produced.  If more segments should be produced,
 the module may emit more subtasks; see the 
 <A HREF="#appl-cmd">appl</A> command for discussion concerning subtask reporting.
-t
-<P>
+t</P>
+
 <H3><CODE> synth </CODE> </H3>
 
-<P>
-<P>The input segment stream is synthesised in a voice dependent way.
-<P>
-<P>
-<P>
-<P>
+
+<P>The input segment stream is synthesised in a voice dependent way.</P>
+
+
+
+
 <H3>Explicit data type specifiers</H3>
 
-<P>
+
 <P>Sometimes an ambiguity concerning the type of data passed at a certain point
 within the stream may occur.  This is currently the case with streams consisting
 of input and output modules only (such as a stream to play out an audio icon
@@ -594,45 +598,46 @@ is a reasonable choice.  There are however instances where the type matters,
 like copying a waveform file to a sound card device: the waveform header
 must be stripped off and the appropriate <CODE>ioctl</CODE>s must be issued to
 replay the raw waveform data with the appropriate sampling frequency, sample
-size and so on.
+size and so on.</P>
 <P>The data types can be expressed explicitly by inserting a pseudo-module
 into the stream at the ambiguous position.  Failing that, the output data
 type of the preceding module and/or the input data type decides the data
 type at this point. Failing even that, the server will assume plain text
-data.
+data.</P>
 <P>The pseudo-module name consists of a single letter enclosed in square
 brackets.  The available data types are indicated by letters listed in
-<A HREF="#typespecs">the table of explicit data type specifiers</A>.
+<A HREF="#typespecs">the table of explicit data type specifiers</A>.</P>
 <P>
-<CENTER><TABLE BORDER><TR><TD>
-<BR>
+<BR><CENTER>
+<TABLE BORDER><TR><TD>
 <A NAME="typespecs"></A> name </TD><TD> data format </TD></TR><TR><TD>
 t </TD><TD> plain text </TD></TR><TR><TD>
 s </TD><TD> STML text </TD></TR><TR><TD>
 i </TD><TD> the server-internal text structure representation </TD></TR><TR><TD>
 d </TD><TD> segments </TD></TR><TR><TD>
 w </TD><TD> waveform </TD></TR><TR><TD>
-
+</TD></TR></TABLE>
 <CAPTION> Explicit data type specifiers </CAPTION>
-</TD></TR></TABLE></CENTER>
+</CENTER><BR>
+</P>
 <P>The data formats are described in 
-<A HREF="#formats">the data formats subsection</A>.
-<P>
-<P>
-<P>
-<P>
-<P>
-<H2><A NAME="ss4.5">4.5 Response codes</A>
+<A HREF="#formats">the data formats subsection</A>.</P>
+
+
+
+
+
+<H2><A NAME="ss4.5">4.5</A> <A HREF="epos.html#toc4.5">Response codes</A>
 </H2>
 
-<P>
+
 <P>Any server <EM>reply</EM> contains a numeric code, a single space, and some
 arbitrary newline-terminated text. The numeric code (three decimal
 digits) allows interfacing with simple to trivial clients, whereas
-the text (which is optional) is meant for possible user interaction.
+the text (which is optional) is meant for possible user interaction.</P>
 <P>The <EM>response codes</EM> are defined by the protocol, while the accompanying
 text is not, but it should rarely exceed 20 characters (clients
-should tolerate at least 76 characters plus the response code).
+should tolerate at least 76 characters plus the response code).</P>
 <P>Every response code consists of the <EM>response class</EM>, <EM>the subclass</EM>
 and an extra digit. The response class drives the protocol states
 and reports errors. The subclass is interpreted depending on the
@@ -640,17 +645,17 @@ response class; it can specify which component has reported
 an error or generated this particular response. Trivial clients
 may ignore this digit altogether. The third digit is merely used
 for distinguishing between messages of the same class and subclass
-and most clients are likely to ignore it in most situations.
-<P>
+and most clients are likely to ignore it in most situations.</P>
+
 <H3>Response classes</H3>
 
 <P>Within TTSCP, nine response classes have been defined.
 Out of these, one is used for in-progress communication,
 four indicate the results of commands, and the remaining
-four are reserved for future extensions.
+four are reserved for future extensions.</P>
 <P>
-<CENTER><TABLE BORDER><TR><TD>
-<BR>
+<BR><CENTER>
+<TABLE BORDER><TR><TD>
 code </TD><TD> error type </TD><TD> suggested action </TD></TR><TR><TD>
 0xx </TD><TD> reserved </TD><TD> (server queries client?) </TD></TR><TR><TD>
 1xx </TD><TD> still OK </TD><TD> informative only </TD></TR><TR><TD>
@@ -661,42 +666,43 @@ code </TD><TD> error type </TD><TD> suggested action </TD></TR><TR><TD>
 6xx </TD><TD> connection terminated </TD><TD> notify user if unexpected </TD></TR><TR><TD>
 7xx </TD><TD> reserved </TD><TD> notify user </TD></TR><TR><TD>
 8xx </TD><TD> server crash or shutdown </TD><TD> notify user </TD></TR><TR><TD>
-
+</TD></TR></TABLE>
 <CAPTION>       TTSCP response classes</CAPTION>
-</TD></TR></TABLE></CENTER>
+</CENTER><BR>
+</P>
 <P>The client is expected to send another command whenever it receives
 a 2xx or a 4xx response, not to send otherwise. The client should
 treat the connection as terminated, whenever it receives any response
 with code 5xx or higher. It may also quit at any time just after
 sending a "done" command to the server; the server will however
-confirm that command with a reply of 600 before disconnecting.
+confirm that command with a reply of 600 before disconnecting.</P>
 <P>Replies of 8xx except 800 are reserved for cases of severe server
 misconfiguration, or detected programming bugs. Their meanings
 are very implementation dependent (implementations are encouraged
 not to issue them except in emergency). If such a reply is ever
-received, the server has abnormally terminated.
+received, the server has abnormally terminated.</P>
 <P>The messages accompanying 3xx and higher response codes are likely
 to be interesting to the user if there is one. Any message without an error
 code is a data flow primarily meant for the user if any; a sequence
 of these may occur only after some 1xx response, except for debugging
-messages if on.
+messages if on.</P>
 <P>At the moment, some error codes contain letters. Later, all of
-them will consist of digits only and will be space-terminated.
-<P>
+them will consist of digits only and will be space-terminated.</P>
+
 <H3>Response subclasses</H3>
 
-<P>
+
 <P>The subclass depends on the response class. The most interesting
 classes are 3xx and 4xx, i.e. errors, where the subclass indicates
 both the nature of the problem, and the suggested way of dealing
 with it (especially in the case of 4xx responses).
 The same meaning is attached to these subclasses also in case
-of 6xx and 8xx responses.
+of 6xx and 8xx responses.</P>
 <P>The middle digit of 1xx and 2xx responses has still no meaning
-attached (there are only a few such responses).
+attached (there are only a few such responses).</P>
 <P>
-<CENTER><TABLE BORDER><TR><TD>
-<BR>
+<BR><CENTER>
+<TABLE BORDER><TR><TD>
 code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 0 </TD><TD> none </TD><TD> relax; assume user-initiated interruption</TD></TR><TR><TD>
 1 </TD><TD> syntax </TD><TD> notify user</TD></TR><TR><TD>
@@ -706,16 +712,17 @@ code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 5 </TD><TD> access denied </TD><TD> notify user</TD></TR><TR><TD>
 6 </TD><TD> server error </TD><TD> have user notify server author</TD></TR><TR><TD>
 7 </TD><TD> network error </TD><TD> wait and retry</TD></TR><TR><TD>
-
+</TD></TR></TABLE>
 <CAPTION>       TTSCP error subclasses</CAPTION>
-</TD></TR></TABLE></CENTER>
-<P>
+</CENTER><BR>
+</P>
+
 <H3>Currently defined messages</H3>
 
+
 <P>
-<P>
-<CENTER><TABLE BORDER><TR><TD>
-<BR>
+<BR><CENTER>
+<TABLE BORDER><TR><TD>
 111     </TD><TD> daemon talks</TD></TR><TR><TD>
 112     </TD><TD> apply task started</TD></TR><TR><TD>
 122     </TD><TD> apply task total bytes count follows</TD></TR><TR><TD>
@@ -725,12 +732,13 @@ code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 200     </TD><TD> daemon is happy and ready</TD></TR><TR><TD>
 211     </TD><TD> access granted</TD></TR><TR><TD>
 212     </TD><TD> anonymous access granted</TD></TR><TR><TD>
-
+</TD></TR></TABLE>
 <CAPTION>       TTSCP success codes as issued by Epos</CAPTION>
-</TD></TR></TABLE></CENTER>
+</CENTER><BR>
+</P>
 <P>
-<CENTER><TABLE BORDER><TR><TD>
-<BR>
+<BR><CENTER>
+<TABLE BORDER><TR><TD>
 401     </TD><TD> intr command received</TD></TR><TR><TD>
 411     </TD><TD> command not recognized</TD></TR><TR><TD>
 412     </TD><TD> option passed illegal value</TD></TR><TR><TD>
@@ -775,17 +783,18 @@ code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 474     </TD><TD> remote tcpsyn server uses an unknown protocol</TD></TR><TR><TD>
 475     </TD><TD> remote tcpsyn server returned error</TD></TR><TR><TD>
 476     </TD><TD> remote tcpsyn server timed out</TD></TR><TR><TD>
-
+</TD></TR></TABLE>
 <CAPTION>       TTSCP error codes as issued by Epos</CAPTION>
-</TD></TR></TABLE></CENTER>
+</CENTER><BR>
+</P>
 <P>The 8xx class of responses (fatal errors) is still very unsettled
 and many of the codes listed there
 will later be removed or merged together. Applications should not try to decode
 them except possibly for the middle digit. The same goes for all x6x subclasses
-of errors (internal errors).
+of errors (internal errors).</P>
 <P>
-<CENTER><TABLE BORDER><TR><TD>
-<BR>
+<BR><CENTER>
+<TABLE BORDER><TR><TD>
 600     </TD><TD> session ended normally</TD></TR><TR><TD>
 800     </TD><TD> server shutting down as requested by client</TD></TR><TR><TD>
 801     </TD><TD> error explicitly reported in config files</TD></TR><TR><TD>
@@ -807,10 +816,11 @@ of errors (internal errors).
 872     </TD><TD> server already running</TD></TR><TR><TD>
 881     </TD><TD> too many syntax errors in rule files</TD></TR><TR><TD>
 882     </TD><TD> infinite include cycle</TD></TR><TR><TD>
-
+</TD></TR></TABLE>
 <CAPTION>       TTSCP session termination codes as issued by Epos</CAPTION>
-</TD></TR></TABLE></CENTER>
-<P>
+</CENTER><BR>
+</P>
+
 <HR>
 <A HREF="epos-5.html">Next</A>
 <A HREF="epos-3.html">Previous</A>

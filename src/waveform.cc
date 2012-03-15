@@ -600,7 +600,7 @@ wavefm::translate()
 	if (cfg->ulaw) hdr.datform = IBM_FORMAT_MULAW;
    finis:
 	translated = true;
-	hdr.buffer_idx = hdr.buffer_idx * target_size / downsamp;
+	hdr.buffer_idx = (hdr.buffer_idx + 1) / downsamp * target_size;
 }
 
 /*
