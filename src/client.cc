@@ -28,7 +28,7 @@
 
 #ifdef THIS_IS_A_TTSCP_CLIENT
 
-#define SCRATCH_SPACE 16384
+#define INITIAL_SCRATCH_SPACE 16384
 
 struct pseudo_static_configuration
 {
@@ -38,11 +38,11 @@ struct pseudo_static_configuration
 	int listen_port;
 };
 
-pseudo_static_configuration pseudocfg = {1, SCRATCH_SPACE, 0, TTSCP_PORT};
+pseudo_static_configuration pseudocfg = {1, INITIAL_SCRATCH_SPACE, 0, TTSCP_PORT};
 
 pseudo_static_configuration *scfg = &pseudocfg;
 
-char scratch[SCRATCH_SPACE + 2];
+char *scratch = (char *)malloc(INITIAL_SCRATCH_SPACE + 2);
 
 #endif
 

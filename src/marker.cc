@@ -26,9 +26,11 @@ class marker
 	~marker();
 	marker(mclass mc, bool e, int p, marker *m, float po) { quant = mc; extent = e; par = p; next = m; pos = po; };
 	marker *derived();
-	void merge(marker *ma, marker **fixup);
+	void merge(marker *&into);
+	inline bool listed(marker *ma);
+	bool disjoint(marker *ma);
 
-	bool operator < (marker ma);
+	bool operator < (marker &ma);
 	
 	int write_ssif(char *whither);
 
@@ -60,33 +62,50 @@ marker *marker::derived()
 }
 
 void
-marker::merge(marker *ma, marker **fixup)	// FIXME: ma == NULL
+marker::merge(marker *&into)
 {
-	if (!this) {
-		*fixup = ma;
+	if (!disjoint(into)) shriek(861, "Cannot merge non-disjoints");
+	if (!this)
+		return;
+	if (!into) {
+		into = this;
 		return;
 	}
-	if (*this < *ma) {
-		if (!next) next = ma;
-		else next->merge(ma, &next);
+	if (*into < *this) {
+		if (!into->next) into->next = this;
+		else merge(into->next);
 	} else {
-		if (quant == ma->quant && pos == ma->pos && extent && ma->extent) {
-			par += ma->par;		// merge compatible extent markers
-			marker *nm = ma->next;
-			ma->next = NULL;
-			delete ma;
-			ma = nm;
-			if (nm) merge(nm, fixup);
+		if (quant == into->quant && pos == into->pos && extent && into->extent) {
+			into->par += par;		// merge compatible extent markers
+			marker *nm = next;
+			next = NULL;
+			delete this;
+			nm->merge(into);
 		} else {
-			*fixup = ma;
-			if (!ma->next) ma->next = this;
-			else ma->next->merge(this, &ma->next);
+			marker *other = into;
+			into = this;
+			other->merge(next);
 		}
 	}
 }
 
+inline bool
+marker::listed(marker *ma)
+{
+	if (!ma) return false;
+	return this == ma || listed(ma->next);
+}
+
 bool
-marker::operator < (marker ma)
+marker::disjoint(marker *ma)
+{
+	if (!this || !ma) return true;
+	if (this == ma) return false;
+	return !listed(ma->next) && next->disjoint(ma);
+}
+
+bool
+marker::operator < (marker &ma)
 {
 	if (extent == ma.extent) return pos < ma.pos;
 	else return !extent;

@@ -81,8 +81,8 @@ void shriek(int, char *txt)
 
 int get_result(int sd)
 {
-	while (sgets(scratch, SCRATCH_SPACE, sd)) {
-		scratch[SCRATCH_SPACE] = 0;
+	while (sgets(scratch, scfg->scratch, sd)) {
+		scratch[scfg->scratch] = 0;
 //		printf("Received: %s\n", scratch);
 		switch(*scratch) {
 			case '1': continue;

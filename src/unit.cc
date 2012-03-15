@@ -95,8 +95,18 @@ unit::unit()
 unit::~unit()
 {
 //	D_PRINT(0, "Disposing %c\n",cont);
-	if (next) delete next;
-	if (firstborn) delete firstborn;
+	if (firstborn) delete_children();
+}
+
+void
+unit::delete_children()
+{
+	unit *v;
+	for (unit *u = firstborn; u; u = v) {
+		v = u->next;
+		delete u;
+	}
+	firstborn = lastborn = NULL;
 }
 
 /****************************************************************************
@@ -515,13 +525,13 @@ unit::subst()
 		unlink(M_DELETE);
 		return;
 	}
-	delete firstborn;
+	delete_children();
 	D_PRINT(0, "innermost unit::subst - gonna relink after subst\n");
 	firstborn = tmpu->firstborn;
 	lastborn  = tmpu->lastborn;
 	firstborn->set_father(this);
 	sanity();
-	tmpu->firstborn = NULL;      //lest they delete out our newly adopted children
+	tmpu->firstborn = NULL;      //FIXME - paranoid
 	tmpu->next = NULL;           //Paranoid
 	delete tmpu;
 	delete parsie;
@@ -552,6 +562,7 @@ unit::subst(hash *table, int l, char *prefix, char *prefix_end, char *body, char
 		safe_grow += sbsize;
 		sbsize <<= 1;
 		sb = (char *)xrealloc(sb, sbsize);
+		DO_PRINT(1, "Had to realloc subst buffer to %d bytes\n", sbsize);
 	}
 //		shriek (463, "Huge or infinitely iterated substitution %30s...", resultant);
 	if (prefix && prefix_end - prefix > 0) {
@@ -1179,16 +1190,23 @@ void
 unit::project_extents()
 {
 	D_PRINT(1, "Projecting an extent from %d\n", depth);	// FIXME
+	sanity();
 	for (marker *n = m; n; n = n->next)
 		if (!n->extent)
 			shriek(862, "Extent followed by a non-extent");
 
 	for (unit *u = firstborn; u; u = u->next) {
 		D_PRINT(3, "Moving prosody point to %d; q=%d, val=%d\n", u->depth, m->quant, m->par);
-		u->m->merge(m->derived(), &u->m);
+		sanity();
+		u->sanity();
+		m->derived()->merge(u->m);
+		sanity();
+		u->sanity();
 	}
+	sanity();
 	delete m;
 	m = NULL;
+	sanity();
 }
 
 inline void
@@ -1198,6 +1216,7 @@ unit::project_one_level(float sum)
 	float c = 0;	// relative current time position within the unit
 	unit *u = firstborn;
 	while (m && !m->extent) {
+		sanity();
 		shriek(861, "non-extents not implemented");
 
 		tmp = m;
@@ -1214,12 +1233,14 @@ unit::project_one_level(float sum)
 		*ml = tmp;
 	}
 	if (m) project_extents();
+	sanity();
 }
 
 
 void
 unit::project(UNIT target)			// FIXME optimize
 {
+	sanity();
 	if (target == depth) return;
 	if (target < depth) {
 		float sum = 0;
@@ -1304,7 +1325,7 @@ unit::segs(UNIT target, hash *dinven)
 	if (depth==target) {
 		D_PRINT(1, "unit::segs %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());
 		if (!dinven->items) {
-			delete firstborn, firstborn=lastborn=NULL;
+			delete_children();
 			return;
 		}
 		_d_descr[3]=0;
@@ -1342,7 +1363,7 @@ unit::unlink(REPARENT rmethod)
 		else if (father) father->firstborn=next;
 	switch (rmethod) {    
 	case M_DELETE:
-		if (firstborn) delete firstborn;
+		if (firstborn) delete_children();
 		break;
 	case M_RIGHTWARDS:
 		D_PRINT(0, "unlinking rightwards at level %d\n",depth);
@@ -1554,6 +1575,13 @@ unit::sanity()
 	if (next && next->prev != this)			insane("next->prev");
 	if (depth==scfg->text_level && father)		insane("TEXT.father");
 	if (cont < -128 || cont > 255 && depth > scfg->segm_level)	insane("content"); 
+
+	if (next && !m->disjoint(next->m)) insane("disjointness problem");
+	if (prev && !m->disjoint(prev->m)) insane("disjointness problem");
+	if (father && !m->disjoint(father->m)) insane("disjointness problem");
+	if (firstborn && !m->disjoint(firstborn->m)) insane("disjointness problem");
+	if (lastborn && !m->disjoint(lastborn->m)) insane("disjointness problem");
+	if (lastborn && lastborn->prev && !m->disjoint(lastborn->prev->m)) insane("disjointness problem");
 
         if (scfg->allpointers) return;
 	if (prev && (unsigned long int) prev<0x8000000) insane("prev");

@@ -88,6 +88,7 @@ inline void *slab<size>::alloc()
 	void *slot;
 
 	if (!tail) {
+		D_PRINT(0, "Metaallocating for slab\n");
 		void *more = xmalloc(size * fragment_size);
 		for (int i=1; i < fragment_size; i++) this->release(i*size +(char *)more);
 		((slab_free_list *) more)->n = slices;
@@ -95,12 +96,14 @@ inline void *slab<size>::alloc()
 	}
 	slot = tail;
 	tail = tail->n;
+	D_PRINT(0, "Allocating %p from slab\n", slot);
 	return slot;
 }
 
 template <int size>
 inline void slab<size>::release(void *ptr)
 {
+	D_PRINT(0, "Releasing %p to slab\n", ptr);
 	slab_free_list *slot = (slab_free_list *)ptr;
 	slot->n = tail;
 	tail = slot;

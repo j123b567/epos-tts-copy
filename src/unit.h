@@ -75,6 +75,7 @@ class unit
 		unit(UNIT layer, int content); 
 		unit();               //(empty unit) constructor
 		~unit();
+	void delete_children();
 	int  write_segs(segment *whither, int starting_at, int max);
                                       //Writes the segments out to an array of
                                       // struct segment. Returns: how many written

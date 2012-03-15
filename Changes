@@ -1255,3 +1255,10 @@ for an exciting story, just skip it.
 	- moved the compiler tests somewhat up the configure.in
 	- fixed yylex() in neural_parse.yy not to use yytoknum
 	- fixed the multiply defined CLEANFILES bug
+
+2.5.13 from 2.5.12
+	- fixed scratch overrun in say
+	- fixed say command line behavior wrt mixed text, dashes and options 
+	- fixed marker::operator < to take the explicit parameter by reference
+	- rewrote marker::merge()
+	- rewrote unit::~unit() to conserve space; don't delete next anymore
