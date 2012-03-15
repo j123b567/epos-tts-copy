@@ -13,6 +13,7 @@
 ^devíti deví»i
 ^desíti desí»i
 nácti nác»i
+ètyrya ètyrija
 
 ^amandin amanïin
 ^astridin astriïin
@@ -54,6 +55,9 @@ astiný as»iný
 astini$ as»iòi
 
 èisti èis»i
+èistiè èis»iè
+èistièk èis»ièk
+èistièc èis»ièc
 øisti øis»i
 jisti jis»i
 listin lis»in
@@ -119,6 +123,7 @@ matico ma»ico
 hatmati hatma»i
 »mati »ma»i
 ^mati ma»i
+^matièk ma»ièk
 submatic subma»ic
 moni$ moòi
 monil moòil
@@ -136,6 +141,84 @@ pa¹tik pa¹»ik
 ^¹tikách ¹»ikách
 ¹tia ¹»ia
 ^nikt òikt
+ìdikov ìïikov
+únikov úòikov
+ùnikov úòikov
+dnikov dòikov
+¹tikov ¹»ikov
+¹nikov ¹òikov
+^tikov »ikov
+ánikov áòikov
+
+tic$ »ic
+tiè$ »iè
+tièe$ »ièe
+tièem »ièem
+tièi$ »ièi
+tièù »ièù
+tièí »ièí
+tiès »iès
+tiè¹ »iè¹
+¹tiè ¹»iè
+¾tiè ¾»iè
+ìtiè ì»iè
+átiè á»iè
+chtiè ch»iè
+cesti ces»i
+desti des»i
+tièký$ »ièký
+tièká$ »ièká
+tièké$ »ièké
+tièkého$ »ièkého
+tièkému$ »ièkému
+tièkém$ »ièkém
+tièkým$ »ièkým
+tièkých$ »ièkých
+tièkými$ »ièkými
+tièkýma$ »ièkýma
+tièc »ièc
+tièo »ièo
+^patiè pa»iè
+^nepatiè nepa»iè
+bezpatiè bezpa»iè
+untiè un»iè
+^tetiè te»iè
+^prateti prate»i
+^vestiè ves»iè
+¹vestiè ¹ves»iè
+lopatiè lopa»iè
+chvaleti chvale»i
+kostiè kos»iè
+kytiè ky»iè
+^matiè ma»iè
+serepeti serepe»i
+sarapati sarapa»i
+botiè bo»iè
+^vatiè va»iè
+drtiè dr»iè
+krtiè kr»iè
+hrsti hrs»i
+smrti smr»i
+tièl »ièl
+^chatiè cha»iè
+¹atiè ¹a»iè
+^latiè la»iè
+^frontiè fron»iè
+houstiè hous»iè
+pustiè pus»iè
+latiè la»iè
+^notiè no»iè
+kutiè ku»iè
+putiè pu»iè
+ìsti ìs»i
+¹peti ¹pe»i
+^kratiè kra»iè
+
+ìtick ì»ick
+¹tick ¹»ick
+chtic ch»ic
+ltick l»ick
+chatic cha»ic
 
 divizn ïivizn
 politi$ poli»i
@@ -155,6 +238,15 @@ bendi benïi
 ^ondic onïic
 politi$ poli»i
 mìdi mìïi
+dit$ ïit
+diti$ ïi»i
+jodit joïit
+indit inïit
+skandit skanïit
+nápadit nápaïit
+nadit naïit
+sadit saïit
+ditel ïitel
 
 hledisk hleïisk
 hradisk hraïisk
@@ -195,15 +287,18 @@ asti astY
 ativi atyvi
 ativn atyvn
 bsti bstY
+^dic dyc
 dimen dymen
 dip dyp
 dir dyr
+dit dyt
 diver dyver
 ^dj d¾
 eioti ejoty
 erti ertY
 geni genY
 geniti genytY
+gmati gmatY
 gni gnY
 ichotom Ychotom
 iket Yket
@@ -216,10 +311,18 @@ isia Yzyja
 isti YstY
 Ysti YstY
 istY YstY
+istick Ystyck
+Ystick Ystyck
+istiè Ystyè
+Ystiè Ystyè
 iz yz
 ^jee d¾í
 kti ktY
+ktièc ktYèc
+ktièk ktYèk
 mati matY
+matiè matyè
+matièk matyèk
 matiti matYtY
 ^matik matyk
 moni monY
@@ -231,8 +334,16 @@ orti ortY
 oui uY
 pae pe
 pti ptY
+ptièc ptYèc
+ptièk ptYèk
 thi thY
+tick tyck
+tiè tyè
+tilac tylac
+tilaè tylaè
 urti urtY
+¾oas ¾oaz
+
 ^dis dys
 dish dyzh
 ix yx
@@ -277,6 +388,7 @@ oiu oju
 ^io jo
 ^iu ju
 ^aer er
+neaer neer
 
 riti ritY
 ridi ridY
@@ -294,7 +406,7 @@ ismech$ Yzmech
 izmus$ Yzmus
 izmu$ Yzmu
 izme$ Yzme
-izmem$ Yzmuem
+izmem$ Yzmem
 izmy$ Yzmi
 izmù$ Yzmú
 izmùm$ Yzmúm
@@ -313,10 +425,12 @@ ing yng
 isting Ystyng
 ilion Ylijón
 ilion ylijón
-ilioná Ylioná
+ilioná Ylyjoná
 illion Ylijón
-illioná Ylioná
+illioná Ylyjoná
 iliard Yliard
+lion lyjón
+glion glyjon
 
 ista$ Ysta
 isty$ Ysty
@@ -369,6 +483,7 @@ istèinou$ Ystèinou
 
 ik$ yk
 ika$ Yka
+iko$ Yko
 iku$ Yku
 ikovi$ Ykovi
 ikem$ Ykem
@@ -380,6 +495,8 @@ ikách$ Ykách
 ikami$ Ykami
 ikum$ Ykum
 ikou$ Ykou
+
+ikov Ykov
 
 tivní tyvní
 tivnì tyvnì
@@ -394,6 +511,7 @@ issimus$ Ysimus
 
 #########################
 # Graeco-Latin Origin
+abdik abdyk
 aborti abortY
 ^adi adY
 ^aditi adytY
@@ -403,10 +521,14 @@ agnosti agnostY
 alpini alpinY
 alternati alternatY
 anilin anylín
+anilín anylín
 animi anymi
 animism anymizm
+animizm anymizm
+animisti anymistY
 ^anti anty
 ^neanti neantY
+^nejanti nejantY
 anticipati anticipatY
 ^antidepresiv antydepresív
 ^antiemeti antyemetY
@@ -420,12 +542,14 @@ antimon antymon
 ^antiteti antytetY
 ^arci arcy
 audi audY
+audit audyt
 auditi audytY
 augustini augustynY
 aviati aviatY
 bioti biotY
 bonit bonyt
 bonif bonyf
+botani botany
 byzanti bizantY
 chinin chinýn
 diabati dyjabatY
@@ -447,11 +571,11 @@ diureti dyjuretY
 ^divis dyvis
 ^diviz dyviz
 ^divid dyvid
-dogmati dogmatY
 elektroni elektronY
 epilepti epileptY
 fantasti fantastY
 finiti finytY
+finit finYt
 festi festY
 floti flotY
 foneti fonetY
@@ -475,6 +599,8 @@ koloni kolonY
 komuni komunY
 kontinu kontynu
 kredit kredyt
+kriti kritY
+kultic kultyc
 kvanti kvantY
 ^latifund latyfund
 legitim legitym
@@ -493,6 +619,7 @@ moti motY
 ^multi multy
 mutati mutatY
 mykoti mikotY
+myria myrijá
 mysti mistY
 nativ natyv
 nihil nyhil
@@ -530,6 +657,7 @@ static statyc
 statik statyk
 ^stipend stypend
 studij studyj
+teatr teátr
 techni technY
 temati tematY
 témati tématY
@@ -562,6 +690,8 @@ fire$ fajr
 flash fle¹
 ^free frí
 ^fuji$ fud¾i
+gigabyt gigabajt
+gigabyte$ gigabajt
 ^girondist ¾irondist
 group grup
 gustin gustyn
@@ -572,9 +702,13 @@ hokejisti hokejistY
 ^john d¾on
 ^judo$ d¾udo
 ^judist d¾udist
+kilobyt kilobajt
+kilobyte$ kilobajt
 ^laser lejzr
 ^mail mejl
 mastif mastyf
+megabyt megabajt
+megabyte$ megabajt
 micro majkro
 miliampér mili'ampér
 ^nikl nykl
@@ -592,6 +726,8 @@ snowboard snoubord
 station stei¹n
 surreal sirreal
 ¹lamastika ¹lamastyka
+terabyt terabajt
+terabyte$ terabajt
 venture venèr
 ware vér
 warech vérech
@@ -606,6 +742,7 @@ witch viè
 afgh afg
 antioch antyjoch
 ^antil antyl
+argentin argentýn
 bieder bídr
 ^burundi burundY
 ^cádiz kádyz

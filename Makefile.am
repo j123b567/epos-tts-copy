@@ -1,21 +1,26 @@
 ##	Process this file with automake run in the top directory to yield Makefile.in
 
 include $(top_srcdir)/Makefile.common
+include data_dirs.am
+include data_files.am
 
 pkgdata_DATA = version
-EASY_INSTALL = cfg lng voice inv mappings ttscp root
+noinst_DATA = $(DATA_DIRS) $(DATA_FILES)
 
 version: $(top_srcdir)/configure.in
 	@echo $(VERSION) > version
 
-# If you don't have find, the following will fail.
-# In this case note that all you need is a recursive copy
+# In case of problems with the installation please note
+# that all you need is a recursive copy
 # of the content of this directory to the "right" place,
 # such as cp -r * /usr/share/epos
 
-install-data-local:	
-	$(INSTALL_DATA) -d $(pkgdatadir)/root
-	cd $(srcdir) && find $(EASY_INSTALL) -type d -exec $(INSTALL_DATA) -d -m 755 $(pkgdatadir)/{} \;
-	cd $(srcdir) && find $(EASY_INSTALL) -type f -exec $(INSTALL_DATA) $(srcdir)/{} $(pkgdatadir)/{} \;
+install-data-local: installdirs
+	@cd $(srcdir) && for i in $(DATA_DIRS); do \
+		$(mkinstalldirs) $(pkgdatadir)/$$i;\
+	done
+	cd $(srcdir) && for i in $(DATA_FILES); do \
+		$(INSTALL_DATA) $$i $(pkgdatadir)/$$i;\
+	done
 
-EXTRA_DIST = $(pkgdata_DATA) $(EASY_INSTALL)
+EXTRA_DIST = $(pkgdata_DATA) $(DATA_FILES) data_dirs.am data_files.am
