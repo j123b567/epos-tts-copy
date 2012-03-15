@@ -129,7 +129,7 @@ make_tree (TTypedValue val = TTypedValue())
 #line 110 "neural_parse.yy"
 #ifndef YYSTYPE
 typedef union {
-	long int int_val;
+	int int_val;
 	double float_val;
 	char string_val [MSG_LENGTH];
 	unit *unit_val;

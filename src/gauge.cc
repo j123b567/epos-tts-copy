@@ -50,10 +50,12 @@ bool show_segments = false;
 bool wavfile = false;
 bool wavstdout = false;
 
+#if 0
 struct segment {
-	short code; char nothing; char ll;
+	int16_t code; char nothing; char ll;
 	int f,e,t;
 };
+#endif
 
 #define STDIN_BUFF_SIZE  550000
 

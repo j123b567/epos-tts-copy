@@ -52,7 +52,7 @@ bool wavstdout = false;
 bool traditional = true;  
 
 struct segment {
-	short code; char nothing; char ll;
+	int16_t  code; char nothing; char ll;
 	int f,e,t;
 };
 

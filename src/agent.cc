@@ -73,7 +73,7 @@ inline void agent_profile(const char *s)
 	static struct timeval start, stop;
 	if (!s) {
 		if (gettimeofday(&start, NULL)) shriek(861, "profiler fails");
-		long duration = start.tv_sec - stop.tv_sec;
+		int duration = start.tv_sec - stop.tv_sec;
 		duration *= 1000000;
 		duration += start.tv_usec - stop.tv_usec;
 		fprintf(log, "%10ld", duration);
@@ -81,7 +81,7 @@ inline void agent_profile(const char *s)
 		if (gettimeofday(&start, NULL)) shriek(861, "profiler fails");
 	} else {
 		if (gettimeofday(&stop, NULL)) shriek(861, "profiler fails");
-		long duration = stop.tv_sec - start.tv_sec;
+		int duration = stop.tv_sec - start.tv_sec;
 		duration *= 1000000;
 		duration += stop.tv_usec - start.tv_usec;
 		fprintf(log, " %-13s%8ld\n", s, duration);
@@ -1233,7 +1233,7 @@ a_ttscp::disconnect()
 void make_nonblocking(int f)
 {
 #ifdef HAVE_WINSOCK
-	ioctlsocket((unsigned long)f, FIONBIO, (unsigned long *)&make_nonblocking);	// &make_nonblocking is a dummy non-NULL pointer
+	ioctlsocket((unsigned int)f, FIONBIO, (unsigned int *)&make_nonblocking);	// &make_nonblocking is a dummy non-NULL pointer
 #else
 	fcntl(f, F_SETFL, O_NONBLOCK);
 #endif

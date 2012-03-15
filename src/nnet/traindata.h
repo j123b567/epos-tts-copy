@@ -256,7 +256,7 @@ public:
 	/// sets the colIndexes array 
 	void setColIndexes ();
 
-	long getSeriesCount(enumSetType set) const;
+	int getSeriesCount(enumSetType set) const;
 
 	/// deletes all rows
 	void clear ()	{ data.DeleteAll(); pos = data.end(); }

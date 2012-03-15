@@ -43,8 +43,8 @@ class bang_ostream: virtual public bang_ios{
 public:
 	virtual bang_ostream &operator<<(int i) { return *this; }
 	virtual bang_ostream &operator<<(unsigned u) { return *this; }
-	virtual bang_ostream &operator<<(long l) { return *this; }
-	virtual bang_ostream &operator<<(unsigned long ul) { return *this; }
+//	virtual bang_ostream &operator<<(long l) { return *this; }
+//	virtual bang_ostream &operator<<(unsigned long ul) { return *this; }
 	virtual bang_ostream &operator<<(double d) { return *this; }
 	virtual bang_ostream &operator<<(char c) { return *this; }
 	virtual bang_ostream &operator<<(const char *s) { return *this; }
@@ -111,8 +111,8 @@ public:
 
 	virtual bang_ostream &operator<<(int i);
 	virtual bang_ostream &operator<<(unsigned u);
-	virtual bang_ostream &operator<<(long li);
-	virtual bang_ostream &operator<<(unsigned long lu);
+//	virtual bang_ostream &operator<<(long li);
+//	virtual bang_ostream &operator<<(unsigned long lu);
 	virtual bang_ostream &operator<<(double g);
 	virtual bang_ostream &operator<<(char c);
 	virtual bang_ostream &operator<<(const char *s);

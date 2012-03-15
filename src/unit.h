@@ -19,8 +19,6 @@
  *	bi-directional linked list between "firstborn" and "lastborn"; all of
  *	its elements have their "depth" lower by one. These and maybe other
  *	assumptions about the structure can be found in unit::sanity().
- *
- *	Note that the neural network stuff is implemented in nnet.cc.
  */
 
 #define JUNCTURE           '0'    // scope boundary in assim environment

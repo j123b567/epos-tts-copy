@@ -24,5 +24,5 @@ epos_LDADD = nnet/libeposnnet.la
 eposm_LDADD = nnet/libeposnnet.la
 
 EXTRA_DIST = options.lst hashtmpl.cc marker.cc block.cc exc.cc \
-nnet.cc qnxipc.cc
+qnxipc.cc
 

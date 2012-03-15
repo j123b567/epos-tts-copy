@@ -2,7 +2,7 @@
 dnl Process this file with autoconf to produce a configure script
 
 AC_INIT(src/unit.cc)
-AM_INIT_AUTOMAKE(epos, 2.5.16)
+AM_INIT_AUTOMAKE(epos, 2.5.17)
 AC_PREFIX_DEFAULT(/usr)
 
 dnl AC_DEFINE_UNQUOTED(BASE_DIR, $libdir) didn't unquote enough
@@ -57,6 +57,7 @@ AM_PROG_LEX
 AC_STDC_HEADERS
 AC_HAVE_HEADERS(strings.h)
 AC_HAVE_HEADERS(string.h)
+AC_HAVE_HEADERS(stdint.h)
 AC_HAVE_HEADERS(io.h)
 AC_HAVE_HEADERS(rx.h)
 AC_HAVE_HEADERS(regex.h)

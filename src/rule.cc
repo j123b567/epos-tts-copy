@@ -564,7 +564,7 @@ class r_contour: public rule
 r_contour::r_contour(char *param) : rule(param)
 {
 	char *p;
-	short int tmp=0, sgn=1;
+	int tmp=0, sgn=1;
 	
 	contour = (int *)xmalloc(strlen(param)*sizeof(int));
 	contour[0] = l = 0;
@@ -623,7 +623,7 @@ class r_smooth: public rule
 r_smooth::r_smooth(char *param) : rule(param)
 {
 	char *p;
-	short int tmp=0, sgn=1, total=0, max;
+	int tmp=0, sgn=1, total=0, max;
 	
 	list=(int *)xmalloc(strlen(param)*sizeof(int));
 	list[0]=n=l=0;

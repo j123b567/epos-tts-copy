@@ -312,40 +312,6 @@ bang_ostream &bang_ofstream::operator<<(unsigned u)
 
 //-----------------------------------------------------------------------------
 
-bang_ostream &bang_ofstream::operator<<(long li)
-{
-	if (state) {
-		state |= failbit;
-		return *this;
-	}
-
-	fprintf(file, "%li", li);
-	if (ferror(file))
-		state |= failbit | badbit;
-
-	return *this;
-}
-
-
-//-----------------------------------------------------------------------------
-
-bang_ostream &bang_ofstream::operator<<(unsigned long lu)
-{
-	if (state) {
-		state |= failbit;
-		return *this;
-	}
-
-	fprintf(file, "%lu", lu);
-	if (ferror(file))
-		state |= failbit | badbit;
-
-	return *this;
-}
-
-
-//-----------------------------------------------------------------------------
-
 bang_ostream &bang_ofstream::operator<<(char c)
 {
 	if (state) {

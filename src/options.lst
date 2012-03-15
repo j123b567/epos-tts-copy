@@ -59,6 +59,7 @@
 #define ELEM   UNIT
 // #define FILE   const char*
 #define MARKUP OUT_ML
+#define SALT   int
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
 #define CHARSET    int
@@ -114,6 +115,7 @@
 #define ELEM   O_UNIT
 // #define FILE   O_FILE
 #define MARKUP O_MARKUP
+#define SALT   O_SALT
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
 #define CHARSET    O_CHARSET
@@ -149,6 +151,7 @@
 #define CHAR
 #define ELEM
 #define MARKUP
+#define SALT
 #define TYPE
 #define CHANNEL
 #define CHARSET
@@ -183,6 +186,7 @@
 #define ELEM   UNIT
 // #define FILE   const char*
 #define MARKUP OUT_ML
+#define SALT   int
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
 #define CHARSET    int
@@ -215,6 +219,7 @@
 #define ELEM   O_UNIT
 // #define FILE   O_FILE
 #define MARKUP O_MARKUP
+#define SALT   O_SALT
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
 #define CHARSET    O_CHARSET
@@ -260,6 +265,7 @@
 #define CHAR
 #define ELEM
 #define MARKUP
+#define SALT
 #define TYPE
 #define CHANNEL
 #define CHARSET
@@ -286,6 +292,7 @@
 #define ELEM   UNIT
 // #define FILE   const char*
 #define MARKUP OUT_ML
+#define SALT   int
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
 #define CHARSET    int
@@ -310,6 +317,7 @@
 #define ELEM   O_UNIT
 // #define FILE   O_FILE
 #define MARKUP O_MARKUP
+#define SALT   O_SALT
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
 #define CHARSET    O_CHARSET
@@ -357,6 +365,7 @@
 #define ELEM   UNIT
 // #define FILE   const char*
 #define MARKUP OUT_ML
+#define SALT   int
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
 #define CHARSET    int
@@ -387,6 +396,7 @@
 #define ELEM   O_UNIT
 // #define FILE   O_FILE
 #define MARKUP O_MARKUP
+#define SALT   O_SALT
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
 #define CHARSET    O_CHARSET
@@ -563,7 +573,8 @@ VOICE_OPTION (inv_t0, init_t, "init_t",      INT, 100)	// Neutral time factor
 VOICE_OPTION (samp_rate, samp_rate, "inv_sampling_rate", INT, 8000)	// The real sampling rate of the inventory
 VOICE_OPTION (samp_size, samp_size, "sample_size",INT, 16)	// (not supported)
 
-VOICE_OPTION (sampa_alt, sampa_alt, "sampa_alternate", INT, 0)
+STATIC (sampa_alts, "sampa_alts", STR, NULL)
+VOICE_OPTION (sampa_alt, sampa_alt, "sampa_alternate", SALT, 0)
 
 VOICE_OPTION (inv_out_rate, out_rate, "out_sampling_rate", INT, 0)	// 0 means equal to samp_rate
 	// positive value specifies the required output rate (samp_rate divided by an integer)
@@ -690,6 +701,7 @@ STATICARRAY (out_color, "color",   STR, NULL, UNIT_MAX)
 #undef ELEM
 // #undef FILE
 #undef MARKUP
+#undef SALT
 #undef TYPE
 #undef CHANNEL
 #undef CHARSET

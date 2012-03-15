@@ -313,7 +313,7 @@ voice::claim_all()
 		while (t->getline(l)) {
 			int a, b, d; char c;
 			if (sscanf(l, "%d %d %c %d\n", &a, &b, &c, &d) == 3) {
-				if (sl[a].pos != -1) shriek(861, "Multilabelled units unimplmd");
+				if (sl[a].pos != NO_SOUND_LABEL) shriek(861, "Multilabelled units unimplmd");
 				sl[a].pos = b;
 				sl[a].labl = c;
 			}

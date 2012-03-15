@@ -45,18 +45,18 @@ const double b[9] = {0.01477848982115,-0.08930749676388,0.25181616063735,-0.4384
 /* lp f0 contour filter coefficients (mean of 144 sentences from speaker Machac) */
 // const double lp[LP_F0_ORD] = {-1.23761, 0.60009, -0.32046, 0.10699};
 
-// these coeffs are from the version where the f0 has the same value over a syllable
+// these coeffs are from the version where the f0 is constant inside a syllable
 const double lp[LP_F0_ORD] = {-0.900693, 0.043125, -0.003700, 0.069916};
 // FIXME! lp coefficients must be configurable
 
 /* Hamming coefficients for TD-PSOLA algorithm */
-int hamkoe(int winlen, unsigned short *data, int e, int e_base)
+int hamkoe(int winlen, uint16_t *data, int e, int e_base)
 {
 	int i;
 	double fn;
 	fn = 2 * pii / (winlen - 1);
 	for (i=0; i < winlen; i++) {
-		data[i] = (unsigned short)((0.53999 - 0.46 * cos(fn * i)) * e / e_base * (1 << HAMMING_PRECISION));
+		data[i] = (uint16_t)((0.53999 - 0.46 * cos(fn * i)) * e / e_base * (1 << HAMMING_PRECISION));
 	}
 	return 0;
 }
@@ -90,18 +90,18 @@ int median(int prev, int curr, int next, int ibonus)
 /* Inventory file header structure */
 struct tdi_hdr
 {
-	int magic;
-	int samp_rate;
-	int samp_size;
-	int bufpos;
-	int n_segs;
-	int diph_offs;
-	int diph_len;
-	int res1;
-	int res2;
-	int ppulses;
-	int res3;
-	int res4;
+	int32_t  magic;
+	int32_t  samp_rate;
+	int32_t  samp_size;
+	int32_t  bufpos;
+	int32_t  n_segs;
+	int32_t  diph_offs;
+	int32_t  diph_len;
+	int32_t  res1;
+	int32_t  res2;
+	int32_t  ppulses;
+	int32_t  res3;
+	int32_t  res4;
 };
 
 tdpsyn::tdpsyn(voice *v)
@@ -114,15 +114,15 @@ tdpsyn::tdpsyn(voice *v)
 	hdr = (tdi_hdr *)tdi->data;
 	printf ("Got %d and config says %d\n", hdr->n_segs, v->n_segs);
 	if (v->n_segs != hdr->n_segs) shriek(463, "inconsistent n_segs");
-	if (sizeof(t_samp) != hdr->samp_size) shriek(463, "inconsistent samp_size");
-	tdp_buff = (t_samp *)(hdr + 1);
-	diph_offs = (int *)((char *)tdp_buff + sizeof(t_samp) * hdr->bufpos);
+	if (sizeof(SAMPLE) != hdr->samp_size) shriek(463, "inconsistent samp_size");
+	tdp_buff = (SAMPLE *)(hdr + 1);
+	diph_offs = (int *)((char *)tdp_buff + sizeof(SAMPLE) * hdr->bufpos);
 	diph_len = diph_offs + v->n_segs;
 	ppulses = diph_len + v->n_segs;
 
 	// this is debugging only!
 #if 1
-	printf ("Samples are %d long.\n", sizeof(t_samp) * hdr->bufpos);
+	printf ("Samples are %d long.\n", sizeof(SAMPLE) * hdr->bufpos);
 #endif
 
 	/* allocate the maximum necessary space for Hamming windows: */	
@@ -138,10 +138,10 @@ tdpsyn::tdpsyn(voice *v)
 
 	max_frame = MAX_OLA_FRAME;
 	
-	wwin = (unsigned short *)xmalloc(sizeof(unsigned short) * (max_frame * 2));
+	wwin = (uint16_t *)xmalloc(sizeof(uint16_t) * (max_frame * 2));
 	memset(wwin, 0, (max_frame * 2) * sizeof(*wwin));
 
-	out_buff = (t_samp *)xmalloc(sizeof(t_samp) * max_frame * 2);
+	out_buff = (SAMPLE *)xmalloc(sizeof(SAMPLE) * max_frame * 2);
 	memset(out_buff, 0, max_frame * 2 * sizeof(*out_buff));
 
 	/* initialisation of lp prosody engine */
@@ -198,7 +198,7 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 	int i, j, k, l, m, slen, nlen, pitch, avpitch, origlen, newlen, maxwin, skip, reply, diflen;
 	double outf0, synf0, exc;
 	static double old_exc = 0;
-	t_samp poms;
+	SAMPLE poms;
 	
 	const int max_frame = this->max_frame;
 	int pitch_saved = 0;
@@ -281,13 +281,13 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 		memcpy(out_buff + max_frame - pitch, out_buff + max_frame, pitch * sizeof(*out_buff));
 		memset(out_buff + max_frame, 0, max_frame * sizeof(*out_buff));
 		for (i = -maxwin;i <= maxwin; i++) {
-			long ttemp;
+			int ttemp;
 			poms = tdp_buff[i + ppulses[diph_offs[d.code] + j - 1]];
 			ttemp = wwin[i + pitch];
 			ttemp *= poms;
 			ttemp = ttemp >> HAMMING_PRECISION;
-			poms = (t_samp) ttemp;
-			//			poms = (t_samp)(wwin[i + pitch] * poms >> HAMMING_PRECISION);
+			poms = (SAMPLE) ttemp;
+			//			poms = (SAMPLE)(wwin[i + pitch] * poms >> HAMMING_PRECISION);
 //			poms = poms * d.e / 100;
 			out_buff[max_frame + i] += poms;
 		}
@@ -415,12 +415,6 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 				nlen = 1;
 			}
 			diflen = (newlen - origlen - (skip - 1) * slen * pitch / skip + (reply - 1) * slen * pitch) / nlen;
-			
-
 		}
-
-
-
-
 	}
 }

@@ -1294,3 +1294,17 @@ for an exciting story, just skip it.
 	- config.guess, config.sub updated
 	- option "downgradables" solves several parser limitations
 	- adapted doc/intro.sgml to get the history closer to current reality
+
+2.5.17 from 2.5.16	12.10.03
+	- struct cue_point: the "chunk" member fixed from int[4] to char[4]
+	- (Cz + Sk) abbrev.dic, abbrurl.dic -> spellout.dic, spellurl.dic
+	- (Cz) soft option diphtongs (no diphtongs for mbr-cz1)
+	- SAMPA alternates are named by the sampa_alts list
+	- list_of_calls()
+	- SAMPLE is now signed 16 bit, got rid of SIGNED_SAMPLE
+	- unified t_samp to SAMPLE; replaced "long" and "short" ints by C99
+	- (Cz) fixed n_segs in theimer.ini
+	- removed nnet.cc
+	- encode_to_sampa() renamed to decode_to_sampa() for consistency
+
+

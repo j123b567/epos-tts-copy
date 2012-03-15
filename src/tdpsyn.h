@@ -21,8 +21,6 @@
 #ifndef	EPOS_TDP_H
 #define	EPOS_TDP_H
 
-#define t_samp short
-
 #define LPC_PROS_ORDER 4
 #define MAX_OFILT_ORDER 9
 
@@ -34,13 +32,13 @@ int median(int lold, int lact, int lnext, int ibonus);
 class tdpsyn : public synth
 {
    private:
-	t_samp *tdp_buff;
-	t_samp *out_buff;
+	SAMPLE *tdp_buff;
+	SAMPLE *out_buff;
 	int *ppulses;
 	int *diph_offs;
 	int *diph_len;
 	int difpos;
-	unsigned short *wwin;
+	uint16_t *wwin;
 	double lpfilt[LPC_PROS_ORDER];
 	double ofilt[MAX_OFILT_ORDER];
 	double smoothfilt[MAX_OFILT_ORDER];

@@ -98,17 +98,17 @@ static int downsample_factor(int working, int out)
 //#pragma hdrstop
 
 // #define RIFF_HEADER_SIZE  8
-#define WAVE_HEADER_SIZE  ((long)(sizeof(wave_header) - RIFF_HEADER_SIZE))
+#define WAVE_HEADER_SIZE  ((int32_t)(sizeof(wave_header) - RIFF_HEADER_SIZE))
 
 
 struct cue_point
 {
-	int name;
-	int pos;
-	int chunk[4];
-	int chunkstart;
-	int blkstart;
-	int sample_offset;
+	int32_t name;
+	int32_t pos;
+	char chunk[4];
+	int32_t chunkstart;
+	int32_t blkstart;
+	int32_t sample_offset;
 };
 
 cue_point cue_point_template = { 0, 0, FOURCC_INIT("data"), 0, 0, 0 };
@@ -119,21 +119,21 @@ cue_point cue_point_template = { 0, 0, FOURCC_INIT("data"), 0, 0, 0 };
 struct ltxt
 {
 	char txt[4];
-	int len;
-	int cp_name;
-	int sample_count;
+	int32_t len;
+	int32_t cp_name;
+	int32_t sample_count;
 	char purpose[4];
-	short country;
-	short language;
-	short dialect;
-	short codepage;
+	int16_t country;
+	int16_t language;
+	int16_t dialect;
+	int16_t codepage;
 };
 
 struct labl
 {
 	char txt[4];
-	long len;
-	long cp_name;
+	int32_t len;
+	int32_t cp_name;
 };
 
 
@@ -520,21 +520,15 @@ wavefm::band_filter(int ds)
 	for (i = 0; i < 9; i++) filt[i] = 0;
 
 	for (i = 0; i < hdr.buffer_idx; i++) {
-		filt[0] = (double)(SIGNED_SAMPLE)buffer[i];
+		filt[0] = (double)buffer[i];
 		for (j=1;j<9;filt[0]=filt[0]-a[ds-2][j]*filt[j++]);
 		double outsamp = 0;
 		for (j=0;j<9;outsamp=outsamp+b[ds-2][j]*filt[j++]);
 //		printf("%d %f        ", buffer[i], (float)outsamp);
-		buffer[i] = (SAMPLE)(SIGNED_SAMPLE)outsamp;
+		buffer[i] = (SAMPLE)outsamp;
 		for (j=8;j>0;j--) filt[j]=filt[j-1];		//FIXME: speed up
 	}
 }
-
-
-
-// #define put_sample_8(sample)  *newbuff++ = (char)sample
-// #define put_sample_16(sample) *(unsigned short *)newbuff = sample, newbuff += 2
-// #define put_sample(sample) if (eight_bit) put_sample_8(sample); else put_sample_16(sample)
 
 #define put_sample(sample) *(int *)newbuff = sample, newbuff += ssbytes;
 

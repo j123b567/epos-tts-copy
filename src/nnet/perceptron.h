@@ -244,7 +244,7 @@ private:
 	int iData;
 
 	time_t startTime;
-	long lastBackupTime, lastGoalWrite;
+	int lastBackupTime, lastGoalWrite;
 	double bestError, currentError;
 	bang_ofstream errorLog;
 	/// local variables used in iterations

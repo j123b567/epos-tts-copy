@@ -81,7 +81,7 @@ struct hsearchtree {
 	key_t *key;
 	data_t *data;
 	hsearchtree<hash_key_t, hash_data_t> *l,*r;
-	short int height;
+	/* short */ int height;
 };
 
 
@@ -509,15 +509,15 @@ hash::update(char *filename, bool keep_backup, bool remove_removed)
 
 /****************************************************************************
  hash::fn - the hash function
- 	Exactly one of the long three lines will actually be used, 
- 	the other cases are expected to be optimized out.
+ 	Exactly one of the conditional lines will actually be used, 
+ 	the other case is expected to be optimized out.
  ****************************************************************************/
 
 template <class key_t, class data_t>
 inline int 
 hash_table<key_t, data_t>::fn(const key_t *key)
 {
-	unsigned int j=0;              //should be long for big tables
+	unsigned int j=0;
 	const char *p;
 	
 	if (key_t_is_string) for (p = (char *)key; *p; p++) j = 23*j+*p;

@@ -580,6 +580,14 @@ bool set_option(epos_option *o, const char *val, void *base)
 			set_enum_option<OUT_ML>(o, val, OUT_MLstr, locus);
 			D_PRINT(1, "Markup language option set to %i\n",*(int*)locus);
 			break;
+		case O_SALT:
+			if (!strcmp(val, "SAMPA")) *(int *)locus = 0;
+			else {
+				set_enum_option<int>(o, val, scfg->sampa_alts, locus);
+				(*(int *)locus)++;
+			}
+			D_PRINT(1, "Sampa alternate option set to %i\n",*(int*)locus);
+			break;
 		case O_SYNTH:
 			set_enum_option<SYNTH_TYPE>(o, val, STstr, locus);
 			D_PRINT(1, "Synthesis type option set to %i\n",*(int*)locus);
@@ -723,6 +731,10 @@ const char *format_option(epos_option *o, void *base)
 			return *(bool *)locus ? "on" : "off";
 		case O_MARKUP:
 			return enum2str(*(int *)locus, OUT_MLstr);
+		case O_SALT:
+			if (!*(int *)locus)
+				return "SAMPA";
+			return enum2str(*(int *)locus - 1, scfg->sampa_alts);
 		case O_SYNTH:
 			return enum2str(*(int *)locus, STstr);
 		case O_UNIT:
@@ -909,7 +921,7 @@ void load_config(const char *filename)
 	load_config(filename, scfg->ini_dir, "config", OS_CFG, cfg, NULL);
 }
 
-static inline void add_language(const char *lng_name)
+static inline void add_language(int, const char *lng_name)
 {
 	char *filename = (char *)xmalloc(strlen(lng_name) + 6);
 	char *dirname = (char *)xmalloc(strlen(lng_name) + 6);
@@ -929,20 +941,7 @@ static inline void add_language(const char *lng_name)
 
 static inline void load_languages(const char *list)
 {
-	int i;
-	int j=0;
-	char *tmp = (char *)xmalloc(strlen(list)+1);
-
-
-	for (i=0; (tmp[j] = list[i]); i++) {
-		if (tmp[j] == ':' ) {
-			tmp[j] = 0;
-			add_language(tmp);
-			j = 0;
-		} else j++;
-	}
-	add_language(tmp);
-	free(tmp);
+	list_of_calls(list, add_language);
 }
 
 void set_base_dir(char *basedir)
@@ -967,6 +966,7 @@ static char opttype_letter(OPT_TYPE ot)
 		case O_LANG:
 		case O_VOICE:
 		case O_CHARSET:
+		case O_SALT:
 			return 'l';
 		case O_MARKUP:
 		case O_SYNTH:

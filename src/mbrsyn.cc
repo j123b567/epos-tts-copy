@@ -53,7 +53,7 @@ mbrsyn::restart_mbrola(voice *v)
 		inv_pathname = compose_pathname(v->models, v->loc, scfg->inv_base_dir);
 		mbrola_binary = compose_pathname(cfg->mbrola_binary, v->loc, scfg->inv_base_dir);
 		if (execl(mbrola_binary, mbrola_binary, "-e", inv_pathname, "-", "-.wav", NULL))
-			shriek(463, "Failed to exec mbrola");
+			shriek(463, "Failed to exec mbrola %s with voice %s", mbrola_binary, inv_pathname);
 		break;
 	default:
 		there = p[1];
@@ -89,6 +89,9 @@ mbrsyn::synssif(voice *v, char *b, wavefm *w)
 	do {
 		offset += l;
 		l = write(there, b + offset, strlen(b + offset));
+//		if (l == -1)
+//			shriek(461, "Apparently MBROLA didn't start\n");
+		D_PRINT(1, "Sent %d bytes to MBROLA\n", l);
 	} while (l < (int)strlen(b + offset));
 
 	close(there);
@@ -98,6 +101,7 @@ mbrsyn::synssif(voice *v, char *b, wavefm *w)
 		if (l == -1) l = 0;
 		offset += l;
 		l = read(back, wb + offset, 1024 * 256 - offset);
+		D_PRINT(1, "Received %d bytes from MBROLA\n", l);
 	} while (l > 0);
 
 	close(back);

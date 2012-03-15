@@ -24,13 +24,14 @@ void Log (const CString &str)
 
 void LogError (const CString &str) { Log (CString("Error: ") + str); }
 
-
-CString toString (long x, int, bool)
+#if 0
+CString toString (int x, int, bool)
 {
 	char tmp[100];
 	sprintf(tmp,"%li",x); // itoa not found on Irix, paja
 	return tmp;
 }
+#endif
 
 CString findFileName (CString mask)
 {

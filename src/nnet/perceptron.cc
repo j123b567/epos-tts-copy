@@ -197,9 +197,9 @@ void CPerceptronNN::initConAttribs ()
 		setPercent (sto[1], layerSizes[recs->end.layer] - 1);
 		setPercent (sfrom[1], layerSizes[recs->end.layer] - 1);
 		from[0] = sfrom[0] + layerStarts[recs->start.layer];
-		to[0] = Min/*<int>*/ ((long) (sto[0] + layerStarts[recs->start.layer]),(long)( neuronCount-1 ));
+		to[0] = Min/*<int>*/ ((int) (sto[0] + layerStarts[recs->start.layer]),(int)( neuronCount-1 ));
 		from[1] = sfrom[1] + layerStarts[recs->end.layer];
-		to[1] = Min/*<int>*/ ((long) (sto[1] + layerStarts[recs->end.layer]),(long)( neuronCount-1 ));
+		to[1] = Min/*<int>*/ ((int) (sto[1] + layerStarts[recs->end.layer]),(int)( neuronCount-1 ));
 
 			// irix CC doesn't allow the type info after Min
 

@@ -74,7 +74,7 @@ struct lang : public cowabilium
 
 struct sound_label
 {
-	short int pos;
+	int16_t pos;
 	char labl;
 };
 

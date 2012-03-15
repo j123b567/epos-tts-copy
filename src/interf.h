@@ -68,6 +68,7 @@ extern char *scratch;
 FIT_IDX fit(char c);		 // converts 'f', 'i' or 't' to 0, 1 or 2, respectively
 UNIT str2enum(const char *item, const char *list, int dflt);
 const char *enum2str(int item, const char *list);
+void list_of_calls(const char *list, void call(int, const char *));
 // hash *str2hash(const char *list, unsigned int max_item_len);
 unit *str2units(const char *text);
 //char *fntab(const char *s, const char *t); //will calloc and return 256 bytes not freeing s,t
@@ -99,7 +100,7 @@ class unit;
 void process_segments(unit *root);
 
 struct segment {
-	short code;
+	int16_t code;
 	char nothing;
 	char ll;
 	int f,e,t;

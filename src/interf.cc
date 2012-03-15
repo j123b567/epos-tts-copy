@@ -304,6 +304,26 @@ const char *enum2str(int item, const char *list)
 	return NULL;	// shriek(446, "enum2str should stringize %d",item);
 }
 
+void list_of_calls(const char *list, void call(int, const char *))
+{
+	int i;
+	int j = 0;
+	int k = 0;
+	char *tmp = (char *)xmalloc(strlen(list)+1);
+
+
+	for (i=0; (tmp[j] = list[i]); i++) {
+		if (tmp[j] == ':' ) {
+			tmp[j] = 0;
+			call(k, tmp);
+			j = 0;
+			k++;
+		} else j++;
+	}
+	call(k, tmp);
+	free(tmp);
+}
+
 /*************
 
 hash *str2hash(const char *list, unsigned int max_item_len)
@@ -623,13 +643,12 @@ void epos_init()	 //Some global sanity checks made here
 	if (!scfg->loaded)cfg->stddbg = stdout,
 				cfg->stdshriek = stderr;
 	if (sizeof(int)<4*sizeof(char) || sizeof(int *)<4*sizeof(char)) 
-		shriek (862, "You dwarf! I want at least 32 bit arithmetic & pointery [%d]", sizeof(int));
+		shriek (862, "I need at least 32 bit arithmetic & pointery [%d]", sizeof(int));
 	if (sizeof(int) > sizeof(void *)) shriek(862, "Your integers are longer than pointers!\n"
 				"Turn hash_table::forall() fns in hash.h the other way round.");
 	if ((unsigned char)-1 != 255) shriek(862, "Your chars are not 8-bit? Funny.");
-	if (sizeof(unsigned short int) != 2) shriek(862, "Short ints not short enough");
-	if (*(short int *)"wxyz" == 256 * 'w' + 'x') scfg->_big_endian = true;
-	if (*(short int *)"wxyz" != 256 * 'x' + 'w' && !scfg->_big_endian) shriek(862,
+	if (*(int16_t *)"wxyz" == 256 * 'w' + 'x') scfg->_big_endian = true;
+	if (*(int16_t *)"wxyz" != 256 * 'x' + 'w' && !scfg->_big_endian) shriek(862,
 				"Not little-endian nor big-endian. Whew!");
 
 #ifdef HAVE_TIME_H

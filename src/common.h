@@ -35,6 +35,17 @@
 #include <stdlib.h>           // just exit() in shriek(), malloc &co...
 #include <stdarg.h>
 
+#ifdef HAVE_STDINT_H
+	#include <stdint.h>
+#else
+	/* the following list is probably incomplete/buggy, please
+	   report any ports which do need to actually use this     */
+	typedef short int int16_t
+	typedef int int32_t
+	typedef unsigned short int uint16_t
+	typedef unsigned int uint32_t
+#endif
+
 #ifdef HAVE_STRING_H
 	#include <string.h>
 #else
@@ -140,7 +151,6 @@ typedef char wchar;
 #else
 	#define socky signed
 #endif
-
 
 #endif   //#ifndef EPOS_COMMON_H
 

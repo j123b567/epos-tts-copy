@@ -108,7 +108,7 @@ make_tree (TTypedValue val = TTypedValue())
 //%raw bison nefunguje s raw! (aspon yylex ne)
 
 %union {
-	long int int_val;
+	int int_val;
 	double float_val;
 	char string_val [MSG_LENGTH];
 	unit *unit_val;

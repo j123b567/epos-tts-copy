@@ -50,7 +50,7 @@ bool CTrainingData::moveToRow (CInt row) const
 	return true;
 }
 
-long CTrainingData::getSeriesCount(enumSetType set) const
+int CTrainingData::getSeriesCount(enumSetType set) const
 {
 	int iser=0;
 	if (!series) return 0;

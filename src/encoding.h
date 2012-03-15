@@ -35,7 +35,7 @@
 	inline void encode_string(char *s, int cs, bool alloc) { encode_string((unsigned char *)s, cs,alloc); }
 	inline void decode_string(char *s, int cs) { decode_string((unsigned char *)s, cs); }
 
-	const char *encode_to_sampa(unsigned char c, int sampa_alt);
+	const char *decode_to_sampa(unsigned char c, int sampa_alt);
 	void update_sampa();
 
 	int get_count_allocated();
@@ -51,7 +51,7 @@
 	inline void decode_string(char *, int)		{ return; };
 	inline int get_count_allocated()		{ return 256; };
 	inline void shutdown_enc()			{ return; };
-	const char *encode_to_sampa(unsigned char c, int sampa_alt);
+	const char *decode_to_sampa(unsigned char c, int sampa_alt);
 	void update_sampa()				{ return; };
 
 #endif

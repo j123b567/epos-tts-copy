@@ -24,10 +24,10 @@ template<class T> inline T sqr (T x) {
 template<class T> inline T Max (const T &x, const T &y) { return x > y ? x : y; }
 template<class T> inline T Min (const T &x, const T &y) { return x < y ? x : y; }
 
-CString toString (const long x, int dummy=0, bool dummy1=0);
+// CString toString (const long x, int dummy=0, bool dummy1=0);
 /** You may specify the number of decimal places, -1 means all */
 CString toString (const double x, int decimalPlaces=-1, bool forceDecimalPoint=false);
-inline CString toString (const int x, int dummy=0, bool dummy1=0) { return toString ((long) x); }
+// inline CString toString (const int x, int dummy=0, bool dummy1=0) { return toString ((long) x); }
 inline CString toString (const CString &x, int dummy=0, bool dummy1=0) { return x; }
 
 inline CString toString (double x, int decimalPlaces, bool forceDecimalPoint)
@@ -66,7 +66,7 @@ CString findFileName (CString mask);
 CString findFirstFileName (CString mask);
 
 inline void fromString (CString x, double &y)	{ y = atof (x.c_str()); } 
-inline void fromString (CString x, long &y)	{ y = atoi (x.c_str()); }
+inline void fromString (CString x, int &y)	{ y = atoi (x.c_str()); }
 
 template<class Titer, class T> inline int findIndex (const Titer & begin, const Titer & end, const T & x)
 {
@@ -91,7 +91,7 @@ template<class Titer> CString join (const Titer & begin, const Titer & end, cons
 TVectorString split(const CString s, const CString &delim, bool allowEmpty=true); 
 
 // negative number means size in percent
-template<class T> void setPercent (T &x, long count)
+template<class T> void setPercent (T &x, int count)
 {
 	if (x < (T)0) x = x * count / -100;
 }

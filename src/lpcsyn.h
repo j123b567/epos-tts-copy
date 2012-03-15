@@ -35,7 +35,7 @@ struct model
 class lpcsyn : public synth
 {
 	int ipitch, lastl;
-	long iyold, ifilt[8], kyu;
+	int iyold, ifilt[8], kyu;
 	int nvyrov, lold;
    protected:
 	file *seg_len;
@@ -53,8 +53,8 @@ class lpcsyn : public synth
 class lpcint : public lpcsyn
 {
 //	cmodel *cmodely;
-	short int *kor_t;
-	short int *kor_i;
+	int16_t *kor_t;
+	int16_t *kor_i;
    public:
 	lpcint(voice *v);
 	void adjust(segment d);
@@ -65,8 +65,8 @@ class lpcint : public lpcsyn
 class lpcfloat : public lpcsyn
 {
 //	fcmodel *fcmodely;
-	short int *kor_t;
-	short int *kor_i;
+	int16_t *kor_t;
+	int16_t *kor_i;
 	float *fkor_t;
 	float *fkor_i;
    public:
@@ -76,9 +76,7 @@ class lpcfloat : public lpcsyn
 
 class lpcvq : public lpcsyn
 {
-//	vqmodel *vqmodels;
-	short int *ener;
-//	short int (*codebook)[8];
+	int16_t *ener;
 	file *codebook;
    public:
 	lpcvq(voice *v);

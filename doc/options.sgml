@@ -761,6 +761,13 @@ unless specified otherwise.
 	language name, while the directory name matches the language name and is
 	located under the directory as determined by the <tt/lang&lowbar;base&lowbar;dir/
 	option.	 The first language listed will become the default language.
+<tag>--sampa&lowbar;alts <sl/list/</tag>
+	Lists the alternate encodings of SAMPA (i.e. non-SAMPA SAMPA-like
+	notations used by people e.g. for languages where SAMPA is not
+	or was not available at the moment it was needed).  The parameter
+	is a colon separated list of strings.  Every alternate encoding
+	has its associated <tt/sampa-alt-XXX.txt/ file where the <tt/XXX/
+	comes from this list.  These encodings are loaded at Epos startup.
 
 </descrip>
 
@@ -1247,14 +1254,14 @@ option is also language dependent.
 	is turned on, this option set the number of bits per channel.
 	Again, this is related to the quality of recording of the
 	segment inventory.  We currently only support 8 and 16 bits.
-<tag>--sampa&lowbar;alternate <sl/n/</tag>
+<tag>--sampa&lowbar;alternate <sl/name/</tag>
 	For MBROLA voices, you can indicate non-standard SAMPA
-	variants here; zero means the standard SAMPA; for voices
+	variants here; the value of <tt/SAMPA/ means the standard SAMPA; for voices
 	where there is no SAMPA notation fixed yet, this
-	parameter should be non-zero.  The alternative SAMPA
+	a different name should be used.  The alternative SAMPA
 	mapping to Unicode will be loaded from file
-	<tt/sampa-n.txt/ where <tt/n/ is specified by this
-	parameter, or <tt/sampa-std.txt/ if <tt/n/ is zero.
+	<tt/sampa-alt-name.txt/ where <tt/name/ is specified by this
+	parameter, or <tt/sampa-std.txt/ if it is specified as <tt/SAMPA/.
 </descrip>
 
 

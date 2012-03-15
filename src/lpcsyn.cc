@@ -50,23 +50,23 @@ const int minsynt=23;
 
 struct cmodel
 {
-	short int rc[8];
-	short int ener;
-	short int incrl;
+	int16_t  rc[8];
+	int16_t  ener;
+	int16_t  incrl;
 };               // model for integer synthesis
 
 struct fcmodel
 {
 	float rc[8];
 	float ener;
-	int   incrl;
+	int32_t   incrl;
 };              // model for float synthesis
 
 struct vqmodel
 {
-	short int adrrc;
-	short int adren;
-	short int incrl;
+	int16_t  adrrc;
+	int16_t  adren;
+	int16_t  incrl;
 };              // model for vector quantised synthesis
 
 
@@ -171,6 +171,7 @@ void lpcsyn::synseg(voice *v, segment d, wavefm *w)	// voice not used
 	D_PRINT(1, "lpcsyn processing another segment\n");
 //	d.eproz=(d.eproz-100) / 9 + (cfg->ti_adj ? kor_i[d.hlaska]-15 : 0);
 	lincr=0;
+	if (d.code > v->n_segs) shriek(463, "Segment number %d occurred, but the maximum is %d\n", d.code, v->n_segs);
 	numodel=(int)seg_len->data[d.code];	// cast to unsigned char * before [] if problems
 	if(!numodel) {
 		D_PRINT(3, "Unknown segment %d, %3s\n", d.code, d.code < v->n_segs ? "in range" : "out of range");
@@ -218,7 +219,7 @@ void lpcvq::frobmod(int imodel, segment d, model *m, int &incrl, int &znely)
 {
 	int i;
 	vqmodel *vqm = (vqmodel *)models->data + seg_offs[d.code] + imodel;
-	short int (*cbook)[8] = (short int (*)[8])codebook->data;
+	int16_t (*cbook)[8] = (int16_t (*)[8])codebook->data;
 
 	incrl = vqm->incrl == 999 ? 0 : -vqm->incrl;
 //	if(vqmodels[seg_offs[d.code]+imodel].incrl == 999) incrl = 0;
@@ -283,7 +284,7 @@ void vqoven(char *, int)
 	shriek(462, "no vq inventories on big-endians, please");
 }
 
-void bswap(short *p)
+void bswap(int16_t  *p)
 {
 	*p = ((*p & 255) << 8) | (*p >> 8);
 }
@@ -291,7 +292,7 @@ void bswap(short *p)
 void shortoven(char *p, int l)
 {
 	if (!scfg->_big_endian) return;
-	for (short *tmp = (short *)p; (char *)tmp < p + l; tmp++) {
+	for (int16_t *tmp = (int16_t *)p; (char *)tmp < p + l; tmp++) {
 		bswap(tmp);
 	}
 }
@@ -308,9 +309,9 @@ lpcint::lpcint(voice *v) : lpcsyn(v)
 // 	cmodely = (cmodel *)freadin(v->models, v->inv_dir, "rb", "integer inventory");
 #if 0
 	if (cfg->ti_adj) { //Needs some more hacking before use -- twice in this file
-//	    kor_t = (short int *)freadin("korekce.set", v->inv_dir, "rb", "integer inventory");
+//	    kor_t = (int16_t *)freadin("korekce.set", v->inv_dir, "rb", "integer inventory");
 		shriek(462, "Remove the comment above this message and adapt the line to claim()/unclaim(), then remove this shriek()");
-	    kor_i = (short int *)(v->n_segs*2 + (char *)kor_t);
+	    kor_i = (int16_t *)(v->n_segs*2 + (char *)kor_t);
 	}
 #endif
 	models = claim(v->models, v->loc, scfg->inv_base_dir, "rb", "lpc inventory", intoven);
@@ -318,10 +319,8 @@ lpcint::lpcint(voice *v) : lpcsyn(v)
 
 lpcvq::lpcvq(voice *v) :lpcsyn(v)
 {
-//	codebook = (short int (*)[8])freadin(v->book, v->inv_dir, "rb", "vector quant synthesis");
 	codebook = claim(v->book, v->loc, scfg->inv_base_dir, "rb", "vector quant synthesis codebook", shortoven);
-	ener = (short int *)(256*16 + (char *)codebook->data);
-//	vqmodels = (vqmodel *)freadin(v->models, v->inv_dir, "rb", "vector quant synthesis");
+	ener = (int16_t *)(256*16 + (char *)codebook->data);
 	models = claim(v->models, v->loc, scfg->inv_base_dir, "rb", "lpc inventory", vqoven);
 }
 

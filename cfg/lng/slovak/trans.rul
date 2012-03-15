@@ -54,7 +54,7 @@ regress  lr>\X\Y(0_!)
 near  *!\Wlr$vowel$VOWEL	word	phone
 {
 	regress ${lower_case}>${upper_case}(!_!) word
-	subst abbrurl.dic			 word
+	subst spellurl.dic			 word
 }
 regress  \W>0(!_!)
 regress  \X\Y>lr(0_!)
@@ -68,7 +68,7 @@ if	spellout
 	progress ${lower_case}>${upper_case}(\Y${upper_case}_!)
 	regex	/\Y/./		text
 }
-subst	 abbrevs.dic							colon
+subst	 spellout.dic							colon
 regress  ${upper_case}>${lower_case}($everywhere)			colon
 
 @include "numerals.rul"

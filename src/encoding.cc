@@ -30,9 +30,9 @@ wchar_t **charsets = 0;			/* charset to unicode */
 unsigned char **encoders = 0;		/* charset to Epos */
 unsigned char **decoders = 0;		/* Epos to charset */
 
-#define MAX_SAMPA_ALTS	2
-#define MAX_SAMPA_ENC	4
-char sampa[MAX_SAMPA_ALTS][256][MAX_SAMPA_ENC];
+int max_sampa_alts = 0;		// means: not even sampa-std.txt
+#define MAX_SAMPA_ENC	4	// max ASCII chars per SAMPA char
+char (*sampa)[256][MAX_SAMPA_ENC] = NULL;
 					/* Epos to SAMPA */
 
 bool sampa_updated = false;
@@ -136,7 +136,7 @@ int get_count_allocated()
 	return result;
 }
 
-void encode_string(unsigned char *s, int cs, bool alloc)
+static void encode_from_8bit(unsigned char *s, int cs, bool alloc)
 {
 
 	do {
@@ -158,13 +158,23 @@ void encode_string(unsigned char *s, int cs, bool alloc)
 	} while (*s++);
 }
 
-void decode_string(unsigned char *s, int cs)
+void encode_string(unsigned char *s, int cs, bool alloc)
+{
+	encode_from_8bit(s, cs, alloc);
+}
+
+static void decode_to_8bit(unsigned char *s, int cs)
 {
 	do {
 		int t = decoders[cs][*s];
 		if (t == UNDEFINED && *s) shriek(461, "Character '%c', code %d infiltrated internal encoding", *s);
 		else *s = t;
 	} while (*s++);
+}
+
+void decode_string(unsigned char *s, int cs)
+{
+	decode_to_8bit(s, cs);
 }
 
 
@@ -184,9 +194,9 @@ void alloc_charset(const char *name)
 	int idx = charset_list_len;
 	charset_list_len++;
 	
-	encoders = (unsigned char **)realloc(encoders, charset_list_len * sizeof(unsigned char *));
-	decoders = (unsigned char **)realloc(decoders, charset_list_len * sizeof(unsigned char *));
-	charsets = (wchar_t **)realloc(charsets, charset_list_len * sizeof(wchar *));
+	encoders = (unsigned char **)xrealloc(encoders, charset_list_len * sizeof(unsigned char *));
+	decoders = (unsigned char **)xrealloc(decoders, charset_list_len * sizeof(unsigned char *));
+	charsets = (wchar_t **)xrealloc(charsets, charset_list_len * sizeof(wchar *));
 
 	encoders[idx] = (unsigned char *)xmalloc(256);
 	decoders[idx] = (unsigned char *)xmalloc(256);
@@ -245,13 +255,20 @@ void load_default_charset()
 	}
 }
 
-void update_sampa(int alt, const char *filename)
+static void load_sampa(int alt, const char *filename)
 {
+
+	if (alt >= max_sampa_alts) {
+		max_sampa_alts = alt + 1;
+		if (!sampa) sampa = (char (*)[256][MAX_SAMPA_ENC])xmalloc(256 * MAX_SAMPA_ENC * alt);
+		sampa = (char (*)[256][MAX_SAMPA_ENC])xrealloc(sampa, max_sampa_alts * 256 * MAX_SAMPA_ENC);
+	}
+
 	D_PRINT(3, "Loading %sSAMPA mappings\n", alt ? "alternate " : "");
 	text *t = new text(filename, scfg->unimap_dir, "", NULL, true);
 	if (!t->exists()) {
 		delete t;
-		shriek(844, "Couldn't find the SAMPA map");
+		shriek(844, "Couldn't find the SAMPA map %s", filename);
 	}
 //	t->raw = true;
 	char *line = (char *)xmalloc(scfg->max_line);
@@ -270,27 +287,34 @@ void update_sampa(int alt, const char *filename)
 	delete t;
 }
 
+static void add_alt_sampa(int alt, const char *name)
+{
+	char filename[300];
+	if (strlen(name) > 256)
+		return;
+	sprintf(filename, "sampa-alt-%s.txt", name);
+	load_sampa(alt + 1, filename);
+}
+
 void update_sampa()
 {
-	char filename[20];
-	for (int i = 0; i < MAX_SAMPA_ALTS; i++) {
-		sprintf(filename, "sampa-%d.txt", i);
-		update_sampa(i, i ? filename : "sampa-std.txt");
-	}
+	load_sampa(0, "sampa-std.txt");
+	if (scfg->sampa_alts) list_of_calls(scfg->sampa_alts, add_alt_sampa);
 	sampa_updated = true;
 }
 
-const char *encode_to_sampa(unsigned char c, int sampa_alt)
+const char *decode_to_sampa(unsigned char c, int sampa_alt)
 {
-	const char *ret = sampa[sampa_alt][c];
 	const char *nothing = "_";
 
-	if (sampa_alt < 0 || sampa_alt >= MAX_SAMPA_ALTS) return nothing;
 	if (!sampa_updated) update_sampa();
+	if (sampa_alt < 0 || sampa_alt >= max_sampa_alts) return nothing;
+
+	const char *ret = sampa[sampa_alt][c];
 	if (*ret) {
 		return ret;
 	} else {
-		if (cfg->paranoid) return nothing;
+		if (!cfg->paranoid || 1) return nothing;	// FIXME
 		else shriek(462, "Character code %d has no SAMPA representation\n", c);
 	}
 }

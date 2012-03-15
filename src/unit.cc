@@ -172,7 +172,7 @@ unit::write_segs(segment *whither, int first, int n)
  
 int
 unit::write_ssif_head(char *whither) {
-	return sprintf(whither, "%.3s %d ", encode_to_sampa(cont, this_voice->sampa_alt), effective(Q_TIME));
+	return sprintf(whither, "%.3s %d ", decode_to_sampa(cont, this_voice->sampa_alt), effective(Q_TIME));
 }
 
 
@@ -1658,10 +1658,10 @@ unit::sanity()
 	if (lastborn && lastborn->prev && !m->disjoint(lastborn->prev->m)) insane("disjointness problem");
 
         if (scfg->allpointers) return;
-	if (prev && (unsigned long int) prev<0x8000000) insane("prev");
-	if (next && (unsigned long int) next<0x8000000)  insane("next");
-	if (firstborn && (unsigned long int) firstborn<0x8000000) insane("firstborn");
-	if (lastborn && (unsigned long int) lastborn<0x8000000)  insane("lastborn");
+	if (prev && (unsigned int) prev<0x8000000) insane("prev");
+	if (next && (unsigned int) next<0x8000000)  insane("next");
+	if (firstborn && (unsigned int) firstborn<0x8000000) insane("firstborn");
+	if (lastborn && (unsigned int) lastborn<0x8000000)  insane("lastborn");
 }
 
 void
@@ -1685,5 +1685,4 @@ unit::neural (UNIT target, CNeuralNet *neuralnet)
 	neuralnet->run (this);
 }
 
-// #include "nnet.cc"
 
