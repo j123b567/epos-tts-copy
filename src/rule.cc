@@ -362,7 +362,7 @@ static regex_t *regex_from_hash(hash *h)
 	b.offset = 0;
 	h->forall(append_to_regex, &b);
 	if (b.offset > 2) b.buffer[b.offset - 2] = 0;
-	DO_PRINT(1, "Fastmatch regex: %s\n", b);
+	D_PRINT(1, "Fastmatch regex: %s\n", b);
 	regex_t *r = (regex_t *)xmalloc(sizeof(regex_t));
 	int status = regcomp(r, b.buffer, 0);
 	if (status) {

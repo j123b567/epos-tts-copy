@@ -1029,7 +1029,7 @@ unit::analyze(UNIT target, hash *table, int unanal_unit_penalty, int unanal_part
 
 	int l;
 	char *b = gather(false, false);
-	l = gbsize;
+	l = gblen;
 	if (++l > vb_size) {
 		vb_size = l;
 		D_PRINT(1, "Growing Viterbi buffer to %d items\n", vb_size);
@@ -1046,13 +1046,16 @@ unit::analyze(UNIT target, hash *table, int unanal_unit_penalty, int unanal_part
 			char *r = j >= i - table->longest ? table->translate(b + j) : 0;
 			int badness = r ? atoi(r)
 				: (i - j) * unanal_unit_penalty + unanal_part_penalty;
+			D_PRINT(0, "Having a string from %d to %d would bring badness %d + %d\n", j, i, vb[j].badness, badness);
 			badness += vb[j].badness;
 			if (badness < vb[i].badness) {
+				D_PRINT(0, "Found an improvement over %d at position %d\n", vb[i].badness, i);
 				vb[i].badness = badness;
 				vb[i].last_len = i - j;
 			}
 		}
 		b[i] = tmp;
+		D_PRINT(0, "Optimum way for arriving at position %d is to start at %d and get %d\n", i, i - vb[i].last_len, vb[i].badness);
 	}
 
 	int n = 0;	

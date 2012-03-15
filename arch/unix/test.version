@@ -30,4 +30,11 @@
 	echo -n "CHECKMEs left: "
 	grep -n CHECKME $distdir/*/* |wc -l
 
+	if grep -n "^[^/]*DO_PRINT.*(" $distdir/*/*[ch] 2>&1 >/dev/null; then
+		echo ""
+		echo "You are not allowed to keep DO_PRINTs in a distribution."
+		echo ""
+		return 1
+	fi
+
 	$distdir/arch/unix/test.optdoc

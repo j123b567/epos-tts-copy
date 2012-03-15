@@ -1423,3 +1423,8 @@ in this way much more often than explicitly indicated here.     ]
 2.5.25 from 2.5.24	25.2.05
 	- fastmatch initialization fixed to be linear in dictionary size
 	- better error handling if fastmatch regex doesn't compile
+
+2.5.26 from 2.5.25	26.2.05
+	- morphoanalyzer fix - used to be confused by buffer space past the input
+	- DO_PRINTs not allowed by a  make distcheck
+
