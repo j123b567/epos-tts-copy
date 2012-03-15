@@ -8,8 +8,9 @@ EASY_INSTALL = cfg lng voice mappings ttscp root
 version: $(top_srcdir)/configure.in
 	@echo $(VERSION) > version
 
-install-data-hook:
-	cd $(srcdir) && find $(EASY_INSTALL) -type d -exec $(INSTALL_DATA) -d $(pkgdatadir)/{} \;
+install-data-local:
+	$(INSTALL_DATA) -d $(pkgdatadir)/root
+	cd $(srcdir) && find $(EASY_INSTALL) -type d -exec $(INSTALL_DATA) -d -m 755 $(pkgdatadir)/{} \;
 	cd $(srcdir) && find $(EASY_INSTALL) -type f -exec $(INSTALL_DATA) $(srcdir)/{} $(pkgdatadir)/{} \;
 
 EXTRA_DIST = $(pkgdata_DATA) $(EASY_INSTALL)
