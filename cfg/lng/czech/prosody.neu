@@ -10,7 +10,7 @@
 			<empty value="0"/>
 		</default>
 		<char2float value="sonority">
-			<chars value="1"><src value="$diphtong"/></chars>
+			<chars value="1"><src value="$diphthong"/></chars>
 			<chars value="0.9"><src value="$long"/></chars>
 			<chars value="0.8"><src value="$short"/></chars>
 			<chars value="0.7"><src value="$sonant$SONANT"/></chars>

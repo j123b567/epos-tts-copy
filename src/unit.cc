@@ -781,13 +781,16 @@ unit::relabel(hash *table, regex_t *fastmatch, SUBST_METHOD method, UNIT target)
 				for (char *p = gb + len - i; p >= gb; p--) {
 					char tmp = p[i];
 					p[i] = 0;
+					D_PRINT(0, "Try recoding a substring: %s\n", p);
 					r = table->translate(p);
 					p[i] = tmp;
 					if (r) {
-						i -= (p == gb);
-						p += (p == gb);
-						if (cfg->paranoid && strlen(r) - i)
-							shriek(462, "Substitute length differs: beginning of '%s' to '%s'", p, r);
+						i -= (p == gb);			// ^
+						p += (p == gb);			// ^
+						i -= (p + i == gb + len);	// $
+						D_PRINT(0, "Match found: %s, length %d\n", r, i);
+						if (strlen(r) - i)
+							shriek(462, "Substitute length differs: '%s' to '%s'", p, r);
 						memcpy(p, r, strlen(r));
 						goto break_home;
 					}
@@ -933,8 +936,10 @@ unit::assim(UNIT target, bool backwards, charxlat *fn, charclass *left, charclas
 void 
 unit::split(unit *before)
 {
-	if (before->father != this) {
-		before->father->split(before);
+	if (before->father != this) {	// this handles multi-level splits
+		if (before->prev) {
+			before->father->split(before);
+		}
 		split(before->father);
 		return;
 	}
@@ -945,7 +950,7 @@ unit::split(unit *before)
 	DBG(1, fout(NULL);)
 	clone->scope=false;
 	if(!(lastborn=before->prev))
-		shriek (463, "Attempted splitting a unit just at its boundary");
+		shriek (463, "Attempted to split a unit at its present boundary");
 	before->prev=NULL;
 	lastborn->next=NULL;
 	clone->firstborn=before;
@@ -976,19 +981,30 @@ char syll_pending;
 void
 unit::syll_break(char *sonor, unit *before)
 {
-	father->split(before);
-	syll_pending=0;
+	unit *ancestor = this;
+	while (ancestor->father && !ancestor->scope) {
+		ancestor = ancestor->father;
+	}
+	ancestor->split(before);
+	D_PRINT(0, "Made the split\n");
+	syll_pending = 0;
 }
 
 void 
 unit::syllabify(char *sonor)
 {
-	if (sonor[inside()]<sonor[Next(depth)->inside()])
-		if (sonor[inside()]<sonor[Prev(depth)->inside()]) syll_break(sonor,this);
-		else syll_pending+=(sonor[inside()]==sonor[Prev(depth)->inside()]);
-	else if (syll_pending && sonor[inside()]<sonor[Prev(depth)->inside()]) {
-		syll_break(sonor,next);
-		syll_pending=0;
+	if (sonor[inside()]<sonor[Next(depth)->inside()]) {
+		if (sonor[inside()]<sonor[Prev(depth)->inside()]) {
+			D_PRINT(0, "Immediate decision to split before a sharp dropdown\n");
+			syll_break(sonor,this);
+		} else {
+			bool equisonorous = sonor[inside()] == sonor[Prev(depth)->inside()];
+			syll_pending += equisonorous;
+			D_PRINT(0, "Postponing the decision to split\n", syll_pending);
+		}
+	} else if (syll_pending && sonor[inside()]<sonor[Prev(depth)->inside()]) {
+		D_PRINT(0, "Decision to split after the 1st char of a %d chars long dropdown\n", syll_pending + 1);
+		syll_break(sonor, Next(depth));
 	}
 }
 
@@ -997,13 +1013,16 @@ unit::syllabify(UNIT target, char *sonor)
 {
 	unit *tmpu, *tmpu_prev;
 	
-	D_PRINT(0, "unit::syllabify in level %d cont %c %c %c \n", depth,Prev(depth)->cont,cont,Next(depth)->cont);
+	D_PRINT(1, "unit::syllabify in level %d cont %c %c %c \n", depth,Prev(depth)->cont,cont,Next(depth)->cont);
 	syll_pending=0;
 	for (tmpu=RightMost(target);tmpu!=&EMPTY; ) {
+		D_PRINT(0, "Considering a target unit, cont %c %c %c\n", tmpu->Prev(depth)->cont, tmpu->cont, tmpu->Next(depth)->cont);
 		tmpu_prev = tmpu->Prev(tmpu->depth);
 		tmpu->syllabify(sonor);
 		tmpu = tmpu_prev;
+		D_PRINT(0, "Considering the next target unit\n");
 	}
+	D_PRINT(0, "Syllabification applied for a whole scope unit.  syll_pending=%d\n", syll_pending);
 }
 
 const int INFINITE_BADNESS = 300000000;
@@ -1590,10 +1609,10 @@ unit::do_sanity()
 	if (lastborn && lastborn->prev && !m->disjoint(lastborn->prev->m)) insane("disjointness problem");
 
         if (scfg->ptr_trusted) return;
-	if (prev && (unsigned int) prev<0x8000000) insane("prev");
-	if (next && (unsigned int) next<0x8000000)  insane("next");
-	if (firstborn && (unsigned int) firstborn<0x8000000) insane("firstborn");
-	if (lastborn && (unsigned int) lastborn<0x8000000)  insane("lastborn");
+	if (prev && (unsigned long) prev<0x8000000) insane("prev");
+	if (next && (unsigned long) next<0x8000000)  insane("next");
+	if (firstborn && (unsigned long) firstborn<0x8000000) insane("firstborn");
+	if (lastborn && (unsigned long) lastborn<0x8000000)  insane("lastborn");
 }
 
 void

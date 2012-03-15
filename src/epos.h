@@ -88,7 +88,7 @@ typedef char UNIT;
 #define U_VOID		120
 
 extern int unused_variable;
-#define unuse(x) (unused_variable = (int)(x));
+#define unuse(x) (unused_variable = (long int)(x));
 
 extern const bool is_monolith;
 

@@ -40,4 +40,4 @@ Should Check
 - what if I change max_line?
 - whether decoding and encoding is properly done for all data types - also cmd_show
 - some characters from mathsign.dic, $, etc. might be misread in some contexts
-
+- behavior of syll in boundary cases - unit testing

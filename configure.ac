@@ -2,7 +2,7 @@
 dnl Process this file with autoconf to produce a configure script
 
 AC_INIT(src/unit.cc)
-AM_INIT_AUTOMAKE(epos, 2.5.28)
+AM_INIT_AUTOMAKE(epos, 2.5.29)
 AC_PREFIX_DEFAULT(/usr/local)
 
 CCC="g++ c++ cc++ gcc cc"
@@ -48,7 +48,7 @@ AC_ARG_ENABLE(portaudio, AC_HELP_STRING([--enable-portaudio], [alternative sound
 	[EXTRA_PORTAUDIO_LIBS=""
 	 EXTRA_PORTAUDIO_DEFS="-DFORGET_PORTAUDIO"]
 )
-AM_CONDITIONAL(PORTAUDIO, test ${EXTRA_PORTAUDIO_DEFS} = "")
+AM_CONDITIONAL(PORTAUDIO, test "${EXTRA_PORTAUDIO_DEFS}" = "")
 
 AC_LANG_CPLUSPLUS
 

@@ -50,6 +50,9 @@ bool debug_ttscp = false;
 bool wavfile = false;
 bool wavstdout = false;
 bool traditional = true;  
+bool do_say = true;
+
+const char *other_traffic_prefix = "Unexpected: ";
 
 #define STDIN_BUFF_SIZE  550000
 
@@ -74,11 +77,11 @@ void shriek(int, char *txt)
 // #include "exc.h"
 #include "client.cc"
 
-void send_to_epos(const char *buffer, int socket)
+int send_to_epos(const char *buffer, int socket)
 {
 	if (debug_ttscp && socket == ctrld)
 		printf("%s", buffer);
-	sputs(buffer, socket);
+	return sputs(buffer, socket);
 }
 
 int get_result(int sd)
@@ -106,7 +109,7 @@ int get_result(int sd)
 			default : ;
 		}
 		char *o = scratch+strspn(scratch, "0123456789 -");
-		if (*scratch && *o) printf("Unexpected: %s\n", o);
+		if (*scratch && *o) printf("%s%s\n", other_traffic_prefix, o);
 	}
 	return 8;	/* guessing */
 }
@@ -202,6 +205,32 @@ void trans_data()
 	}
 }
 
+#ifdef HAVE_UNISTD_H
+void restart_epos()
+{
+	int timeout;
+	int d = just_connect_socket(0, 8778);
+	int w;
+	if (d == -1) {
+		shriek("Not running at port 8778");
+	}
+	system("killall -HUP eposd");
+	signal(SIGPIPE, SIG_IGN);
+	timeout = 30;
+	do {
+		usleep(100000);
+		w = send_to_epos(" ", d);
+		if (!timeout--) {
+			shriek("Restart not attempted");
+		}
+	} while (w != -1);
+
+	timeout = 30;
+	do usleep(100000); while(just_connect_socket(0, 8778) == -1 && timeout--);
+	if (timeout == -1) shriek("Restart attempted, but timed out");
+}
+#endif
+
 void send_option(const char *name, const char *value)
 {
 	if (debug_ttscp) {
@@ -231,6 +260,7 @@ void dump_help()
 	printf(" -t  use the traditional lower level synthesizer interface\n");
 	printf(" -u  use utterance chunking\n");
 	printf(" -w  write the waveform to ./said.wav\n");
+	printf(" -x  transcribe only (do not synthesize)\n");
 	printf(" -z  display the TTSCP protocol exchange in the control connection\n");
 	printf(" --some_long_option     ...as documented (or listed by 'eposd -H')\n");
 }
@@ -284,6 +314,7 @@ void send_cmd_line(int argc, char **argv)
 					  exit(0);
 				case 'l': send_to_epos("show languages\r\nshow voices\r\n", ctrld);
 					  printf("Languages available:\n");
+					  other_traffic_prefix = "";
 					  get_result(ctrld);
 					  printf("Voices available for the current language:\n");
 					  get_result(ctrld);
@@ -295,13 +326,7 @@ void send_cmd_line(int argc, char **argv)
 				case 'o': wavstdout = true; break;
 				case 'p': send_option("pausing", "true"); break;
 #ifdef HAVE_UNISTD_H
-				case 'r': system("killall -HUP epos");
-					  int timeout;
-					  timeout = 10;
-					  do sleep(1); while(just_connect_socket(0, 8778) != -1 && timeout--);
-					  if (timeout == -1) shriek("Restart not attempted");
-					  do sleep(1); while(just_connect_socket(0, 8778) == -1 && timeout--);
-					  if (timeout == -1) shriek("Restart attempted, but timed out");
+				case 'r': restart_epos();
 					  exit(0);
 #endif
 				case 's': traditional = false; break;
@@ -311,6 +336,7 @@ void send_cmd_line(int argc, char **argv)
 				case 'w': send_option("wave_header", "true");
 					  wavfile = true;
 					  output_file = "said.wav"; break;
+				case 'x': do_say = false; break;
 				case 'z': debug_ttscp = true; break;
 				case 'D':
 					send_option("debug", "true");
@@ -409,8 +435,7 @@ int main(int argc, char **argv)
 /// #endif
 
 	if (!wavstdout) trans_data();
-	say_data();
-//	printf("\n");
+	if (do_say) say_data();
 	send_to_epos("delh ", ctrld);
 	send_to_epos(dh, ctrld);
 	send_to_epos("\r\ndone\r\n", ctrld);

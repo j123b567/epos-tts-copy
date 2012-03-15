@@ -137,6 +137,16 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 
+TESTS = hard_zero_data_test				\
+	intr_test					\
+	legal_data_test long_data_test long_strm_test	\
+	random_data_test				\
+	soft_zero_data_test				\
+	syn2_test 					\
+	vogon_test 					\
+	shutdown_test
+
+
 CLEANFILES = *~ *.wav core gmon.out matlab.in tmp.0* dmalloc hackfile \
 		profile.log said.* 0\?tmp DEADJOE *.old *.local \
 		epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi \
@@ -148,29 +158,105 @@ AM_CPPFLAGS = -I$(srcdir)/..
 
 OTHER_CXXFLAGS = -DSOURCEDIR=$(srcdir)
 
-noinst_PROGRAMS = vrfy
+noinst_PROGRAMS = $(TESTS)
+noinst_LTLIBRARIES = libepostest.la
 
-vrfy_SOURCES = vrfy.cc
+LDADD = libepostest.la
 
-TESTS = vrfy
+libepostest_la_SOURCES = testbench.cc testbench.h
+
+hard_zero_data_test_SOURCES = hard_zero_data_test.cc
+intr_test_SOURCES = intr_test.cc
+legal_data_test_SOURCES = legal_data_test.cc
+long_data_test_SOURCES = long_data_test.cc
+long_strm_test_SOURCES = long_strm_test.cc
+random_data_test_SOURCES = random_data_test.cc
+soft_zero_data_test_SOURCES = soft_zero_data_test.cc
+syn2_test_SOURCES = syn2_test.cc
+vogon_test_SOURCES = vogon_test.cc
+shutdown_test_SOURCES = shutdown_test.cc
 subdir = src/tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-noinst_PROGRAMS = vrfy$(EXEEXT)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+
+libepostest_la_LDFLAGS =
+libepostest_la_LIBADD =
+am_libepostest_la_OBJECTS = testbench.lo
+libepostest_la_OBJECTS = $(am_libepostest_la_OBJECTS)
+noinst_PROGRAMS = hard_zero_data_test$(EXEEXT) intr_test$(EXEEXT) \
+	legal_data_test$(EXEEXT) long_data_test$(EXEEXT) \
+	long_strm_test$(EXEEXT) random_data_test$(EXEEXT) \
+	soft_zero_data_test$(EXEEXT) syn2_test$(EXEEXT) \
+	vogon_test$(EXEEXT) shutdown_test$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 
-am_vrfy_OBJECTS = vrfy.$(OBJEXT)
-vrfy_OBJECTS = $(am_vrfy_OBJECTS)
-vrfy_LDADD = $(LDADD)
-vrfy_DEPENDENCIES =
-vrfy_LDFLAGS =
+am_hard_zero_data_test_OBJECTS = hard_zero_data_test.$(OBJEXT)
+hard_zero_data_test_OBJECTS = $(am_hard_zero_data_test_OBJECTS)
+hard_zero_data_test_LDADD = $(LDADD)
+hard_zero_data_test_DEPENDENCIES = libepostest.la
+hard_zero_data_test_LDFLAGS =
+am_intr_test_OBJECTS = intr_test.$(OBJEXT)
+intr_test_OBJECTS = $(am_intr_test_OBJECTS)
+intr_test_LDADD = $(LDADD)
+intr_test_DEPENDENCIES = libepostest.la
+intr_test_LDFLAGS =
+am_legal_data_test_OBJECTS = legal_data_test.$(OBJEXT)
+legal_data_test_OBJECTS = $(am_legal_data_test_OBJECTS)
+legal_data_test_LDADD = $(LDADD)
+legal_data_test_DEPENDENCIES = libepostest.la
+legal_data_test_LDFLAGS =
+am_long_data_test_OBJECTS = long_data_test.$(OBJEXT)
+long_data_test_OBJECTS = $(am_long_data_test_OBJECTS)
+long_data_test_LDADD = $(LDADD)
+long_data_test_DEPENDENCIES = libepostest.la
+long_data_test_LDFLAGS =
+am_long_strm_test_OBJECTS = long_strm_test.$(OBJEXT)
+long_strm_test_OBJECTS = $(am_long_strm_test_OBJECTS)
+long_strm_test_LDADD = $(LDADD)
+long_strm_test_DEPENDENCIES = libepostest.la
+long_strm_test_LDFLAGS =
+am_random_data_test_OBJECTS = random_data_test.$(OBJEXT)
+random_data_test_OBJECTS = $(am_random_data_test_OBJECTS)
+random_data_test_LDADD = $(LDADD)
+random_data_test_DEPENDENCIES = libepostest.la
+random_data_test_LDFLAGS =
+am_shutdown_test_OBJECTS = shutdown_test.$(OBJEXT)
+shutdown_test_OBJECTS = $(am_shutdown_test_OBJECTS)
+shutdown_test_LDADD = $(LDADD)
+shutdown_test_DEPENDENCIES = libepostest.la
+shutdown_test_LDFLAGS =
+am_soft_zero_data_test_OBJECTS = soft_zero_data_test.$(OBJEXT)
+soft_zero_data_test_OBJECTS = $(am_soft_zero_data_test_OBJECTS)
+soft_zero_data_test_LDADD = $(LDADD)
+soft_zero_data_test_DEPENDENCIES = libepostest.la
+soft_zero_data_test_LDFLAGS =
+am_syn2_test_OBJECTS = syn2_test.$(OBJEXT)
+syn2_test_OBJECTS = $(am_syn2_test_OBJECTS)
+syn2_test_LDADD = $(LDADD)
+syn2_test_DEPENDENCIES = libepostest.la
+syn2_test_LDFLAGS =
+am_vogon_test_OBJECTS = vogon_test.$(OBJEXT)
+vogon_test_OBJECTS = $(am_vogon_test_OBJECTS)
+vogon_test_LDADD = $(LDADD)
+vogon_test_DEPENDENCIES = libepostest.la
+vogon_test_LDFLAGS =
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/vrfy.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/hard_zero_data_test.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/intr_test.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/legal_data_test.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/long_data_test.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/long_strm_test.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/random_data_test.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/shutdown_test.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/soft_zero_data_test.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/syn2_test.Po ./$(DEPDIR)/testbench.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/vogon_test.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
@@ -179,10 +265,22 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(vrfy_SOURCES)
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
+	$(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+DIST_SOURCES = $(libepostest_la_SOURCES) $(hard_zero_data_test_SOURCES) \
+	$(intr_test_SOURCES) $(legal_data_test_SOURCES) \
+	$(long_data_test_SOURCES) $(long_strm_test_SOURCES) \
+	$(random_data_test_SOURCES) $(shutdown_test_SOURCES) \
+	$(soft_zero_data_test_SOURCES) $(syn2_test_SOURCES) \
+	$(vogon_test_SOURCES)
 DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/Makefile.common \
 	Makefile.am
-SOURCES = $(vrfy_SOURCES)
+SOURCES = $(libepostest_la_SOURCES) $(hard_zero_data_test_SOURCES) $(intr_test_SOURCES) $(legal_data_test_SOURCES) $(long_data_test_SOURCES) $(long_strm_test_SOURCES) $(random_data_test_SOURCES) $(shutdown_test_SOURCES) $(soft_zero_data_test_SOURCES) $(syn2_test_SOURCES) $(vogon_test_SOURCES)
 
 all: all-am
 
@@ -194,15 +292,53 @@ $(srcdir)/Makefile.in:  Makefile.am $(top_srcdir)/Makefile.common $(top_srcdir)/
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
 
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" = "$$p" && dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+libepostest.la: $(libepostest_la_OBJECTS) $(libepostest_la_DEPENDENCIES) 
+	$(CXXLINK)  $(libepostest_la_LDFLAGS) $(libepostest_la_OBJECTS) $(libepostest_la_LIBADD) $(LIBS)
+
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
 	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-vrfy$(EXEEXT): $(vrfy_OBJECTS) $(vrfy_DEPENDENCIES) 
-	@rm -f vrfy$(EXEEXT)
-	$(CXXLINK) $(vrfy_LDFLAGS) $(vrfy_OBJECTS) $(vrfy_LDADD) $(LIBS)
+hard_zero_data_test$(EXEEXT): $(hard_zero_data_test_OBJECTS) $(hard_zero_data_test_DEPENDENCIES) 
+	@rm -f hard_zero_data_test$(EXEEXT)
+	$(CXXLINK) $(hard_zero_data_test_LDFLAGS) $(hard_zero_data_test_OBJECTS) $(hard_zero_data_test_LDADD) $(LIBS)
+intr_test$(EXEEXT): $(intr_test_OBJECTS) $(intr_test_DEPENDENCIES) 
+	@rm -f intr_test$(EXEEXT)
+	$(CXXLINK) $(intr_test_LDFLAGS) $(intr_test_OBJECTS) $(intr_test_LDADD) $(LIBS)
+legal_data_test$(EXEEXT): $(legal_data_test_OBJECTS) $(legal_data_test_DEPENDENCIES) 
+	@rm -f legal_data_test$(EXEEXT)
+	$(CXXLINK) $(legal_data_test_LDFLAGS) $(legal_data_test_OBJECTS) $(legal_data_test_LDADD) $(LIBS)
+long_data_test$(EXEEXT): $(long_data_test_OBJECTS) $(long_data_test_DEPENDENCIES) 
+	@rm -f long_data_test$(EXEEXT)
+	$(CXXLINK) $(long_data_test_LDFLAGS) $(long_data_test_OBJECTS) $(long_data_test_LDADD) $(LIBS)
+long_strm_test$(EXEEXT): $(long_strm_test_OBJECTS) $(long_strm_test_DEPENDENCIES) 
+	@rm -f long_strm_test$(EXEEXT)
+	$(CXXLINK) $(long_strm_test_LDFLAGS) $(long_strm_test_OBJECTS) $(long_strm_test_LDADD) $(LIBS)
+random_data_test$(EXEEXT): $(random_data_test_OBJECTS) $(random_data_test_DEPENDENCIES) 
+	@rm -f random_data_test$(EXEEXT)
+	$(CXXLINK) $(random_data_test_LDFLAGS) $(random_data_test_OBJECTS) $(random_data_test_LDADD) $(LIBS)
+shutdown_test$(EXEEXT): $(shutdown_test_OBJECTS) $(shutdown_test_DEPENDENCIES) 
+	@rm -f shutdown_test$(EXEEXT)
+	$(CXXLINK) $(shutdown_test_LDFLAGS) $(shutdown_test_OBJECTS) $(shutdown_test_LDADD) $(LIBS)
+soft_zero_data_test$(EXEEXT): $(soft_zero_data_test_OBJECTS) $(soft_zero_data_test_DEPENDENCIES) 
+	@rm -f soft_zero_data_test$(EXEEXT)
+	$(CXXLINK) $(soft_zero_data_test_LDFLAGS) $(soft_zero_data_test_OBJECTS) $(soft_zero_data_test_LDADD) $(LIBS)
+syn2_test$(EXEEXT): $(syn2_test_OBJECTS) $(syn2_test_DEPENDENCIES) 
+	@rm -f syn2_test$(EXEEXT)
+	$(CXXLINK) $(syn2_test_LDFLAGS) $(syn2_test_OBJECTS) $(syn2_test_LDADD) $(LIBS)
+vogon_test$(EXEEXT): $(vogon_test_OBJECTS) $(vogon_test_DEPENDENCIES) 
+	@rm -f vogon_test$(EXEEXT)
+	$(CXXLINK) $(vogon_test_LDFLAGS) $(vogon_test_OBJECTS) $(vogon_test_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -210,7 +346,17 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vrfy.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hard_zero_data_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/intr_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/legal_data_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/long_data_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/long_strm_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/random_data_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shutdown_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/soft_zero_data_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/syn2_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testbench.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vogon_test.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
@@ -417,7 +563,7 @@ distdir: $(DISTFILES)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
 
 installdirs:
 install: install-am
@@ -447,8 +593,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
-	mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
+	clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -495,15 +641,16 @@ ps-am:
 uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
-	clean-generic clean-libtool clean-noinstPROGRAMS ctags \
-	distclean distclean-compile distclean-generic distclean-libtool \
-	distclean-tags distdir dvi dvi-am info info-am install \
-	install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am install-man \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool pdf \
-	pdf-am ps ps-am tags uninstall uninstall-am uninstall-info-am
+	clean-generic clean-libtool clean-noinstLTLIBRARIES \
+	clean-noinstPROGRAMS ctags distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am info info-am install install-am install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-info-am
 
 
 # The following line may be deleted if using any other compiler than Watcom C.

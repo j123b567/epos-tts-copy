@@ -268,12 +268,13 @@ your preference.
 
   It is required
   either to have a <tt>phone</tt> target, or to keep all the replacers
-  and replacees the same length, because otherwise it is not obvious how to handle the
-  children of the units affected.  Note also that to be considered a match
-  with the <tt>phone</tt> target, all characters other than phones also
+  and replacees the same length (because of the descendants
+  of the units affected).  Note also that to be considered a match
+  in the former case (target <tt>phone</tt>), all characters other than phones also
   have to match (must be found or not found on the same positions in both
-  the replacee and the occurrence in question) except for the terminating
-  scope-level separator (if any), which is invisible to this rule type.
+  the replacee and the occurrence in question). The only exception is
+  the terminating scope-level separator (if any), which is ignored and
+  preserved.
 
   Any replacer may begin with a ^ or end with a &dollar;. That forces
   the substring being replaced to be at the beginning or the end
@@ -503,7 +504,7 @@ lip	5
   as <tt/ga-s/ with total badness 355, as the only alternative
   analysis <tt/gas/ has total badness 450: that is, one unanalysed
   part consisting of three unanalysed units (letters).
-  One solution might be to increase the badness of the
+  A solution would be, for example, to increase the badness of the
   miniature morpheme <tt/s/ to a value somewhere between 101 and 249;
   with this adjustment it will still be cheaper than an isolated
   unanalysed letter <tt/s/ in an otherwise known context,
@@ -681,12 +682,19 @@ regress \X>0(!_!)
 <sect2> Type <tt>syll</tt>
 <p>
 
-  Roughly speaking, this rule type can be used to split words to
+  Roughly speaking, this rule type can be used to split words into
   syllables according to the theory of sonority, i.e. at the least sonorous
-  phones.  More generally, it could be used to do any sort of inserting unit
-  boundaries depending on local values of a simple metric.
+  phones.
 
-  The parameter is an ordering of the target units (typically, phones).
+  More generally, it is used to do any sort of inserting unit
+  boundaries depending on local extremes of a simple metric
+  defined at target units.
+  A split occurs at the scope level unit, and, whenever necessary,
+  at all levels between the scope and the target units.
+
+  The parameter is an ordering of the target units (typically, phones),
+  starting from the extremal (least sonorous) ones, with groups of
+  equal status (equal sonority) delimited by <tt>&lt;</tt>
 
 Example:
 <tscreen><verb>

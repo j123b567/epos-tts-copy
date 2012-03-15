@@ -119,17 +119,17 @@
 #define CHANNEL    O_CHANNEL
 #define CHARSET    O_CHARSET
 
-#define OPTION(name,type,default) {"C:" stringify(name) + 2, type, OS_CFG, A_PUBLIC, A_PUBLIC, true, false, (int)&((configuration *)NULL)->name},
+#define OPTION(name,type,default) {"C:" stringify(name) + 2, type, OS_CFG, A_PUBLIC, A_PUBLIC, true, false, (long int)&((configuration *)NULL)->name},
 
 #define OPTIONAGGR(x) 
-#define OPTIONITEM(id,name,type, default) {"C:" stringify(name) + 2, type, OS_CFG, A_PUBLIC, A_PUBLIC, true, false, (int)&((configuration *)NULL)->id},
+#define OPTIONITEM(id,name,type, default) {"C:" stringify(name) + 2, type, OS_CFG, A_PUBLIC, A_PUBLIC, true, false, (long int)&((configuration *)NULL)->id},
 #define OPTIONAGGRENDS 
 
 #define VOICE_OPTION(name,type,default) OPTION(name,type,default)
 #define LNG_OPTION(name,type,default)  OPTION(name,type,default)
 
 #define OPTIONARRAY(name, type, default, number) {"C:" stringify(name) + 2, type, OS_CFG, \
-		A_PUBLIC, A_PUBLIC, true, true, (int)&((configuration *)NULL)->name},
+		A_PUBLIC, A_PUBLIC, true, true, (long int)&((configuration *)NULL)->name},
 #define STATICARRAY(name, type, default, number)
 #define LNG_OPTIONARRAY(name, type, default, number)  \
 		OPTIONARRAY(name, type, default, number)
@@ -217,13 +217,13 @@
 #define OPTIONAGGRENDS
 
 #define OPTION(x,y,z)
-#define VOICE_OPTION(name,type,default)   {"L:" stringify(name) + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, true, false, (int)&((lang *)NULL)->name},
-#define LNG_OPTION(name,type,default)  {"L:" stringify(name) + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, true, false, (int)&((lang *)NULL)->name},
+#define VOICE_OPTION(name,type,default)   {"L:" stringify(name) + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, true, false, (long int)&((lang *)NULL)->name},
+#define LNG_OPTION(name,type,default)  {"L:" stringify(name) + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, true, false, (long int)&((lang *)NULL)->name},
 
 #define OPTIONARRAY(name, type, default, number)
 #define STATICARRAY(name, type, default, number)
 #define LNG_OPTIONARRAY(name, type, default, number) {"L:" stringify(name) + 2, type, OS_LANG, \
-		A_PUBLIC, A_PUBLIC, true, true, (int)&((lang *)NULL)->name},
+		A_PUBLIC, A_PUBLIC, true, true, (long int)&((lang *)NULL)->name},
 
 
 #undef CONFIG_LANG_DESCRIBE
@@ -299,7 +299,7 @@
 #define CHANNEL    O_CHANNEL
 #define CHARSET    O_CHARSET
 
-#define VOICE_OPTION(name,type,default)  {"V:" stringify(name) + 2, type, OS_VOICE, A_PUBLIC, A_PUBLIC, true, false, (int)&((voice *)NULL)->name},
+#define VOICE_OPTION(name,type,default)  {"V:" stringify(name) + 2, type, OS_VOICE, A_PUBLIC, A_PUBLIC, true, false, (long int)&((voice *)NULL)->name},
 
 #define STATICARRAY(name, type, default, number)
 
@@ -361,14 +361,14 @@
 #define CHARSET    O_CHARSET
 
 #undef STATIC_OPTION
-#define STATIC_OPTION(name,type,default) {"S:" stringify(name) + 2, type, OS_STATIC, A_PUBLIC, A_PUBLIC, true, false, (int)&((static_configuration *)NULL)->name},
+#define STATIC_OPTION(name,type,default) {"S:" stringify(name) + 2, type, OS_STATIC, A_PUBLIC, A_PUBLIC, true, false, (long int)&((static_configuration *)NULL)->name},
 #define OPTION(name,type,default) 
 
 #define VOICE_OPTION(name,type,default)
 #define LNG_OPTION(name,type,default)
 
 #define STATICARRAY(name, type, default, number) {"S:" stringify(name) + 2, type, OS_STATIC, \
-		A_PUBLIC, A_PUBLIC, true, true, (int)&((static_configuration *)NULL)->name},
+		A_PUBLIC, A_PUBLIC, true, true, (long int)&((static_configuration *)NULL)->name},
 
 
 #undef CONFIG_STATIC_DESCRIBE
@@ -430,6 +430,7 @@ STATIC (max_errors,	INT, 0)		// How many rule file syntax errors to report?
 STATIC (max_nest,	INT, 60)	// How many @include directives may be nested?
 OPTION (multi_subst,	INT, 0)		// How many substs should apply to a word?
 OPTION (fastmatch_thres,INT, 0)		// How long words should use fastmatch?
+STATIC (fastmatch_substs,BOOL,false)    // Use fastmatch at all?
 STATIC (memory_low,	BOOL, false)  // Should we free hash tables after first use?
 STATIC (forking,	BOOL, false)  // (UNIX only) Detach using a child process?
 STATIC (asyncing,	BOOL, false)  // (UNIX only) Close files using a child process?

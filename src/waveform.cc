@@ -844,7 +844,7 @@ wavefm::get_total_len()
 inline char *
 wavefm::get_ophase_buff(const w_ophase *p)
 {
-	char *tmp = (char *)this + (int)p->buff;
+	char *tmp = (char *)this + (long int)p->buff;
 	return p->inlined ? tmp : *(char **)tmp;
 }
 
@@ -853,9 +853,9 @@ wavefm::get_ophase_len(const w_ophase *p)
 {
 	int tmp;
 	if (p->inlined) {
-		tmp = (int)p->len;
+		tmp = (long int)p->len;
 	} else {
-		tmp = *(int *)((char *)this + (int)p->len);
+		tmp = *(int *)((char *)this + (long int)p->len);
 		if (translated) {
 			tmp = from_le32s(tmp);
 		}

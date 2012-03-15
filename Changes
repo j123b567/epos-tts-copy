@@ -1454,5 +1454,18 @@ in this way much more often than explicitly indicated here.     ]
 	- say-epos option -z to print the TTSCP exchange
 	- gcc 3.4 fix - moved Min/Max templates into nnet/vector.h (suggested by Karl Chen)
 	- all files made root-owned and world-writable
-
-
+2.5.29 from 2.5.28	26.4.05
+	- Latin language (the 4 prominent continental pronunciation standards)
+	- fastmatch_substs made optional (and disabled by default) to speed up startup
+	- some fixes for g++ 4.0 and 64-bit pointers (Andreas Jochens)
+	- syll rule can now do general multilevel splits
+	- fix: recode substs with the end-of-string marker $
+	- minor error reporting improvements
+	- trivi fix in configure.ac when --enable-portaudio=yes
+	- reinit fixes
+	- say-epos -r fixes
+	- vrfy.cc broken up into automake-driven individual tests
+	- Vogon language (unit testing infrastructure)
+	- FAQ: report bugs by writing the tests
+	- say-epos option -x to turn off the synthesis (transcribe only)
+	

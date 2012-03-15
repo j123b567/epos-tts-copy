@@ -94,7 +94,7 @@ for details and some rationale, as far as the C subset of C++ is concerned).
 
 
 
-Q: How can I avoid copy-and-paste?  And why should I?
+Q: (followup) How can I avoid copy-and-paste?  And why should I?
 A:
 We insist of having every idea at (at most) one point in the source.
 The reason is maintainability.  If you are tempted to copy and
@@ -106,4 +106,25 @@ to read and understand correctly, but the point is that this actually
 makes it (almost) impossible to understand incorrectly and modify
 inconsistently.  The latter concern is what counts, unless you are
 preparing the last patch to Epos forever.
+
+
+
+Q: I found a bug, but I'm no programmer.  How can I get it fixed fast?
+A:
+Best bug reports get fastest response.  A very good way to report errors
+is to construct a test case which demonstrates the error in the Vogon
+language.  This is done by editing cfg/lng/vogon/vogon.rul and
+src/tests/vogon_test.cc.
+
+Adjust the rules in vogon.rul so that all existing tests continue to
+succeed, while you can demonstrate the bug with (note the -x!)
+say-epos -x --language vogon   "INPUT TEXT"
+by either crashing Epos or receiving a different response than the
+documentation suggests.  Then add the INPUT TEXT and the correct output
+into vogon_test.cc.  Because of the bug, this will make the tests
+(to be run with "make check") fail.  Send us a diff (or, the files
+you've changed).
+
+This procedure not only makes it perfectly clear how to reproduce the bug,
+but it will also (almost) prevent it from reappearing after we fix it.
 

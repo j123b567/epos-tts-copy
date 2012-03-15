@@ -671,7 +671,7 @@ TTypedValue::print (FILE *file)
 		case 'i': fprintf (file, "%i", int_val); break;
 		case 'c': fprintf (file, "%c", char_val); break;
 		case 'b': fprintf (file, "%s", bool_val ? "true" : "false"); break;
-		case 'u': fprintf (file, "unit var %u", unsigned (unit_val)); break;
+		case 'u': fprintf (file, "unit var %lu", (unsigned long)(unit_val)); break;
 		default: fprintf (file, "Cannot print value type %c", value_type);
 	}
 }

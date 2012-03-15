@@ -1727,7 +1727,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=epos
- VERSION=2.5.28
+ VERSION=2.5.29
 
 
 cat >>confdefs.h <<_ACEOF
@@ -8307,7 +8307,7 @@ else
 fi;
 
 
-if test ${EXTRA_PORTAUDIO_DEFS} = ""; then
+if test "${EXTRA_PORTAUDIO_DEFS}" = ""; then
   PORTAUDIO_TRUE=
   PORTAUDIO_FALSE='#'
 else

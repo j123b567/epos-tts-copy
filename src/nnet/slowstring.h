@@ -58,7 +58,7 @@ typedef CBasicString<char> CString;
 typedef CString RStr;
 
 template<class T>
-CBasicString<T>::CBasicString<T> ()
+CBasicString<T>::CBasicString ()
 {
 	data = new T;
 	data[0] = 0;

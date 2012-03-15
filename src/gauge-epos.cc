@@ -374,7 +374,7 @@ void send_cmd_line(int argc, char **argv)
 void send_options()
 {
 	send_option("generate_segs", "false");
-	send_option("diphtongs", "false");
+	send_option("diphthongs", "false");
 	send_option("phr_break", "false");
 	send_option("roman", "false");
 	send_option("degeminate", "true");

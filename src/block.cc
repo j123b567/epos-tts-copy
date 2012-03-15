@@ -22,7 +22,7 @@
 #define END_OF_SWITCH	2	   // by unit length
 #define END_OF_RULES	3
 #define LAST_SPECIAL_RULE	END_OF_RULES
-#define ORDINARY_RULE(x) (((unsigned int)(x)) > LAST_SPECIAL_RULE)
+#define ORDINARY_RULE(x) (((unsigned long)(x)) > LAST_SPECIAL_RULE)
 #define MAX_WORDS_PER_LINE 64
 
 #define DOLLAR             '$'             //These symbols are used to represent 
@@ -126,7 +126,7 @@ block_rule::load_rules(int terminator, text *file, hash *inherited_vars)
 		}
 	}
 	if (again > 1) diatax("Badly placed count");
-	int last_as_special = (int)rulist[n_rules];
+	long last_as_special = (long int)rulist[n_rules];
 	if (last_as_special != terminator) switch (last_as_special) {
 		case END_OF_BLOCK:  diatax("No block to terminate");
 		case END_OF_CHOICE: diatax("No choice to terminate");
@@ -366,7 +366,7 @@ resolve_vars(char *line, hash *vars, text *file)
 			*eov=0;
 			D_PRINT(0, "Resolving \"%s\"\n",src);
 			value = vars->translate(src);
-			if (!value) diatax("Undefined identifier");
+			if (!value) diatax(fmt("Undefined identifier '%s'", src));
 			strcpy(dest, value);
 			while (*dest) dest++;
 			if (strchr(VAR_TERM_ONLY,takeout)) eov++; else *eov=takeout;
@@ -528,7 +528,7 @@ next_real_rule(text *file, hash *vars, int *count)
 	try {
 		rule *r = parse_rule(file, vars, count);
 		if (ORDINARY_RULE(r)) return r;
-		if ((int)r != END_OF_RULES) diatax("No rule follows a conditional rule");
+		if ((long int)r != END_OF_RULES) diatax("No rule follows a conditional rule");
 		shriek(811, "No rule follows a conditional rule at the end of %s", file->current_file);
 	} catch (any_exception *e) {
 		if (e->code / 10 != 81) throw e;

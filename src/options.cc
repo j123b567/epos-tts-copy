@@ -87,7 +87,7 @@ void cow(cowabilium **p, int size, int extraoffset, int extrasize)
 	}
 }
 
-#define  LANGS_OFFSET   ((int)&((configuration *)NULL)->langs)
+#define  LANGS_OFFSET   ((long int)&((configuration *)NULL)->langs)
 #define  LANGS_LENGTH   ((*cfg)->n_langs * sizeof(void *))
 
 void cow_configuration(configuration **cfg)
@@ -467,13 +467,35 @@ static inline void post_set_unit_levels(const char *)
 	}
 }
 
+static inline char *get_startup_cwd(char *buff, size_t size)
+{
+	static char *startup_wd = NULL;
+	if (startup_wd != NULL) {
+		if (strlen(startup_wd) + 1 <= size) {
+			strcpy(buff, startup_wd);
+			return startup_wd;
+		} else {
+			return NULL;
+		}
+	}
+	char *ret = getcwd(buff, size);
+	if (ret == NULL) {
+		return NULL;
+	}
+	startup_wd = FOREVER(strdup(ret));
+	return ret;
+}
+
 static inline const char *pre_base_dir(const char *value)
 {
 	if (value && value[0] != SLASH) {
 		size_t size = scfg->scratch_size ? scfg->scratch_size : 64;
 		char *abs = (char *)xmalloc(size);
-		while (!getcwd(abs, size - 1))
+		while (!get_startup_cwd(abs, size - 1))
 			size *= 2, abs = (char *)xrealloc(abs, size);
+		if (!strcmp(abs, "/")) {
+			shriek(814, "base_dir relative to the root? Prepend the slash.");
+		}
 		while (strlen(abs) + strlen(value) + 1 >= size)
 			size *= 2, abs = (char *)xrealloc(abs, size);
 		char *tmp = abs + strlen(abs);
@@ -727,7 +749,7 @@ bool set_option_to_default(epos_option *o, void *base)
  *	The order of cowing cfg, lang and voice, is important.
  */
 
-#define  VOICES_OFFSET  ((int)&((lang *)NULL)->voicetab)
+#define  VOICES_OFFSET  ((long int)&((lang *)NULL)->voicetab)
 #define  VOICES_LENGTH  (this_lang->n_voices * sizeof(void *))
 
 bool set_option(epos_option *o, const char *value)
@@ -881,8 +903,8 @@ void reinitialize_configuration()
 	set_option_or_die("fixed_ini_file", "fixed.ini");
 	set_option_or_die("restr_file", "restr.ini");
 
-	set_option_or_die("_token_esc", "nrt[eE\\ #;@~.d-mXYZWVU");
-	set_option_or_die("_value_esc", "\n\r\t\033\033\033\\\377#;@\1\2\3\4\5\037\036\035\034\032\030");
+	set_option("_token_esc", "nrt[eE\\ #;@~.d-mXYZWVU");		/* no ..._or_die just because of the leading underscore */
+	set_option("_value_esc", "\n\r\t\033\033\033\\\377#;@\1\2\3\4\5\037\036\035\034\032\030");
 
 	scfg->_slash_esc = '/';
 

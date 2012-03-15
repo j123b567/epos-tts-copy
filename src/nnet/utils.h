@@ -24,7 +24,7 @@ template<class T> inline T sqr (T x) {
 // CString toString (const long x, int dummy=0, bool dummy1=0);
 /** You may specify the number of decimal places, -1 means all */
 CString toString (const double x, int decimalPlaces=-1, bool forceDecimalPoint=false);
-// inline CString toString (const int x, int dummy=0, bool dummy1=0) { return toString ((long) x); }
+// inline CString toString (const int x, int dummy=0, bool dummy1=0) { return toString ((long int) x); }
 inline CString toString (const CString &x, int dummy=0, bool dummy1=0) { return x; }
 
 inline CString toString (double x, int decimalPlaces, bool forceDecimalPoint)

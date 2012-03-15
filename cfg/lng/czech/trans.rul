@@ -13,8 +13,8 @@ $sonant    = jlr$nasal
 $SONANT    = JLR$NASAL
 $short     = aeiouuyìäöü
 $long      = áéíóúùýìäöü
-$diphtong  = OAE
-$vowel     = $short$long$diphtong
+$diphthong  = OAE
+$vowel     = $short$long$diphthong
 $VOWEL     = AEIOUUYÁÉÍÓÚÙÝÌ
 $consonant = $voiced$voiceless$sonant
 $everywhere= !_!
@@ -269,7 +269,7 @@ near   hd		word
 	progress  w>v($everywhere)     ; vìt¹inou ale "w" odstraní výjimky, øeknìme
  }
 
- if  diphtongs
+ if  diphthongs
  {
 	progress  oae>OAE(!_u)	syll	; Dvojhlásky
 	regress   u>0(OAE_!)	syll

@@ -446,7 +446,7 @@ r_subst::r_subst(char *param) : hashing_rule(param)
 {
 	method = M_SUBSTR;
 	negated *= 2;
-	use_fastmatch = true;
+	use_fastmatch = scfg->fastmatch_substs;
 }
 
 r_prep::r_prep(char *param) : r_subst(param)
