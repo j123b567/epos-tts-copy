@@ -36,11 +36,11 @@ if not exist hash.cc echo #include "hash.cpp" > hash.cc
 
 del config.h
 copy ..\arch\win\config.in .\config.h
+copy ..\arch\win\epos.dsw .
 copy ..\arch\win\epos.dsp .
-copy ..\arch\win\eposm.dsp .
 copy ..\arch\win\say.dsp .
 copy ..\arch\win\instserv.dsp .
-copy ..\arch\win\epos.dsw .
+copy ..\arch\win\eposm.dsp .
 
 copy ..\arch\win\service\*.* .
 

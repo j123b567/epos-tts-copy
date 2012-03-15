@@ -33,25 +33,26 @@ list the option names and types using <CODE>epos -H</CODE>.
 </H2>
 
 <P>
-<P>Basically, there are three major classes of options: global options,
+<P>There are four classes of options: static options, global options,
 language options and voice options. For instance, switching a voice
-means switching to another set of voice options, while the language
-options and global options stay the same.
+in fact means switching to another set of voice options, while the language
+options, global options and static options stay the same.
 <P>Every voice is language specific (implies a specific language).
 That's why switching the language automatically switches the voice
-to the voice defined as default for this particular language.
-(It is however possible to use the same configuration file to setup
+to the voice defined as default or the last active one for this particular language.
+(It is of course possible to use the same configuration file to setup
 a similarly sounding voice for every language if desired.)
 It is also important to distinguish between a voice and an inventory.
 An <EM>inventory</EM> is a set of speaker-dependent files used
 to base a <EM>voice</EM>, that is, a mode of speech, on.  Multiple
 different voices may use the same inventory, and may even sound
 quite different depending on various configuration options.
-The average user may expect to be able to modify the voice dependent
+The average expert user may expect to be able to modify the voice dependent
 configuration files, but not inventory files.  Also, the inventories
 may often be distributed externally to Epos, while sample voices
 based on them may either be included with Epos, or with the
-segment inventory, or their creation may be left to the user.
+segment inventory, or their creation may be completely left
+to the user.
 <P>A set of voice options should completely describe a voice.
 A set of language options should completely describe a language,
 except for voice-specific behavior. A set of global options
@@ -67,11 +68,22 @@ voice. Likewise, there is a global option for every language option
 to default to. Therefore, adding a new language or voice options
 doesn't necessarily imply adding them to each language or voice
 configuration file, if a reasonable default can be suggested.
+<P>
+<A NAME="static"></A> 
+The difference between global and static options is subtler
+and not that important for most users.  All voice specific,
+language specific and also global options are implemented
+as user specific, that is, each TTSCP control connection may assign
+a different value to them at the same time.  For some options
+however, which are of even more global impact, this may make
+little sense.  These are termed static.  Assigning a value
+to a static option causes the value to change even for
+other concurrent users.
 <P>Whenever an option name is given, it is first understood as a voice option
 (of the current voice); if there is no such voice option, the name
-is treated as a language option, then as a global option. To override
-this order, you can prefix an option with "C:", "L:" or "V:". This will
-restrict the search to global, language or voice options, respectively.
+is treated as a language option, then as a global/static option. To override
+this order, you can prefix an option with "S:", "C:", "L:" or "V:". This will
+restrict the search to static, global, language or voice options, respectively.
 (This is automatically done with configuration files, because every
 configuration file describes either a language or a voice, or it is unrelated
 to the current language and voice altogether.)
@@ -96,7 +108,7 @@ to setup the global configuration: <CODE>fixed.ini</CODE>, <CODE>epos.ini</CODE>
 either <CODE>ansi.ini</CODE> or <CODE>rtf.ini</CODE> (depending on the preferred
 output format if colored output is turned on -- either ANSI escape sequences
 or RTF are supported at the moment; other markup formats can be added easily).
-By convention, <CODE>fixed.ini</CODE> contains the standard global configuration
+By convention, <CODE>fixed.ini</CODE> contains the standard global and static configuration
 values used by a given installation and rarely or never changes, while
 <CODE>epos.ini</CODE> contains less permanent parameters and temporary values.
 The global parameters include a list of <EM>languages</EM>, or language
@@ -140,7 +152,7 @@ The available escape sequences are listed in
 \ </TD><TD> hard space </TD><TD> 255 </TD><TD></TD></TR><TR><TD>
 \# </TD><TD> hash </TD><TD> 35 </TD><TD></TD></TR><TR><TD>
 \; </TD><TD> semicolon </TD><TD> 59 </TD><TD></TD></TR><TR><TD>
-\&commat; </TD><TD> at sign </TD><TD> 34 </TD><TD></TD></TR><TR><TD>
+\@ </TD><TD> at sign </TD><TD> 34 </TD><TD></TD></TR><TR><TD>
 \~ </TD><TD> dots </TD><TD> (1) </TD><TD> No...</TD></TR><TR><TD>
 \. </TD><TD> decimal point </TD><TD> (2) </TD><TD> 1.2 kg</TD></TR><TR><TD>
 \- </TD><TD> range </TD><TD> (3) </TD><TD> 2-3 people</TD></TR><TR><TD>
@@ -170,6 +182,27 @@ cause the contents of the <CODE>filename</CODE> file to be inserted at this plac
 main <CODE>.ini</CODE> file. These includes can be nested to any finite depth; if no or
 relative path is specified, the directory which holds the topmost file is used for
 the lookup.
+<P>
+<H3>Character encoding</H3>
+
+<P>
+<P>Sometimes it is not convenient or possible to encode all configuration files
+in the same character encoding.  For example, character encoding may be
+language dependent.  But it is even possible for different lines of the
+same file to use different encodings.  You can switch character encodings
+for the same file using the <CODE>@charset</CODE> directive.
+Charset name must be specified as a parameter and it must be enclosed in
+parentheses.  Epos attempts to load the corresponding unicode character
+mapping file and immediately switches the charset number for the current
+file.  Please note two differences from the <CODE>charset</CODE> option:
+the directive only affects the current "logical" file (including included
+files as well as any files it has been included from using the
+<CODE>@include</CODE> directive), whereas the option doesn't affect it at
+all, but it affects all subsequent files (e.g. for the given language).
+<P>
+<H3>Other directives</H3>
+
+<P>
 <P>Two more directives, <CODE>@warn</CODE> and <CODE>@error</CODE> with obvious semantics
 are available for diagnostic purposes.
 <P>
@@ -256,7 +289,7 @@ say --show_transcript off "Say this, do not show the transcription"
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>Refer to the 
-<A HREF="#indivopts">individual options</A> subsection
+<A HREF="#indivopts">individual options</A> section
 for documentation on available long options.
 <P>
 <H3>Language and voice switching</H3>
@@ -329,7 +362,8 @@ client and not a full-fledged controlling interface to Epos.
 <DT><B>-p</B><DD><P>Same as <CODE>--pausing</CODE>.
 <DT><B>-v</B><DD><P>Show Epos version.
 <DT><B>-D</B><DD><P>Turn on debugging output.  Multiple <CODE>-D</CODE> options cause the output to be more
-verbose.  
+verbose: this is equivalent to lowering the <CODE>always_dbg</CODE> option to four
+minus number of occurences.
 <DT><B>-H</B><DD><P>In addition to a summary of short options, show also a list of all available
 long options.
 </DL>
@@ -371,7 +405,7 @@ but sometimes a more fine-grained access control mechanism is needed.
 It is authentication and limiting access to specified options
 for some or all users.
 <P>By default, all settable parameters can be changed by any outside connection
-(this doesn't affect any other connections in any way). 
+(this doesn't affect the value in use for any other connection in any way). 
 You can control this privilege by restricting it in <CODE>cfg/restr.ini</CODE>.
 <P>Every line of that file is in the form
 <P>
@@ -438,7 +472,14 @@ Czech voice; it will also set the default language to Slovak. See
 the 
 <A HREF="epos-4.html#ttscp">TTSCP specification</A> for more info.
 <P>
-<H2><A NAME="soft-options"></A> <A NAME="ss3.6">3.6 Soft options </A>
+<A NAME="reinitialization"></A> <H2><A NAME="ss3.6">3.6 Reloading configuration files</A>
+</H2>
+
+<P>
+<P>Under UNIX, Epos reinitializes itself upon a hangup signal (SIGHUP).
+Existing TTSCP connections are terminated and configuration is reloaded.
+<P>
+<H2><A NAME="soft-options"></A> <A NAME="ss3.7">3.7 Soft options </A>
 </H2>
 
 <P>
@@ -475,7 +516,7 @@ clash with each other. However, built-in option names may not be used
 as soft option names.
 <P>
 <P>
-<H2><A NAME="ss3.7">3.7 Level of description dependent options</A>
+<H2><A NAME="ss3.8">3.8 Level of description dependent options</A>
 </H2>
 
 <P>
@@ -488,7 +529,7 @@ an array of options, indexed using the commercial at character
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-        perm@colon      ":,"
+        perm@colon       ":,"
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>defines the permissible colon terminators.  Since the TSR layer names
@@ -511,7 +552,7 @@ recommended after any of both types of level of description dependent
 options has been set.
 <P>
 <P>
-<H2><A NAME="indivopts"></A> <A NAME="ss3.8">3.8 Selected individual options </A>
+<H2><A NAME="indivopts"></A> <A NAME="ss3.9">3.9 Selected individual options </A>
 </H2>
 
 <P>
@@ -537,6 +578,9 @@ of technical nature and the output produced by Epos should not change
 with these options changed, but they can be useful in some special
 configurations.  They also get added to resolve some simple software
 engineering dilemmata.
+<P>The options in this subsection are not 
+<A HREF="#static">static</A>
+unless specified otherwise.
 <P>
 <DL>
 <DT><B>--comma <I>delimiter</I></B><DD><P>This is the delimiter for Epos-generated lists, especially
@@ -599,6 +643,7 @@ in for the next use.
 various kinds of input files than without.  It will rather
 try to reject suspicious or formally incorrect inputs,
 than to do something reasonable with them. Useful for debugging.
+This option is not static.
 <DT><B>--pausing</B><DD><P>With this option on, Epos will pause and wait for a keypress
 after every rule is applied.  Of course, this is incompatible
 with the <CODE>forking</CODE> option and some other setups.  Should
@@ -613,6 +658,7 @@ compiler; enable this option to skip these checks.
 any text which contains an unknown character (not listed in on of the
 <CODE>perm_*</CODE> options).  This option replaces such characters with
 the value of the <CODE>default_char</CODE> option before they're classified.
+This option is not static.
 <DT><B>--show_rule</B><DD><P>Print each rule before it is applied.  This is useful mostly for
 debugging situations (when a text is parsed in an unexpected way
 and the user is trying to find out which rule has escaped his
@@ -683,6 +729,8 @@ is controlled by TTSCP rather than by option settings.  However, there
 are some options related to the output formats produced by the monolithic
 binary (executable).  There are also some conventional informative outputs
 that can be produced by the monolithic and server binaries equally.
+<P>All options in this subsection are 
+<A HREF="#static">static</A>.
 <P>
 <DL>
 <DT><B>--show_phones</B><DD><P>Print the sequence of sounds generated from the text processed.
@@ -764,17 +812,9 @@ description are
 The <CODE>segment</CODE> and <CODE>text</CODE> may not be applicable for some of
 these options. This model of displaying the TSR is not used for
 transmitting the text over TTSCP.
-<P>
+<P>All the options in this subsection are 
+<A HREF="#static">static>.  &lt;descrip> &lt;tag>--colored&lt;/tag>  If disabled, all color manipulating options will be ignored.  Many configurations will enable this by default, because the  escape sequences are rarely usable directly and never indirectly. &lt;tag>--normal_color &lt;sl/color/&lt;/tag>  String to switching to the neutral (default) color. Issued at the end  of every colored piece of text. &lt;tag>--curr_rule_color &lt;sl/color/&lt;/tag>  String to switch to the a &lt;em/bold/ color.  The bold color will  be used to highlight the current rule in the list of rules printed  by the &lt;ref id=</A> name="debug rule type">.
 <DL>
-<DT><B>--colored</B><DD><P>If disabled, all color manipulating options will be ignored.
-Many configurations will enable this by default, because the
-escape sequences are rarely usable directly and never indirectly.
-<DT><B>--normal_color <I>color</I></B><DD><P>String to switching to the neutral (default) color. Issued at the end
-of every colored piece of text.
-<DT><B>--curr_rule_color <I>color</I></B><DD><P>String to switch to the a <EM>bold</EM> color.  The bold color will
-be used to highlight the current rule in the list of rules printed
-by the 
-<A HREF="epos-2.html#debug-rule">debug rule type</A>.
 <DT><B>--fatal_color <I>color</I></B><DD><P>String to switch to the color used for printing out fatal error
 messages.
 <P>
@@ -819,7 +859,7 @@ option.
 <DT><B>--swallow_underbars</B><DD><P>Epos uses the low line (<CODE>_</CODE>) character to represent
 suprasegmental units with no content at their level (e.g. syllables
 are often only implicitly terminated or even generated
-by the rules and have no associated symbol.); this option,
+by the rules and have no associated symbol); this option,
 when enabled, suppresses them completely.
 </DL>
 <P>
@@ -838,16 +878,13 @@ also covers some time vs. space trade-off configuration parameters, though
 these are no limits at all. Also some <EM>sanity check limits</EM> are imposed; these
 act as hard limits, but can be effectively disabled by setting them to absurdly
 high values, with no direct impact on efficiency in the typical case.
-<P>In fact, you can ignore this section completely, as the few hard limits tend to
+<P>In fact, you can ignore this subsection completely, as the few hard limits tend to
 employ reasonably high values.
+<P>The options in this subsection are 
+<A HREF="#static">static</A> unless
+specified otherwise.
 <P>
 <DL>
-<DT><B>--seg_buff_size <I>segments</I></B><DD><P>Soft limit.  Maximum number of segments generated by the diphoniser
-and synthesized at once. It more segments have to be generated,
-they are synthesized in chunks of <CODE>seg_buff_size</CODE>.  If this
-option is set to zero, a growable buffer is used instead, and
-there is no limit on memory consumed.
-This option has no effect in the monolithic Epos.
 <DT><B>--buffer_size <I>bytes</I></B><DD><P>Soft limit. The initial buffer size for a wave file. This value is not
 used, if we already know that we will eventually write this waveform
 to a sound card device; in this case we use ioctls to find out the size
@@ -856,12 +893,24 @@ playback.
 <DT><B>--dev_text_len <I>bytes</I></B><DD><P>Sanity check limit.  When reading from a device, this is the maximum
 amount of data which will be read for processing.  This is not necessary
 when reading from a file, because the length of a file can be known in
-advance and it is always finite.
+advance.  This option is not static.
+<DT><B>--hash_search <I>n</I></B><DD><P>Trade-off.  Controls how many multipliers are tried out when
+constructing a perfect hash table, for each table size.
+The search begins at 1 and continues up to <I>n</I>.
+If the table still has collisions, hash table size is
+increased by one and the search restarts.  This is iterated
+until a perfect hash table is found.  As we only use perfect hash
+tables for representing constant sets and functions, they are only
+constructed during Epos startup.  Setting this option to a small
+value (such as 17) speeds up Epos startup, while larger values
+can sometimes arrive at a smaller table, thus saving some memory.
 <DT><B>--hashes_full <I>percentage</I></B><DD><P>Trade-off. Controls how full should a hash table ideally be.
 The hash tables used in Epos
 are actually quite robust performance-wise, so that even values
 like 1000, that is, ten data items per a hash table slot, result
 in near-optimal speed. Values somewhere below 100 are the best bet.
+<DT><B>--max_errors <I>count</I></B><DD><P>Sanity check limit.  If more than <I>count</I> of errors in a rules file
+is found, Epos quits parsing the file.
 <DT><B>--max_line_len <I>characters</I></B><DD><P>Hard limit. Maximum line length in a text-oriented input file.
 Longer lines are truncated.
 <DT><B>--max_net_cmd <I>characters</I></B><DD><P>Hard limit. Maximum TTSCP command length. TTSCP lines longer
@@ -882,6 +931,12 @@ case, the substitution is considered impossible (infinite).
 Usually only very few bytes of the buffer are needed, but overflowing
 it is fatal. It is recommended to provide at least a few hundred bytes,
 preferably kilobytes, for this buffer.
+<DT><B>--seg_buff_size <I>segments</I></B><DD><P>Soft limit.  Maximum number of segments generated by the diphoniser
+and synthesized at once. It more segments have to be generated,
+they are synthesized in chunks of <CODE>seg_buff_size</CODE>.  If this
+option is set to zero, a growable buffer is used instead, and
+there is no limit on memory consumed.
+This option has no effect in the monolithic Epos.
 <DT><B>--variables <I>count</I></B><DD><P>Soft limit. Number of variables used in a set of rules.
 </DL>
 <P>
@@ -990,7 +1045,10 @@ proper. Its format is speech synthesis type dependent.
 <DT><B>--counts <I>filename</I></B><DD><P>The value is a file name. The file contains the lengths of individual
 segments in this segment inventory.
 <DT><B>--dpt_file <I>filename</I></B><DD><P>The value is a file name. The file contains the symbolic segment names
-for user output.
+for user output; each consists of exactly three characters on a line
+(indented with spaces from the left if necessary).  No blank lines
+nor comments are allowed.  This file usually comes with a diphone
+inventory.
 <DT><B>--codebook <I>filename</I></B><DD><P>The value is a file name. The file contains the code book for
 the vector quantified LPC speech synthesis (<CODE>lpc-vq</CODE> type only).
 <A NAME="snlfile-option"></A> <DT><B>--snl_file <I>filename</I></B><DD><P>The value is a file name.  The file contains phone boundary information
@@ -1000,7 +1058,8 @@ within the segment (valued from 1 to 1024, e.g. 512 is the middle of the segment
 and the character (phone representation) which is to be associated with
 the position.  Lines not conforming to this specification are ignored.
 Currently, at most one label may be indicated for one segment, but it
-would be easy to get rid of this limit.
+would be easy to get rid of this limit (at a cost of a few extra
+processor instructions).
 See also 
 <A HREF="#labelphones-option">label_phones option</A>.
 <DT><B>--init_f <I>percentage</I></B><DD><P>The auditory neutral integer value for the fundamental frequency.
@@ -1036,7 +1095,7 @@ segment inventory.  We currently only support 8 and 16 bits.
 <H3>Prosody generation</H3>
 
 <P>
-<P>The options in this section control how the resulting per segment prosodic
+<P>The options in this subsection control how the resulting per segment prosodic
 information is assembled from the prosodic adjustments done to the
 structural units by the rules.  It actually controls the interpretation
 of those adjustments themselves.
@@ -1115,10 +1174,13 @@ but the first one allows to place any file in an arbitrary directory.
 Likewise, if the directory name begins with a slash, it is not considered
 to be relative to the base directory.
 <P>Changing these options in run time does not immediately cause re-reading the
-renamed files.
+renamed files.  All of the options in this section are 
+<A HREF="#static">static</A>
+unless stated otherwise.
 <P>
 <DL>
-<DT><B>--base_dir <I>dirname</I></B><DD><P>The value is an absolute directory name.  This option can be used to
+<DT><B>--base_dir <I>dirname</I></B><DD><P>Only changeable on the command line.
+The value is an absolute directory name.  This option can be used to
 change the location of the whole configuration structure, which can also be
 used for trying out Epos before installing it:
 <BLOCKQUOTE><CODE>
@@ -1138,14 +1200,17 @@ giving access to the rest of the file system. Write access
 to this subtree to any user except Epos effectively gives him
 the privilege to use the Epos file access rights anywhere
 in the system through creating a symlink to the absolute root directory.
+This option is not static.
 <P>
 <P>
 <DT><B>--ini_dir <I>dirname</I></B><DD><P>The value is a directory name.  Sets the path to language
-independent configuration files.
+independent configuration files.  This option is only changeable
+on the command line.
 <P>
 <DT><B>--fixed_ini_file <I>filename</I></B><DD><P>The value is a file name.  This option can be used to change the file name
 of the <CODE>fixed.ini</CODE> file, which usually contains operating system
-independent, relatively fixed default global configuration.
+independent, relatively fixed default global configuration.  This option
+is only changeable on the command line.
 <DT><B>--cfg_file <I>filename</I></B><DD><P>The value is a file name. This option can be used to change the file name
 of the <CODE>epos.ini</CODE> file.
 <DT><B>--local_sound_file <I>filename</I></B><DD><P>The value is a file name. This option can be used to change the file name
@@ -1188,7 +1253,8 @@ option) is appended to it.
 <DT><B>--ttscp_help_dir <I>dirname</I></B><DD><P>The value is a directory name.  In this directory, TTSCP help files
 for individual TTSCP commands and other help topics are located.
 The contents of these files is sent to the TTSCP control connection
-in reply to a corresponding <CODE>help</CODE> command.
+in reply to a corresponding <CODE>help</CODE> command.  This option is not
+static.
 <DT><B>--wav_dir <I>dirname</I></B><DD><P>The value is a global directory name.
 Any waveform files created by Epos without explicit directory
 specification will be created in this directory.
@@ -1205,8 +1271,11 @@ Applies only to the monolithic Epos.
 <H3>Daemon startup options</H3>
 
 <P>
-<P>The options in this section usually have no effect if changed in run time;
-change them in the configuration files instead and restart Epos.
+<P>All options in this subsection are 
+<A HREF="#static">static</A>.
+They also usually have no effect if changed during run time;
+change them in the configuration files instead and request Epos
+<A HREF="#reinitialization">reinitialization</A>.
 <P>
 <DL>
 <P>
@@ -1232,9 +1301,12 @@ as in TTSCP.
 to store its internal password to a file.  This password can then
 be used for TTSCP authentication in order to issue restricted commands
 such as <CODE>down</CODE>.  If the file can not be created, no error is reported.
+<DT><B>--debug_password <I>password</I></B><DD><P>The value is a string.  The string may be used instead of the server
+password.  Use of this option makes Epos insecure and is discouraged.
 <DT><B>--restr_file <I>filename</I></B><DD><P>The file named by this parameter provides access control in TTSCP to individual
 options.  Its syntax is described 
 <A HREF="#restricted-options">above</A>.
+This option can only be changed from the command line.
 <DT><B>--listen_port <I>port</I></B><DD><P>The TCP port number where the daemon should be listening for incoming
 TTSCP connections. The daemon will check if no other service is already
 running on that port and refuses to run if the port is already occupied.
@@ -1261,7 +1333,7 @@ This code is usually a <CODE>fprintf</CODE> to the <CODE>stddbg</CODE> stream.
 The decision whether to execute the debugging code, based on the
 code area and severity level is carried out by the <CODE>debug_wanted</CODE>
 function supplied in <CODE>src/interf.cc</CODE>.  You can either edit
-it yourself, or, you can use the options described in this section
+it yourself, or, you can use the options described in this subsection
 to control the behavior of the default <CODE>debug_wanted</CODE> function
 supplied by Epos.  Note that <CODE>#define DEBUGGING</CODE> must be
 enabled in <CODE>interf.h</CODE>, else the <CODE>DEBUG</CODE> macro is ignored
@@ -1279,13 +1351,13 @@ level </TD><TD> debugging messages </TD><TD> comment </TD></TR><TR><TD>
 
 <CAPTION>       Severity levels</CAPTION>
 </TD></TR></TABLE></CENTER>
-<P>
-<P>
+<P>All options in this subsection are 
+<A HREF="#static">static</A>.
 <P>
 <DL>
 <DT><B>--use_debug</B><DD><P>This option must be <CODE>on</CODE> to provide any debugging information (except for
 daemon activity logging controlled by 
-<A HREF="#daemon-log-option">the daemon_log option</A>.
+<A HREF="#daemon-log-option">the daemon_log option</A> and syslog logging.
 <DT><B>--assim_debug <I>level</I></B><DD><P>Severity level threshold for the code area of <CODE>regress</CODE> and
 related types of rules, as well as their implementation in the
 <CODE>src/unit.cc</CODE> file.

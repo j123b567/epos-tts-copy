@@ -99,11 +99,11 @@ int ptdsyn::analyza(DIFON *dfn, sample_type *waveout, int *tas, voice *v)
  strcpy(scratch, "segments/");
  strcat(scratch, dfn->fname);
  strcat(scratch, ".wav");
- char *filename = compose_pathname(scratch, v->loc, cfg->inv_base_dir);
+ char *filename = compose_pathname(scratch, v->loc, scfg->inv_base_dir);
 
 
 /* filename=new char[MAXFILENAME];
- strcpy(filename, cfg->base_dir);
+ strcpy(filename, scfg->base_dir);
  strcat(filename,"/");
  strcat(filename, cfg->inv_dir);
  strcat(filename,"/petriska/segments/");
@@ -174,7 +174,7 @@ ptdsyn::ptdsyn(voice *v)
   K=new kbuffer(5000);
   if(!dif)fprintf(stderr,"Not enough memory for DIFON");
   FILE *f;
-  char * pathname = compose_pathname("difon.dat", v->loc, cfg->inv_base_dir);
+  char * pathname = compose_pathname("difon.dat", v->loc, scfg->inv_base_dir);
  if((f=fopen(pathname,"rt"))==NULL){
   fprintf(stderr,"Cannot open file :%s",pathname);
   exit(1); 
@@ -196,8 +196,8 @@ ptdsyn::ptdsyn(voice *v)
   strcpy(scratch, "labels/");
   strcat(scratch, dif[i].fname);
   strcat(scratch, ".label");
-  filename = compose_pathname(scratch, v->loc, cfg->inv_base_dir);
-/*        strcpy (filename, cfg->base_dir);
+  filename = compose_pathname(scratch, v->loc, scfg->inv_base_dir);
+/*        strcpy (filename, scfg->base_dir);
         strcat (filename, "/");
 	strcat (filename,v->inv_dir); 
         strcat(filename,"/petriska/labels/");

@@ -1,6 +1,18 @@
 Bugs
-- better prosody modelling for monosyllaba	- 2.5
+- decoding and encoding not done for non-text data types (ssif etc.)
+- better prosody modelling for monosyllaba
+- 213788788
+- smooth not implemented
+- document [p] and dump
+- the --show_labels option is undoc and too idiosyncratic
+- theimer is broken
+- subst doesn't apply the first time
+- assignments to cfg probably do not cow the cfg properly
 - fix regress behavior wrt literal zero characters
+- sound labels are broken
+- say a @b
+- -H
+- parser discards garbage before the next phone - not always garbage
 
 Features
 - pause hierarchy rules
@@ -20,11 +32,12 @@ Features
 - pause/resume in TTSCP
 - t i adjustment option
 - TCP wrappers & auth config & /etc/epos.users
-- unicode
 - reasonable logging
 - investigate the optimum pause lengths
 - integrate the neural network stuff
 - all rule and config file syntax errors should be reported in a single run
+- big-endian ovens
+- sighup (now no defaults.ini & bugs)
 
 Inventory omissions
 - unknown segment - no. 19 (consonant---r)
@@ -42,16 +55,18 @@ Optimisations
 - static options (not changeable with setl, not cowed)
 - free some option value strings (for the master context and monolith)
 - initialiser lists instead of constructor code
+- remove code duplication in function.cc
 
 Miscelannea
 - QNX port
 - make install not robust (cfg not there, no binaries...)
 - iso8859-to-cp1250 conversions - get rid of the convertor if possible
 - examine the --input_text and --input_file options
+- document waveform labels in ttscp.sgml - waveform format description
 
 Should Check
 - behavior of intr with something other than oa_wavefm (may miss 123 or 122)
 - investigate segment free utterance handling
 - load_config skips trailing whitespace in a very strange way
 - TTSCP error codes, esp. those related to options and values, should be revised
-
+- what if I change max_line?

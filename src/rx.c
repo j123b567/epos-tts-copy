@@ -28,10 +28,6 @@
 
 #define REGEX_MALLOC
 
-#ifdef DEBUG
-	#undef DEBUG
-#endif
-
 /* AIX requires this to be the first thing in the file. */
 #if defined (_AIX) && !defined (REGEX_MALLOC)
   #pragma alloca
@@ -39,6 +35,10 @@
 
 #undef	_GNU_SOURCE
 #define _GNU_SOURCE
+
+#ifdef DEBUG
+	#undef DEBUG
+#endif
 
 #include "config.h"
 

@@ -25,11 +25,12 @@ enum SYNTH_TYPE {
 	S_LPC_INT = 5,
 	S_LPC_VQ = 6,
 	S_KTD = 8,
-	S_PTD = 10
+	S_PTD = 10,
+	S_MBROLA = 12
 };
 
-#define STstr "none:internet:::lpc-float:lpc-int:lpc-vq::ktd::ptd:"
-#define ST_MAX (S_PTD+1)
+#define STstr "none:internet:::lpc-float:lpc-int:lpc-vq::ktd::ptd::mbrola:"
+#define ST_MAX (S_MBROLA+1)
 
 enum CHANNEL_TYPE {CT_MONO, CT_LEFT, CT_RIGHT, CT_BOTH};
 #define CHANNEL_TYPEstr "mono:left:right:both:"
@@ -64,8 +65,8 @@ struct lang : public cowabilium
 	void add_voices(const char *voice_names);
 	void compile_rules();		// could be made delayed....
 
-	void *operator new(size_t size);
-	void operator delete(void *ptr);
+//	void *operator new(size_t size);
+//	void operator delete(void *ptr);
 };
 
 struct sound_label

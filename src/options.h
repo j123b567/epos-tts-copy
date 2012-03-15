@@ -18,10 +18,13 @@
  *	and scattered all around the code base.
  */
 
-enum OPT_STRUCT { OS_CFG, OS_LANG, OS_VOICE };
+enum OPT_STRUCT { OS_STATIC, OS_CFG, OS_LANG, OS_VOICE };
 enum ACCESS { A_PUBLIC, A_AUTH, A_ROOT, A_NOACCESS };
-enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SYNTH, O_CHANNEL, O_DBG_AREA, O_INT, O_CHAR, O_STRING, O_LANG, O_VOICE };
+enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SYNTH, O_CHANNEL, O_DBG_AREA, O_INT, O_CHAR, O_STRING, O_LANG, O_VOICE, O_CHARSET };
 								//various types of options
+								
+#define OPT_STRUCT_PREFIX	"SCLV"								
+								
 #define CONFIG_DECLARE
 struct configuration : public cowabilium	//Some description & defaults can be found in options.lst
 {
@@ -37,10 +40,19 @@ struct configuration : public cowabilium	//Some description & defaults can be fo
 	stream * current_stream;
 
 	configuration();
+	~configuration();
 	void shutdown();	// destructor of some sort
 
 	void *operator new(size_t size);
 	void operator delete(void *ptr);
+};
+
+#define CONFIG_STATIC_DECLARE
+struct static_configuration
+{
+	#include "options.lst"
+	
+	inline static_configuration();
 };
 
 /*	Visual C++ 6.0 and Watcom C 10.6 generate incorrect code for
@@ -63,6 +75,7 @@ struct configuration : public cowabilium	//Some description & defaults can be fo
  //void cow(cowabilium **p, int size, int, int);	/* copy **p if shared and adjust *p, see options.cc */
 void cow_claim();				/* claim all current global cfg */
 void cow_unclaim(configuration *);		/* unclaim the cfg specified */
+void cow_catharsis();
 
 void cow_configuration(configuration **);
 
@@ -78,6 +91,8 @@ struct option
 	bool per_level		BIT_FIELD(1);
 	short int offset;
 };
+
+void cow_unstring(cowabilium *p, option *optlist);
 
 void config_init();
 void config_release();
@@ -101,6 +116,7 @@ bool voice_switch(const char *name);
 
 extern configuration master_cfg;
 extern configuration *cfg;
+extern static_configuration * scfg;
 
 void load_config(const char *filename);
 void load_config(const char *filename, const char *dirname, const char *what,
@@ -111,6 +127,8 @@ void list_voices();
 
 void shutdown_cfgs();
 void shutdown_langs();
+
+void free_all_options();
 
 extern int argc_copy;
 extern char **argv_copy;

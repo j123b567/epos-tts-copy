@@ -87,11 +87,11 @@ if   !kadlec_dph
 #  mezi slabikami získávaly prosodické hodnoty èásteènì
 #  od obou slabik.  Pøedpokládá se, ¾e difon pøechodu mezi
 #  hláskami je pøipojen k hlásce prvé, proto se pøihlí¾í
-#  pouze k pravému sousedu (váha 30%, vlastní hodnota
-#  má tedy váhu 70%). Ideologicky èistá øe¹ení jsou buïto
+#  pouze k pravému sousedu (váha 20%, vlastní hodnota
+#  má tedy váhu 80%). Ideologicky èistá øe¹ení jsou buïto
 #  nevyhlazovat vùbec (pøiøadit difon doleva), nebo
 #  vyhlazovat f/50\50, tj. kvalifikovat difon jako spojovací.
 #
 
-smooth   f/70\30     word segment
+; smooth   f/80\20     word phone
 

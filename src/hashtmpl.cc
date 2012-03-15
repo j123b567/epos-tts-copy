@@ -49,7 +49,7 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
 #endif
 
 #ifdef WANT_DMALLOC
-	#include <dmalloc.h>          // Unimportant debugging hack. Throw it out.
+	#include <dmalloc.h>
 #endif
 
 #define key_t  hash_key_t
@@ -307,7 +307,7 @@ int hash_max_line = 1024;
 hash::hash(const char *filename,
 		int perc_full, int perc_downsize, int perc_upsize,
 		int max_tree_depth, const char * no_data, bool multi_data,
-		const char *not_found, char *esctab): hash_table<char, char>(0)
+		const char *not_found, char esc(char)): hash_table<char, char>(0)
 {
 	FILE *hashfile;
 	char *buff;
@@ -349,7 +349,7 @@ printf("hash::hash: using file %s\n", filename);
 		for (tmp = dst = buff; !strchr(COMMENT_LINES, tmp[1]) ||
 				!strchr(WHITESPACE, tmp[0]) && tmp[1] && tmp[1] != '\n';
 				tmp++, dst++) {
-			if (esctab && tmp[0] == ESCAPE) *dst = esctab[(unsigned char)*++tmp];
+			if (esc && tmp[0] == ESCAPE) *dst = esc(*++tmp);
 			else *dst = *tmp;
 		}
 		*dst = *tmp;

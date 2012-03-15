@@ -128,7 +128,7 @@ context::context(int std_in, int std_out)
 		//	config->stdshriek =
 #endif
 	} else {
-		DEBUG(2,11,fprintf(STDDBG, "master context OK\n");)
+		DBG(2,11,fprintf(STDDBG, "master context OK\n");)
 		cow_claim();
 		this_context = this;
 	}
@@ -136,7 +136,7 @@ context::context(int std_in, int std_out)
 	uid = UID_ANON;
 	config->sd_in = std_in;
 	config->sd_out = std_out;
-	DEBUG(1,11,fprintf(STDDBG, "new context uses fd %d and %d\n", std_in, std_out);)
+	DBG(1,11,fprintf(STDDBG, "new context uses fd %d and %d\n", std_in, std_out);)
 
 	sgets_buff = (char *)xmalloc(config->max_net_cmd);
 	*sgets_buff = 0;
@@ -159,16 +159,16 @@ context::~context()
 	// fclose(config->stdshriek...
 #endif
 	if (this == this_context) leave();  // shriek(862, "Deleting active context");
-	cow_unclaim(config);
+	if (this != master_context) cow_unclaim(config);
 	free(sgets_buff);
 }
 
 void
 context::enter()
 {
-	DEBUG(1,11,fprintf(STDDBG, "enter_context(%p)\n", this);)
+	DBG(1,11,fprintf(STDDBG, "enter_context(%p)\n", this);)
 	if (!this) {
-		DEBUG(2,11,fprintf(STDDBG, "(nothing to enter!)\n");)
+		DBG(2,11,fprintf(STDDBG, "(nothing to enter!)\n");)
 		return;
 	}
 
@@ -189,7 +189,7 @@ context::leave()
 {
 //	context *c = context_table[index];
 	if (!this) {
-		DEBUG(2,11,fprintf(STDDBG, "(nothing to leave!)\n");)
+		DBG(2,11,fprintf(STDDBG, "(nothing to leave!)\n");)
 		return;
 	}
 	if (this_context != this) shriek(462, "leaving unentered context");
@@ -205,7 +205,7 @@ context::leave()
 	cfg = master_context->config;
 	::this_context = master_context;
 //	session_uid = master_context->uid;
-	DEBUG(1,11,fprintf(STDDBG, "leave_context(%p)\n", this);)
+	DBG(1,11,fprintf(STDDBG, "leave_context(%p)\n", this);)
 }
 
 /*
@@ -235,7 +235,7 @@ int sgets(char *buffer, int space, int sd, char *partbuff)
 	int result = 0;
 
 	if (*partbuff) {
-		DEBUG(1,11,fprintf(STDDBG, "[core] Appending.\n");)
+		DBG(1,11,fprintf(STDDBG, "[core] Appending.\n");)
 		l = strlen(partbuff);
 		if (l > space) shriek(862, "sgets() holdback overflow"); // was: shriek(664)
 		if (l == space) goto too_long;
@@ -246,13 +246,13 @@ int sgets(char *buffer, int space, int sd, char *partbuff)
 	if (result >= 0) buffer[l+result] = 0; else buffer[l] = 0;
 	if (result <= 0) {
 		if (result == -1 && errno == EAGAIN) {
-			DEBUG(2,11,fprintf(STDDBG, "Nothing to do: %d\n", sd);)
+			DBG(2,11,fprintf(STDDBG, "Nothing to do: %d\n", sd);)
 			*buffer = 0;
 			return 0;
 		}
 		*partbuff = 0;	/* forgetting partial line upon EOF/error. Bad? */
 		*buffer = 0;
-		DEBUG(2,11,fprintf(STDDBG, "Error on socket: %d\n", sd);)
+		DBG(2,11,fprintf(STDDBG, "Error on socket: %d\n", sd);)
 		return -1;
 	}
 	l += result;
@@ -270,13 +270,13 @@ already_enough_text:
 	if (i >= space) goto too_long;
 	buffer[i] = 0;
 	strcpy(partbuff, buffer);
-	DEBUG(1,11,fprintf(STDDBG, "[core] partial line read: %s\n", partbuff);)
+	DBG(1,11,fprintf(STDDBG, "[core] partial line read: %s\n", partbuff);)
 	*buffer = 0;
 	return 0;
 
 too_long:
 	strcpy(partbuff, "remark ");
-	DEBUG(2,11,fprintf(STDDBG, "[core] Too long command ignored");)
+	DBG(2,11,fprintf(STDDBG, "[core] Too long command ignored");)
 	sputs("413 Too long\n", sd);
 	*buffer = 0;
 	return 0;
@@ -309,14 +309,14 @@ static void detach()
 {
 	int i;
         UNIX (ioctl(0, TIOCNOTTY);)          //Release the control terminal
-	if (!cfg->daemon_log || !*cfg->daemon_log)
+	if (!scfg->daemon_log || !*scfg->daemon_log)
 		return;
 	for (i=0; i<3; i++) close(i);
-	if (!open(cfg->daemon_log, O_RDWR|O_CREAT|O_APPEND  UNIX( |O_NOCTTY), MODE_MASK)
+	if (!open(scfg->daemon_log, O_RDWR|O_CREAT|O_APPEND  UNIX( |O_NOCTTY), MODE_MASK)
 			|| !open (NULL_FILE, O_RDWR|O_APPEND, MODE_MASK)) {
 		for (i=1; i<3; i++) dup(0);
-		cfg->colored = false;
-		DEBUG(3,11,fprintf(STDDBG, "\n\n\n\nEpos restarted at ");)
+		scfg->colored = false;
+		DBG(3,11,fprintf(STDDBG, "\n\n\n\nEpos restarted at ");)
 		fflush(stdout);
 		system("/bin/date");
 	} else /* deep OS level trouble, contact authors */ call_abort();
@@ -325,22 +325,23 @@ static void detach()
 static inline void make_server_passwd()
 {
 	make_rnd_passwd(server_passwd, SERVER_PASSWD_LEN);
-	DEBUG(0,11,fprintf(STDDBG, "[core] server internal password is %s\n", server_passwd);)
-	if (cfg->listen_port != TTSCP_PORT) return;
+	DBG(0,11,fprintf(STDDBG, "[core] server internal password is %s\n", server_passwd);)
+	if (scfg->listen_port != TTSCP_PORT) return;
 
 	FILE *f;
-	char *filename = compose_pathname(cfg->pwdfile, "");
+	char *filename = compose_pathname(scfg->pwdfile, "");
 	if (filename && *filename && (f = fopen(filename, "w", NULL))) {
 		UNIX(chmod(filename, S_IRUSR));
 		fwrite(server_passwd, SERVER_PASSWD_LEN, 1, f);
 		fwrite("\n", 1, 1, f);
 		fclose(f);
-		free((char *)cfg->pwdfile);
-		cfg->pwdfile = filename;
+		free((char *)scfg->pwdfile);
+		scfg->pwdfile = filename;
 	}
 }
 
 volatile bool server_shutting_down = false;
+volatile bool server_reinit_req = false;
 
 void server_shutdown()
 {
@@ -349,16 +350,55 @@ void server_shutdown()
 		sputs("800 shutdown requested\r\n", tmp->c->config->sd_out);
 		delete ctrl_conns->remove(tmp->handle);
 	}
-	if (cfg->pwdfile) remove(cfg->pwdfile);
+	if (scfg->pwdfile) remove(scfg->pwdfile);
 	delete accept_conn;
 	delete ctrl_conns;
 	delete data_conns;
 	delete master_context;
+//	cfg->n_langs = 0;	// otherwise the langs point into no man's land
 	free(sleep_table);
 	epos_done();
 	exit(0);
 }
 
+static void server_reinit_check()
+{
+	if (server_reinit_req) {
+		server_reinit_req = false;
+		while (ctrl_conns->items) {
+			a_ttscp *tmp = ctrl_conns->translate(ctrl_conns->get_random());
+			sputs("601 reinit requested\r\n", tmp->c->config->sd_out);
+			sleep_table[tmp->c->config->sd_out] = NULL;
+			FD_CLR(tmp->c->config->sd_out, &block_set);
+			FD_CLR(tmp->c->config->sd_out, &push_set);
+			delete ctrl_conns->remove(tmp->handle);
+		}
+		while (data_conns->items) {
+			a_ttscp *tmp = data_conns->translate(data_conns->get_random());
+			sleep_table[tmp->c->config->sd_out] = NULL;
+			FD_CLR(tmp->c->config->sd_out, &block_set);
+			FD_CLR(tmp->c->config->sd_out, &push_set);
+			delete data_conns->remove(tmp->handle);
+		}
+//		free_all_options();
+		delete accept_conn;
+		select_fd_max = 0;
+		delete master_context;
+		master_context = NULL;
+		epos_reinit();
+		FD_ZERO(&block_set);
+		FD_ZERO(&push_set);
+		master_context = new context(-1, DARK_ERRLOG);
+		accept_conn = new a_accept();
+	}
+}
+
+/*
+static void unix_sigfatal(int)
+{
+	shriek(467, "Helemese! A fatal signal occured.\n");
+}
+*/
 
 static void unix_sigterm(int)
 {
@@ -366,11 +406,24 @@ static void unix_sigterm(int)
 	server_shutting_down = true;
 }
 
+static void unix_sighup(int)
+{
+	server_reinit_req = true;
+}
+
 static void daemonize()
 {
 	UNIX(signal(SIGPIPE, SIG_IGN);)		// possibly dangerous
 	UNIX(signal(SIGCHLD, SIG_IGN);)		// automatic child reaping
 	UNIX(signal(SIGTERM, unix_sigterm);)
+	UNIX(signal(SIGHUP, unix_sighup);)
+//	UNIX(signal(SIGINT,...);)
+//	UNIX(signal(SIGQUIT,...);)
+//	UNIX(signal(SIGILL, unix_sigfatal);)
+//	UNIX(signal(SIGFPE, unix_sigfatal);)
+//	UNIX(signal(SIGSEGV, unix_sigfatal);)
+	
+	UNIX(chdir("/");)
 
 //	dispatcher_pid = getpid();
 
@@ -422,7 +475,9 @@ static bool select_socket(bool sleep)
 	if (n < 0 && errno != EINTR) shriek(871, "select() failed");
 
    restart:
-	if (server_shutting_down) return false;
+	if (server_shutting_down || server_reinit_req) {
+		FD_ZERO(&rd_set); FD_ZERO(&wr_set); return false;
+	}
 
 	idle();
 
@@ -448,13 +503,13 @@ void server()
 	while (!server_shutting_down) {
 		while (runnable_agents > SCHED_SATIATED
 					|| runnable_agents && !select_socket(false)) {
-			DEBUG(3,11,if (runnable_agents > SCHED_WARN) fprintf(STDDBG,"Busy! %d runnable agents\n", runnable_agents);)
+			DBG(3,11,if (runnable_agents > SCHED_WARN) fprintf(STDDBG,"Busy! %d runnable agents\n", runnable_agents);)
 			sched_sel()->timeslice();
 		}
 		select_socket(true);
 		for (fd=0; fd < select_fd_max; fd++) if (FD_ISSET(fd, &rd_set) || FD_ISSET(fd, &wr_set)) {
 			agent *a = sleep_table[fd];
-			DEBUG(2,11,fprintf(STDDBG, a ? "Scheduling select(%d)ed agent\n"
+			DBG(2,11,fprintf(STDDBG, a ? "Scheduling select(%d)ed agent\n"
 					: "sche sche scheduler\n", fd);)
 			sleep_table[fd] = NULL;
 			int pushing = FD_ISSET(fd, &push_set);
@@ -467,6 +522,7 @@ void server()
 				a->dep = NULL;
 			}
 		}
+		server_reinit_check();
 	}
 	server_shutdown();
 }
@@ -483,7 +539,8 @@ void server_crashed(char *, a_ttscp *a, int why_we_crashed)
 void lest_already_running()
 {
 	if (running_at_localhost()) {
-		cfg->pwdfile = NULL;
+		if (scfg->pwdfile) free((char *)scfg->pwdfile);	// FIXME: set_option()
+		scfg->pwdfile = NULL;
 		shriek(872, "Already running\n");
 	}
 #ifdef ENETUNREACH
@@ -495,7 +552,8 @@ void lest_already_running()
 void init_thrown_exception(int errcode)
 {
 	ctrl_conns->forall(server_crashed, errcode);
-	if (cfg->pwdfile) remove(cfg->pwdfile);
+
+	if (scfg->pwdfile) remove(scfg->pwdfile);
 }
 
 int start_unix_daemon()
@@ -509,7 +567,7 @@ int start_unix_daemon()
 			case 0:  detach();
 				 server();
 				 return 0;	/* child  */
-			default: UNIX( if (!running_at_localhost() && cfg->init_time--) sleep(1);)
+			default: UNIX( if (!running_at_localhost() && scfg->init_time--) sleep(1);)
 				 return 0;	/* parent */
 		}
 
@@ -526,7 +584,6 @@ int start_unix_daemon()
 	}
 }
 
-
 int main(int argc, char **argv)
 {
 	argc_copy = argc, argv_copy = argv;
@@ -537,4 +594,3 @@ int main(int argc, char **argv)
 #endif
 	return start_unix_daemon();
 }
-

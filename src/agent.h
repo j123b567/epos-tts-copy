@@ -74,7 +74,7 @@ class context
 
 class stream;
 
-enum DATA_TYPE {T_NONE, T_INPUT, T_TEXT, T_STML, T_UNITS, T_DIPHS, T_WAVEFM};
+enum DATA_TYPE {T_NONE, T_INPUT, T_TEXT, T_STML, T_UNITS, T_SEGS, T_SSIF, T_WAVEFM};
 
 struct pend_ll
 {
@@ -201,7 +201,7 @@ extern socky int select_fd_max;
 
 inline int my_fork()
 {
-	if (!cfg->forking) return -1;
+	if (!scfg->forking) return -1;
 	else return fork();
 }
 

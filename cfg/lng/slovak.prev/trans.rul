@@ -1,25 +1,26 @@
 #
 #	(c) Jirka Hanika <geo@ff.cuni.cz>
-#       (c) Martin Petriska <petriska@pobox.sk>
+#       (c) Martin Petriska <petriska@kre.elf.stuba.sk>
 
-$voiced    = bdïgZ®z¾hv
+$voiced    = bdïgZ®z¾hw
 $voiceless = pt»kcès¹xf
 $fric      = sz¹¾fvhx
 $afric     = cZè®
 $stop      = pbt»dïkg
+$sonor     = rRàlLåmnMÒNUIjòµ
 $nasal     = mnòN
-$sonant    = jlr$nasal
+$sonant    = jlLRr$nasal
 $short     = aeiouyäì
 $long      = áéíóúýäì
-$diphtong  = AEUOô
+$diphtong  = IU
 $vowel     = $short$long$diphtong
 $consonant=$voiced$voiceless$sonant
 $everywhere= !_!
 $numbers   = 1234567890
-$sonority  = 0'<$fric$afric${stop}<$nasal<l<rj<àå$vowel   ;l<r viz "umrlec" etc. Ani systematické, ani bezpeèné.
+$sonority  = 0'<$fric$afric${stop}<lµr$nasal$stop<RLàå<î$vowel   ;l<r viz "umrlec" etc. Ani systematické, ani bezpeèné.
 
-$lower_case = aáäbcèdïeéìfghiíjklµåmnòoóôpqràs¹t»uúvwxyýz¾
-$upper_case = AÁÄBCÈDÏEÉÌFGHIÍJKL¥ÅMNÒOÓÔPQRÀS©T«UÚVWXYÝZ®
+$lower_case = aáäbcèdïeéìfghiíîjklµåmnòoóôpqràs¹t»uúvwxyýz¾
+$upper_case = AÁÄBCÈDÏEÉÌFGHIÍÎJKL¥ÅMNÒOÓÔPQRÀS©T«UÚVWXYÝZ®
 
 # Pravidla pro ètení zkratek apod.: velké písmeno na jiném,
 #   ne¾ prvním místì ve slovì indikuje zkratku a hláskuje se.
@@ -32,11 +33,54 @@ subst	 abbrevs.dic							colon
 regress  ${upper_case}>${lower_case}($everywhere)			colon
 
 
-#include "numerals.rul"
+@include "numerals.rul"
 
- subst	   main.dic		   ;Rôzne výnimky
+ subst	   dtnl.dic		   ;výnimky zmekcovania detenele
+ subst     wfv.dic                 ;výnimky výslovnosti w,v,f 
+################### §102 predlo¾ky s,k
+ regress s>S(0_0)
+ regress k>K(0_0)
+ regress S>z(!_v$voiced$vowel$sonor) colon
+ regress K>g(!_v$voiced$vowel$sonor) colon
+ regress K>k(!_!)
+ regress S>s(!_!)
+ 
+ subst    dtnl3.dic		  ;vynimky zmekcovania (okrem dtnl.dic) 
+                                  ;pre samostatne slova, (u nej	 vz. slova konciace na nej)
 
+ with	preps.dic		word	word
+ {
+	regress   _\ ~>P(!_!)	word   word
+ }
+ regress	P>\ (!_P)	colon  word	; dvì pøedlo¾ky za sebou
 
+ regress  _\ ~>F(!_0)		colon	word
+
+ progress  0>S(!S_sz¹¾)	 colon  
+ progress  S>0(!_!0)     word   ; "S" jen pøed hranicí slov, za ní¾ je sykavka
+ progress  0>S(0_s)	 colon	; "S" pøed první hláskou v klausi
+ inside  P
+ {
+	prep	"Sse,se seS,se SseS,se"	  ; "se" jako pøedlo¾ka
+ }
+ progress  S>0($everywhere)
+
+ inside	 P			word
+ {
+	prep	preps.dic	word
+ }
+ progress  P>\ ($everywhere)	word	word
+
+subst     so.dic word            ;výnimky so,zo, ku gu, s,k
+
+#§ 146 výslovnos» x v cudzích slovách 
+ regress e>E(0_x) colon            ;ex na zaèiatku slova
+ regress x>G(E_$vowel$voiced)
+ regress x>G(!_0!#)                  ;na konci slova
+ regress 0>z(G_!)
+ regress G>g($everywhere)
+ regress E>e($everywhere)
+ 
  progress  0>s(x_!)
  progress  u0>0v(q_!)              ; Rozlo¾enie x,q na ks, kv
  regress   xq>k($everywhere)
@@ -44,14 +88,83 @@ regress  ${upper_case}>${lower_case}($everywhere)			colon
  regress   z¾>Z®(d_!)              ; Spøe¾ky dz,d¾ > Z,® 
  progress  cd>0(!_xZ®)
  
+ regress r>R(!$vowel_!$vowel)	   ; slabièné r->R 
+ regress l>L(!$vowel_!$vowel)	   ; slabièné l->L
 
- regress 0>o(ô_!)
- regress ô>u($everywhere)          ;ô zatial nahradené spojením uo
- progress  w>v($everywhere)       
+
+#        samohláska U (kUoò)
  
- regress v>ô($vowel_!$vowel)	   ; §74 Kral, fonema W zatial neexistuje	
- regress ô>u($everywhere)          ; takze je nahradena u
+ regress 0>o(ô_!)
+ regress ô>U($everywhere)          ;ô nahradené spojením Uo (1)
+ progress w>v($everywhere)       
+ 
+ regress v>U(R$vowel_0)		   ; (2)	
+ 
+ regress v>U(RL$vowel_!RL$vowel)   ; §74 Kral, v sa meni na U (3)	 
+ 
+ regress u>U(o_0)		   ; 7 pad j.c. u->U (4)
+ 
+#       samohlaska î
+ 
+ regress j>î($vowel_!$vowel)      ;dvojhlaskove î	
+# regress aeu>ÁÉÚ(i_0)                 ;treba zru¹i» îa,îe,îu na konci slov
+ progress i>î(!$vowel_aeu)        ;dvojhlásky ia,ie,iu
+# regress ÁÉÚ>aeu(i_0)                                  
 
+
+#       spoluhlaska w
+
+ regress v>w(0_!rlRLàåµj$vowel)	      ;(1) §121 okrem predlo¾ky v
+ regress v>w(0_0)                     ; v ako predlo¾ka
+ 
+ regress f>w(L$vowel_$voiced) ;(2)
+
+#       spoluhlaska N 
+ progress  n>N(!_kg)               ;ng
+
+
+ regress   dtnl>ï»òµ(!_îíie)
+ regress i>y(d_a)                 ; diabetik, diastola, vynimky v slovniku
+  
+ progress  yýì>iíe($everywhere)
+#             tz -> c
+ regress   z>q(t_!)		   ; tz -> c Hertz	
+ progress t>0(!_q)
+ regress q>c($everywhere)
+
+# zz->dz 
+ regress z>C(z_!)                  ;zz->dz intermezzo (Kral) (blbost pizza=picca)
+ regress z>c(!_C)
+ regress C>c(!_!)
+
+#
+ regress t>0(s_s)                 ;mestsky -> mesky
+ regress s>0(s_!)
+ 
+ regress s>q(Zdt_k)                  ; Zsk,tsk,dsk -> ck 	
+ progress Zdt>0(!_q)                 ; § 246
+ regress q>c($everywhere)
+
+ regress s>q(»tïd_t)		   ; »st,ïst,dst,tst-> ct
+ progress »tïd>0(!_q)
+ regress q>c($everywhere)
+  
+ regress »>0(!_ï)		  ; »ï->ï devä»desiat
+ regress z>0(!_s)                 
+########################   Gama ch->G
+ regress x>G(!_h) 	colon
+
+# regress   $voiced>${voiceless}(!_$voiceless&0');Èeská asimilace znìlosti
+################# Znelostná asimilácia
+
+ regress   $voiced>${voiceless}(!_$voiceless&0')  colon   
+ regress   $voiceless>$voiced(!_$voiced!v) colon
+ 
+################### §95 asimilacia neznelej na znelu na hranici slov
+
+
+
+ 
  progress ä>e($everywhere)         ; nahrada ä za e
 
 
@@ -73,50 +186,22 @@ regress  ${upper_case}>${lower_case}($everywhere)			colon
  progress  Q>_($everywhere)	sent	colon
  progress  Q>:($everywhere)	text	sent
 
+ subst dtnl2.dic 
+
+# prep     syll.dic		; Rozsadit vokály
  
+regress   0>'(0_$vowel)	; Rázy
 
- subst     syll.dic		; Rozsadit vokály
+# prep	nonsyl.dic		syll
  
- regress   0>'(0_$vowel)	; Rázy
+syll      $sonority	syll	; Rozklad_na_slabiky
 
- 
-
-
- prep	nonsyl.dic		syll
-
-
-
-
-
-
- regress   dtnl>ï»òµ(!_íie)
-  
- progress  yýì>iíe($everywhere)
-
- regress   z>q(t_!)		   ; tz -> c Hertz	
- progress t>0(!_q)
- regress q>c($everywhere)
- 
- regress t>0(s_s)                 ;mestsky -> mesky
- regress s>0(s_!)
- 
- regress s>q(Zdt_k)                  ; Zsk,tsk,dsk -> ck 	
- progress Zdt>0(!_q)                 ; § 246
- regress q>c($everywhere)
-
- regress s>q(»tïd_t)		   ; »st,ïst,dst,tst-> ct
- progress »tïd>0(!_q)
- regress q>c($everywhere)
-  
- regress »>0(!_ï)		  ; »ï->ï devä»desiat
-
-# regress   $voiced>${voiceless}(!_$voiceless&0')       	; Asimilace znìlosti
- regress   $voiced>${voiceless}(!_$voiceless&0')  colon     	; Asimilace znìlosti
-
- regress   $voiceless>$voiced(!_$voiced!v)       colon
-
-
- 
-# progress  n>N(!_kg)
-
- syll      $sonority	syll	; Rozklad_na_slabiky
+# uprava aby fungovalo zo starymi difonmi
+regress w>v(!_!)
+regress U>u(!_!)
+regress R>r(!_!)
+regress L>l(!_!) 
+regress ä>e(!_!) 
+regress î>i(!_!)
+regress N>n(!_!)
+#regress µ>l(!_!)

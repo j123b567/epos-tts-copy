@@ -39,7 +39,7 @@ extern double buf[6];
 ktdsyn::ktdsyn (voice *v)
 {
 	FILE *f;
-	char * pathname = compose_pathname("useky.dat", v->loc, cfg->inv_base_dir);
+	char * pathname = compose_pathname("useky.dat", v->loc, scfg->inv_base_dir);
 	f = fopen (pathname, "rt", "ktd segments");
 	free(pathname);
 //	if (!f) shriek(841, "Cannot open file useky.dat");
@@ -51,7 +51,7 @@ ktdsyn::ktdsyn (voice *v)
 		po_u++;
 	}
 	fclose (f);
-	DEBUG(3,9,fprintf(STDDBG,"Time Domain synth OK\n");)
+	DBG(3,9,fprintf(STDDBG,"Time Domain synth OK\n");)
 }
 
 
@@ -63,15 +63,15 @@ ktdsyn::~ktdsyn()
 
 void ktdsyn::synseg(voice *v, segment d, wavefm *w)
 {
-	DEBUG(1,9,fprintf(STDDBG, "Diphone %d for ktdsyn\n", d.code);)
+	DBG(1,9,fprintf(STDDBG, "Diphone %d for ktdsyn\n", d.code);)
 	if (v->samp_size != 8) shriek(813, "ktd synth still supports only 8bit channels, sorry\n");
 
 	unsigned char *s_psl = new unsigned char[6000];
 	char *m_sub = (char *)xmalloc(MAX_PATHNAME);
 
-	strcpy (m_sub, cfg->base_dir);
+	strcpy (m_sub, scfg->base_dir);
 	strcat (m_sub, "/");
-	strcat (m_sub, cfg->inv_base_dir);
+	strcat (m_sub, scfg->inv_base_dir);
 	strcat (m_sub, "/");
 	strcat (m_sub, v->loc);
 	strcat (m_sub, "/");

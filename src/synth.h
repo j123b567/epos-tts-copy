@@ -28,7 +28,7 @@
  *	would never be called except by common code, but it the
  *	compiler needs it at least declared).
  */
- 
+
 class synth
 {
 	unsigned int crc;
@@ -39,8 +39,9 @@ class synth
 
 	synth();
 	virtual ~synth(void);
-	virtual void synseg(voice *v, segment d, wavefm *w) = 0;
+	virtual void synseg(voice *v, segment d, wavefm *w);
 	virtual void synsegs(voice *v, segment *d, int count, wavefm *w);
+	virtual void synssif(voice *v, char *, wavefm *w);
 };
 
 class voidsyn: public synth
@@ -49,6 +50,7 @@ class voidsyn: public synth
 	voidsyn() : synth() {};
 	virtual ~voidsyn() {};
 	virtual void synseg(voice *v, segment d, wavefm *w);
+	virtual void synssif(voice *v, char *, wavefm *w);
 };
 
 void play_segments(unit *root, voice *v);

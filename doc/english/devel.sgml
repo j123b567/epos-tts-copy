@@ -90,7 +90,7 @@ of description above the current unit.
 <p>
 
 This class represents a logical line-oriented text file. It handles things
-like the <ref id="include-directive" name="@include directive">,
+like the <ref id="include-directive" name="&commat;include directive">,
 <ref id="escaping" name ="backslash-escaped special characters">,
 initial whitespace and comment stripping. It is used for the <ref id="rules"
 name="rule files"> and <ref id="cfg-files" name="configuration files">,
@@ -314,6 +314,7 @@ to us any compilation issues which may be distribution related,
 these will be the most easy ones to solve.
 
 <sect2> Other UNIX clones
+<p>
 
 Epos is ported to other unices
 from time to time as well, but there may be minor incompatibilities
@@ -335,7 +336,7 @@ On the QNX operating system, Epos can be controlled not only over
 a TCP-based TTSCP implementation, but also using a QNX specific
 interprocess communication interface.  See <tt>src/qnxipc.cc</tt>
 for details; be however aware that this code has never been completely
-debugged becasuse of a drop in our motivation.  You could help debug
+debugged because of a drop in our motivation.  You could help debug
 this easily if you really need this and provide us with a QNX machine.
 
 <sect2> Windows NT, Windows 2000
@@ -370,8 +371,8 @@ how to proceed step by step with Visual C++.
 File input and output modules are not going to work
 with Windows sockets (whose incompatible implementation
 of the <tt/select/ call doesn't allow file decriptors at all).
-If you enable the <tt/writefs/ option, be aware of serious
-trouble after the first writing error such as disk full.
+If you enable the <tt/writefs/ option, Epos will crash
+after the first writing error such as disk full.
 Don't enable the <tt/readfs/ option.
 
 <sect2> Windows CE
@@ -443,8 +444,8 @@ Lots of global data declarations live in <tt/common.h/; others (especially
 small, library-like functions) can be found in <tt/interf.h/.
 
 If you have any code or development related comment or question about Epos, send
-it to the Epos development mailing list <htmlurl url="mailto:epos@braille.mff.cuni.cz"
-name="epos@braille.mff.cuni.cz">.  You are also encouraged to subscribe to the
+it to the Epos development mailing list <htmlurl url="mailto:epos&commat;braille.mff.cuni.cz"
+name="epos&commat;braille.mff.cuni.cz">.  You are also encouraged to subscribe to the
 list first by sending a mail containing only the text <tt/subscribe epos/ to
-<htmlurl url="mailto:listserv@braille.mff.cuni.cz" name = "epos.braille.mff.cuni.cz"/.
+<htmlurl url="mailto:listserv&commat;braille.mff.cuni.cz" name = "epos.braille.mff.cuni.cz"/.
 Please spend a few seconds by trying to look up the answer in the documentation first.

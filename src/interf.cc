@@ -14,7 +14,6 @@
  *
  */
 
-
 #include "common.h"
 #include "exc.cc"
 
@@ -62,7 +61,7 @@
 
 char *scratch = NULL;
 
-char *esctab = NULL;
+charxlat *esctab = NULL;
 
 int unused_variable;
 
@@ -75,7 +74,7 @@ int severity(int code)
 	if (code / 10 == 80) return LOG_NOTICE;
 	if (code >= 610) return LOG_CRIT;
 	if (code / 10 == 45 || code == 444 || code == 445) {
-		if (cfg->authpriv) return LOG_ERR | LOG_AUTHPRIV;
+		if (scfg->authpriv) return LOG_ERR | LOG_AUTHPRIV;
 		return LOG_WARNING;
 	}
 	if (code / 10 == 46) return LOG_ERR;
@@ -86,29 +85,31 @@ int severity(int code)
 }
 #endif
 
+int errors = 0;
 
 void shriek(int code, const char *s) 
-{	/* Art (c) David Miller */
-	if (cfg->shriek_art == 1) fprintf(cfg->stdshriek,
+{
+	int l_errno = errno;
+	/* Art (c) David Miller */
+	if (scfg->shriek_art == 1) fprintf(cfg->stdshriek,
 "              \\|/ ____ \\|/\n"
 "              \"@'/ ,. \\`@\"\n"
 "              /_| \\__/ |_\\\n"
 "                 \\__U_/\n");
-	if (cfg->shriek_art == 2) fprintf(cfg->stdshriek, "\nSuddenly, something went wrong.\n\n");
-	color(cfg->stdshriek, cfg->shriek_col);
-	fprintf(cfg->stdshriek, "Fatal: %s\n",s); 
-	color(cfg->stdshriek, cfg->normal_col);
-
+	if (scfg->shriek_art == 2) fprintf(cfg->stdshriek, "\nSuddenly, something went wrong.\n\n");
+	color(cfg->stdshriek, scfg->shriek_col);
+	fprintf(cfg->stdshriek, "Error: %s (%d)\n",s, code); 
+	color(cfg->stdshriek, scfg->normal_col);
 
 #ifdef HAVE_SYSLOG_H
-	if (cfg->use_syslog)
-		if (cfg->log_codes) syslog(LOG_DAEMON | severity(code), "%3d %s", code, s);
+	if (scfg->use_syslog)
+		if (scfg->log_codes) syslog(LOG_DAEMON | severity(code), "%3d %s", code, s);
 		else syslog(LOG_DAEMON | severity(code), "%s", s);
 #else
-	FILE *hackfile = fopen("hackfile","w");
-	if (hackfile) {
-		fprintf(hackfile, s);
-		fclose(hackfile);
+	FILE *h = fopen("epos.err","w");
+	if (h) {
+		fprintf(h, "%s\nerrno=%d (%s)\n", s, l_errno, strerror(l_errno));
+		fclose(h);
 	}
 #endif
 	command_failed *xcf;
@@ -123,8 +124,9 @@ void shriek(int code, const char *s)
 			throw new connection_lost (code, s);
 
 		case 8 :
-			printf("Abnormal condition: %s (code %d)\n", s, code);
-			if (errno && EAGAIN) printf("Current errno value: %d (%s)\n", errno, strerror(errno));
+			errors++;
+//			printf("Abnormal condition: %s (code %d)\n", s, code);
+			if (l_errno && EAGAIN) printf("Current errno value: %d (%s)\n", l_errno, strerror(l_errno));
 			throw new fatal_error (code, s);
 
 			printf("Your compiler does NOT support exception handling, aborting\n");
@@ -169,6 +171,12 @@ char *fmt(const char *s, const char *t, const char *u, int i)
 char *fmt(const char *s, int i, int j)
 {
 	sprintf(error_fmt_scratch, s, i, j);
+	return error_fmt_scratch;
+}
+
+char *fmt(const char *s, const char *t, int i, const char *u)
+{
+	sprintf(error_fmt_scratch, s, t, i, u);
 	return error_fmt_scratch;
 }
 
@@ -231,7 +239,7 @@ fopen(const char *filename, const char *flags, const char *reason)
 		OOM_HANDLER;
 	if (!f && reason) shriek(445, fmt(message, reason, filename, strerror(errno)));
 	if (cfg->paranoid && f && *flags == 'r') {
-		if (!fread(&message, 1, 1, f))
+		if (reason && !fread(&message, 1, 1, f))
 			shriek(445, fmt(message, reason, filename, "maybe a directory"));
 		fseek(f, 0, SEEK_SET);
 	}
@@ -240,12 +248,12 @@ fopen(const char *filename, const char *flags, const char *reason)
 
 void colorize(int level, FILE *handle)
 {
-	if (!cfg->colored) return; 
+	if (!scfg->colored) return; 
 	if (level==-1) {
-		fputs(cfg->normal_col, handle);
+		if (scfg->normal_col) fputs(scfg->normal_col, handle);
 		return;
 	}
-	fputs(cfg->out_color[level],handle);
+	if (scfg->out_color[level]) fputs(scfg->out_color[level],handle);
 }
 
 FIT_IDX fit(char c)
@@ -277,10 +285,10 @@ UNIT str2enum(const char *item, const char *list, int dflt)
 			k++, j=item-1, i=strchr(i,LIST_DELIM);
 			if (!i) break;
 		}
-//		DEBUG(0,0,fprintf(STDDBG,"str2enum %s %s %d\n",i,j,k);)
+//		DBG(0,0,fprintf(STDDBG,"str2enum %s %s %d\n",i,j,k);)
 	}
 	if(i && j && !*j) return (UNIT)k;
-	DEBUG(3,0,fprintf(STDDBG,"str2enum returns ILL for %s %s\n",item, list);)
+	DBG(2,0,fprintf(STDDBG,"str2enum returns ILL for %s %s\n",item, list);)
 	return U_ILL;
 }
 
@@ -345,16 +353,16 @@ unit *str2units(const char *text)
 	unit *root;
 	parser *parsie;
 
-	if (text && (signed)strlen(text) > cfg->maxtext) shriek(456, "input too long");
+	if (text && (signed)strlen(text) > scfg->maxtext) shriek(456, "input too long");
 
 	if (text && *text) parsie = new parser(text, 1);
 	else parsie = new parser(this_lang->input_file, 0);
-	root=new unit(cfg->text_level, parsie);
+	root=new unit(scfg->text_level, parsie);
 	delete parsie;
 	return root;
 }
 
-
+#ifdef CLASSIC_BOOLTAB
 
 char *fntab(const char *s, const char *t)
 {
@@ -366,7 +374,12 @@ char *fntab(const char *s, const char *t)
 					: "Too many (%d) resultant elements",abs(tmp)));
 	if(!t[1]) for (tmp=0; s[tmp]; tmp++) tab[(unsigned char)s[tmp]]=*t;
 	else for (tmp=0;s[tmp]&&t[tmp];tmp++) tab[(unsigned char)(s[tmp])]=t[tmp];
-
+	
+	int ids = 0;
+	DBG(1,0,for (tmp = 0; tmp < 256; tmp++) if ((unsigned char)tab[tmp] == tmp) ids++;\
+	int globs = t[1] ? 0 : strlen(s);\
+	int rest = 256 - ids - globs;\
+	fprintf(STDDBG, "Adding a function, %d ids, %d being mapped to %c, and %d nontrivials\n", ids, globs, t[1] ? '#' : t[0], rest);)
 	return(tab);
 }
 
@@ -378,21 +391,25 @@ bool *booltab(const char *s)
 	bool mode = true;
 	tab = (bool *)xcalloc(sizeof(bool), 256);         //should always return zero-filled array
 	
-	DEBUG(0,0,fprintf(STDDBG, "gonna booltab out of %s\n", s););
+	DBG(0,0,fprintf(STDDBG, "gonna booltab out of %s\n", s););
 	if (*s==EXCLAM) memset(tab, true, 256*sizeof(bool));
 	for(tmp=s; *tmp; tmp++) switch (*tmp) {
 		case EXCLAM: mode = !mode; break;
 		case ESCAPE: if (!*++tmp) tmp--;	// and fall through
 		default:  tab[(unsigned char)(*tmp)]=mode;
 	}
+	DBG(2,0,int yes = 0; for(int i = 0; i < 256; i++) if (tab[i]) yes++;\
+	fprintf(STDDBG, "Adding a booltab, %d yes, %d no\n", yes, 256 - yes);)
 	return(tab);
 }
+
+#endif
 
 /*
  * be slow and robust
  * if filename is absolute, ignore the dirname
  * if filename begins with "./", ignore the dirname
- * non-absolute dirnames start from cfg->base_dir
+ * non-absolute dirnames start from scfg->base_dir
  * convert any slashes to backslashes in DOS
  * the compiler will notice if '/'==SLASH and test only once
  */
@@ -404,13 +421,14 @@ char *compose_pathname(const char *filename, const char *dirname, const char *tr
 	register int tmp=0;
 	char *pathname;
 
-	if (!filename || !dirname || !treename) return strdup("");
-	if (!*dirname) dirname = ".";
-	pathname = (char *)xmalloc(strlen(filename) + strlen(dirname) + strlen(treename) + strlen(cfg->base_dir) + 4);
+	if (!filename) filename = "";
+	if (!dirname || !*dirname) dirname = ".";
+	if (!treename) treename = "";
+	pathname = (char *)xmalloc(strlen(filename) + strlen(dirname) + strlen(treename) + strlen(scfg->base_dir) + 4);
 	if (IS_NOT_SLASH(*filename) && (filename[0]!='.' || IS_NOT_SLASH(filename[1]))) {
 		if (IS_NOT_SLASH(*dirname)) {
 			if (IS_NOT_SLASH(*treename)) {
-				strcpy(pathname, cfg->base_dir);
+				strcpy(pathname, scfg->base_dir);
 				tmp = strlen(pathname);
 				if (IS_NOT_SLASH(pathname[tmp-1])) pathname[tmp++] = SLASH;
 			}
@@ -442,7 +460,7 @@ char *limit_pathname(const char *filename, const char *dirname)
 {
 	char *p;
 	char *r;
-	if ((int)strlen(filename) >= cfg->scratch) shriek(864, "File name too long");
+	if ((int)strlen(filename) >= scfg->scratch) shriek(864, "File name too long");
 	strcpy(scratch, filename);
 	for (p = scratch; !IS_NOT_SLASH(*p); p++);
 	for (r = scratch; (*r = *p); p++, r++) {
@@ -501,7 +519,7 @@ inline bool reclaim(file *ff, const char *flags, const char *description, void o
 	ff->data[len] = 0;
 	if (oven != NULL) oven(ff->data, len);
 	fclose(f);
-	DEBUG(1,0,fprintf(STDDBG, "cache update for %s\n", ff->filename);)
+	DBG(1,0,fprintf(STDDBG, "cache update for %s\n", ff->filename);)
 	return true;
 }
 
@@ -524,7 +542,7 @@ file *claim(const char *filename, const char *dirname, const char *treename, con
 	ff = file_cache->translate(pathname);
 	if (ff) {
 		reclaim(ff, flags, description, oven);
-		DEBUG(1,0,fprintf(STDDBG, "cache hit on %s\n", pathname);)
+		DBG(1,0,fprintf(STDDBG, "cache hit on %s\n", pathname);)
 		free(pathname);
 		ff->ref_count++;
 		return ff;
@@ -551,7 +569,7 @@ file *claim(const char *filename, const char *dirname, const char *treename, con
 	ff->filename = pathname;
 	ff->timestamp = get_timestamp(pathname);
 	file_cache->add(pathname, ff);
-	DEBUG(1,0,fprintf(STDDBG, "cache miss on %s\n", pathname);)
+	DBG(1,0,fprintf(STDDBG, "cache miss on %s\n", pathname);)
 	return ff;
 }
 
@@ -564,7 +582,7 @@ void unclaim(file *ff)
 {
 	ff->ref_count--;
 	if (!ff->ref_count) {
-		if (cfg->lowmemory) uncache_file(NULL, ff, NULL);
+		if (scfg->lowmemory) uncache_file(NULL, ff, NULL);
 	}
 }
 
@@ -587,11 +605,15 @@ static inline void release(char **buffer)
 static inline void compile_rules()
 {
 	int tmp = cfg->default_lang;
-	_next_rule_line = (char *)xmalloc(cfg->max_line+1);
+	_next_rule_line = (char *)xmalloc(scfg->max_line+1);
 	for (int i=0; i<cfg->n_langs; i++) {
 		cfg->default_lang = i;
-		if (cfg->langs[i]->n_voices)
+		if (cfg->langs[i]->n_voices) try {
 			cfg->langs[i]->compile_rules();
+		} catch (any_exception *e) {
+			errors++;
+		}
+		if (errors > 0) shriek(811, fmt("Rules for %s cannot be compiled", cfg->langs[i]->name));
 	}
 	free(_next_rule_line); _next_rule_line = NULL;
 	cfg->default_lang = tmp;
@@ -606,15 +628,38 @@ static inline void compile_rules()
 		Takes nearly as much time as killing and restarting
  *	epos_catharsis(): to release as much as possible, but leave a way back
  */
+ 
+/*************** delete all this
 
+void epos_init(int argc_, char**argv_)	 //Some global sanity checks made here
+{
+	static const char * CFG_FILE_OPTION = "--cfg_file";
+	register int optlen=strlen(CFG_FILE_OPTION);
+	register char *result;
+	
+	argc=argc_; argv=argv_;
+	
+//	cow_claim();
+//	cow_configuration(&cfg);
 
+	if ((result=getenv(CFG_FILE_ENVIR_VAR))) scfg->inifile=result;
+	for (int i=1; i<argc-1; i++) if (!strncmp(argv[i], CFG_FILE_OPTION, optlen)) {
+		switch (argv[i][optlen]) {
+			case 0:	  scfg->inifile=argv[++i]; break;
+			case '=': scfg->inifile=argv[i]+optlen+1; break;
+			default:  ;// another option, most likely a bug ;
+		}
+	}
+	epos_init();
+}
+
+***************************/
 void epos_init()	 //Some global sanity checks made here
 {
 #ifdef HAVE_SYSLOG_H
 	openlog("epos", LOG_CONS, LOG_DAEMON);
 #endif
-
-	if (!cfg->loaded)	cfg->stddbg = stdout,
+	if (!scfg->loaded)cfg->stddbg = stdout,
 				cfg->stdshriek = stderr;
 	if (sizeof(int)<4*sizeof(char) || sizeof(int *)<4*sizeof(char)) 
 		shriek (862, fmt("You dwarf! I want at least 32 bit arithmetic & pointery [%d]", sizeof(int)));
@@ -622,38 +667,40 @@ void epos_init()	 //Some global sanity checks made here
 				"Turn hash_table::forall() fns in hash.h the other way round.");
 	if ((unsigned char)-1 != 255) shriek(862, "Your chars are not 8-bit? Funny.");
 	if (sizeof(unsigned short int) != 2) shriek(862, "Short ints not short enough");
-	if (*(short int *)"wxyz" == 256 * 'w' + 'x') cfg->big_endian = true;
-	if (*(short int *)"wxyz" != 256 * 'x' + 'w' && !cfg->big_endian) shriek(862,
+	if (*(short int *)"wxyz" == 256 * 'w' + 'x') scfg->big_endian = true;
+	if (*(short int *)"wxyz" != 256 * 'x' + 'w' && !scfg->big_endian) shriek(862,
 				"Not little-endian nor big-endian. Whew!");
 
 #ifdef HAVE_TIME_H
 	srand(time(NULL));	// randomize
 #endif
-
-	if (!esctab) esctab = FOREVER(fntab(cfg->token_esc, cfg->value_esc));
+	load_default_charset();
+	if (!esctab) esctab = (charxlat *)FOREVER(new charxlat(scfg->token_esc, scfg->value_esc));
 
 	config_init();
 
 #ifdef DEBUGGING
-	if (cfg->use_dbg && cfg->stddbg_file && *cfg->stddbg_file)
-		cfg->stddbg = fopen(cfg->stddbg_file,"w","debugging messages");
+	if (scfg->use_dbg && scfg->stddbg_file && *scfg->stddbg_file)
+		cfg->stddbg = fopen(scfg->stddbg_file,"w","debugging messages");
 #else
-	if (cfg->use_dbg) shriek(813, "Either disable debugging in config file, or #define it in interf.h");
+	if (scfg->use_dbg) shriek(813, "Either disable debugging in config file, or #define it in interf.h");
 #endif
 	cfg->stdshriek = stderr;
-	if (cfg->stdshriek_file && *cfg->stdshriek_file)
-		cfg->stdshriek = fopen(cfg->stdshriek_file, "w", "error messages");
+	if (scfg->stdshriek_file && *scfg->stdshriek_file)
+		cfg->stdshriek = fopen(scfg->stdshriek_file, "w", "error messages");
 		
 //	if (!_subst_buff) _subst_buff = (char *)xmalloc(MAX_GATHER+2);
 //	if (!_gather_buff) _gather_buff = (char *)xmalloc(MAX_GATHER+2);
-	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)xmalloc(cfg->max_line+1); 
-	if (!scratch) scratch = (char *)xmalloc(cfg->scratch+1);
+	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)xmalloc(scfg->max_line+1); 
+	if (!scratch) scratch = (char *)xmalloc(scfg->scratch+1);
 	
 	compile_rules();
 
-	DEBUG(1,10,fprintf(STDDBG,"struct configuration is %d bytes\n", (int)sizeof(configuration));)
-	DEBUG(1,10,fprintf(STDDBG,"struct lang is %d bytes\n", (int)sizeof(lang));)
-	DEBUG(1,10,fprintf(STDDBG,"struct voice is %d bytes\n", (int)sizeof(voice));)
+	DBG(1,10,fprintf(STDDBG,"struct static_configuration is %d bytes\n", (int)sizeof(static_configuration));)
+	DBG(1,10,fprintf(STDDBG,"struct configuration is %d bytes\n", (int)sizeof(configuration));)
+	DBG(1,10,fprintf(STDDBG,"struct lang is %d bytes\n", (int)sizeof(lang));)
+	DBG(1,10,fprintf(STDDBG,"struct voice is %d bytes\n", (int)sizeof(voice));)
+	DBG(2,10,fprintf(STDDBG,"allocated %d chars, %d chars free\n", get_count_allocated(), 256 - get_count_allocated());)
 }
 
 void end_of_eternity();
@@ -671,10 +718,15 @@ void epos_catharsis()
 
 	// one a_protocol may be lost here, see agent.cc
 
-	cfg->shutdown();
+//	cow_catharsis(cfg);
+
+	cfg->shutdown();	//...FIXME: might need proto_cfg->shutdown; othrws shutdown never called
 
 	shutdown_file_cache();
 	
+	free_all_options();
+
+	shutdown_enc();
 #ifdef HAVE_SYSLOG_H
 	closelog();
 #endif
@@ -686,21 +738,19 @@ void epos_done()
 	config_release();
 	unit::done();
 	shutdown_hashing();
-	shutdown_langs();
 	shutdown_cfgs();
 
-//	release(&_subst_buff);
-//	release(&_gather_buff);
 	release(&_resolve_vars_buff);
 	release(&scratch);
 	
 	END_OF_ETERNITY;
+	cow_catharsis();
 }
 
 void epos_reinit()
 {
 	epos_catharsis();
-	load_config("default.ini");
+//	load_config("default.ini");
 	epos_init();
 }
 
@@ -725,16 +775,16 @@ char *current_debug_tag = NULL;
 int  debug_config(int area)
 {
 	switch (area) {
-		case _INTERF_: return cfg->interf_dbg;
-		case _RULES_:  return cfg->rules_dbg;
-		case _ELEM_:   return cfg->elem_dbg;
-		case _SUBST_:  return cfg->subst_dbg;
-		case _ASSIM_:  return cfg->assim_dbg;
-		case _SPLIT_:  return cfg->split_dbg;
-		case _PARSER_: return cfg->parser_dbg;
-		case _SYNTH_:  return cfg->synth_dbg;
-		case _CFG_:    return cfg->cfg_dbg;
-		case _DAEMON_: return cfg->daemon_dbg;
+		case _INTERF_: return scfg->interf_dbg;
+		case _RULES_:  return scfg->rules_dbg;
+		case _ELEM_:   return scfg->elem_dbg;
+		case _SUBST_:  return scfg->subst_dbg;
+		case _ASSIM_:  return scfg->assim_dbg;
+		case _SPLIT_:  return scfg->split_dbg;
+		case _PARSER_: return scfg->parser_dbg;
+		case _SYNTH_:  return scfg->synth_dbg;
+		case _CFG_:    return scfg->cfg_dbg;
+		case _DAEMON_: return scfg->daemon_dbg;
 	}
 	shriek(861, fmt("Unknown debug area %d", area));
 	return 0;   // keep the compiler happy
@@ -742,19 +792,19 @@ int  debug_config(int area)
 
 bool debug_wanted(int lev, /*_DEBUG_AREA_*/ int area) 
 {
-	if (!cfg->use_dbg) return false;
-	if (cfg->always_dbg > 10 || cfg->always_dbg < 0) shriek(862, "cfg bogus"); //FIXME: hack
-	if (lev >= cfg->always_dbg) return true;
-	if (area == cfg->focus_dbg) return lev >= debug_config(area);
-	if (lev < cfg->limit_dbg)   return false;
+	if (!scfg->use_dbg) return false;
+	if (scfg->always_dbg > 10 || scfg->always_dbg < 0) shriek(862, "cfg bogus"); //FIXME: hack
+	if (lev >= scfg->always_dbg) return true;
+	if (area == scfg->focus_dbg) return lev >= debug_config(area);
+	if (lev < scfg->limit_dbg)   return false;
 	return  lev >= debug_config(area);
 }
 
 void debug_prefix(int lev, int area)
 {
 	unuse(lev); unuse(area);
+	color(STDDBG, scfg->normal_col);
 	if (current_debug_tag) fprintf(STDDBG, "[%s] ", current_debug_tag);
-//	if (this_lang && this_lang->name) printf("%s ", this_lang->name);
 }
 
 #endif   // ifdef DEBUGGING
@@ -777,9 +827,9 @@ char *forever(void *heapptr)
 
 void end_of_eternity()
 {
-	DEBUG(3,0,fprintf(STDDBG,"Freeing %d permanent heap buffers.\n", forever_count);)
+	DBG(3,0,fprintf(STDDBG,"Freeing %d permanent heap buffers.\n", forever_count);)
 	while (forever_count-- > 0) {
-		DEBUG(0,0,fprintf(STDDBG, "pointer number %d was %p\n", forever_count, forever_ptr_list[forever_count]);)
+		DBG(0,0,fprintf(STDDBG, "pointer number %d was %p\n", forever_count, forever_ptr_list[forever_count]);)
 		free(forever_ptr_list[forever_count]);
 	}
 }

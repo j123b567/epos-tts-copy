@@ -23,7 +23,7 @@
 
 inline UNIT get_level (const char *levname)
 {
-	return str2enum(levname, cfg->unit_levels, U_DEFAULT);
+	return str2enum(levname, scfg->unit_levels, U_DEFAULT);
 }
 
 #define NN_VOCAL	'A' 
@@ -45,15 +45,15 @@ void
 unit::nnet_out(const char *filename, const char *dirname)      //NULL means stdout
 {
 	FILE *outf;
-	if (cfg->neuronet) {
+	if (scfg->neuronet) {
 		if (filename) {
 			filename = compose_pathname(filename, dirname);
 			outf=fopen(filename,"wt");
 		} else outf=stdout;
 
-//		fputs(cfg->header_xscr,outf);
+//		fputs(scfg->header_xscr,outf);
 		nnet_dump(outf);
-//		fputs(cfg->footer_xscr,outf);
+//		fputs(scfg->footer_xscr,outf);
 		if(filename)fclose(outf);
 	} else {
 		shriek(463, "Neuronet output is disabled.");	// FIXME, error code
@@ -69,7 +69,7 @@ unit::nnet_dump(FILE *handle)        //this one does the real job
 {
 	unit *tmpu;
 
-	UNIT phone = cfg->phone_level;
+	UNIT phone = scfg->phone_level;
     
 	for(tmpu=LeftMost(phone);tmpu!=&EMPTY;tmpu=tmpu->Next(phone)) {
 			//lastlong=1, iff vocalic(cont) && next->cont!=':'

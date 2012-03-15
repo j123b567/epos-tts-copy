@@ -27,7 +27,7 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@cuni.cz"
-#define VERSION     "2.4.66"
+#define VERSION     "2.5.1"
 
 #include "config.h"
 
@@ -54,13 +54,12 @@ char *strdup(const char *);
 #endif
 
 #ifdef WANT_DMALLOC
-	#include <dmalloc.h>  // Unimportant debugging hack. Throw it out.
+	#include <dmalloc.h>
 #endif			      // new and delete are overloaded in interf.cc !
 
 #ifndef  IGNORE_REGEX_RULES
 	#define WANT_REGEX    // About always, we want to use the regex code
 #endif
-
 
 #ifdef WANT_REGEX
    extern "C" {
@@ -68,7 +67,7 @@ char *strdup(const char *);
 		#include <rx.h>
 	#else
 	    #ifdef HAVE_REGEX_H
-		#include <regex.h>	// in some cases, "rx.h" may do better anyway
+		#include <regex.h>
 	    #else
 		#include "rx.h"
 	    #endif
@@ -79,7 +78,6 @@ char *strdup(const char *);
 #define TTSCP_PORT	8778
 
 
-enum SYMTABLE {ST_ROOT, ST_RAW, ST_EMPTY};
 enum SUBST_METHOD {M_EXACT=0, M_END=1, M_BEGIN=2, M_BEGIN_OR_END=3, M_SUBSTR=4, M_PROPER=7, M_LEFT=8, M_RIGHT=16, M_ONCE=32};
 enum REPARENT {M_DELETE, M_RIGHTWARDS, M_LEFTWARDS};
 enum FIT_IDX {Q_FREQ, Q_INTENS, Q_TIME};
@@ -105,18 +103,22 @@ class  unit;
 
 class stream;
 
+typedef char wchar;
+
 #include "defaults.h"
 #include "exc.h"
 #include "hash.h"
 #include "text.h"
 #include "voice.h"
-#include "interf.h"             //See interf.h and even interf.cc for other headerities
+#include "function.h"
+#include "interf.h"
 #include "options.h"
 #include "parser.h"
 #include "unit.h"
 #include "rule.h"              //See rules.h for additional #defines and enums
 #include "waveform.h"
 #include "synth.h"
+#include "encoding.h"
 
 #define MAX_PATHNAME       256	  // only load_language uses this
 

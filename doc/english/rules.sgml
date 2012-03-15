@@ -105,15 +105,15 @@ The code, scope and target identifier is not case sensitive, but the parameter
 usually is.
 
 
-<sect1> Using comments and the <tt>@include</tt> directive
+<sect1> Using comments and the <tt>&commat;include</tt> directive
 <p>
 
 Any text starting with a semicolon or <tt/&num;/ not in the middle of a word up to the
 end of the line is a comment.  It will be properly ignored.  If a line
 doesn't contain anything except whitespace and/or comment, it is also
-ignored.  The <tt>@include</tt> directive can be used to nest the rule
+ignored.  The <tt>&commat;include</tt> directive can be used to nest the rule
 files.  The same rules apply within <tt>.ini</tt> files; for more
-details, see <ref id="include-directive" name="the @include directive in
+details, see <ref id="include-directive" name="the &commat;include directive in
 configuration files">.
 
 <sect1> Variables (macros)
@@ -261,10 +261,10 @@ your preference.
 
   Setup the segment layer below the phone layer.
   The parameter names a file, which contains
-  phone to segment mappings, again in the dictionary format
-  The replacees represent three character
-  segment identifiers, the replacers are the respective segment
-  numbers (decimal).
+  phone to segment mappings, again in the dictionary format.
+  The replacees each represent a three character
+  segment identifier, the replacers are the respective segment
+  codes (decimal).
   It is possible, and indeed typical to include multiple identifiers
   for the same segment number.
 
@@ -278,7 +278,7 @@ your preference.
   a given triplet of phones, they will be placed from left to right
   in this order: <tt/lt?, ?t?, ?tr, ltr/.
 
-A sentence may contain these segments with the Czech segment inventory
+A sentence may contain these segment with the Czech diphone inventory
 by Tomas Dubeda:
 
 <tscreen><verb>
@@ -382,7 +382,7 @@ with multiple levels of description simultaneously.
   Move a unit to another level of description, e.g. when a segment
   level unit should directly affect the prosody.  The parameter is of the form
   <tt>from:to</tt> (<tt>from</tt> and <tt>to</tt> are arbitrary strings,
-  they can employ the "except" operator (exclamation mark).  The tokens
+  they can employ the <ref id="except" name="except"> operator (exclamation mark).  The tokens
   in <tt>from</tt>, if found at the target
   level, are copied to the scope level, if the original scope token is listed
   in <tt>to</tt>.  It is also possible to omit the colon and the <tt>to</tt> string; the default
@@ -723,11 +723,29 @@ rules with whitespace, but it is strongly recommended for readability.
 
   Apply a rule or a block of rules within certain units only.
   The parameter is a list of values at the scope level, wherein the
-  following rule should be applied; the "except" operator may be used.
+  following rule should be applied; the <ref id="except" name="except">
+  operator may be used.
 
   Every unit (a sentence, for example), which fulfills the criterion,
   is processed separately, therefore the scope of the following rule may
   be at most that of the <tt>inside</tt> rule itself.
+
+<sect2> Type <tt>near</tt>
+<p>
+
+  Apply a rule or a block of rules within units which contain
+  at least one of the specified units.  The parameter is a list
+  of values at the target level, which are looked up in a unit
+  of the scope level; the <ref id="except" name="except">
+  operator may be used.  If an occurence is found, the following
+  rule gets applied to the scope level unit.
+
+  If the parameter begins with an asterisk, the asterisk is treated
+  as an except operator and the test is negated.  In other words,
+  the following rule gets applied, if every target level unit contained
+  meets the set description with the leading asterisk ignored.
+  You can combine asterisk and an extra except operator to get tests of
+  the "contains no characters of this class" type.
 
 <sect2> Type <tt>with</tt> <label id="with-rule">
 <p>
@@ -822,20 +840,29 @@ you can also make negative specifications, such as "all consonants except
 l and r".  To do this, use the exclamation mark serving as an "except" operator:
 <tt>&dollar;consonants!lr</tt> (The right operand is subtracted from the left one.)
 If there is no left operand, say in <tt>!x</tt>, the semantics is "all but x".
-You see that <tt>!</tt> alone means "everything".
+A consequence is that <tt>!</tt> alone means "everything".
 
 The operator is right-associative; <tt>!&dollar;vowels!ou</tt> means "all excluding vowels,
-but <tt>o</tt> and <tt>u</tt> don't count as vowels just now".
+but <tt>o</tt> and <tt>u</tt> don't count as vowels just now".  Therefore,
+<tt/o/ and <tt/u/ are included in this unordered list.
 
-Let us repeat that this operator will never work for ordered lists, not even
+Let us repeat that this operator will never work for ordered lists, nor
 for the <tt>syll</tt> rule sonority groups.
 
 
 <sect1> Escaping special characters
 <p>
 
-You can use the backslash to escape any special character including itself
-anywhere in the rules or <tt>.ini</tt> file strings.
-<tt/&bsol;n/, <tt/&bsol;t/, <tt/&bsol;&lsqb;/ may be used
-to insert a newline, tab, or escape characters, respectively.
+You can escape any special character by prefixing it by a backslash
+anywhere in the rules or configuration files.  The backslash will
+be skipped, and the character will lose any special meaning which
+it would acquire within a given context.  Of course, backslashes
+themselves can be escaped in the same way.
+
+<p>
+
+In addition, special characters listed in
+<ref id="escapes" name="the table of escape sequences"> can be inserted
+using the same mechanism.
+
 

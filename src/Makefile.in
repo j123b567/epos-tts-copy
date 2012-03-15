@@ -39,11 +39,11 @@ eposversionfile = $(LIBDIR)/version
 
 SHELL = /bin/sh
 
-HEADERS=common.h defaults.h unit.h parser.h rule.h text.h interf.h options.h hash.h synth.h voice.h exc.h
-MOREHEADERS=waveform.h ktdsyn.h ptdsyn.h lpcsyn.h tcpsyn.h slab.h rx.h client.h agent.h 
-SOURCES=parser.cc unit.cc rule.cc block.cc text.cc interf.cc options.cc exc.cc hash.cc hashd.cc hashtmpl.cc synth.cc waveform.cc voice.cc say.cc options.lst nnet.cc monolith.cc daemon.cc agent.cc ttscp.cc client.cc qnxipc.cc ktdsyn.cc ptdsyn.cc lpcsyn.cc tcpsyn.cc rx.c
+HEADERS=common.h defaults.h unit.h parser.h rule.h text.h encoding.h interf.h function.h options.h hash.h synth.h voice.h exc.h
+MOREHEADERS=waveform.h ktdsyn.h ptdsyn.h lpcsyn.h mbrsyn.h tcpsyn.h slab.h rx.h client.h agent.h 
+SOURCES=parser.cc unit.cc marker.cc rule.cc block.cc text.cc encoding.cc interf.cc function.cc options.cc exc.cc hash.cc hashd.cc hashtmpl.cc synth.cc waveform.cc voice.cc say.cc options.lst nnet.cc monolith.cc daemon.cc agent.cc ttscp.cc client.cc qnxipc.cc ktdsyn.cc ptdsyn.cc lpcsyn.cc mbrsyn.cc tcpsyn.cc rx.c
 DOSSOURCES=epos.cpp config.dos README.dos
-MODULES=parser.o unit.o rule.o text.o interf.o options.o synth.o ktdsyn.o ptdsyn.o lpcsyn.o tcpsyn.o voice.o waveform.o
+MODULES=parser.o unit.o rule.o text.o encoding.o interf.o function.o options.o synth.o ktdsyn.o ptdsyn.o lpcsyn.o mbrsyn.o tcpsyn.o voice.o waveform.o
 TARGETS=epos say vrfy
 DOSES=  dos1250 dos1252 dospc2 dosil1 dosil2 doskam doskoi8 dosascii dosmac dosvga
 
@@ -81,7 +81,7 @@ config.h.in: configure.in ../arch/unix/acconfig.h
 configure: configure.in config.h.in
 	autoconf
 
-Makefile: configure config.h Makefile.in
+Makefile: configure Makefile.in
 	@./configure
 	@touch Makefile
 
@@ -167,7 +167,7 @@ $(eposversionfile): common.h
 	@cat common.h | grep '#define.*VERSION' | cut -f 2 -d\" > $(eposversionfile)
 
 
-config.h: config.h.in configure
+config.h: config.h.in
 	@sh ./configure
 	@touch config.h
 
@@ -195,6 +195,9 @@ parser.o: common.h parser.h interf.h parser.cc voice.h options.h options.lst $(M
 interf.o: common.h interf.h options.h voice.h interf.cc exc.cc options.lst $(MAKEFILE) $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ interf.cc
 
+function.o: function.h options.h interf.h unit.h function.cc options.lst $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ function.cc
+
 options.o: common.h interf.h options.h voice.h options.cc exc.cc options.lst $(MAKEFILE) $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ options.cc  -DBASE_DIR=$(LIBDIR)
 
@@ -207,11 +210,14 @@ hashd.o: hash.h hash.cc hashd.cc hashtmpl.cc defaults.h slab.h $(MAKEFILE) $(SHE
 rule.o: $(HEADERS) rule.cc block.cc options.lst $(MAKEFILE) $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ rule.cc
 
-unit.o: $(HEADERS) unit.cc nnet.cc options.lst $(MAKEFILE) $(SHELL)
+unit.o: $(HEADERS) unit.cc marker.cc nnet.cc options.lst $(MAKEFILE) $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ unit.cc
 
 text.o: common.h defaults.h hash.h interf.h options.lst $(MAKEFILE) text.cc $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ text.cc
+
+encoding.o: $(HEADERS) encoding.h encoding.cc options.lst $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ encoding.cc
 
 synth.o: synth.h synth.cc interf.h options.h options.lst waveform.h ktdsyn.h lpcsyn.h $(MAKEFILE) $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ synth.cc
@@ -230,6 +236,9 @@ ptdsyn.o: ptdsyn.h waveform.h synth.h ptdsyn.cc interf.h options.lst $(MAKEFILE)
 
 lpcsyn.o: lpcsyn.h waveform.h synth.h lpcsyn.cc interf.h options.lst $(MAKEFILE)
 	$(CC) $(FLAGS) -c -o $@ lpcsyn.cc
+
+mbrsyn.o: mbrsyn.h synth.h mbrsyn.cc waveform.h interf.h options.lst $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ mbrsyn.cc
 
 tcpsyn.o: tcpsyn.h tcpsyn.cc client.h waveform.h interf.h options.lst $(MAKEFILE)
 	$(CC) $(FLAGS) -c -o $@ tcpsyn.cc

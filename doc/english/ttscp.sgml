@@ -1,5 +1,5 @@
 
-<sect>Text-To-Speech Control Protocol  (TTSCP)  (version 0) <label id="ttscp">
+<sect>Text-To-Speech Control Protocol (version 0) <label id="ttscp">
 <p>
 
 TTSCP is a client-server connection-oriented,
@@ -76,7 +76,7 @@ unindented and server responses indented.
 	release: 2.4.6
 	handle: O29-m2UZ
 	
-user user@host.domain.net
+user user&commat;host.domain.net
 	452 user not found
 setl some_option on
 	200 OK
@@ -225,9 +225,8 @@ of this rule.)
 
 This format allows storing labels (i.e. pointers to specific
 positions within the waveform); Epos does use this feature
-if enabled e.g. using the
-<ref id="labelphones-option" name="label_phones option">.
-
+if enabled e.g. using the <ref id="labelphones-option" name="label_phones option">
+to label phone and/or segment boundaries within the waveform.
 
 <sect1> TTSCP Commands
 <p>
@@ -418,6 +417,10 @@ Set a server configuration parameter. The parameter is a whitespace-separated
 "option value" pair. The server may ignore this command altogether
 with an error code 442. In any case, this setting should never
 alter the execution environment of existing and/or future sessions.
+(In Epos, setting a static option using <tt/setl/, which is rarely
+allowed and even less often actually done, affects all connections
+in the same way; but all voice, language and global options
+fully follow this standard.)
 The server will reply with an error code 412 if the value assigned
 is illegal, or with 451 if the server is configured not to allow
 to change this parameter (may depend on the current authentication status).
@@ -718,7 +721,7 @@ sending a "done" command to the server; the server will however
 confirm that command with a reply of 600 before disconnecting,
 and this is the only 6xx response code defined at the moment.
 
-Replies of 8xx except 800 are reserved for cases of severe server
+Replies of 8xx except 80x are reserved for cases of severe server
 misconfiguration, or detected programming bugs. Their meanings
 are very implementation dependent (implementations are encouraged
 not to issue them except in emergency). If such a reply is ever
@@ -800,6 +803,7 @@ code      | error type      | suggested action@
 415	| no or bad stream@
 416	| no parameter allowed@
 417	| parameter missing@
+418	| bad format or encoding@
 421	| output voice busy@
 422	| out of memory@
 423	| nothing to interrupt@
@@ -829,6 +833,7 @@ code      | error type      | suggested action@
 464	| input triggered OS incompatibility@
 465	| i/o problem : error on close()@
 466	| command stuck@
+467	| fatal signal@
 471	| tcpsyn received invalid waveform@
 472	| unresolved remote tcpsyn server@
 473	| unreachable remote tcpsyn server@
@@ -852,6 +857,7 @@ of errors (internal errors).
 <tabular ca="|l|l|">
 <hline>
 600	| session ended normally@
+601	| server reinitializing as requested@
 <hline>
 800	| server shutting down as requested by client@
 801	| error explicitly reported in config files@
@@ -862,6 +868,7 @@ of errors (internal errors).
 841	| cannot open necessary configuration file@
 842	| no voices configured@
 843	| up-to-date configuration files not found@
+844	| no unicode maps found@
 861	| internal error: impossible branch of execution@
 862	| internal error: invariance violation@
 863	| internal error: buffer overflow@
@@ -870,6 +877,8 @@ of errors (internal errors).
 869	| double fault@
 871	| network unreachable@
 872	| server already running@
+881	| too many syntax errors in rule files@
+882	| infinite include cycle@
 <hline>
 </tabular>
 <caption>

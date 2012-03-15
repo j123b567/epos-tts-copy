@@ -99,7 +99,7 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 
 	inline void async_close(int fd)
 	{
-		int pid = cfg->asyncing ? fork() : -1;
+		int pid = scfg->asyncing ? fork() : -1;
 		switch(pid)
 		{
 			case -1:

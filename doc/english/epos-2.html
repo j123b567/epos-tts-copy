@@ -254,10 +254,10 @@ of prosodic adjustments to be applied.
 <P>
 <P>Setup the segment layer below the phone layer.
 The parameter names a file, which contains
-phone to segment mappings, again in the dictionary format
-The replacees represent three character
-segment identifiers, the replacers are the respective segment
-numbers (decimal).
+phone to segment mappings, again in the dictionary format.
+The replacees each represent a three character
+segment identifier, the replacers are the respective segment
+codes (decimal).
 It is possible, and indeed typical to include multiple identifiers
 for the same segment number.
 <P>The middle character denotes the phone the resulting segment will
@@ -268,7 +268,7 @@ therefore a kind of wildcard.
 <P>If both fully specified and partly specified segments exist for
 a given triplet of phones, they will be placed from left to right
 in this order: <CODE>lt?, ?t?, ?tr, ltr</CODE>.
-<P>A sentence may contain these segments with the Czech segment inventory
+<P>A sentence may contain these segment with the Czech diphone inventory
 by Tomas Dubeda:
 <P>
 <BLOCKQUOTE><CODE>
@@ -382,7 +382,8 @@ with multiple levels of description simultaneously.
 <P>Move a unit to another level of description, e.g. when a segment
 level unit should directly affect the prosody.  The parameter is of the form
 <CODE>from:to</CODE> (<CODE>from</CODE> and <CODE>to</CODE> are arbitrary strings,
-they can employ the "except" operator (exclamation mark).  The tokens
+they can employ the 
+<A HREF="#except">except</A> operator (exclamation mark).  The tokens
 in <CODE>from</CODE>, if found at the target
 level, are copied to the scope level, if the original scope token is listed
 in <CODE>to</CODE>.  It is also possible to omit the colon and the <CODE>to</CODE> string; the default
@@ -726,10 +727,29 @@ rules with whitespace, but it is strongly recommended for readability.
 <P>
 <P>Apply a rule or a block of rules within certain units only.
 The parameter is a list of values at the scope level, wherein the
-following rule should be applied; the "except" operator may be used.
+following rule should be applied; the 
+<A HREF="#except">except</A>
+operator may be used.
 <P>Every unit (a sentence, for example), which fulfills the criterion,
 is processed separately, therefore the scope of the following rule may
 be at most that of the <CODE>inside</CODE> rule itself.
+<P>
+<H3>Type <CODE>near</CODE></H3>
+
+<P>
+<P>Apply a rule or a block of rules within units which contain
+at least one of the specified units.  The parameter is a list
+of values at the target level, which are looked up in a unit
+of the scope level; the 
+<A HREF="#except">except</A>
+operator may be used.  If an occurence is found, the following
+rule gets applied to the scope level unit.
+<P>If the parameter begins with an asterisk, the asterisk is treated
+as an except operator and the test is negated.  In other words,
+the following rule gets applied, if every target level unit contained
+meets the set description with the leading asterisk ignored.
+You can combine asterisk and an extra except operator to get tests of
+the "contains no characters of this class" type.
 <P>
 <H3><A NAME="with-rule"></A> Type <CODE>with</CODE> </H3>
 
@@ -818,10 +838,11 @@ you can also make negative specifications, such as "all consonants except
 l and r".  To do this, use the exclamation mark serving as an "except" operator:
 <CODE>$consonants!lr</CODE> (The right operand is subtracted from the left one.)
 If there is no left operand, say in <CODE>!x</CODE>, the semantics is "all but x".
-You see that <CODE>!</CODE> alone means "everything".
+A consequence is that <CODE>!</CODE> alone means "everything".
 <P>The operator is right-associative; <CODE>!$vowels!ou</CODE> means "all excluding vowels,
-but <CODE>o</CODE> and <CODE>u</CODE> don't count as vowels just now".
-<P>Let us repeat that this operator will never work for ordered lists, not even
+but <CODE>o</CODE> and <CODE>u</CODE> don't count as vowels just now".  Therefore,
+<CODE>o</CODE> and <CODE>u</CODE> are included in this unordered list.
+<P>Let us repeat that this operator will never work for ordered lists, nor
 for the <CODE>syll</CODE> rule sonority groups.
 <P>
 <P>
@@ -829,10 +850,18 @@ for the <CODE>syll</CODE> rule sonority groups.
 </H2>
 
 <P>
-<P>You can use the backslash to escape any special character including itself
-anywhere in the rules or <CODE>.ini</CODE> file strings.
-<CODE>\n</CODE>, <CODE>\t</CODE>, <CODE>\[</CODE> may be used
-to insert a newline, tab, or escape characters, respectively.
+<P>You can escape any special character by prefixing it by a backslash
+anywhere in the rules or configuration files.  The backslash will
+be skipped, and the character will lose any special meaning which
+it would acquire within a given context.  Of course, backslashes
+themselves can be escaped in the same way.
+<P>
+<P>
+<P>In addition, special characters listed in
+<A HREF="epos-3.html#escapes">the table of escape sequences</A> can be inserted
+using the same mechanism.
+<P>
+<P>
 <P>
 <P>
 <HR>

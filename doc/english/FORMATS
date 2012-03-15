@@ -4,6 +4,7 @@ the documentation into various formats:
 
 make epos.txt		text-only doc, to be viewed with "less"
 make epos.dvi		finely typeset doc, to be printed with "dvips"
+make epos.ps		postscript file, as above
 make epos.html		a hypertext documentation, to be viewed e.g. with "lynx"
 make epos.info		GNU info documentation, to be viewed with "info" or "emacs"
 

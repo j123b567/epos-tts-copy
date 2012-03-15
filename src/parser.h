@@ -20,6 +20,8 @@
  *
  */
 
+enum SYMTABLE {ST_ROOT, ST_RAW, /* ST_EMPTY */};		// FIXME: necessary?
+
 class parser
 {
 	unsigned char *text;	// allocated dynamically
@@ -39,7 +41,8 @@ class parser
 	void init(SYMTABLE symtab);          // the common constructor
 	~parser();
 	UNIT level;		// contains the UNIT level of the next symbol
-	int f, i, t;		// f, i, t of the next symbol (usually zero)
+//	int f, i, t;		// f, i, t of the next symbol (usually zero)
+	float t;
 	unsigned char gettoken(); // gets the next symbol
 	UNIT chrlev(unsigned char c);  // what level c is to be analysed at
 	void done();		// shriek if some input left
@@ -51,6 +54,7 @@ class parser
  *	Special tokens added to ASCII instead of some absurd ctrl chars:
  *	DOTS	 ...	\~
  *	DECPOINT 1.3	\.
+ *	URLDOT   .com	\d
  *	RANGE	 1-3	\-
  *	MINUS	  -3	\m
  *	
@@ -67,15 +71,16 @@ class parser
  *
  *	Adding special tokens: parser::gettoken(), fmtchar(), .ini
  *	files must recognize the token (probably as a perm_phone), for
- *	which you have to add some intuitive escape sequence to option.cc,
+ *	which you have to add some intuitive escape sequence to option.lst,
  *	namely to token_esc and value_esc defaults.
  *	Then add some appropriate handling within the rules.
  */
 
 #define DOTS	 1
 #define DECPOINT 2
-#define	RANGE	 3
-#define MINUS	 4
+#define URLDOT   3
+#define	RANGE	 4
+#define MINUS	 5
 
 #define _INTERNAL1	31
 #define _INTERNAL2	30

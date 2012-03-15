@@ -66,10 +66,10 @@
 
 inline void agent_profile(const char *s)
 {
-	if (!cfg->profile || !*cfg->profile) return;
+	if (!scfg->profile || !*scfg->profile) return;
 	
 	static FILE *log = NULL;
-	if (!log) log = fopen(cfg->profile, "w", "profile");
+	if (!log) log = fopen(scfg->profile, "w", "profile");
 	static struct timeval start, stop;
 	if (!s) {
 		if (gettimeofday(&start, NULL)) shriek(861, "profiler fails");
@@ -102,12 +102,12 @@ agent::agent(DATA_TYPE typein, DATA_TYPE typeout)
 	pendin = pendout = NULL; pendcount = 0;
 	c = NULL;
 	dep = NULL;
-	DEBUG(1,11,fprintf(STDDBG, "Creating a handler, intype %i, outtype %i\n", typein, typeout);)
+	DBG(1,11,fprintf(STDDBG, "Creating a handler, intype %i, outtype %i\n", typein, typeout);)
 }
 
 agent::~agent()
 {
-//	DEBUG(1,11,fprintf(STDDBG, "Handler deleted.\n");)
+//	DBG(1,11,fprintf(STDDBG, "Handler deleted.\n");)
 }
 
 inline void
@@ -121,26 +121,26 @@ void
 agent::timeslice()
 {
 	c->enter();
-	DEBUG(1,11,fprintf(STDDBG, "Timeslice for %s\n", name());)
-	DEBUG(0,11,fprintf(STDDBG, "pendcount %d, next->pendcount %d, pend_max %d\n", pendcount, next ? next->pendcount : -42, cfg->pend_max);)
-	if (next && next->pendcount > cfg->pend_max) {
-		DEBUG(1,11,fprintf(STDDBG, "(satiated)\n");)
+	DBG(1,11,fprintf(STDDBG, "Timeslice for %s\n", name());)
+	DBG(0,11,fprintf(STDDBG, "pendcount %d, next->pendcount %d, pend_max %d\n", pendcount, next ? next->pendcount : -42, scfg->pend_max);)
+	if (next && next->pendcount > scfg->pend_max) {
+		DBG(1,11,fprintf(STDDBG, "(satiated)\n");)
 		c->leave();
 		return;
 	}
 	if (!inb && in != T_NONE) {
 		if (!pendin) {
 			/* We may take this path legally after an intr command */
-			DEBUG(2,11,fprintf(STDDBG, "No input of type %i; shrugging off\n", in);)
+			DBG(2,11,fprintf(STDDBG, "No input of type %i; shrugging off\n", in);)
 			c->leave();
 			return;
 		}
-		DEBUG(2,11,fprintf(STDDBG, "Getting pending task, type %i\n", in);)
+		DBG(2,11,fprintf(STDDBG, "Getting pending task, type %i\n", in);)
 		pend_ll *tmp = pendin;
 		inb = tmp->d;
 		pendin = tmp->next;
 		delete tmp;
-		if (pendcount-- == cfg->pend_min) prev->unquench();
+		if (pendcount-- == scfg->pend_min) prev->unquench();
 		if (!pendin) {
 			prev->pendout = NULL;
 			if (pendcount) shriek(862, "pending count incorrect");
@@ -152,7 +152,7 @@ agent::timeslice()
 		agent_profile(name());
 	} catch (command_failed *e) {
 		if (!next) throw e;
-		DEBUG(2,11,fprintf(STDDBG, "Processing failed, %d, %.60s\n", e->code, e->msg);)
+		DBG(2,11,fprintf(STDDBG, "Processing failed, %d, %.60s\n", e->code, e->msg);)
 		reply(e->code, e->msg);
 		delete e;
 		finis(true);
@@ -175,7 +175,8 @@ inline void do_relax(void *ptr, DATA_TYPE type)
 		case T_STML:	
 		case T_TEXT:	free(ptr); break;
 		case T_UNITS:	delete ((unit *)ptr); break;
-		case T_DIPHS:	free(ptr); break;
+		case T_SEGS:	free(ptr); break;
+		case T_SSIF:	free(ptr); break;
 		case T_WAVEFM:	delete((wavefm *)ptr); break;
 	}
 }
@@ -218,7 +219,7 @@ agent::finis(bool err)
 bool agent::brk()
 {
 	relax();
-	DEBUG(1,11,fprintf(STDDBG, "interrupting an agent, intype %i, outtype %i\n", in, out);)
+	DBG(1,11,fprintf(STDDBG, "interrupting an agent, intype %i, outtype %i\n", in, out);)
 	return true;
 }
 
@@ -315,41 +316,78 @@ class a_segs : public agent
 	virtual const char *name() { return "segs"; };
 	int position;
    public:
-	a_segs() : agent(T_UNITS, T_DIPHS) {position = 0;};
+	a_segs() : agent(T_UNITS, T_SEGS) {position = 0;};
 };
 
-#define INIT_DIPHS_BS	2048
+#define INIT_SEGS_BS	2048
+#define INIT_SSIF_BS	4096
 
 void
 a_segs::run()
 {
-	int dbs = cfg->db_size ? cfg->db_size : INIT_DIPHS_BS;
-	segment *d = (segment *)xmalloc((dbs + 1) * sizeof(segment));
+	int sbs = cfg->sb_size ? cfg->sb_size : INIT_SEGS_BS;
+	segment *d = (segment *)xmalloc((sbs + 1) * sizeof(segment));
 	segment *c = d + 1;
 	int n;
 	int items = 0;
 
 	unit *root = *(unit **)&inb;
+	root->project(scfg->segm_level);
 again:
-	n = root->write_segs(c, position, dbs);
+	n = root->write_segs(c, position, sbs);
 	position += n;
 	items += n;
-	if (cfg->db_size && n >= dbs) {
-		d = (segment *)xrealloc(d, (dbs + 1 + position) * sizeof(segment));
+	if (cfg->sb_size && n >= sbs) {
+		d = (segment *)xrealloc(d, (sbs + 1 + position) * sizeof(segment));
 		c = d + 1 + position;
 		goto again;
-	}
-	if (!cfg->db_size || n < dbs) {
+	} else {
 		delete root;
 		inb = NULL;
 		position = 0;
-	} else schedule();
+	}
 	d->code = items;
 	d->nothing = d->ll = 0;
-	DEBUG(1,11,fprintf(STDDBG, "agent segs generated %d segments\n", n);)
+	DBG(1,11,fprintf(STDDBG, "agent segs generated %d segments\n", n);)
 	pass(d);
 }
 
+class a_ssif : public agent
+{
+	virtual void run();
+	virtual const char *name() { return "to-mbrola"; };
+	int position;
+   public:
+	a_ssif() : agent(T_UNITS, T_SSIF) {position = 0;};
+};
+
+void
+a_ssif::run()
+{
+	int ssifbs = cfg->ssifb_size ? cfg->ssifb_size : INIT_SSIF_BS;
+	char *d = (char *)xmalloc((ssifbs + 1));
+	char *c = d /* + sizeof header */;
+	int n;
+	int items = 0;
+
+	unit *root = *(unit **)&inb;
+	root->project(scfg->phone_level);
+again:
+	n = root->write_ssif(c, position, ssifbs);
+	position += n;
+	items += n;
+	if (cfg->ssifb_size && n >= ssifbs) {
+		d = (char *)xrealloc(d, (ssifbs + 1 + position));
+		c = d /* + sizeof header */ + strlen(d);		/* FIXME: efficiency */
+		goto again;
+	} else {
+		delete root;
+		inb = NULL;
+		position = 0;
+	}
+	DBG(1,11,fprintf(STDDBG, "agent ssif generated %d items\n", n);)
+	pass(d);
+}
 
 class a_chunk : public agent
 {
@@ -422,39 +460,63 @@ class a_synth : public agent
 {
 	virtual void run();
 	virtual const char *name() { return "synth"; };
+   protected:
+	void init_syn();
    public:
-	a_synth() : agent(T_DIPHS, T_WAVEFM) {};
+	a_synth(DATA_TYPE din, DATA_TYPE dout) : agent(din, dout) {};
+	a_synth() : agent(T_SEGS, T_WAVEFM) {};
 };
+
+void
+a_synth::init_syn()
+{
+	try {
+		this_voice->syn = setup_synth(this_voice);
+	} catch (command_failed *e) {
+		if (e->code / 10 == 47 && this_lang->fallback_voice && *this_lang->fallback_voice) {
+							// 47x codes are network errors
+			voice_switch(this_lang->fallback_voice);
+			if (this_lang->permanent_fallbacks) {
+				c->leave();
+				voice_switch(this_lang->fallback_voice);
+				c->enter();
+			} 
+			delete e;
+			return;
+		} else throw e;
+	}
+}
 
 void
 a_synth::run()
 {
 	if (!this_voice) shriek(861, "No current voice");
-	if (!this_voice->syn) {
-		try {
-			synth *sy = setup_synth(this_voice);
-			this_voice->syn = sy;
-//			c->leave();
-//			this_voice->syn = sy;
-//			c->enter();
-		} catch (command_failed *e) {
-			if (e->code / 10 == 47 && this_lang->fallback_voice && *this_lang->fallback_voice) {
-								// 47x codes are network errors
-				voice_switch(this_lang->fallback_voice);
-				if (this_lang->permanent_fallbacks) {
-					c->leave();
-					voice_switch(this_lang->fallback_voice);
-					c->enter();
-				} 
-				delete e;
-				run();
-				return;
-			} else throw e;
-		}
-	}
+	while (!this_voice->syn) init_syn();	// at most twice
 	wavefm *wfm = new wavefm(this_voice);
 	this_voice->syn->synsegs(this_voice, (segment *)inb + 1, ((segment*)inb)->code, wfm);
-	DEBUG(1,11,fprintf(STDDBG, "a_synth processes %d segments\n", ((segment *)inb)->code);)
+	DBG(1,11,fprintf(STDDBG, "a_synth processes %d segments\n", ((segment *)inb)->code);)
+
+	free(inb);
+	inb = NULL;
+	pass(wfm);
+}
+
+class a_syn : public a_synth
+{
+	virtual void run();
+   public:
+	a_syn() : a_synth(T_SSIF, T_WAVEFM) {};
+//	a_syn() : agent(T_SSIF, T_WAVEFM) {};
+};
+
+void
+a_syn::run()
+{
+	if (!this_voice) shriek(861, "No current voice");
+	while (!this_voice->syn) init_syn();	// at most twice
+	wavefm *wfm = new wavefm(this_voice);
+	this_voice->syn->synssif(this_voice, (char *)inb, wfm);
+//	DBG(1,11,fprintf(STDDBG, "a_synth processes %d segments\n", ((segment *)inb)->code);)
 
 	free(inb);
 	inb = NULL;
@@ -501,7 +563,7 @@ socky int special_io(const char *name, DATA_TYPE intype)
 	if (!cfg->localsound) shriek(453, "Not allowed to use localsound");
 
 	if (localsound != -1) return localsound;
-	int r = open(cfg->local_sound_device, O_WRONLY | O_NONBLOCK);
+	int r = open(scfg->local_sound_device, O_WRONLY | O_NONBLOCK);
 	if (r == -1) shriek(462, fmt("Could not open localsound device, error %d", errno));
 	localsound = r;
 	return r;
@@ -539,12 +601,12 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 			 * the socket upon exit        */
 	}
 	if (socket >= 0) stretch_sleep_table(socket);
-	DEBUG(0,11,fprintf(STDDBG, "I/O agent is %p\n", this);)
+	DBG(0,11,fprintf(STDDBG, "I/O agent is %p\n", this);)
 }
 
 a_io::~a_io()
 {
-	DEBUG(0,11,fprintf(STDDBG, "~a_io\n");)
+	DBG(0,11,fprintf(STDDBG, "~a_io\n");)
 	if (close_upon_exit) async_close(socket);
 }
 
@@ -569,9 +631,9 @@ a_input::a_input(const char *par) : a_io(par, T_INPUT, T_TEXT)
 void a_input::run()
 {
 	int res;
-	DEBUG(0,11,fprintf(STDDBG, "Entering input agent\n");)
+	DBG(0,11,fprintf(STDDBG, "Entering input agent\n");)
 	if (sleep_table[socket]) {
-		DEBUG(0,11,fprintf(STDDBG, "avoiding a nested input\n");)
+		DBG(0,11,fprintf(STDDBG, "avoiding a nested input\n");)
 		block(socket);
 		return;
 	}
@@ -589,8 +651,10 @@ void a_input::run()
 	}
 	offset += res;
 	if (offset == toread) {
+		void *dta = inb;
+		((char *)dta)[offset] = 0;
 		switch (out) {
-			case T_DIPHS:
+			case T_SEGS:
 				if ((((segment *)inb)->code + 1) * (int)sizeof(segment) != offset)
 					shriek(432, fmt("Received bad segments: %d segs, %d bytes",
 						((segment *)inb)->code, offset));
@@ -603,11 +667,11 @@ void a_input::run()
 				inb = NULL; toread = offset = 0;
 				pass(w);
 				return;
+			case T_TEXT:
+				encode_string((char *)inb, this_lang->charset, false);
 			default: ;	/* otherwise no problem */
 		}
-		void *dta = inb;
-		((char *)dta)[offset] = 0;
-		DEBUG(2,11,fprintf(STDDBG, "Read and about to process %s\n", (char *)dta);)
+		DBG(2,11,fprintf(STDDBG, "Read and about to process %s\n", (char *)dta);)
 		inb = NULL;
 		toread = 0;	// superfluous
 		offset = 0;	// superfluous
@@ -618,13 +682,13 @@ void a_input::run()
 bool
 a_input::mktask(int size)
 {
-	DEBUG(2,11,fprintf(STDDBG, "%d bytes to be read\n", size);)
+	DBG(2,11,fprintf(STDDBG, "%d bytes to be read\n", size);)
 	if (inb) return false;	// busy
 	toread = size;
 	inb = xmalloc(size + 1);
 	offset = 0;
 	block(socket);
-	DEBUG(1,11,fprintf(STDDBG, "Apply task has been scheduled\n");)
+	DBG(1,11,fprintf(STDDBG, "Apply task has been scheduled\n");)
 	return true;
 }
 
@@ -632,14 +696,16 @@ a_input::mktask(int size)
 class a_output : public a_io
 {
 	virtual int insize() = 0;
+	virtual void decode() {};
 	virtual void run();
 	virtual const char *name() { return "output"; };
 	bool foreground() {return ((stream *)next)->foreground(); };
 	int written;
+	bool decoded;
    protected:
 	void report(bool total, int written);
    public:
-	a_output(const char *par, DATA_TYPE i) : a_io(par, i, T_NONE) {written = 0;};
+	a_output(const char *par, DATA_TYPE i) : a_io(par, i, T_NONE) {written = 0; decoded = false;};
 };
 
 void
@@ -650,6 +716,11 @@ a_output::run()
 		return;
 	}
 	int size = insize();
+	if (!decoded) {
+		decode();
+		decoded = true;
+	}
+	
 	if (written) {
 		int now_written = ywrite(socket, (char *)inb + written, size - written);
 		report(false, now_written);
@@ -663,6 +734,7 @@ a_output::run()
 	}
 	if (written == size) {
 		written = 0;
+		decoded = false;
 		relax();
 		finis(false);
 	} else push(socket);
@@ -681,32 +753,35 @@ a_output::report(bool total, int written)
 }
 
 
-class oa_ascii : public a_output
+template <DATA_TYPE type> class oa_ascii : public a_output
 {
 	virtual int insize() {
 		return strlen((char *)inb);
 	}
+	virtual void decode() {
+		decode_string((char *)inb, this_lang->charset);
+	}
    public:
-	oa_ascii(const char *s): a_output(s, T_TEXT) {};
+	oa_ascii(const char *s): a_output(s, type) {};
 };
 
-class oa_stml : public a_output
-{
-	virtual int insize() {
-		return strlen((char *)inb);
-	}
-   public:
-	oa_stml(const char *s): a_output(s, T_STML) {};
-};
+//class oa_stml : public a_output
+//{
+//	virtual int insize() {
+//		return strlen((char *)inb);
+//	}
+//   public:
+//	oa_stml(const char *s): a_output(s, T_STML) {};
+//};
 
 class oa_seg : public a_output
 {
 	virtual int insize() {
-		DEBUG(1,11,fprintf(STDDBG, "Sending %d segments\n", ((segment *)inb)->code);)
+		DBG(1,11,fprintf(STDDBG, "Sending %d segments\n", ((segment *)inb)->code);)
 		return ((segment *)inb)->code * sizeof(segment);
 	}
    public:
-	oa_seg(const char *s): a_output(s, T_DIPHS) {};
+	oa_seg(const char *s): a_output(s, T_SEGS) {};
 };
 
 class oa_wavefm : public a_output
@@ -741,7 +816,7 @@ oa_wavefm::run()
 		if (w->written) report(false, w->written);
 		report(true, w->written_bytes());
 		w->detach(socket);
-		DEBUG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n", w->written_bytes());)
+		DBG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n", w->written_bytes());)
 		attached = false;
 		delete w;
 		inb = NULL;
@@ -759,7 +834,7 @@ oa_wavefm::brk()
 		report(false, w->written_bytes());
 		w->brk();
 		if (attached) w->detach(socket);
-		DEBUG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n", w->written_bytes());)
+		DBG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n", w->written_bytes());)
 		attached = false;
 		relax();
 	}
@@ -773,19 +848,20 @@ oa_wavefm::brk()
  *	stream agent itself. stream->head is an input agent.
  */
 
-enum agent_type {AT_UNKNOWN, AT_CHUNK, AT_JOIN, AT_ASCII, AT_DIPHS, AT_PRINT, AT_RULES, AT_STML, AT_SYNTH,
-		 AT_T_TEXT, AT_T_STML, AT_T_UNITS, AT_T_DIPHS, AT_T_WAVEFM};
-const char *agent_type_str = ":chunk:join:raw:diphs:print:rules:stml:synth:[t]:[s]:[i]:[d]:[w]:";
+enum agent_type {AT_UNKNOWN, AT_CHUNK, AT_JOIN, AT_ASCII, AT_SSIF, AT_SEGS, AT_PRINT, AT_RULES, AT_STML, AT_SYNTH,
+		 AT_T_TEXT, AT_T_STML, AT_T_UNITS, AT_T_SSIF, AT_T_SEGS, AT_T_WAVEFM};
+const char *agent_type_str = ":chunk:join:raw:dump:diphs:print:rules:stml:synth:[t]:[s]:[i]:[p]:[d]:[w]:";
 
 agent *make_agent(char *s, agent *preceding)
 {
 	if (strchr("@#/.$", *s)) {
 		if (!preceding) return new a_input(s);
 		switch (preceding->out) {
-			case T_TEXT:   return new oa_ascii(s);
-			case T_STML:   return new oa_stml(s);
+			case T_TEXT:   return new oa_ascii<T_TEXT>(s);
+			case T_STML:   return new oa_ascii<T_STML>(s);
 			case T_UNITS: shriek(448, "Units are hard to output");
-			case T_DIPHS:  return new oa_seg(s);
+			case T_SSIF:   return new oa_ascii<T_SSIF>(s);
+			case T_SEGS:  return new oa_seg(s);
 			case T_WAVEFM: return new oa_wavefm(s);
 			default: shriek(462, "unimplmd oa");
 		}
@@ -795,7 +871,8 @@ agent *make_agent(char *s, agent *preceding)
 		case AT_UNKNOWN: shriek(861, "Agent type bug.");
 		case AT_ASCII: return new a_ascii;
 		case AT_CHUNK: return new a_chunk;
-		case AT_DIPHS: return new a_segs;
+		case AT_SSIF:  return new a_ssif;
+		case AT_SEGS:  return new a_segs;
 		case AT_JOIN:  return new a_join;
 		case AT_PRINT: return new a_print;
 		case AT_RULES: return new a_rules;
@@ -805,7 +882,8 @@ agent *make_agent(char *s, agent *preceding)
 		case AT_T_TEXT:  return new a_type<T_TEXT>;
 		case AT_T_STML:  return new a_type<T_STML>;
 		case AT_T_UNITS: return new a_type<T_UNITS>;
-		case AT_T_DIPHS: return new a_type<T_DIPHS>;
+		case AT_T_SSIF:  return new a_type<T_SSIF>;
+		case AT_T_SEGS:  return new a_type<T_SEGS>;
 		case AT_T_WAVEFM:return new a_type<T_WAVEFM>;
 
 		default:       shriek(415, "Unknown agent type"); return NULL;
@@ -820,7 +898,7 @@ stream::stream(char *s, context *pc) : agent(T_NONE, T_NONE)
 	agent *l = head = NULL;
 
 	callbk = NULL;
-//	c = new context(cfg->sd_in, cfg->sd_out);	// a little redundant
+//	c = new context(cfg->sdin, cfg->sdout);	// a little redundant
 	c = pc;
 //	navelcord<context> ncc(c);
 
@@ -829,7 +907,7 @@ stream::stream(char *s, context *pc) : agent(T_NONE, T_NONE)
 
 	do {
 		*tmp = 0;
-		DEBUG(1,11,fprintf(STDDBG, "Making agent out of %s\n", s);)
+		DBG(1,11,fprintf(STDDBG, "Making agent out of %s\n", s);)
 		try {
 			a = make_agent(s, NULL); a->c = c;
 		} catch (command_failed *e) {
@@ -870,7 +948,7 @@ stream::release_agents()
 void
 stream::apply(agent *ref, int bytes)
 {
-	DEBUG(2,11,fprintf(STDDBG, "In stream::apply %p %p %d\n", head, ref, bytes);)
+	DBG(2,11,fprintf(STDDBG, "In stream::apply %p %p %d\n", head, ref, bytes);)
 	callbk = ref;
 	head->mktask(bytes);
 }
@@ -894,13 +972,13 @@ stream::run()
 void
 stream::finis(bool err)		// FIXME: simplify
 {
-	DEBUG(2,11,fprintf(STDDBG, "submitted a subtask\n");)
+	DBG(2,11,fprintf(STDDBG, "submitted a subtask\n");)
 	for (agent *a = head; a != this; a = a->next) {
 		if (a->inb || a->pendin) {
-			DEBUG(2,11,fprintf(STDDBG, "more subtasks are pending\n");)
+			DBG(2,11,fprintf(STDDBG, "more subtasks are pending\n");)
 			if (err) {
 				a->relax();
-				DEBUG(2,11,fprintf(STDDBG, "subtasks discarded\n");)
+				DBG(2,11,fprintf(STDDBG, "subtasks discarded\n");)
 				if  (callbk) callbk->schedule();
 				else shriek(862, "double fault - no callback");
 				callbk = NULL;
@@ -909,7 +987,7 @@ stream::finis(bool err)		// FIXME: simplify
 			return;
 		}
 	}
-	DEBUG(2,11,fprintf(STDDBG, "this has been the last subtask\n");)
+	DBG(2,11,fprintf(STDDBG, "this has been the last subtask\n");)
 	if (!err) reply("200 output OK");
 	if (callbk) callbk->schedule();
 	else shriek(862, "no callback");
@@ -983,20 +1061,22 @@ void a_protocol::run()
 		return;
 	}
 
+	encode_string(buffer, this_lang->charset, false);	// FIXME (alloc->true)
+
 	if ((int)strlen(buffer) >= cfg->max_net_cmd)
 		shriek(413, "Received command is too looong");
 	if (res > 0 && *buffer) switch (run_command(buffer)) {
 		case PA_NEXT:
-			DEBUG(0,11,fprintf(STDDBG, "PA_NEXT\n");)
+			DBG(0,11,fprintf(STDDBG, "PA_NEXT\n");)
 			if (strchr(sgets_buff, '\n')) schedule();
 			else block(cfg->sd_in);
 			return;
 		case PA_DONE:
-			DEBUG(0,11,fprintf(STDDBG, "PA_DONE\n");)
+			DBG(0,11,fprintf(STDDBG, "PA_DONE\n");)
 			disconnect();
 			return;
 		case PA_WAIT:
-			DEBUG(0,11,fprintf(STDDBG, "PA_WAIT\n");)
+			DBG(0,11,fprintf(STDDBG, "PA_WAIT\n");)
 			return;
 		default:
 			shriek(861, "Bad protocol action\n");
@@ -1044,7 +1124,7 @@ a_ttscp::~a_ttscp()
 	c->enter();
 	if (cfg->current_stream) delete cfg->current_stream;
 	cfg->current_stream = NULL;
-	DEBUG(2,11,fprintf(STDDBG, "deleted context closes fd %d and %d\n", cfg->sd_in, cfg->sd_out);)
+	DBG(2,11,fprintf(STDDBG, "deleted context closes fd %d and %d\n", cfg->sd_in, cfg->sd_out);)
 	c->leave();
 	while (deps->items) {
 		a_ttscp *tmp = deps->translate(deps->get_random());
@@ -1080,7 +1160,7 @@ a_ttscp::run_command(char *cmd)
 	char *keyword;
 	char *param;
 
-	DEBUG(2,11,fprintf(STDDBG, "[ cmd] %s\n", cmd);)
+	DBG(2,11,fprintf(STDDBG, "[ cmd] %s\n", cmd);)
 
 	keyword = cmd + strspn (cmd, WHITESPACE);
 	param = keyword + strcspn(keyword, WHITESPACE);
@@ -1109,12 +1189,12 @@ a_ttscp::run_command(char *cmd)
 	try {
 		return ttscp_cmd_set[i].impl(param, this);
 	} catch (command_failed *e) {
-		DEBUG(2,11,fprintf(STDDBG, "Command failed, %d, %.60s\n", e->code, e->msg);)
+		DBG(2,11,fprintf(STDDBG, "Command failed, %d, %.60s\n", e->code, e->msg);)
 		reply(e->code, e->msg);
 		delete e;
 		return PA_NEXT;
 	} catch (connection_lost *d) {
-		DEBUG(2,11,fprintf(STDDBG, "Releasing a TTSCP control connection, %d, %.60s\n", d->code, d->msg);)
+		DBG(2,11,fprintf(STDDBG, "Releasing a TTSCP control connection, %d, %.60s\n", d->code, d->msg);)
 		reply(d->code, d->msg);		/* just in case */
 		reply(201, fmt("debug %d", cfg->sd_in));
 		delete d;
@@ -1129,7 +1209,7 @@ a_ttscp::run_command(char *cmd)
 void
 a_ttscp::disconnect()
 {
-	DEBUG(2,11,fprintf(STDDBG, "ctrl conn %d lost\n", cfg->sd_in);)
+	DBG(2,11,fprintf(STDDBG, "ctrl conn %d lost\n", cfg->sd_in);)
 	if (this != ctrl_conns->remove(handle) /* && this != data_conns->remove(handle) */ )
 		shriek(862, "Failed to disconnect a ctrl connection");
 	disconnector.disconnect(this);
@@ -1145,7 +1225,7 @@ void make_nonblocking(int f)
 }
 
 #ifndef HAVE_GETHOSTNAME
-int gethostbyname(char *b, size_t)
+int gethostname(char *b, size_t)
 {
 	strcpy(b, "localhost");
 	return 0;
@@ -1163,12 +1243,12 @@ a_accept::a_accept() : agent(T_NONE, T_NONE)
 
 	cfg->sd_in = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	memset(&sa, 0, sizeof(sa));
-	gethostname(scratch, cfg->scratch - 1);
+	gethostname(scratch, scfg->scratch - 1);
 	sa.sin_family = AF_INET;
-	sa.sin_addr.s_addr = htonl(cfg->local_only ? INADDR_LOOPBACK : INADDR_ANY);
-	sa.sin_port = htons(cfg->listen_port);
+	sa.sin_addr.s_addr = htonl(scfg->local_only ? INADDR_LOOPBACK : INADDR_ANY);
+	sa.sin_port = htons(scfg->listen_port);
 	setsockopt(cfg->sd_in, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
-	DEBUG(2,11,fprintf(STDDBG, "[core] Trying to bind...\n");)
+	DBG(3,11,fprintf(STDDBG, "[core] Binding to the TTSCP port.\n");)
 	if (bind(cfg->sd_in, (sockaddr *)&sa, sizeof (sa))) shriek(871, "Could not bind");
 	if (listen(cfg->sd_in, 64)) shriek(871, "Could not listen");
 	make_nonblocking(cfg->sd_in);
@@ -1183,7 +1263,7 @@ a_accept::a_accept() : agent(T_NONE, T_NONE)
 
 a_accept::~a_accept()
 {
-	close (cfg->sd_in);
+	close (c->config->sd_in);
 	delete c;
 }
 
@@ -1194,12 +1274,12 @@ a_accept::run()
 	int f = accept(cfg->sd_in, (sockaddr *)&ia, &sia);
 	if (f == -1) {
 //		shriek(871, fmt("Cannot accept() - network problem (errno %d)", errno));
-		DEBUG(3,11,fprintf(STDDBG, "Cannot accept() - errno %d! Madly looping.\n", errno);)
+		DBG(3,11,fprintf(STDDBG, "Cannot accept() - errno %d! Madly looping.\n", errno);)
 		if (errno != EAGAIN) schedule();
 		return;
 	}
 	make_nonblocking(f);
-	DEBUG(2,11,fprintf(STDDBG, "[core] Accepted %d (on %d).\n", f, cfg->sd_in);)
+	DBG(2,11,fprintf(STDDBG, "[core] Accepted %d (on %d).\n", f, cfg->sd_in);)
 	c->leave();
 	unuse(new a_ttscp(f, f));
 	c->enter();
@@ -1237,7 +1317,7 @@ agent *sched_sel()
 	sched_tail = sched_tail->prev;
 	delete tmp;
 	runnable_agents--;
-	DEBUG(1,11,fprintf(STDDBG, "Agent %s\n", r->name());)
+	DBG(1,11,fprintf(STDDBG, "Agent %s\n", r->name());)
 	return r;
 }
 
@@ -1262,7 +1342,7 @@ void stretch_sleep_table(socky int fd)
 void
 agent::block(socky int fd)
 {
-	DEBUG(1,11,fprintf(STDDBG, "Sleeping on %d\n", fd);)
+	DBG(1,11,fprintf(STDDBG, "Sleeping on %d\n", fd);)
 	stretch_sleep_table(fd);
 	if (sleep_table[fd]) {
 		agent *a;
@@ -1283,7 +1363,7 @@ agent::block(socky int fd)
 void
 agent::push(socky int fd)
 {
-	DEBUG(1,11,fprintf(STDDBG, "Pushing on %d\n", fd);)
+	DBG(1,11,fprintf(STDDBG, "Pushing on %d\n", fd);)
 	stretch_sleep_table(fd);
 	if (sleep_table[fd]) {
 		agent *a;
@@ -1301,7 +1381,3 @@ agent::push(socky int fd)
 	return;
 }
 
-//void free_sleep_table()
-//{
-//	free(sleep_table);
-//}

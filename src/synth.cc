@@ -18,6 +18,7 @@
 #include "ktdsyn.h"
 #include "ptdsyn.h"
 #include "lpcsyn.h"
+#include "mbrsyn.h"
 #include "tcpsyn.h"
 
 #define SOUND_LABEL_BASE	(1 << SOUND_LABEL_SHIFT)
@@ -36,6 +37,7 @@ synth *setup_synth(voice *v)
 		case S_LPC_VQ:	return new lpcvq(v);
 		case S_KTD:	return new ktdsyn(v);
 		case S_PTD:	return new ptdsyn(v);
+		case S_MBROLA:  return new mbrsyn(v);
 		default:	shriek(861, "Impossible synth type");
 	}
 	return NULL;
@@ -63,14 +65,14 @@ void play_segments(unit *root, voice *v)
 	int i=BUFF_SIZE;
 
 	if (!v->syn) v->syn = setup_synth(v);
-	if (!cfg->play_segs && !cfg->show_segs) return;
+	if (!scfg->play_segs && !scfg->show_segs) return;
 	wavefm w(v);
 	for (int k=0; i==BUFF_SIZE; k+=BUFF_SIZE) {
 		i=root->write_segs(d+1,k,BUFF_SIZE);
 		d[0].code = i; d[0].nothing = 0; d[0].ll = 0;
 //		frob_segments(d/*+1*/, i, v);		(moved to synth::synsegs)
 //		w.attach();
-		DEBUG(3,9,fprintf(STDDBG,"Using %s synthesis\n", enum2str(this_voice->type, STstr));)
+		DBG(3,9,fprintf(STDDBG,"Using %s synthesis\n", enum2str(this_voice->type, STstr));)
 		v->syn->synsegs(v, d+1, i, &w);
 //		w.detach();
 	}
@@ -83,12 +85,12 @@ void show_segments(unit *root)
 	int i=BUFF_SIZE;
 	voice *v = this_voice;
 	
-	if (!cfg->show_segs) return;
+	if (!scfg->show_segs) return;
 	v->claim_all();
 	for (int k=0; i==BUFF_SIZE; k+=BUFF_SIZE) {
 		i=root->write_segs(d,k,BUFF_SIZE);
 		for (int j=0;j<i;j++) {
-			if (cfg->seg_raw) fprintf(STDDBG,  "%5d", d[j].code);
+			if (scfg->seg_raw) fprintf(STDDBG,  "%5d", d[j].code);
 			fprintf(STDDBG," %.3s f=%d t=%d i=%d\n", d[j].code<v->n_segs && v->segment_names ? ((char(*)[4])v->segment_names->data)[d[j].code] : "?!", d[j].f, d[j].t, d[j].e);
 		}
 	}
@@ -98,12 +100,12 @@ void show_segments(unit *root)
 
 synth::synth()
 {
-	DEBUG(1,9,fprintf(STDDBG,"A synthesis going to initialise\n");)
+	DBG(1,9,fprintf(STDDBG,"A synthesis going to initialise\n");)
 }
 
 synth::~synth()
 {
-	DEBUG(1,9,fprintf(STDDBG,"A synthesis deconstructed\n");)
+	DBG(1,9,fprintf(STDDBG,"A synthesis deconstructed\n");)
 }
 
 void
@@ -130,7 +132,7 @@ synth::synsegs(voice *v, segment *d, int n, wavefm *w)
 			if (cfg->label_seg) {
 				strncpy(tmp, ((char(*)[4])v->segment_names->data)[d[i].code], 3);
 				tmp[3] = 0;
-				w->label(0, tmp, enum2str(cfg->segm_level, cfg->unit_levels));
+				w->label(0, tmp, enum2str(scfg->segm_level, scfg->unit_levels));
 			}
 			int oi = w->get_buffer_index();
 			synseg(v, x, w);
@@ -140,12 +142,18 @@ synth::synsegs(voice *v, segment *d, int n, wavefm *w)
 				tmp[1] = 0;
 				int negoffs = (SOUND_LABEL_BASE - v->sl[x.code].pos)
 					* len >> SOUND_LABEL_SHIFT;
-				int level = cfg->label_sseg ? d[i].ll : cfg->phone_level;
-//				FILE *f = fopen("02tmp", "a+"); fputs(enum2str(level, cfg->unit_levels), f); fputs("\n", f); fclose(f);
-				w->label(negoffs, tmp, enum2str(level, cfg->unit_levels));
+				int level = cfg->label_sseg ? d[i].ll : scfg->phone_level;
+//				FILE *f = fopen("02tmp", "a+"); fputs(enum2str(level, scfg->unit_levels), f); fputs("\n", f); fclose(f);
+				w->label(negoffs, tmp, enum2str(level, scfg->unit_levels));
 			}
 		} else 	synseg(v, x, w);
 	}
+}
+
+void
+synth::synssif(voice *v, char *, wavefm *w)
+{
+	shriek(861, "synth::synsiff is abstract");
 }
 
 void
@@ -154,4 +162,9 @@ voidsyn::synseg(voice *, segment, wavefm *)
 	shriek(813, "Synthesis type absent");
 }
 
+
+void voidsyn::synssif(voice *, char *, wavefm *)
+{
+	shriek(813, "Synthesis type absent");
+}
 

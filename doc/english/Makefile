@@ -25,6 +25,7 @@ epos.txt: epostwk.sgml
 epos.html: epos.sgml
 	@echo Converting to HTML
 	@sgml2html $^
+	@../../arch/unix/commat
 
 epos.dvi: epos.sgml
 	@sgml2latex --output=dvi --papersize=a4 --language=en $^

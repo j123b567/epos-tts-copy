@@ -1,0 +1,2481 @@
+diff -ruN -x*.dph* slovak/abbrevs.dic lng/slovak/abbrevs.dic
+--- slovak/abbrevs.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/abbrevs.dic	Sat Nov 28 14:47:00 1998
+@@ -16,7 +16,6 @@
+ J	jé~
+ K	ká~
+ L	|el~
+-¼       |e¾~
+ M	|em~
+ N	|en~
+ Ò	|eò
+@@ -27,9 +26,9 @@
+ Q	kvé~
+ R	|er~
+ S	|es~
+-Š	|eš~
++©	|e¹~
+ T	té~
+-	é~
++«	»é~
+ U	|ú~
+ Ú	dlhé|ú~
+ V	vé~
+@@ -38,4 +37,4 @@
+ Y	|ypsilon~
+ İ	dlhé~tvrdé~í~
+ Z	zet~
+-	et~
++®	¾et~
+diff -ruN -x*.dph* slovak/cudz.dic lng/slovak/cudz.dic
+--- slovak/cudz.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/cudz.dic	Thu Jan  1 01:00:00 1970
+@@ -1,47 +0,0 @@
+-^accelerand aèelìrand
+-adagio adádo
+-abbé  abé
+-fóò fón
+-agitáto aditáto
+-akusti akusty
+-akadem akadìm
+-aritmeti aritmety
+-alabaster alabastìr
+-amnesti amnìsty
+-amorti amorty
+-ampli amply
+-^andante andantì
+-^andantí andantı
+-atleti atlìty
+-bandi bandy
+-banjo bendo
+-^basti basty  
+-bapti bapty
+-^belet belìt
+-^bene benì
+-^batik batyk
+-^batist batyst
+-^barcelon barselon 
+-^bazili bazily                 #bazilika
+-^begóni begóny
+-^beòadik beòadyk
+-^berlín berlın
+-^bernardín bernardın
+-bibli bibly 
+-^bili bily
+-bešti bešty                    #beštia, ...
+-^inteli intìly
+-^intele intìlì
+-polyti polyty
+-patia$ patya
+-foneti fonety
+-klima klyma
+-klíma klıma
+-kráter krátìr
+-akrobati akrobaty
+-mechani mechany
+-metali metaly
+-majster majstìr
+-nisti nysty
+-stigma stygma
+-valìntín valìntın          
+\ No newline at end of file
+diff -ruN -x*.dph* slovak/dtnl.dic lng/slovak/dtnl.dic
+--- slovak/dtnl.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/dtnl.dic	Thu Jan  1 01:00:00 1970
+@@ -1,525 +0,0 @@
+-^accelerand aèelìrand
+-adagio adádo
+-abbé  abé
+-fóò fón
+-agitáto aditáto
+-akusti akusty
+-akadem akadìm
+-aritmeti aritmety
+-alabaster alabastìr
+-amnesti amnìsty
+-amorti amorty
+-ampli amply
+-^andante andantì
+-^andantí andantı
+-atleti atlìty
+-^inteli intìly
+-^intele intìlì
+-polyti polyty
+-patia$ patya
+-foneti fonety
+-klima klyma
+-klíma klıma
+-kráter krátìr
+-akrobati akrobaty
+-mechani mechany
+-metali metaly
+-majster majstìr
+-nisti nysty
+-stigma stygma
+-valìntín valìntın   
+-abalien abalyen
+-abdik abdyk
+-abesínia abesínya
+-ablatív ablatıv
+-^ablegát ablìgát
+-^aboli aboly
+-^abstin abstyn
+-^ade adì
+-^adiab adyab
+-^adíc adıc
+-^admiralit admiralyt
+-akridín akridın 
+-akti akty
+-aktí aktı
+-aktuali aktualy
+-amulet amulìt
+-aníz anız
+-anódi anódy
+-^ane anì
+-^ali aly
+-alerg alìrg
+-alter altìr
+-^alej a¾ej
+-anegdot anìgdot
+-^anim anym
+-analytik analytyk
+-anilín anylın
+-anión anyón
+-angli angly
+-^anizo anyzo
+-aòje aòIe
+-^anes anìs
+-^anìste anìstì
+-^anìsteti anìstìty
+-^anti anty
+-^antagoni antagony
+-^aplik aplyk
+-^ate atì
+-^audi audy
+-bater batìr
+-^balet balìt
+-balistik balystyk
+-bandi bandy
+-banjo bendo
+-^basti basty  
+-bapti bapty
+-^belet belìt
+-^bene benì
+-^batik batyk
+-^batist batyst
+-^barcelon barselon 
+-^bazili bazily                 #bazilika
+-^begóni begóny
+-^beòadik beòadyk
+-^berlín berlın
+-^bernardín bernardın
+-^betle betlì
+-bibli bibly 
+-^bili bily
+-bešti bešty                    #beštia, ...
+-charakter charaktìr
+-centi centy
+-ceremoni ceremóny
+-cister cistìr
+-cylistik cyklystyk
+-^deba dìba
+-^debát dìbát
+-^debet dìbet
+-^dez dìz
+-^deblok dìblok
+-^debrec dìbrec
+-^debut dìbut
+-^decem dìcem
+-^decén dìcén
+-^decen dìcen
+-^deci dìci
+-^decíz dìcíz
+-^decresce dìkreše
+-^dederon dìdìron
+-^dedik dìdyk
+-^deduk dìduk
+-^de$ dì
+-^def dìf
+-^deg dìg
+-^dech dìch
+-^dei dìi
+-^dek dìk
+-^deleg dìlìg
+-^delf dìlf
+-^delig dìlyg
+-^delik dìlyk
+-^delim dìlym
+-^delt dìlt
+-^demag dìmag
+-^demar dìmar
+-^demask dìmask
+-^demen dìmen
+-^demet dìmet
+-^demik dìmik
+-^demilit dìmilyt
+-^deminu dìminu
+-^demis dìmis
+-^demi dìmi
+-^demo dìmo
+-^denaci dìnaci
+-^denár dìnár
+-^denat dìnat
+-^dend dìnd
+-^denerv dìnìrv
+-^denis dìnys
+-^denom dìnom
+-^dent dìnt
+-^denu dìnu
+-^denz dìnz
+-^dep dìp
+-^derb dìrb
+-^deri dìri
+-^derm dìrm
+-^derog dìrog
+-^dervi dìrvi
+-^desant dìsant
+-^descart dìkart
+-^decend dìscend
+-^desde dìsdì
+-^desén dìzén
+-^desen dìsen
+-^design dyzain
+-^desk dìsk
+-^desp dìsp
+-^dest dìst
+-^deš dìš
+-^deta dìta
+-^dete dìtì
+-^deton dìton
+-^detr dìtr
+-^dett dìtt
+-^deu dìu 
+-^deval dìval
+-^devast dìvast
+-^deverb dìverb
+-^deviá dìviá
+-^devíz dìvíz
+-^devo dìvo
+-^devó dìvó
+-^dek dìk
+-deón$ dìón                           # Akordeón
+-dend dìnd
+-dez dìz                            # dividenda, revidendum   
+-^dema dìma
+-^deter dìtìr
+-^deton dìton
+-denèn dìnèn
+-^degener dìgenìr
+-^deriv dìriv
+-^dep dìp
+-^detto$ dìtto
+-^devíz dìvíz
+-^debil dìbil
+-dekor dìkor
+-dezider dìzider
+-dealer dılìr
+-dekremen dìkremen
+-dezin dìzin
+-^devíz dìvíz
+-^dya¾ dia¾               # vınimky predpôn s dia opaène 
+-^dyabol diabol           # default zameni dia za dya 
+-^dya dia
+-didakt dydakt
+-^dieréz dyeréz
+-^diesel dızel
+-^diét dyét
+-^dietet dyetìt
+-^dif dyf
+-^dig dyg
+-digi dygi
+-^dich dych
+-^dik dyk
+-dikt dykt
+-^dil dyl
+-^dim dym
+-^din dyn
+-^dio dyo
+-^dió dyó
+-^dip dyp
+-^dir dyr
+-^dis  dys
+-^diš dyš
+-dita$ dyta               #Afrodita Dita, komodita
+-^dit dyt
+-^diu dyu
+-^diver dyver
+-^divid dyvid
+-^divinác dyvinác
+-^divinit dyvinyt
+-^divis dyvis
+-^divíz dyvíz
+-^dixie dyxie
+-^dizer dyzer
+-^dio dyo
+-elek elìk
+-encia$ ìncia
+-etik etyk
+-ent ìnt
+-finit finyt
+-foneti fonìty
+-^fone fonì
+-^foni fony
+-^fóni fóny
+-foter fotìr
+-gener genìr
+-gotik gotyk
+-hetero htìro
+-chnik$ chnyk
+-chnika$ chnyka
+-io yo
+-^inter intìr
+-id$ yd
+-it$ yt
+-ista$ ysta
+-isti$ ysti
+-istk ystk
+-izm yzm
+-ideál idìál
+-idea idìa
+-ída$ ıda
+-^inic inyc
+-^indi indy
+-^inde indì
+-^indí indı
+-^informatik informatyk
+-^investíc investıc
+-^investi invensty
+-izáci yzáci
+-ifikáci yfikáci
+-nium$ nyum
+-^jeden jedìn
+-judi judy                    #abjudikácia
+-katalek katalìk
+-kanibal kanybal
+-kandid kandydä
+-kanoni kanony
+-kartel kartìl
+-kateg katìg
+-katech katìch 
+-katió katyó
+-klick  klyck
+-komunik komunyk
+-kritik krityk
+-kredit kredyt
+-^kredi kredy
+-kolíz kolız
+-ktída$ ktıda
+-kvali kvaly
+-lex lìx
+-leks lìks
+-^lib  lyb
+-lik$ lyk
+-lick lyck
+-lingvisti lingvisty
+-litik lytyk
+-lizov lyzov
+-^lino lyno
+-línia$ lınya
+-línie$ lınye
+-líniu$ lınyu
+-líniou$ lınyou
+-^lito lyto
+-^litr lytr
+-^leu lìu 
+-leg lìg
+-^lepr lìpr
+-^levant lìvant
+-^levit lìvit 
+-minister minystìr
+-motív motıv
+-modern modìrn
+-matemati matìmaty	
+-martin martyn
+-magnet magnìt
+-^melódi melódy
+-^melodi melody
+-meter metìr
+-nder ndìr
+-nej$ nìj
+-^neandert nìandert
+-^necesér nesesér
+-^nefelí nìfelí
+-^nefr nìfr
+-^negác nìgác
+-^negat nìgat
+-^neger nìger
+-^negov nìgov
+-^negroid nìgroid
+-^neguš nìguš 
+-^neglié nìglyé
+-^nekro nìkro
+-^nekt nìkt
+-^nelson nìlzon
+-^nematód nìmatód
+-^neobarok nìobarok
+-^neodarvin nìodarvin
+-^neodım nìodım
+-^neofaš nìofaš
+-^neofyt nìofyt
+-^neogén nìogén
+-^neokant nìokant
+-^neoklasic nìoklasic
+-^neokolonia nìokolonya
+-^neolit nìolit
+-^neolog neolog
+-^neomaltuz nìomaltuz
+-^neón nìón
+-^neonaciz nìonaciz
+-^neopla nìopla
+-^neopozitiv nìopozityv
+-^neopragma nìopragma
+-^neoprén nìoprén
+-^neoreal nìoreal
+-^neoromant nìoromant
+-^neoscholastik nìoscholastyk
+-^neosimbol nìosimbiol
+-^neotén nìotén 
+-^neotomizmus nìotomizmus
+-^neotyp nìotyp
+-^neovitaliz nìovitaliz
+-^neozoikum nìozoikum
+-^nep$ nìp
+-^nepálèina$ nìpálèina
+-^nepman nìpman
+-^nepot nìpot
+-^nepovsk nìpovsk
+-^nept nìpt
+-^nero$ nìro 
+-nerv nìrv
+-^nesesér nìsesér
+-^nestor nìstor
+-netto nìtto
+-^neuma$ nìuma
+-^neuralg nìuralg
+-^neurasténia nìurasténya
+-^neurastenick nìurastìnyck
+-^neurastenik nìurastìnyk
+-^neurín nìurín
+-^neurit nìurit
+-^neurón nìurón
+-^neurop nìurop
+-^neurot nìurot
+-^neurotik nìurotyk
+-^neurotick nìurotyck
+-^neuróza nìuróza
+-^neutrál nìutrál
+-^neutral nìutral
+-^neutrofil nìutrofil
+-^neutrón nìutrón
+-^neutronit nìutronyt
+-^neutrum nìutrum
+-nex nìx
+-^niagar nyagar
+-^nihili nyhily
+-ntinent ntynìnt
+-^nikel nykel
+-^nikl nykl
+-^nimbus nymbus
+-^nimród nymród
+-^niób nyób
+-^nit$ nyt
+-^nity$ nyty
+-^nitova nytova
+-^nitro nytro
+-^nitrit nytrit
+-^niobit nyobit
+-^nirván nyrván
+-^nivel nyvel
+-^nivo nyvo
+-nikotín nykotın 
+-olícia$ olıcia
+-parti party
+-paralel paralìl
+-^pneumatik pnìumatyk
+-^pneumatí pneumatı
+-plastik plastyk
+-polit polyt
+-policajt polycajt
+-^posti posty              #postimpresionickı 
+-^radiál radyál
+-^radiá radyá
+-rádio rádyo
+-rádia rádya
+-rádio rádyo
+-^relik relyk
+-^robotik robotyk
+-^sortiment sortyment
+-^strateg stratìg
+-^smen zmen		  # par.97 smena
+-^sme$ zme
+-synte syntì
+-synteti syntìty
+-^teak tık
+-^team tım
+-^teatr tìatr
+-^teda$ tìda
+-^tedeum tìdìum
+-techn tìchn
+-^teín tìín
+-^teista tìista
+-^teizmus tìizmus
+-^tej tìj
+-^tekt tìkt
+-^telev tìlìv
+-^telef tìlef
+-^telep tìlìp
+-^telegr tìlìgr
+-^telek tìlìk
+-^telem tìlìm
+-^teleo tìlìo
+-^teler tìlìr
+-^teleskop tìlìskop
+-^telestich tìlìstych
+-^teletyp tìlìtyp
+-^telev tìlìv
+-^telex tìlìx
+-^telofáza tìlofáza
+-^telúr tìlúr
+-^telurick tìlurick
+-^temat tìmat
+-^temer tìmer
+-^temian tìmian
+-^temovani tìmovani
+-^temp tìmp
+-^ten$ tìn
+-^tende tìndì
+-^tenez tìnez
+-^tenh¾a tình¾a
+-^tenis tìnys
+-^tenor tìnor
+-^tenot tìnot
+-^tentam$ tìntam
+-^tento$ tìnto
+-^tenuto tìnúto
+-^tenz tìnz
+-^tene tìne
+-^teo tìo
+-teoretik tìoretyk
+-^teóri tìóri
+-^ter tìr
+-tera tìra
+-test tìst
+-^tesil tìsil
+-^tesla tìsla
+-test tìst
+-^tetan tìtan
+-^tetov tìtov
+-^tetr tìtr
+-^teut tìut
+-text tìxt
+-^tezau tìzau
+-^tradí tradı
+-^tradi trady
+-^tib tyb
+-tick tyck
+-tièn tyèn
+-^tidli tydly
+-^tik tyk
+-tilda tylda
+-^timbre tìmbr
+-^timokrac tymokrac
+-^tink tynk
+-^tinta tynta
+-^tina tyna
+-^tir tyr
+-tiny tyny
+-^titan tytan
+-^titán tytán
+-^títo$ tıto
+-^titón tytón
+-^titr tytr
+-^titul tytul
+-^tizian tycian
+-tistyck tystyck
+-tifik tyfik
+-#tik$ tyk                 #fonetik, diabetik, ale advokátik ;-(, a vsetky 
+-#tika$ tyka                # zdrobneniny od advokátika 
+-tikum$ tykum
+-tív tıv
+-tivi tyvi
+-tivy tyvi 
+-tivá tyvá
+-tizá tyzá                #klimatizácia deratizácia tyzmu
+-^tip typ
+-zdeno zdìno
+-# ^trafme$ trawme           # par.121 trafi - blbost
+-^so$ zo                    #par.106
+-^ku$ gu
+-volent volìnt
+-vted vtìd
+diff -ruN -x*.dph* slovak/dtnl2.dic lng/slovak/dtnl2.dic
+--- slovak/dtnl2.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/dtnl2.dic	Thu Jan  1 01:00:00 1970
+@@ -1,26 +0,0 @@
+-admiòist administ
+-admira¾ admiral
+-agóò agón
+-alïehi aldehi
+-^akce¾ akcel
+-^akae akate
+-akorï akord
+-anensk aòensk
+-^amò amn
+-^chu¾i chuli
+-ïit dit
+-fí¾ia fília
+-fóòia fónia
+-^konï kond
+-^kas kast
+-^karï kard
+-^kan kant
+-iïent ident
+-k¾im klim
+-^ige¾ igel
+-¾ita$ lita
+-norma¾ normal
+-staik statik
+-ta¾epsi talepsi
+-eáer teáter
+-dentá¾ dentál 
+\ No newline at end of file
+diff -ruN -x*.dph* slovak/dtnl3.dic lng/slovak/dtnl3.dic
+--- slovak/dtnl3.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/dtnl3.dic	Thu Jan  1 01:00:00 1970
+@@ -1 +0,0 @@
+-^nìj$ nej 
+\ No newline at end of file
+diff -ruN -x*.dph* slovak/dtnlw.dic lng/slovak/dtnlw.dic
+--- slovak/dtnlw.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/dtnlw.dic	Thu Jan  1 01:00:00 1970
+@@ -1,520 +0,0 @@
+-^accelerand aèelìrand
+-adagio adádo
+-abbé  abé
+-fóò fón
+-agitáto aditáto
+-akusti akusty
+-akadem akadìm
+-aritmeti aritmety
+-alabaster alabastìr
+-amnesti amnìsty
+-amorti amorty
+-ampli amply
+-^andante andantì
+-^andantí andantı
+-atleti atlìty
+-^inteli intìly
+-^intele intìlì
+-polyti polyty
+-patia$ patya
+-foneti fonety
+-klima klyma
+-klíma klıma
+-kráter krátìr
+-akrobati akrobaty
+-mechani mechany
+-metali metaly
+-majster majstìr
+-nisti nysty
+-stigma stygma
+-valìntín valìntın   
+-abalien abalyen
+-abdik abdyk
+-abesínia abesínya
+-ablatív ablatıv
+-^ablegát ablìgát
+-^aboli aboly
+-^abstin abstyn
+-^ade adì
+-^adiab adyab
+-^adíc adıc
+-^admiralit admiralyt
+-akridín akridın 
+-akti akty
+-aktí aktı
+-aktuali aktualy
+-amulet amulìt
+-aníz anız
+-anódi anódy
+-^ane anì
+-^ali aly
+-alerg alìrg
+-alter altìr
+-^alej aej
+-anegdot anìgdot
+-^anim anym
+-analytik analytyk
+-anilín anylın
+-anión anyón
+-angli angly
+-^anizo anyzo
+-aòje aòIe
+-^anes anìs
+-^anìste anìstì
+-^anìsteti anìstìty
+-^anti anty
+-^antagoni antagony
+-^aplik aplyk
+-^ate atì
+-^audi audy
+-bater batìr
+-^balet balìt
+-balistik balystyk
+-bandi bandy
+-banjo bendo
+-^basti basty  
+-bapti bapty
+-^belet belìt
+-^bene benì
+-^batik batyk
+-^batist batyst
+-^barcelon barselon 
+-^bazili bazily                 #bazilika
+-^begóni begóny
+-^beòadik beòadyk
+-^berlín berlın
+-^bernardín bernardın
+-^betle betlì
+-bibli bibly 
+-^bili bily
+-bešti bešty                    #beštia, ...
+-charakter charaktìr
+-centi centy
+-ceremoni ceremóny
+-cister cistìr
+-cylistik cyklystyk
+-^deba dìba
+-^debet dìbet
+-^dez dìz
+-^deblok dìblok
+-^debrec dìbrec
+-^debut dìbut
+-^decem dìcem
+-^decén dìcén
+-^decen dìcen
+-^deci dìci
+-^decíz dìcíz
+-^decresce dìkreše
+-^dederon dìdìron
+-^dedik dìdyk
+-^deduk dìduk
+-^de$ dì
+-^def dìf
+-^deg dìg
+-^dech dìch
+-^dei dìi
+-^dek dìk
+-^deleg dìlìg
+-^delf dìlf
+-^delig dìlyg
+-^delik dìlyk
+-^delim dìlym
+-^delt dìlt
+-^demag dìmag
+-^demar dìmar
+-^demask dìmask
+-^demen dìmen
+-^demet dìmet
+-^demik dìmik
+-^demilit dìmilyt
+-^deminu dìminu
+-^demis dìmis
+-^demi dìmi
+-^demo dìmo
+-^denaci dìnaci
+-^denár dìnár
+-^denat dìnat
+-^dend dìnd
+-^denerv dìnìrv
+-^denis dìnys
+-^denom dìnom
+-^dent dìnt
+-^denu dìnu
+-^denz dìnz
+-^dep dìp
+-^derb dìrb
+-^deri dìri
+-^derm dìrm
+-^derog dìrog
+-^dervi dìrvi
+-^desant dìsant
+-^descart dìkart
+-^decend dìscend
+-^desde dìsdì
+-^desén dìzén
+-^desen dìsen
+-^design dyzain
+-^desk dìsk
+-^desp dìsp
+-^dest dìst
+-^deš dìš
+-^deta dìta
+-^dete dìtì
+-^deton dìton
+-^detr dìtr
+-^dett dìtt
+-^deu dìu 
+-^deval dìval
+-^devast dìvast
+-^deverb dìverb
+-^deviá dìviá
+-^devíz dìvíz
+-^devo dìvo
+-^devó dìvó
+-^dek dìk
+-deón$ dìón                           # Akordeón
+-dend dìnd
+-dez dìz                            # dividenda, revidendum   
+-^dema dìma
+-^deter dìtìr
+-^deton dìton
+-denèn dìnèn
+-^degener dìgenìr
+-^deriv dìriv
+-^dep dìp
+-^detto$ dìtto
+-^devíz dìvíz
+-^debil dìbil
+-dekor dìkor
+-dezider dìzider
+-dealer dılìr
+-dekremen dìkremen
+-dezin dìzin
+-^devíz dìvíz
+-^dya dia               # vınimky predpôn s dia opaène 
+-^dyabol diabol           # default zameni dia za dya 
+-^dya dia
+-didakt dydakt
+-^dieréz dyeréz
+-^diesel dızel
+-^diét dyét
+-^dietet dyetìt
+-^dif dyf
+-^dig dyg
+-digi dygi
+-^dich dych
+-^dik dyk
+-dikt dykt
+-^dil dyl
+-^dim dym
+-^din dyn
+-^dio dyo
+-^dió dyó
+-^dip dyp
+-^dir dyr
+-^dis  dys
+-^diš dyš
+-dita$ dyta               #Afrodita Dita, komodita
+-^dit dyt
+-^diu dyu
+-^diver dyver
+-^divid dyvid
+-^divinác dyvinác
+-^divinit dyvinyt
+-^divis dyvis
+-^divíz dyvíz
+-^dixie dyxie
+-^dizer dyzer
+-^dio dyo
+-elek elìk
+-encia$ ìncia
+-etik etyk
+-ent ìnt
+-finit finyt
+-foneti fonìty
+-^fone fonì
+-^foni fony
+-^fóni fóny
+-foter fotìr
+-gener genìr
+-gotik gotyk
+-hetero htìro
+-chnik$ chnyk
+-chnika$ chnyka
+-io yo
+-^inter intìr
+-id$ yd
+-it$ yt
+-ista$ ysta
+-isti$ ysti
+-istk ystk
+-izm yzm
+-ideál idìál
+-idea idìa
+-ída$ ıda
+-^inic inyc
+-^indi indy
+-^inde indì
+-^indí indı
+-^informatik informatyk
+-^investíc investıc
+-^investi invensty
+-izáci yzáci
+-ifikáci yfikáci
+-nium$ nyum
+-^jeden jedìn
+-judi judy                    #abjudikácia
+-katalek katalìk
+-kanibal kanybal
+-kandid kandydä
+-kanoni kanony
+-kartel kartìl
+-kateg katìg
+-katech katìch 
+-katió katyó
+-klick  klyck
+-komunik komunyk
+-kritik krityk
+-kredit kredyt
+-^kredi kredy
+-kolíz kolız
+-ktída$ ktıda
+-kvali kvaly
+-lex lìx
+-leks lìks
+-^lib  lyb
+-lik$ lyk
+-lick lyck
+-lingvisti lingvisty
+-litik lytyk
+-lizov lyzov
+-^lino lyno
+-línia$ lınya
+-línie$ lınye
+-líniu$ lınyu
+-líniou$ lınyou
+-^lito lyto
+-^litr lytr
+-^leu lìu 
+-leg lìg
+-^lepr lìpr
+-^levant lìvant
+-^levit lìvit 
+-minister minystìr
+-motív motıv
+-modern modìrn
+-matemati matìmaty	
+-martin martyn
+-magnet magnìt
+-^melódi melódy
+-^melodi melody
+-meter metìr
+-nder ndìr
+-nej$ nìj
+-^neandert nìandert
+-^necesér nesesér
+-^nefelí nìfelí
+-^nefr nìfr
+-^negác nìgác
+-^negat nìgat
+-^neger nìger
+-^negov nìgov
+-^negroid nìgroid
+-^neguš nìguš 
+-^neglié nìglyé
+-^nekro nìkro
+-^nekt nìkt
+-^nelson nìlzon
+-^nematód nìmatód
+-^neobarok nìobarok
+-^neodarvin nìodarvin
+-^neodım nìodım
+-^neofaš nìofaš
+-^neofyt nìofyt
+-^neogén nìogén
+-^neokant nìokant
+-^neoklasic nìoklasic
+-^neokolonia nìokolonya
+-^neolit nìolit
+-^neolog neolog
+-^neomaltuz nìomaltuz
+-^neón nìón
+-^neonaciz nìonaciz
+-^neopla nìopla
+-^neopozitiv nìopozityv
+-^neopragma nìopragma
+-^neoprén nìoprén
+-^neoreal nìoreal
+-^neoromant nìoromant
+-^neoscholastik nìoscholastyk
+-^neosimbol nìosimbiol
+-^neotén nìotén 
+-^neotomizmus nìotomizmus
+-^neotyp nìotyp
+-^neovitaliz nìovitaliz
+-^neozoikum nìozoikum
+-^nep$ nìp
+-^nepálèina$ nìpálèina
+-^nepman nìpman
+-^nepot nìpot
+-^nepovsk nìpovsk
+-^nept nìpt
+-^nero$ nìro 
+-nerv nìrv
+-^nesesér nìsesér
+-^nestor nìstor
+-netto nìtto
+-^neuma$ nìuma
+-^neuralg nìuralg
+-^neurasténia nìurasténya
+-^neurastenick nìurastìnyck
+-^neurastenik nìurastìnyk
+-^neurín nìurín
+-^neurit nìurit
+-^neurón nìurón
+-^neurop nìurop
+-^neurot nìurot
+-^neurotik nìurotyk
+-^neurotick nìurotyck
+-^neuróza nìuróza
+-^neutrál nìutrál
+-^neutral nìutral
+-^neutrofil nìutrofil
+-^neutrón nìutrón
+-^neutronit nìutronyt
+-^neutrum nìutrum
+-nex nìx
+-^niagar nyagar
+-^nihili nyhily
+-ntinent ntynìnt
+-^nikel nykel
+-^nikl nykl
+-^nimbus nymbus
+-^nimród nymród
+-^niób nyób
+-^nit$ nyt
+-^nity$ nyty
+-^nitova nytova
+-^nitro nytro
+-^nitrit nytrit
+-^niobit nyobit
+-^nirván nyrván
+-^nivel nyvel
+-^nivo nyvo
+-nikotín nykotın 
+-olícia$ olıcia
+-parti party
+-paralel paralìl
+-^pneumatik pnìumatyk
+-^pneumatí pneumatı
+-plastik plastyk
+-polit polyt
+-policajt polycajt
+-^posti posty              #postimpresionickı 
+-^radiál radyál
+-^relik relyk
+-^robotik robotyk
+-^sortiment sortyment
+-^strateg stratìg
+-^smen zmen		  # par.97 smena
+-^sme$ zme
+-synte syntì
+-synteti syntìty
+-^teak tık
+-^team tım
+-^teatr tìatr
+-^teda$ tìda
+-^tedeum tìdìum
+-techn tìchn
+-^teín tìín
+-^teista tìista
+-^teizmus tìizmus
+-^tej tìj
+-^tekt tìkt
+-^telev tìlìv
+-^telef tìlef
+-^telep tìlìp
+-^telegr tìlìgr
+-^telek tìlìk
+-^telem tìlìm
+-^teleo tìlìo
+-^teler tìlìr
+-^teleskop tìlìskop
+-^telestich tìlìstych
+-^teletyp tìlìtyp
+-^telev tìlìv
+-^telex tìlìx
+-^telofáza tìlofáza
+-^telúr tìlúr
+-^telurick tìlurick
+-^temat tìmat
+-^temer tìmer
+-^temian tìmian
+-^temovani tìmovani
+-^temp tìmp
+-^ten$ tìn
+-^tende tìndì
+-^tenez tìnez
+-^tenha tìnha
+-^tenis tìnys
+-^tenor tìnor
+-^tenot tìnot
+-^tentam$ tìntam
+-^tento$ tìnto
+-^tenuto tìnúto
+-^tenz tìnz
+-^tene tìne
+-^teo tìo
+-teoretik tìoretyk
+-^teóri tìóri
+-^ter tìr
+-tera tìra
+-test tìst
+-^tesil tìsil
+-^tesla tìsla
+-test tìst
+-^tetan tìtan
+-^tetov tìtov
+-^tetr tìtr
+-^teut tìut
+-text tìxt
+-^tezau tìzau
+-^tradí tradı
+-^tradi trady
+-^tib tyb
+-tick tyck
+-tièn tyèn
+-^tidli tydly
+-^tik tyk
+-tilda tylda
+-^timbre tìmbr
+-^timokrac tymokrac
+-^tink tynk
+-^tinta tynta
+-^tina tyna
+-^tir tyr
+-tiny tyny
+-^titan tytan
+-^titán tytán
+-^títo$ tıto
+-^titón tytón
+-^titr tytr
+-^titul tytul
+-^tizian tycian
+-tistyck tystyck
+-tifik tyfik
+-#tik$ tyk                 #fonetik, diabetik, ale advokátik ;-(, a vsetky 
+-#tika$ tyka                # zdrobneniny od advokátika 
+-tikum$ tykum
+-tív tıv
+-tivi tyvi
+-tivy tyvi 
+-tivá tyvá
+-tizá tyzá                #klimatizácia deratizácia tyzmu
+-^tip typ
+-zdeno zdìno
+-# ^trafme$ trawme           # par.121 trafi - blbost
+-^so$ zo                    #par.106
+-^ku$ gu
+-volent volìnt
+-vted vtìd
+diff -ruN -x*.dph* slovak/main.dic lng/slovak/main.dic
+--- slovak/main.dic	Thu Jan  1 01:00:00 1970
++++ lng/slovak/main.dic	Wed Dec 30 16:46:07 1998
+@@ -0,0 +1,87 @@
++^nikel nykel
++^diabet  dyabet
++^diag dyag
++^diak dyak
++^diapoz dyapoz
++^dis  dys
++^di¹ dy¹
++^dit dyt
++^diu dyu
++^divízi dyvízi
++^diver dyver
++^dizer dyzer
++^dik dyk
++^dir dyr
++^dio dyo
++^elek elìk
++^tex tìx
++^dez dìz
++^deter dìtìr
++^deton dìton
++^dialek dyalìk
++^jeden jedìn
++^degener dìgenìr
++^detto$ dìtto
++^deut dìut
++^deval dìval
++^devíz dìvíz
++^pneumatik pnìumatyk
++^pneumatí pneumatı
++^ten$ tìn
++^tento$ tìnto
++^tejto$ tìjto
++^kredi kredy
++ntinent ntynìnt
++minister minystìr
++nizm nyzm
++tera tìra
++motív motıv
++tívn tıvn
++nej$ nìj 
++ismus$ ysmus
++techn tìchn
++dekor dìkor
++dezider dìzider
++ideál idìál
++idea idìa
++modern modìrn
++matemati matìmaty	
++foneti fonìty
++lingvisti lingvisty
++^debil dìbil
++io yo
++^disk	dysk
++definiti definyti
++tick tyck
++^ten$ tìn
++^tento$ tìnto
++^dip dyp
++^tenis tìnys
++martin martyn
++zdeno zdìno
++bater batìr
++anegdot anìgdot
++diferenc dyferenc
++minister minyster
++^dif dyf
++^ter tìr
++teraz tìraz
++gener genìr
++^investíc investıc
++^investi invensty
++charakter charaktìr
++^sortiment sortyment
++^radiál radyál
++^tradí tradı
++^tradi trady
++^strateg stratìg
++dealer dılìr
++dezin dìzin
++^devíz dìvíz
++kritik krityk
++synte sytì
++synteti syntìty
++nist nyst
++^melódi melódy
++^melodi melody
++komunik komunyk 
+\ No newline at end of file
+diff -ruN -x*.dph* slovak/mathsign.dic lng/slovak/mathsign.dic
+--- slovak/mathsign.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/mathsign.dic	Tue Dec  1 15:08:02 1998
+@@ -1,8 +1,8 @@
+ 
+-# pøíklad øešení jednoduchıch znaèek
++# pøíklad øe¹ení jednoduchıch znaèek
+ 
+ +	~plus~
+-\-	~a~
++\-	~a¾~
+ \m	~mínus~
+ =	~rovná~sa~
+ /	~lomeno~
+@@ -10,14 +10,14 @@
+ ;	~bodkoèiarka~
+ $$	~dolár~
+ (	~zátvorka~
+-)	~zátvorku~uzavrie~
++)	~zátvorku~uzavrie»~
+ [	~hranatá~zátvorka~
+-]	~hranatú~uzavrie~
+-{	~zloená~zátvorka~
+-}	~zloenú~uzavrie~
++]	~hranatú~uzavrie»~
++{	~zlo¾ená~zátvorka~
++}	~zlo¾enú~uzavrie»~
+ &	~et~
+ *	~hviezdièka~
+-^^	~strieška~
++^^	~strie¹ka~
+ %	~percent~
+ _	~dolná~èiarka~
+ '	~apostrof~
+diff -ruN -x*.dph* slovak/nnet.rul lng/slovak/nnet.rul
+--- slovak/nnet.rul	Sat Mar 25 00:12:01 2000
++++ lng/slovak/nnet.rul	Tue Dec  1 15:08:28 1998
+@@ -4,7 +4,7 @@
+ ; metod implementovanıch v nnet.cc
+ 
+ 
+-@include "slovak.rul"
++#include "slovak.rul"
+ 
+ ;#warn Now applying extra nnet rules
+ 
+diff -ruN -x*.dph* slovak/numerals.rul lng/slovak/numerals.rul
+--- slovak/numerals.rul	Sat Mar 25 00:12:01 2000
++++ lng/slovak/numerals.rul	Sun Dec 27 19:06:33 1998
+@@ -88,7 +88,7 @@
+ 
+ if   colloquial   text
+ {
+-	regex	/11/~jedenás/	colon
++	regex	/11/~jedenás»/	colon
+ 	regex	/1/~jedna/	colon
+ }
+ 
+diff -ruN -x*.dph* slovak/numsimple.dic lng/slovak/numsimple.dic
+--- slovak/numsimple.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/numsimple.dic	Sun Dec 27 18:08:26 1998
+@@ -1,29 +1,29 @@
+ 1 jedna
+ 2 dve
+ 3 tri
+-4 štyri
+-5 pä
+-6 šes
++4 ¹tyri
++5 pä»
++6 ¹es»
+ 7 sedem
+ 8 osem
+-9 devä
+-10 desa
+-11 jedenás
+-12 dvanás
+-13 trinás
+-14 štrnás
+-15 pätnás
+-16 šestnás
+-17 sedemnás
+-18 osemnás
+-19 devätnás
++9 devä»
++10 desa»
++11 jedenás»
++12 dvanás»
++13 trinás»
++14 ¹trnás»
++15 pätnás»
++16 ¹estnás»
++17 sedemnás»
++18 osemnás»
++19 devätnás»
+ 
+-20 dvadsa
+-30 tridsa
+-40 štyridsa
+-50 pädesiat
+-60 šesdesiat
++20 dvadsa»
++30 tridsa»
++40 ¹tyridsa»
++50 pä»desiat
++60 ¹es»desiat
+ 70 sedemdesiat
+ 80 osemdesiat
+-90 devädesiat
++90 devä»desiat
+ 
+diff -ruN -x*.dph* slovak/palkova.rul lng/slovak/palkova.rul
+--- slovak/palkova.rul	Sat Mar 25 00:12:01 2000
++++ lng/slovak/palkova.rul	Mon Sep 20 13:22:15 1999
+@@ -1,5 +1,5 @@
+ #
+-#	prosodická pravidla Fonetického ústavu FF UK pro èeštinu, 1998
++#	prosodická pravidla Fonetického ústavu FF UK pro èe¹tinu, 1998
+ #
+ #	(c) 1998  Zdena Palková
+ #	(c) 1998  Jiøí Hanika
+@@ -11,9 +11,9 @@
+ #
+ 
+ 
+-$base_dir	external
+-$prosody_dir	= external
+-$prosody = ${base_dir}/${prosody_dir}
++#$base_dir	external
++#$prosody_dir	= external
++#$prosody = ${base_dir}/${prosody_dir}
+ 
+ 
+ # pøidat èárku pøed "a":
+@@ -27,31 +27,31 @@
+ regress \X>a(!_!)
+ 
+ #
+-#  Následující odstavec ještì pøed transkripcí oznaèuje
+-#  koncová monosylaba, která podléhají pozdìjšímu
+-#  slévání do taktù. Po transkripci u nelze rozlišit
++#  Následující odstavec je¹tì pøed transkripcí oznaèuje
++#  koncová monosylaba, která podléhají pozdìj¹ímu
++#  slévání do taktù. Po transkripci u¾ nelze rozli¹it
+ #  "mì" vs. "mnì".
+ #
+ 
+-#with "ma a sa ho mi ti si mu"
+-#{
+-#	regress  _\ >~(!_!)   word  word
+-#}
++with "mi mì se si ho mu ti tì"
++{
++	regress  _\ >~(!_!)   word  word
++}
+ 
+ #
+ #  Zde se provádìjí transkripèní pravidla ze souboru
+ #  trans.rul; "#include" není jen komentáø!
+ #
+ 
+-@include "trans.rul"
++#include "trans.rul"
+ 
+ #
+-#  Následující pravidla ošetøují tøi teèky a pomlèku.
++#  Následující pravidla o¹etøují tøi teèky a pomlèku.
+ #
+ 
+ inside	\~	sent
+ {
+-   6x	regress  0>\#(!_0)	sent	; vloení pausy po tøech teèkách
++   6x	regress  0>\#(!_0)	sent	; vlo¾ení pausy po tøech teèkách
+ }
+ regress  \~>.(!_!)	sent	sent
+ regress  ->,(!_!)	sent	colon
+@@ -60,8 +60,8 @@
+ #
+ #  Následující odstavec peèuje o to, aby døíve oznaèené
+ #  krátké tvary zájmenné byly zapojeny do øetìzù monosylab
+-#  pøi pozdìjším skládání taktù, ale jiná koncová
+-#  monosylaba nikoli. Dìje se tak ještì pøed transkripcí
++#  pøi pozdìj¹ím skládání taktù, ale jiná koncová
++#  monosylaba nikoli. Dìje se tak je¹tì pøed transkripcí
+ #  zejména proto, abychom poznali  "mì" vs. "mnì".
+ #
+ 
+@@ -78,7 +78,7 @@
+ #  Nyní si oznaèíme mono-, di-, tri-, tetra-, polysyllaba.
+ #  Dìje se tak jen v taktech ukonèenıch mezerou (ta je
+ #  zvıraznìna pøedcházejícím zvrácenım lomítkem),
+-#  tedy nikoli v koncovıch taktech. Viz té minulı komentáø.
++#  tedy nikoli v koncovıch taktech. Viz té¾ minulı komentáø.
+ #
+ 
+ <   word   syll
+@@ -91,21 +91,21 @@
+ 
+ #
+ #  Monosylaba se v urèitıch pozicích oznaèí jako pøízvuèná ("x")
+-#  a vzápìtí jsou ve všech ostatních pozicích, kde zùstala oznaèena
+-#  jako "m", pøilepena ke svému levému sousedu. Poèáteèní støíška
++#  a vzápìtí jsou ve v¹ech ostatních pozicích, kde zùstala oznaèena
++#  jako "m", pøilepena ke svému levému sousedu. Poèáteèní støí¹ka
+ #  znamená zaèátek úseku.
+ #
+ #  (V pravidlech 4.6 sub f nesouhlasí pøíklad s formulacemi pravidel.
+ #   Doporuèuji zkontrolovat.)...
+ #
+-#  Je dùleité, e u pravidel, která pracují se seznamem øetìzcù,
+-#  jako je napøíklad následující, nezáleí na poøadí poloek v seznamu.
++#  Je dùle¾ité, ¾e u pravidel, která pracují se seznamem øetìzcù,
++#  jako je napøíklad následující, nezále¾í na poøadí polo¾ek v seznamu.
+ #  Jde-li o pravidlo substituèní, provádìjí se substituce (pøednostnì
+-#  v pravé èásti zpracovávaného textu a delší, je-li pochybnost)
++#  v pravé èásti zpracovávaného textu a del¹í, je-li pochybnost)
+ #  opakovanì tak dlouho, dokud se text neustálí, nebo dokud program
+ #  neztratí trpìlivost (s vìènì zacyklenım pravidlem).
+ #
+-#  Nakonec se zamete (všechny doèasné znaèky se smaou).
++#  Nakonec se zamete (v¹echny doèasné znaèky se sma¾ou).
+ #
+ 
+ subst	"^mmmmm,mmmxm  ^mmmmmm,mmmxmm  ^mmmmmmm,mmmmxmm"	colon  word
+@@ -145,8 +145,8 @@
+ regress  I>_(!_!)	sent   word
+ 
+ #
+-#  Právì jsme pøestali "I" pouívat k oznaèení isolovanıch
+-#  taktù a zaèneme ho pouívat k oznaèení taktù iniciálních.
++#  Právì jsme pøestali "I" pou¾ívat k oznaèení isolovanıch
++#  taktù a zaèneme ho pou¾ívat k oznaèení taktù iniciálních.
+ #
+ #  P bude oznaèovat takt pøedcházející poslednímu.
+ #
+@@ -158,7 +158,7 @@
+ #  Rozdìlíme M na A a B podle toho, zda budeme chtít
+ #  kadenci klesavou nebo stoupavou. Oznaèování se dìje
+ #  zleva:  IMMMMPF -> IBMMMPF -> IBAMMPF -> IBACMPF ->
+-#  -> IBACBPF a pak dalším pravidlem -> IBABBPF
++#  -> IBACBPF a pak dal¹ím pravidlem -> IBABBPF
+ #
+ 
+ subst   "IM,IB  BM,BA  AM,AC  CM,CB"	colon  word
+@@ -168,7 +168,7 @@
+ regress  IAB>aab(!_ab)	colon	word	; O,P: F-1 (kA, kB)
+ regress  F>T(!_0)	sent	word
+ 
+-# Toto pravidlo je nejspíš reliktem minulosti
++# Toto pravidlo je nejspí¹ reliktem minulosti
+ #with	postp2.dic	colon   word
+ #{
+ #	regress   FT>M(!_!)	colon	word
+@@ -180,7 +180,7 @@
+ 
+ #
+ #  pøi pøiøazování kadencí se hodnota pøiøazená slabice
+-#  vztahuje na všechny její hlásky v pouitém slabièném
++#  vztahuje na v¹echny její hlásky v pou¾itém slabièném
+ #  èlenìní
+ #
+ 
+@@ -216,7 +216,7 @@
+ 			contour	 f/-3:+0:+0:+0:-3	word   syll
+ 			contour	 f/-2:+0:+0:+0:-2	word   syll
+ 		]
+-		nothing		; hexasyllaba a delší se neøeší
++		nothing		; hexasyllaba a del¹í se neøe¹í
+ 	>
+ }
+ 
+@@ -243,7 +243,7 @@
+ 		[					; pentasyllaba
+ 			contour	 f/-2:+0:+0:+0:-2	word   syll
+ 		]
+-		nothing		; hexasyllaba a delší se neøeší
++		nothing		; hexasyllaba a del¹í se neøe¹í
+ 	>
+ }
+ 
+@@ -309,7 +309,7 @@
+ 			contour  f/-2:-2:+0:+2:+2	word   syll
+ 			contour	 f/-2:+0:+0:+0:-2	word   syll
+ 		]
+-		nothing		; hexasyllaba a delší se neøeší
++		nothing		; hexasyllaba a del¹í se neøe¹í
+ 	>
+ }
+ 
+@@ -380,7 +380,7 @@
+ #
+ 
+ <  colon  word	; tzn. zaøiï se dle poètu taktù v promluvovém úseku
+-    3x	nothing			; jeden a tøi takty se neupravují
++    3x	nothing			; jeden a¾ tøi takty se neupravují
+ 	contour		f/0:-1:-2:-3				colon  word
+ 	contour		f/0:-1:-2:-3:-4				colon  word
+ 	contour		f/0:-1:-2:-3:-4:-5			colon  word
+@@ -398,7 +398,7 @@
+ #
+ 
+ <  sent  colon	; tzn. zaøiï se dle poètu promluvovıch úsekù ve vìtì
+-    2x	nothing			; jeden a dva takty se neupravují
++    2x	nothing			; jeden a¾ dva takty se neupravují
+ 	contour		f/0:-2:-4:			sent  colon
+ 	contour		f/0:-2:-4:-6			sent  colon
+ 	contour		f/0:-2:-4:-6:-8			sent  colon
+@@ -409,13 +409,13 @@
+ 	nothing
+ >
+ 
+-regress   0>\#(!_0)	colon	; vloení pausy
++regress   0>\#(!_0)	colon	; vlo¾ení pausy
+ inside	\#	phone
+ {
+ 	contour   t/-65   phone
+ }
+ 
+-5x  regress   0>\#(!_0)	sent	; vloení pausy
++5x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
+ 
+ if   kadlec_dph
+ 	diphones  kadlec.dph    colon
+@@ -423,15 +423,15 @@
+ 	diphones  traditnl.dph  colon
+ 
+ #
+-#  mírné vyhlazování se zejména snaí, aby hranièní difony
++#  mírné vyhlazování se zejména sna¾í, aby hranièní difony
+ #  mezi slabikami získávaly prosodické hodnoty èásteènì
+-#  od obou slabik.  Pøedpokládá se, e difon pøechodu mezi
+-#  hláskami je pøipojen k hlásce prvé, proto se pøihlíí
++#  od obou slabik.  Pøedpokládá se, ¾e difon pøechodu mezi
++#  hláskami je pøipojen k hlásce prvé, proto se pøihlí¾í
+ #  pouze k pravému sousedu (váha 30%, vlastní hodnota
+-#  má tedy váhu 70%). Ideologicky èistá øešení jsou buïto
++#  má tedy váhu 70%). Ideologicky èistá øe¹ení jsou buïto
+ #  nevyhlazovat vùbec (pøiøadit difon doleva), nebo
+ #  vyhlazovat f/50\50, tj. kvalifikovat difon jako spojovací.
+ #
+ 
+-# smooth   f/70\30     word diphone
++smooth   f/70\30     word segment
+ 
+diff -ruN -x*.dph* slovak/preps.dic lng/slovak/preps.dic
+--- slovak/preps.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/preps.dic	Wed Nov 18 19:01:21 1998
+@@ -1,29 +1,26 @@
+-# zde nesmí bıt uvedeno "se" - øeší se zvláš
++# zde nesmí bıt uvedeno "se" - øe¹í se zvlá¹»
+ 
+ 'o
+ 'od
+ 'u
+ bez
+ do
+-cez
+ k
+-ku
+-g
+-gu
++ke
++ku 
+ na
+ nad
+ o
+ od
+ po
+ pod
+-pot
+-pre
+-pred
+-pret
++pro
++pøed
++pøes
+ s
+ u
+ v 
+-vo 
++ve 
+ z
+ za 
+-zo
++ze
+diff -ruN -x*.dph* slovak/sampa1.dic lng/slovak/sampa1.dic
+--- slovak/sampa1.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/sampa1.dic	Thu Jan  1 01:00:00 1970
+@@ -1,25 +0,0 @@
+-á a:
+-ä {
+-é e:
+-í i:
+-ó o:
+-ú u:
+-îa i_^a
+-îe i_^e
+-îu i_^u
+-Uo u_^o
+-U u_^
+-M F
+-;N N\
+-c ts
+-Z dz
+-š S
+- Z
+-è tS
+-R =r
+-à =r:
+-L =l
+-å =l:
+-;ï J\
+-ò J
+-î i_^
+diff -ruN -x*.dph* slovak/sampa2.dic lng/slovak/sampa2.dic
+--- slovak/sampa2.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/sampa2.dic	Thu Jan  1 01:00:00 1970
+@@ -1,3 +0,0 @@
+- c
+-¾ L
+- dZ
+diff -ruN -x*.dph* slovak/sav.dic lng/slovak/sav.dic
+--- slovak/sav.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/sav.dic	Thu Jan  1 01:00:00 1970
+@@ -1,7 +0,0 @@
+-ä e
+-U &
+-Ò $
+-Z <
+-î _
+-G *
+-N +
+diff -ruN -x*.dph* slovak/sav.rul lng/slovak/sav.rul
+--- slovak/sav.rul	Sat Mar 25 00:12:01 2000
++++ lng/slovak/sav.rul	Thu Jan  1 01:00:00 1970
+@@ -1,7 +0,0 @@
+-regress a>:(î_!)
+-regress e>;(î_!)
+-regress u>/(î_!)
+-regress o>ô(U_!)
+-regress î>0(!_:;/)
+-regress U>0(!_ô)
+-regress M>#(!_!)
+\ No newline at end of file
+diff -ruN -x*.dph* slovak/skratky.dic lng/slovak/skratky.dic
+--- slovak/skratky.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/skratky.dic	Sun Dec 27 19:20:20 1998
+@@ -4,10 +4,6 @@
+ ^BARUM$ barum
+ ^JUMIS$ jumis
+ ^FEI fei
+-^ing$ ininier
++^ing$ in¾inier
+ ^bc$ bakalár
+-^doc$ docent
+-^Dr$ doktor
+-^YMCA$ imka
+-^WC$ VC
+-^CIA$ síaiei
+\ No newline at end of file
++^doc$ docent
+\ No newline at end of file
+diff -ruN -x*.dph* slovak/slovak.ini lng/slovak/slovak.ini
+--- slovak/slovak.ini	Sat Mar 25 00:12:01 2000
++++ lng/slovak/slovak.ini	Sun Mar 19 22:47:16 2000
+@@ -1,9 +1,9 @@
+ 
+-# Pøed naètením tohoto souboru se naète ještì fixed.ini
+-# a pøípadnì i ansi.ini nebo rtf.ini; následnì ještì inventáø a epos.ini
++# Pøed naètením tohoto souboru se naète je¹tì fixed.ini
++# a pøípadnì i ansi.ini nebo rtf.ini; následnì je¹tì inventáø a epos.ini
+ #or winepos.ini
+ 
+-#	Pouívané adresáøe a soubory
++#	Pou¾ívané adresáøe a soubory
+ 
+ name slovak
+ 
+@@ -19,11 +19,12 @@
+ soft_options	colloquial(b)=false:irony(b)=false:kadlec_dph(b)=false
+ 
+ rules_dir	"slovak"
++#prosody_dir	"czech/prosody"
+ hash_dir	"slovak"
+ input_dir	"slovak"
+ ;invent_dir	"slovak"
+ 
+-dph_file		"traditnl.dph"
++; dph_file		"traditnl.dph"
+ dpt_file		"traditnl.dpt"
+ 
+ #	Pár zatím bezvıznamnıch konstant
+@@ -33,7 +34,7 @@
+ 
+ 
+ #	Pøípustná písmenka
+-perm@phone 	"aáäbcèdïeéìfghiíjkl¾åmnòoóôpqrøàsštuúùvwxyızAÁÄBCÈDÏEÉÌFGHIÍJKL¼ÅMNÒOÓÔPQRØÀSŠTUÚÙVWXYİZ+=/@$%^'\"&*()0123456789\.\-\m"
++perm@phone 	"aáäbcèdïeéìfghiíjklµåmnòoóôpqrøàs¹t»uúùvwxyız¾AÁÄBCÈDÏEÉÌFGHIÍJKL¥ÅMNÒOÓÔPQRØÀS©T«UÚÙVWXYİZ®+=/@$%^'\"&*()0123456789\.\-\m"
+ perm@syll	"|"
+ perm@word	" ~"
+ perm@colon	",-"
+diff -ruN -x*.dph* slovak/slovak.rul lng/slovak/slovak.rul
+--- slovak/slovak.rul	Sat Mar 25 00:12:01 2000
++++ lng/slovak/slovak.rul	Mon Sep 20 13:23:06 1999
+@@ -1,20 +1,22 @@
+ #
+ #	(c) Jirka Hanika <geo@ff.cuni.cz>
+-#       (c) Martin Petriska <petriska@kre.elf.stuba.sk>
++#       (c) Martin Petriska <petriska@pobox.sk>
+ # Pravidla pro zpracování slovenèiny
+ 
+ $invent_dir	external
+-$prosody_dir	external
+-$base_dir	external
++#$prosody_dir	external
++#$base_dir	external
+ #$dph_file	external
+ 
+ 
+ #$inv_dph =	$dph_file
+ 
+-$prosody   = ${base_dir}/${prosody_dir}
++#$prosody   = ${base_dir}/${prosody_dir}
+ #$dph_file  = ${base_dir}/${invent_dir}/${inv_dph}
+ 
+-@include "trans.rul"
++$prosody = ../czech/prosody
++
++#include "trans.rul"
+ 
+  inside  .?:!	sent		; Pochybné - nemá zasáhnout vìty bez interpunkce
+  {
+@@ -60,7 +62,7 @@
+ 	smooth	f/30/40\30			word	phone
+  }
+ 
+- inside   ?	sent	; Následující jen pro otázky zjišovací
++ inside   ?	sent	; Následující jen pro otázky zji¹»ovací
+  {
+ 	prosody   $prosody/fadeoutp.dic	sent	phone
+ 	prosody	  $prosody/fadeoutw.dic	sent	word
+@@ -90,34 +92,19 @@
+ 	prosody   $prosody/exclafad.dic	sent	syll
+  }
+ 
+-#regress   0>\#(!_0)	colon	; vloení pausy
++regress   0>\#(!_0)	colon	; vlo¾ení pausy
+ 
+ # diphones  ${dph_file}	colon	    ; mìlo by bıt zhruba posledním pravidlem
+ 
+-
+-# Format vystupu transkripcie
+-
+-# A. SAMPA
+-
+-;subst sampa1.dic
+-;subst sampa2.dic
+-
+-# B. prevod (SAV)
+-
+-;#include "SAV.rul"
+-# subst SAV.dic
+-
+ if   kadlec_dph
+ 	diphones  kadlec.dph   colon
+ if  !kadlec_dph
+ 	diphones  traditnl.dph colon
+ 
+-
+-
+-
+ # diphones  traditnl.dph
+  
+ # smooth    f/10/80\10	text diphone
++
+ 
+ ;--------------------  debug     elem,pause text
+ 
+diff -ruN -x*.dph* slovak/so.dic lng/slovak/so.dic
+--- slovak/so.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/so.dic	Thu Jan  1 01:00:00 1970
+@@ -1,12 +0,0 @@
+-^zním$ s|ním
+-^zòou$ s|òou
+-^znami$ s|nami
+-^zvami$ s|vami
+-^znimi$ s|nimi
+-^zomnou$ so|mnou
+-^gnemu$ k|nemu
+-^gnej$ k|nej
+-^gnám$ k|nám
+-^gvám$ k|vám
+-^gnim$ k|nim
+-             
+\ No newline at end of file
+diff -ruN -x*.dph* slovak/syll.dic lng/slovak/syll.dic
+--- slovak/syll.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/syll.dic	Sat Dec  5 03:07:32 1998
+@@ -1,6 +1,6 @@
+-# Vynechal jsem au, ou, eu jakoto dvojhlásky a taky dvojice dlouhıch jakoto blbost
+-# Po "i" se nevkládá slabiènı pøedìl, ale "j", které ho rovnì vyvolá
+-# V aa, ee, oo, uu (jen krátkıch) se vloí ráz, od verse 1-2-4 i na poèátku slova.
++# Vynechal jsem au, ou, eu jako¾to dvojhlásky a taky dvojice dlouhıch jako¾to blbost
++# Po "i" se nevkládá slabiènı pøedìl, ale "j", které ho rovnì¾ vyvolá
++# V aa, ee, oo, uu (jen krátkıch) se vlo¾í ráz, od verse 1-2-4 i na poèátku slova.
+ #aa a'a
+ #ae a|e
+ #ai a|i
+@@ -19,16 +19,16 @@
+ #eí e|í
+ #eó e|ó
+ #eú e|ú
+-#ia i|a
+-#ie i|e
+-#ii i|i
+-#io i|o
+-#iu i|u
+-#iá i|á
+-#ié i|é
+-#ií i|í
+-#ió i|ó
+-#iú i|ú
++#ia ija
++#ie ije
++#ii iji
++#io ijo
++#iu iju
++#iá ijá
++#ié ijé
++#ií ijí
++#ió ijó
++#iú ijú
+ #oa o|a
+ #oe o|e
+ #oi o|i
+diff -ruN -x*.dph* slovak/text.txt lng/slovak/text.txt
+--- slovak/text.txt	Sat Mar 25 00:12:01 2000
++++ lng/slovak/text.txt	Fri Jan  1 13:47:44 1999
+@@ -1,2 +1,13 @@
+-Ako sa Kubko a Mako s medveïom skamarátil.Zatúlal sa v noci k salašu medveï. Poobchádzal okolo košiara,  ovce vy¾akal, a ako pred kolibou dubasil, narobil stôp ani maku. A  e valasi tuho spali a pes tak lenivel, e ho ráno bolo naèim  budi, zbadali ich, a keï sa Mako chystal návlaky na krpcoch  okolo nôh omotáva, aby si ich, nedajboe, nepristúpil. Zohol sa,  len èo sa na svetlo vytiahol, a tu: ha! Vlastnú nohu priloil,  ale stupaj bola predsa len väèšia, hoci mal Mako nohu riadnu.  Ale èo aj Makova noha obutá v krpci ko¾ká bola, pazúry z nej  predsa len netrèali. Hneï mu svitlo v hlave.
+- -Medveï.
++Vincent ©ikula: Skú¹ka
++Muzikantské skú¹ky odjak¾iva bıvali v po¾iarnej zbrojnici. Miestnos» je pomerne
++malá a e¹te zaprataná kadejakım haraburdím. Na stenách sú rozve¹ané hadice, 
++náhradné rozstrekovaèe a pri dverách visia aj dve poµnice. 
++Uprostred miestnosti stojí podlhovastı stôl na ktorı si hudobníci polo¾ia noty.
++Stolièiek niet a to je vlastne vıhoda, lebo keby boli stolièky, ani by sa 
++v¹etci hudobníci do miestnosti nepomestili. Kúsok od dverí je malé mre¾ované
++okienko. Decká, èo bıvajú na blízku, sa zbehnú, keï poèujú hra». Vy¹kriabu sa
++k mre¾ovanému okienku a nazízajú dnu. Strıco Toma¹oviè alebo strıco zahru¹ka 
++vybehnú ka¾dú chvíµu von, odháòajú decká èiapkou. Tie sa v¾dy rozpàchnu, no 
++len èo sa vráti strıco Toma¹oviè do vnútra, lezú k okienku zas. Strıco Toma¹oviè
++sa postaví vedµa kontrá¹ov, zaène sa prehrabáva» v notách. Vy neviete, èo sú to
++kontrá¹i? Kontrá¹ je muzikant, ktorı kontruje.  
+\ No newline at end of file
+diff -ruN -x*.dph* slovak/textm.txt lng/slovak/textm.txt
+--- slovak/textm.txt	Thu Jan  1 01:00:00 1970
++++ lng/slovak/textm.txt	Wed Nov 18 19:01:21 1998
+@@ -0,0 +1 @@
++bác!
+diff -ruN -x*.dph* slovak/textn.txt lng/slovak/textn.txt
+--- slovak/textn.txt	Thu Jan  1 01:00:00 1970
++++ lng/slovak/textn.txt	Wed Nov 18 19:01:22 1998
+@@ -0,0 +1 @@
++Na obì¾né dráze pomalu konèí poèáteèní fáze projektu.
+diff -ruN -x*.dph* slovak/trans.rul lng/slovak/trans.rul
+--- slovak/trans.rul	Sat Mar 25 00:12:01 2000
++++ lng/slovak/trans.rul	Tue May 18 23:28:12 1999
+@@ -1,29 +1,28 @@
+ #
+ #	(c) Jirka Hanika <geo@ff.cuni.cz>
+-#       (c) Martin Petriska <petriska@kre.elf.stuba.sk>
++#       (c) Martin Petriska <petriska@pobox.sk>
+ 
+-$voiced    = bdïgZzhw
+-$voiceless = ptkcèsšxf
+-$fric      = szšfvhx
+-$afric     = cZè
+-$stop      = pbtdïkg
+-$sonor     = rRàlLåmnMÒNUIjò¾
++$voiced    = bdïgZ®z¾hv
++$voiceless = pt»kcès¹xf
++$fric      = sz¹¾fvhx
++$afric     = cZè®
++$stop      = pbt»dïkg
+ $nasal     = mnòN
+-$sonant    = jlLRr$nasal
++$sonant    = jlr$nasal
+ $short     = aeiouyäì
+ $long      = áéíóúıäì
+-$diphtong  = IU
++$diphtong  = AEUOô
+ $vowel     = $short$long$diphtong
+ $consonant=$voiced$voiceless$sonant
+ $everywhere= !_!
+ $numbers   = 1234567890
+-$sonority  = 0'<$fric$afric${stop}<l¾r$nasal$stop<RLàå<î$vowel   ;l<r viz "umrlec" etc. Ani systematické, ani bezpeèné.
++$sonority  = 0'<$fric$afric${stop}<$nasal<l<rj<àå$vowel   ;l<r viz "umrlec" etc. Ani systematické, ani bezpeèné.
+ 
+-$lower_case = aáäbcèdïeéìfghiíîjkl¾åmnòoóôpqràsštuúvwxyız
+-$upper_case = AÁÄBCÈDÏEÉÌFGHIÍÎJKL¼ÅMNÒOÓÔPQRÀSŠTUÚVWXYİZ
++$lower_case = aáäbcèdïeéìfghiíjklµåmnòoóôpqràs¹t»uúvwxyız¾
++$upper_case = AÁÄBCÈDÏEÉÌFGHIÍJKL¥ÅMNÒOÓÔPQRÀS©T«UÚVWXYİZ®
+ 
+ # Pravidla pro ètení zkratek apod.: velké písmeno na jiném,
+-#   ne prvním místì ve slovì indikuje zkratku a hláskuje se.
++#   ne¾ prvním místì ve slovì indikuje zkratku a hláskuje se.
+ #   Stejnì tak jednotlivé písmeno pøed cifrou nebo speciálním znakem.
+ subst skratky.dic
+ regress	 ${lower_case}>${upper_case}(0_!${lower_case})			colon
+@@ -33,111 +32,71 @@
+ regress  ${upper_case}>${lower_case}($everywhere)			colon
+ 
+ 
+-@include "numerals.rul"
++#include "numerals.rul"
++
++ subst	   main.dic		   ;Rôzne vınimky
++
+ 
+- subst	   dtnl.dic		   ;vınimky zmekcovania detenele
+- subst     wfv.dic                 ;vınimky vıslovnosti w,v,f 
+-################### §102 predloky s,k
+- regress s>S(0_0)
+- regress k>K(0_0)
+- regress S>z(!_v$voiced$vowel$sonor) colon
+- regress K>g(!_v$voiced$vowel$sonor) colon
+- regress K>k(!_!)
+- regress S>s(!_!)
+- 
+- subst    dtnl3.dic		  ;vynimky zmekcovania (okrem dtnl.dic) 
+-                                  ;pre samostatne slova, (u nej	 vz. slova konciace na nej)
+-
+- with	preps.dic		word	word
+- {
+-	regress   _\ ~>P(!_!)	word   word
+- }
+- regress	P>\ (!_P)	colon  word	; dvì pøedloky za sebou
+-
+- regress  _\ ~>F(!_0)		colon	word
+-
+- progress  0>S(!S_szš)	 colon  
+- progress  S>0(!_!0)     word   ; "S" jen pøed hranicí slov, za ní je sykavka
+- progress  0>S(0_s)	 colon	; "S" pøed první hláskou v klausi
+- inside  P
+- {
+-	prep	"Sse,se seS,se SseS,se"	  ; "se" jako pøedloka
+- }
+- progress  S>0($everywhere)
+-
+- inside	 P			word
+- {
+-	prep	preps.dic	word
+- }
+- progress  P>\ ($everywhere)	word	word
+-
+-subst     so.dic word            ;vınimky so,zo, ku gu, s,k
+-
+-#§ 146 vıslovnos x v cudzích slovách 
+- regress e>E(0_x) colon            ;ex na zaèiatku slova
+- regress x>G(E_$vowel$voiced)
+- regress x>G(!_0!#)                  ;na konci slova
+- regress 0>z(G_!)
+- regress G>g($everywhere)
+- regress E>e($everywhere)
+- 
+  progress  0>s(x_!)
+- progress  u0>0v(q_!)              ; Rozloenie x,q na ks, kv
++ progress  u0>0v(q_!)              ; Rozlo¾enie x,q na ks, kv
+  regress   xq>k($everywhere)
+- regress   h>x(c_!)                ; Spøeka ch > x
+- regress   z>Z(d_!)              ; Spøeky dz,d > Z, 
+- progress  cd>0(!_xZ)
++ regress   h>x(c_!)                ; Spøe¾ka ch > x
++ regress   z¾>Z®(d_!)              ; Spøe¾ky dz,d¾ > Z,® 
++ progress  cd>0(!_xZ®)
+  
+- regress r>R(!$vowel_!$vowel)	   ; slabièné r->R 
+- regress l>L(!$vowel_!$vowel)	   ; slabièné l->L
+-
+ 
+-#        samohláska U (kUoò)
+- 
+  regress 0>o(ô_!)
+- regress ô>U($everywhere)          ;ô nahradené spojením Uo (1)
+- progress w>v($everywhere)       
+- 
+- regress v>U(R$vowel_0)		   ; (2)	
++ regress ô>u($everywhere)          ;ô zatial nahradené spojením uo
++ progress  w>v($everywhere)       
+  
+- regress v>U(RL$vowel_!RL$vowel)   ; §74 Kral, v sa meni na U (3)	 
++ regress v>ô($vowel_!$vowel)	   ; §74 Kral, fonema W zatial neexistuje	
++ regress ô>u($everywhere)          ; takze je nahradena u
++
++ progress ä>e($everywhere)         ; nahrada ä za e
++
++
++# Následující pravidla jednak zmìní vìty vydìlené dvojteèkou
++#   na vìty vydìlené teèkou (to je spí¹e ¹patnì ne¾ dobøe),
++#   dále pak oznaèí dvojteèkou (místo otazníku) ty vìty, které
++#   obsahovaly ve své první klausi nìkteré ze slov uvedenıch
++#   ve slovníku wh.dic, nemìly tuto klausi zvlá¹» vydìlenou
++#   ¾ádnou interpunkcí, a byly samy vydìleny otazníkem.
++#
++# Fonetik vidí, ¾e jsem právì "definoval" doplòovací otázky.
++
++ progress  :>.($everywhere)	text	sent
++ subst     wh.dic				; Doplòovací otázky
++ raise     Q:_			colon	phone
++ progress  Q>_(!0_!)		sent	colon	;  jen v první klausi
++ raise     Q:?			sent	colon
++ progress  Q>0($everywhere)			;  úklid v¹ech úrovní
++ progress  Q>_($everywhere)	sent	colon
++ progress  Q>:($everywhere)	text	sent
++
+  
+- regress u>U(o_0)		   ; 7 pad j.c. u->U (4)
++
++ subst     syll.dic		; Rozsadit vokály
+  
+-#       samohlaska î
++ regress   0>'(0_$vowel)	; Rázy
++
+  
+- regress j>î($vowel_!$vowel)      ;dvojhlaskove î	
+-# regress aeu>ÁÉÚ(i_0)                 ;treba zruši îa,îe,îu na konci slov
+- progress i>î(!$vowel_aeu)        ;dvojhlásky ia,ie,iu
+-# regress ÁÉÚ>aeu(i_0)                                  
+ 
+ 
+-#       spoluhlaska w
++ prep	nonsyl.dic		syll
++
++
+ 
+- regress v>w(0_!rlRLàå¾j$vowel)	      ;(1) §121 okrem predloky v
+- regress v>w(0_0)                     ; v ako predloka
+- 
+- regress f>w(L$vowel_$voiced) ;(2)
+ 
+-#       spoluhlaska N 
+- progress  n>N(!_kg)               ;ng
+ 
+ 
+- regress   dtnl>ïò¾(!_îíie)
+- regress i>y(d_a)                 ; diabetik, diastola, vynimky v slovniku
++ regress   dtnl>ï»òµ(!_íie)
+   
+  progress  yıì>iíe($everywhere)
+-#             tz -> c
++
+  regress   z>q(t_!)		   ; tz -> c Hertz	
+  progress t>0(!_q)
+  regress q>c($everywhere)
+-
+-# zz->dz 
+- regress z>C(z_!)                  ;zz->dz intermezzo (Kral) (blbost pizza=picca)
+- regress z>c(!_C)
+- regress C>c(!_!)
+-
+-#
++ 
+  regress t>0(s_s)                 ;mestsky -> mesky
+  regress s>0(s_!)
+  
+@@ -145,63 +104,19 @@
+  progress Zdt>0(!_q)                 ; § 246
+  regress q>c($everywhere)
+ 
+- regress s>q(tïd_t)		   ; st,ïst,dst,tst-> ct
+- progress tïd>0(!_q)
++ regress s>q(»tïd_t)		   ; »st,ïst,dst,tst-> ct
++ progress »tïd>0(!_q)
+  regress q>c($everywhere)
+   
+- regress >0(!_ï)		  ; ï->ï devädesiat
+- regress z>0(!_s)                 
+-########################   Gama ch->G
+- regress x>G(!_h) 	colon
+-
+-# regress   $voiced>${voiceless}(!_$voiceless&0');Èeská asimilace znìlosti
+-################# Znelostná asimilácia
+-
+- regress   $voiced>${voiceless}(!_$voiceless&0')  colon   
+- regress   $voiceless>$voiced(!_$voiced!v) colon
+- 
+-################### §95 asimilacia neznelej na znelu na hranici slov
+-
++ regress »>0(!_ï)		  ; »ï->ï devä»desiat
+ 
++# regress   $voiced>${voiceless}(!_$voiceless&0')       	; Asimilace znìlosti
++ regress   $voiced>${voiceless}(!_$voiceless&0')  colon     	; Asimilace znìlosti
+ 
+- 
+- progress ä>e($everywhere)         ; nahrada ä za e
++ regress   $voiceless>$voiced(!_$voiced!v)       colon
+ 
+ 
+-# Následující pravidla jednak zmìní vìty vydìlené dvojteèkou
+-#   na vìty vydìlené teèkou (to je spíše špatnì ne dobøe),
+-#   dále pak oznaèí dvojteèkou (místo otazníku) ty vìty, které
+-#   obsahovaly ve své první klausi nìkteré ze slov uvedenıch
+-#   ve slovníku wh.dic, nemìly tuto klausi zvláš vydìlenou
+-#   ádnou interpunkcí, a byly samy vydìleny otazníkem.
+-#
+-# Fonetik vidí, e jsem právì "definoval" doplòovací otázky.
+-
+- progress  :>.($everywhere)	text	sent
+- subst     wh.dic				; Doplòovací otázky
+- raise     Q:_			colon	phone
+- progress  Q>_(!0_!)		sent	colon	;  jen v první klausi
+- raise     Q:?			sent	colon
+- progress  Q>0($everywhere)			;  úklid všech úrovní
+- progress  Q>_($everywhere)	sent	colon
+- progress  Q>:($everywhere)	text	sent
+-
+- subst dtnl2.dic 
+-
+-# prep     syll.dic		; Rozsadit vokály
+- 
+-regress   0>'(0_$vowel)	; Rázy
+-
+-# prep	nonsyl.dic		syll
+  
+-syll      $sonority	syll	; Rozklad_na_slabiky
++# progress  n>N(!_kg)
+ 
+-# uprava aby fungovalo zo starymi difonmi
+-regress w>v(!_!)
+-regress U>u(!_!)
+-regress R>r(!_!)
+-regress L>l(!_!) 
+-regress ä>e(!_!) 
+-regress î>i(!_!)
+-regress N>n(!_!)
+-#regress ¾>l(!_!)
+\ No newline at end of file
++ syll      $sonority	syll	; Rozklad_na_slabiky
+diff -ruN -x*.dph* slovak/txt/blondinka.txt lng/slovak/txt/blondinka.txt
+--- slovak/txt/blondinka.txt	Thu Jan  1 01:00:00 1970
++++ lng/slovak/txt/blondinka.txt	Thu Dec 31 22:36:40 1998
+@@ -0,0 +1,8 @@
++ Odpadne blondínka na námestí. Okolo nej chodia µudia, nikto
++ si ju nev¹íma, vtom si ju v¹imne jeden maník,, zavolá záchranku a
++ zoberú ju. Na klinike ju polo¾ia na operaèku. Doktor ju obleje
++ kıblom vody - niè. Prepleskne ju - niè. Musia ju otvori». Rozre¾ú lebku a
++ èo nevidia -jeden jedinı drótik jej prechádza od jednej steny k druhej.
++ Tak ho teda prestrihnú.
++ Blondínku zo¹ijú, poèkajú kım sa preberie.
++ Blondínka vstane a ..... odpadnú jej u¹i.
+diff -ruN -x*.dph* slovak/txt/jumis.txt lng/slovak/txt/jumis.txt
+--- slovak/txt/jumis.txt	Thu Jan  1 01:00:00 1970
++++ lng/slovak/txt/jumis.txt	Sun Dec 27 19:21:39 1998
+@@ -0,0 +1,33 @@
++Firma JUMIS, spol. s. r. o. - personálno-poradenská spoloènos» - predstavuje modernú personálnu a mana¾érsku konzultaènú firmu ponúkajúcu svoje slu¾by nielen obchodnım, ale aj priemyselnım a ostatnım spoloènostiam. Firma bola zalo¾ená v r. 1995 ako súèas» holdingu firiem okolo vydavateµstva Informaèné Centrum Podnikateµov, spol. s. r. o.
++
++Na¹e slu¾by mô¾ete vyu¾i» v nasledujúcich oblastiach:
++ Obsadzovanie voµnıch pracovnıch miest správnymi µuïmi
++ Zvy¹ovanie odbornej úrovne mana¾érov, obchodníkov a ïal¹ích zamestnancov prostredníctvom kvalitnıch tréningovıch programov
++ Vypracovanie osobnıch a personálnych analız, ako aj analız vzdelávacích potrieb firiem
++OBLAS« VİBERU ZAMESTNANCOV
++Na¹a filozofia je zameraná na to, aby sme na¹li kandidáta, ktorı by vyhovoval Va¹im po¾iadavkám a potrebám. Prvım krokom je vypracovanie podrobného popisu pracovného miesta a rozpracovanie po¾iadaviek na vhodného kandidáta. Nasleduje proces vyhµadávania potenciálnych kandidátov formou inzercie, z na¹ej obsiahlej databázy alebo priamym oslovením kandidátov na základe osobnıch kontaktov. Po vytypovaní kandidátov si ich pozıvame na osobné pohovory spojené s vypracovaním ich osobnej analızy. Po získaní v¹etkıch potrebnıch podkladov tieto vyhodnotíme a klientovi doporuèíme toho najvhodnej¹ieho kandidáta.
++Garanciou na¹ej firmy je bezplatné vyhµadanie nového kandidáta, pokiaµ v rámci skú¹obnej doby 1-3 mesiacov klient nebude spokojnı s odporuèenım kandidátom. Sme v¹ak schopnı dáva» garancie aj na 6 a viac mesiacov.
++OBLAS« TRÉNINGOVİCH AKTIVÍT
++Spoluprácu s na¹ím klientom obvykle zaèíname vypracovaním identifikácie a analızy vzdelávacích potrieb klienta. V tejto fáze sa podrobne zmapujú mo¾nosti zvı¹enia odborného rastu personálu. Po odkonzultovaní sa dohodneme na jednotlivıch tréningovıch aktivitách, ktoré sú u¹ité priamo na mieru zákazníkovi s tım, ¾e tréningy sa mô¾u realizova» aj v domácom prostredí ná¹ho klienta.
++
++Z na¹ej súèasnej ponuky tréningovıch kurzov Vám mô¾eme ponúknu»:
++
++1. Rozvoj mana¾érskych zruèností
++   Efektívna komunikácia
++   Firemná kultúra
++   Hodnotenie a motivácia zamestnancov
++   Riadenie projektov
++   Riadenie seba samého - Time mana¾ment
++   Skupinové rie¹enie problémov
++   Tímová práca a rozvoj tímu
++   Vedenie zamestnancov
++   Vedenie porád
++2. Rozvoj obchodnıch zruèností
++   Rozvoj komunikaènıch a obchodnıch zruèností
++   Úspe¹nı predajca
++   Telefonickı predaj
++3. Osobnı rozvoj
++   Antistresovı program
++   Asertívne správanie
++   Osobnı a profesnı rozvoj
++   Umenie komunikova»
+diff -ruN -x*.dph* slovak/txt/kofi.txt lng/slovak/txt/kofi.txt
+--- slovak/txt/kofi.txt	Thu Jan  1 01:00:00 1970
++++ lng/slovak/txt/kofi.txt	Sun Dec 27 19:24:16 1998
+@@ -0,0 +1,17 @@
++V prvı deò roku 1997 nastúpil do funkcie generálneho tajomníka OSN Kofi Annan
++Mu¾ èiernej pleti s vysokım kreditom
++Kofi Annan (58 rokov) pochádza z Ghany, vzdelanie v¹ak získal vo ©vajèiarsku a v Spojenıch ¹tátoch. V rovníkovej Afrike, ktorá má v òom svojho prvého reprezentanta na èele OSN, ho pova¾ujú za naturalizovaného Amerièana. Napriek tomu je Kofi Annan prvım èernochom na èele OSN. Vıznamnej¹ie je v¹ak jeho iné prvenstvo: z doteraj¹ích siedmich generálnych tajomníkov tejto organizácie je jedinım, ktorı na tento post prichádza z jej vnútra ako veterán newyorského sídla OSN.
++
++Obr.: Kofi Annan prijíma gratuláciu od Javiera Pereza de Cuellar (pôsobil vo funkcii generálneho tajomníka OSN v rokoch 1982-1991). Vµavo odstupujúci Butrus Butrus-Ghálí (1992-1996).
++
++Poèas tridsa»roènej kariéry v OSN vystriedal také funkcie ako programovı ¹éf, riaditeµ personálneho odboru alebo naposledy námestník generálneho tajomníka pre mierové operácie. V newyorskom sídle ho poznajú ako kompetentného umierneného diplomata, s veµkım prehµadom o fungovaní celej in¹titúcie. Podµa bosnianskeho veµvyslanca v OSN Muhamada Saèirbeja bol Annan jedinım z vysokıch predstaviteµov OSN, ktorı z jej zmätenıch aktivít v Bosne a Hercegovine neodi¹iel s hanbou. Vyslú¾il si kredit najmä pri namáhavıch rokovaniach v pä»èlennej kontaktnej skupine OSN pre bıvalú Juhosláviu. Aj vïaka tejto skúsenosti Spojené ¹táty vehementne podporovali Annanovu kandidatúru v Bezpeènostnej rade. A preto¾e hovorí vıborne po francúzsky, napokon s ním súhlasilo aj Francúzsko, ktoré s jeho podporou v BR dlho váhalo.
++
++Èo je dôle¾ité, Kofi Annan má dobré vz»ahy s novovymenovanou americkou ministerkou zahraniènıch vecí Madeleine Albrightovou, ktorá s ním na svojom predchádzajúcom poste v OSN èasto prichádzala do kontaktu. Tento kontakt bude hra» dôle¾itú úlohu pri rie¹ení krízovej finanènej situácie svetovej organizácie a pri presadzovaní jej oneskorenıch reforiem. O reformy pritom ide v prvom rade, preto¾e OSN nemô¾e fungova» tım istım spôsobom ako doteraz, ked plytvá prostriedkami, »ahá pod sebou rozbujnené, èasto nepotrebné agentúry a permanentne nemá na svoju èinnos» finanèné prostriedky. "Je èas dohodnú» sa na tom, èo Organizácia Spojenıch národov mô¾e a musí robi» a èo robi» nemô¾e, " povedal okrem iného Kof i Annan vo svojom úvodnom prejave. Za prioritu svojho pôsobenia v novej funkcii si zvolil vytıèi» nové ciele a poslanie OSN vo svete po skonèení studenej vojny.
++
++Odchádzajúci generálny tajomník, 74-roènı Egyp»an Butrus Butrus-Ghálí, zaèínal na tomto poste krátko po skonèení studenej vojny. Pä» stálych èlenov Bezpeènostnej rady ho delegovalo do tejto funkcie s nádejou, ¾e doká¾e prispôsobi» obrovskú prebyrokratizovanú in¹titúciu novım podmienkam, ¾e sa èlenské ¹táty pod jeho vedením zhodnú na novom poslaní a vızname OSN. Butrus-Ghálí v¹ak vzápätí pri¹iel s ambicióznou víziou urobi» z OSN akúsi svetovú vládu, ktorá by rie¹ila konfliktné situácie, mala by k dispozícii vlastné mierové jednotky a postupne by si vybudovala urèitú nezávislos» rozhodovania. Predstavy doteraj¹ieho generálneho tajomníka sa èasto dostávali do konfliktu s politikou Spojenıch ¹tátov ako súèasnej veµmoci. Washington potreboval efektívnu OSN, a nie obdobu európskej KBSE, kde neexistuje vedúca mocnos» a akúkoµvek rıchlu a úèinnú akciu brzí nevyhnutnos» v¹eobecného konsenzu. O v¹etkom nakoniec rozhodli financie.
++
++Spojené ¹táty sú toti¾ nielen najväè¹ím poplatníkom, ale aj najväè¹ím dl¾níkom svetovej organizácie. Schvaµovanie tıchto príspevkov má v rukách Kongres, kontrolovanı republikánmi, ktorí odmietali schváli» príspevky na OSN na budúci rok, ak na èele svetovej organizácie zostane Butrus Ghálí. Bez zaplatenia amerického dlhu v hodnote 1,4 miliardy dolárov by sa OSN èoskoro dostala na pokraj finanèného kolapsu. V oficiálnej verzii sa mu vyèítal pomalı postup pri reformovaní vnútornej ¹truktúry OSN, v neoficiálnej idealistická a nerealizovateµná predstava o budúcej èinnosti OSN. V pozadí sa v podstate hrá o èosi viac. Vplyvnı americkı senátor Jessie Helms, ¹éf senátneho vıboru pre zahraniènú politiku, uverejnil v jesennom èísle odborného èasopisu Foreign Affairs èlánok, v ktorom argumentoval, ¾e ak nedôjde k zefektívneniu èinnosti OSN, je v americkom záujme z celej organizácie vystúpi».
++
++Je dobrım signálom, ¾e novozvolenı generálny tajomník u¾ vyhlásil, ¾e je pripravenı oficiálne obhajova» svoju predstavu o reformách svetovej organizácie pred príslu¹nım vıborom amerického Senátu.
++
++MILAN NIÈ, Rádio Slobodná Európa 
+diff -ruN -x*.dph* slovak/txt/sedlak.txt lng/slovak/txt/sedlak.txt
+--- slovak/txt/sedlak.txt	Thu Jan  1 01:00:00 1970
++++ lng/slovak/txt/sedlak.txt	Sat Dec 19 21:27:25 1998
+@@ -0,0 +1,35 @@
++Jozef Sedlák
++V na¹ej tradícií a¾ do ¹es»desiatych rokov nie je veµmi bohato zastúpená fotografická moderna. V tridsiatych rokoch Irena Blühová alebo Milo¹ Dohnány tvorivo rozvíjali podnety autorov ako Moholy Nagy èi Jaromír Funke. Na konci pä»desiatych rokov v diele Juraja ©ajmovièa alebo Alexandra Strelingera sa objavili pokusy o prekonanie reportá¾nej podstaty fotografickej tvorby smerom k poetickej ¹tylizácii. V ¹es»desiatych rokoch sa u nás pevne udomácnilo presvedèenie, ¾e fotografia je svojbytnım vizuálnym vyjadrovacím systémom, ktorı sa neobmedzuje len na fotografiu krajiny èi sociálnu dokumentárnu tvorbu. Anton ©tubòa, Ladislav Borodáè èi ¥ubomír Rapo¹ vyzdvihli samonosné sebestaèné hodnoty fotografie, ktorá sa mô¾e konfrontova» aj so ¹trukturálnou abstrakciou, aj s umením objektu, aj s op-artom. V sedemdesiatych rokoch nasledovalo obdobie, ktoré fotografiu u nás premenilo na dekoratívne médium - autori sa predháòali v tom, kto zrealizuje lukratívnej¹iu monumentálnu fotografickú vızdobu v ministerskıch budovách, nemocniciach a ¹kolách. Komunisti tolerovali a podporovali µúbivı dekoratívny formalizmus, vyprázdnenı a bez akejkoµvek duchovnej håbky. Iba v neoficiálnej reportá¾nej tvorbe sa uchoval vírus hodnotnej fotografie.
++V tejto situácii Jozef Sedlák vstúpil do moderného mlèanlivého vizuálneho umenia. V jeho reakcii na aktuálnu dobovú situáciu slovenskej fotografie sa stretá viacero vrstiev. Najpodstatnej¹ím znakom je návrat k modernistickej viere v zmysel tvorivého gesta a mágiu umenia, presvedèenie, ktoré v ¹es»desiatych rokoch prinieslo autentické a originálne hodnoty, kım zdegenerovali v politickom ornamente sedemdesiatych rokov. Sedlák navrátil fotografiu k fascinácii schátranımi priestormi, pavuèinami prasklín v múroch èi chladnım prostredím odvrátenej strany priemyselnej civilizácie. Iba¾e - na rozdiel od podobnıch motívov zo ¹es»desiatych rokov - Sedlák dbá o u¹µachtilos» tvaru, melódiu diela formuje zo ¹irokého spektra odtieòov sivej a z elegancie ¹truktúr. Obnovuje vieru v objaviteµskú silu umenia, ale nevzdáva sa ani estétstva zrodeného na pôde formálnej exhibície sedemdesiatych rokov, keï sa tak "zvıtvaròovalo", a¾ celkom zmizlo umenie.
++Podobu Sedlákovej tvorby ovplyvnila voµba príbehu ako ideálnej formy vyjadrenia, obdiv k dielu Duana Michalsa, ktorı v príbehoch na¹iel priestor na zviditeµnenie hlbokıch citov a mo¾nos» a¾ bezohµadnej sebaanalızy. Dôle¾itú rolu u neho zohral aj pozitívny dialóg s konceptuálnym trendom, ktorı proti technologickej dokonalosti vyzdvihoval my¹lienku. V tvorbe Dezidera Tótha, Ruda Sikoru, Michala Kerna sa v protiklade k oficiálnemu umeniu prikladala hlavná váha vıpovedi, nie stvárneniu. Sedlák si osvojil toto presvedèenie o idey ako nevyhnutnom základe umeleckého diela. Jozef Sedlák patrí ku skupine autorov inscenovanej fotografie, ktorí v osemdesiatych rokoch slovenskú fotografiu reprezentovali v medzinárodnıch kontextoch, ale zastáva medzi nimi celkom vınimoèné miesto. Jeho odpoveï na dobovú krízu fotografického umenia sa odli¹uje do istej miery od reakcii Mira ©volíka, Tona Stana, Ruda Prekopa, Petra ®upníka, Vasila Stanka alebo Kamila Vargu.
++Sedlákovi rovesníci tie¾ odmietli falo¹ oficiálnej fotografie, ale do znaènej miery aj presvedèenie o obrodzujúcej a hµadajúcej podstate umenia. Mladí autori si zvolili cestu hry, paradoxu, senzuality, aby do fotografie navrátili aj rados», aj zmysluplnos», a vyhli sa tak obom súdobım extrémom ornamentálnej prázdnote a racionalistickému chladu. V ich voµbe sa odzrkadlila celková atmosféra zaèínajúcej postmoderny, ktorá uprednostnila citácie a variácie, chaos ¹tılov pred dokonalos»ou tradiènej formy, odmietali presvedèenie modernistov, ¾e najdôle¾itej¹ia je originalita a neopakovateµnos».
++V tomto základnom presvedèení bol rozdiel, ktorı Sedláka odli¹uje od jeho súputnikov zo "slovenskej novej vlny". Niet u neho ¾iadnej rezignácie na posolstvo, zmysel, vıznam. Na rozdiel od svojich rovesníkov, aj keï sa hrá, tak to nie je hra, ktorá je ponorená akoby sama do seba, ale je to hra, ktorá je inotajom, symbolom, hµadaním. Azda by sa dalo poveda» aj tak, ¾e hra u ostatnıch bola radostná, nespútaná, ale u Sedláka ani v hre sa nestratil vá¾ny, hµadajúci a sebaspytujúci rozmer. Pri návratoch do dejín fotografie Sedlák nebol tak ovplyvnenı secesiou, piktorializmom ako iní autori inscenovanej fotografie.
++U Sedláka sa odli¹ujú osemdesiate a devä»desiate roky, nie v zmysle zlomu, ale v zmysle triády. Po úvodnom akorde mystiky priestoru a psychologizácie nasledoval v druhej polovici osemdesiatych rokov diskurz o dokonalosti idey, o spore idey a veci, aby v devä»desiatych rokoch v¹etko zvrátila téma prízrakov, v ktorej existuje pôvodná mystika priestoru.
++U mladého autora je prirodzené spıtavé sebaskúmanie, sebapozorovanie, ktoré sa od otázok o tom, akı som, kto som, èasto prelieva do otázok o tom, akí sú druhí, èo sa skrıva za ich tvárami, èo hıbe ich mysµou. Cez viacdielne príbehy, v ktorıch jednotlivá fotografia nestaèila na vyjadrenie autorského postoja, Sedlák v duchu takmer èechovovsky ne¾nej melanchólie obrazovo skúmal podstatu µudskej hodnoty. V jeho metóde sa nachádza Michalsov vplyv, aj v tendencii k premene fotografie na psychologickú terapiu, iba¾e nikdy nie v zmysle a¾ bezohµadne krutej otvorenosti.
++V mnohıch Sedlákovıch fotografiách niet pevnıch hraníc medzi realitou a ilúziou. Èlovek v nich ¾ije v medzistave èi medzièase. Jeden z jeho cyklov sa volá Pät' sekúnd klinickej smrti - stav, ktorı e¹te nie je smr»ou, ale u¾ akoby ani nie ¾ivotom.
++V prvej polovici osemdesiatych rokov sa k Sedlákovım "portrétom du¹e" radí viacero príbehov z opustenıch suterénnych priestorov, v ktorıch zaznievajú príznaky iného sveta, reálnej¹ieho ne¾ konkrétna realita. Sedlák luminografiou, viacnásobnımi expozíciami, ale aj alchımiou svetla naznaèuje reálnu prítomnos» neviditeµného sveta, formuluje mystiku, ktorá prekraèuje v umení tradiènú personifikáciu prírody a skôr obnovuje prastarú víziu reality symbolu na úkor reality veci. V jeho vizuálne u¹µachtilıch obrazoch je v¹etko dôle¾ité ukryté v symbolike, v odkazoch, nará¾kach, nie v tom, èo je zrejmé, inscenované a viditeµné.
++V tvorbe Jozefa Sedláka ako spiritus movens a základnı charakteristickı znak ¹tılu funguje hlbinná vıreènos» svetla, súvislos» reèi svetla s paradoxnou èi tajomnou podstatou µudskej existencie. V spodnıch vrstvách Sedlákovej poetiky zaznieva o2vena Platónovej filozofie - èlovek nepozná iné ne¾ svet tieòov a skutoène reálny svet ideí mu ostáva nedostupnı.
++Na konci uplynulého desa»roèia sa váhy preklonili v prospech sporu èi dialógu medzi ideou, dokonalos»ou a èlovekom, vecou. Akoby u¾ nestaèilo reflektova» reálnu prítomnos» nadzemskej entity, s autorovım µudskım dozrievaním prichádza aj poznanie, ¾e niekedy sa sputnáva, èo nie je sputnateµné, ¾e èlovek utvorí svojím telom dokonalos» geometrickıch tvarov, súèasne ich poci»uje ako obmedzenie.
++V cykle O demokracii svetla  µudské ruky utvárajú luminografické obrazce kruhu, trojuholníka, i ¹tvorca, Noria originálnu znakovú reè svetla. Na jednej strane bez nich niet dokonalosti tvaru, na druhej strane ich tvar obmedzuje, individuálne rozdiely v òom strácajú dôle¾itos» a hodnotí sa len celok, v ktorom èas» je dobrovoµne akceptovanou súèas»ou veµkej stavby. Ruky sú tradiène symbolom maximálnej odli¹nosti a osobnej skúsenosti èloveka. U Sedláka sa tento znak podriaïuje "demokracii svetla". Úsilie o odhalenie esencie konkrétnej µudskej existencie dospieva k obrazom, v ktorıch sa individuálne potláèa a do popredia vystupuje v¹eobecné.
++
++Na konci osemdesiatych rokov u Sedláka psychologizáciu a mystiku priestoru nahradilo zmierenie, namiesto naliehavıch osobnıch príbehov sa objavili depersonalizované obrazy - symboly, ktoré v sebe skrıvali potenciálne konflikt z rezignácie na individualitu. Spor idey a sveta sa transformoval do polohy u¹µachtilej obhajoby idey, stavby, celku, v skratke by sa dalo o tomto období hovori» ako o architektonickom období, keï celok je dôle¾itej¹í ne¾ detail, aj keï práve z detailov sa buduje dielo.
++
++V devä»desiatych rokoch sa vırazne zmenil Sedlákov tvorivı postoj nie v zmysle metódy, keï opä» vyu¾íva rozprávanie formou príbehov, keï poèíta s luminografiou a surrealistickou montá¾ou fantasknıch motívov èi s estetikou vıtvarnej perfekcie, v ktorej niet priestoru pre farebnú alebo tvarovú disharmóniu, ale v tom zmysle, ¾e sa ozvali neznáme podoby µudskej du¹e. Po priezraènom, zmierenom období konca uplynulého desa»roèia nastúpili roky drsnej irónie a ú¹kµabkov, vznikli tri rozsiahle cykly - Príbehy z podvedomia.
++
++Sedlák paralelne s ateliérovou inscenovanou tvorbou realizuje aj viaceré dokumentaristické projekty. K úspe¹nım patril u¾ cyklus o vojenskıch odvodoch v prvej polovici osemdesiatych rokov. Autor neskôr polo¾il dôraz na cykly z ústavov sociálnej starostlivosti, pripomínanie faktov a µudí, ktorí ¾ijú na okraji èi dokonca mimo spoloènosti, ktorıch tváre a telá sú kruto poznaèené nevyIieèiteµnımi chorobami a du¹evnou zaostalos»ou. Sedlák stále priná¹a správy o odvrátenej strane modernej civilizácie, ktorú sme vyhradili do ústavov, mimo dosahu v¹edného dòa väè¹iny µudí.
++
++V Príbehoch z podvedomia sa v inscenovanej podobe objavila správa o odvrátenej strane nie spoloènosti, ale individuality. V súvislosti s Príbehmi z podvedomia I /1991/ Sedlák hovorí o svojom poslaní, ktoré vidí v tom, ¾e chce "rozlo¾i» èloveka v irealite fotografie, rozdeli» jeho ¹aty a zameni» jeho tvár, oddeli» hlavu od tela a trup od nôh, jednu ruku od druhej a pozrie» sa dnu - hlboko - tak hlboko", aby spoznal príbeh jeho sebapoznávania, sebanájdenia, obety a zjednotenia.
++
++Technologickı princíp v Príbehoch z podvedomia spoèíva vo viacnásobnej expozícii a viacnásobnom nasvetµovaní pripravenıch detailov priestoru èi modelu. Dômyselné vyu¾itie drapérii pritom dovoµuje, aby vznikli veristicky pôsobiace, bytosti, o ktorıch vieme, ¾e nemô¾u reálne existova» - rybohlavy, pavúèí µudia, ¾ivé trupy bez hláv, telá vrastené priamo do podlahy, osamotené, akoby ¾ivé pa¾e èi nohy alebo ruko-lebky.
++
++Sedlák konfrontuje diváka s modelom, ktorı je v rozpore s jeho be¾nou skúsenos»ou, lebo Sedlákova fotografia mu neponúka okamih, ale minúty èi hodiny luminografickej akcie - snímanie slabého svetelného zdroja ako prskavka èi neón dlhım èasom expozície spolu s viacnásobnımi expozíciami, pri ktorıch sa snímka komponuje z rôznych èasovıch okamihov, rôznych udalostí, aby dospela k ireálnej kompozícii vsugerujúcej reálnu existenciu. 0 Sedlákovej metóde sa dá hovori» ako o totálnej fotografií - ¾iadne iné médium èi umeleckı prostriedok nedoká¾e urobi» to, èo dosahuje Jozef Sedlák fotografiou. Jeho práce v maximálnej miere strá¾ia realizmus fotografie, jej tzv. kopírovanie reality, aby v koneènom dôsledku budoval vizionársky svet neskutoènıch situácii a vz»ahov. Nádherná, stále prítomná polarita verizmu a nadreálnosti.
++
++Inscenácia v Sedlákovej tvorbe znamená podobne ako u Kamila Vargu utvorenie obrazu pomocou ¹pecifickıch fotografickıch techník. Na rozdiel od tvorby Vasila Stanka alebo Tona Stana, ktorí vo fotografií siahajú aj po divadelno-taneènıch princípoch tvorby diela, nie je len fotografom, ale aj re¾isérom. V devä»desiatych rokoch Sedlák uzatvára tvorivú triádu gotickım boschovskım obdobím. Od prvıch psychologickıch interpretácii existencie, hµadania vlastnej identity, sa cez architektonické obdobie dostal k príbehom o tajomnıch hlasoch µudského vnútra. Do diela sa vrátila psychológia, ale nie v zdvorilom humanistickom variante, ale skôr v zostupe do predcivilizaènıch prírodnıch etáp existencie.
++
++Pre Sedlákovu tvorbu je príznaèné, ¾e v nej niet zúfalstva. V jeho fotografiách mo¾no narazi» aj na tragédiu, aj boles», ale niet v nich paralyzujúcej beznádeje, apatie a nihilizmu. To, ¾e niet jasnıch a definitívnych odpovedí, nepodnecuje k pasivite a µahostajnosti, naopak, akoby u Sedláka práve neustála neistota o pravdivej podobe vecí a µudí vyvolávala dobrodru¾stvo neustáleho a neúnavného kladenia otázok, nièím neznièiteµnej tú¾by po pravde. Treba v¹ak zdôrazni», ¾e v¹etko podmieòuje jeho presvedèenie o existencii zmyslu, poriadku, ktorı je, ktorı bol danı a treba len k nemu preniknú».
++
++Nakoniec by som rád zdôraznil µudskı rozmer Sedlákovıch fotografií. Napriek mo¾no prazvlá¹tnej svetelno-slovnej kombinatorike jeho cykly nie sú nièím duchovednım ani duchamornım. Aj keï v nich niet veµa humoru, tak e¹te to neznamená, ¾e v nich niet nádeje. V¾dy mu je prednej¹ia vernos» pravde ne¾ vernos» schéme. Tak ako vo svojej dokumentárnej tvorbe spája tragické s grotesknım, takisto v inscenovanej tvorbe zjednocuje symbolické s reálnym, mystické s µudskım.
++
++Jozef Sedlák prekryl svet ideí svetom vecí, a tak sa priblí¾il k pod state. Nie je toti¾ dogmatik, aby v mene vernosti systému obetoval pravdu okamihu.
++
++Václav Macek
+diff -ruN -x*.dph* slovak/txt/text.txt.rozhlas lng/slovak/txt/text.txt.rozhlas
+--- slovak/txt/text.txt.rozhlas	Thu Jan  1 01:00:00 1970
++++ lng/slovak/txt/text.txt.rozhlas	Sat Dec 19 21:17:07 1998
+@@ -0,0 +1,4 @@
++Bolo ¹es» hodín. Dobré ráno, vá¾ení poslucháèi. Vysielame správy slovenského rozhlasu.
++Juhoslávia. Úèastníci belehradského stretnutia zaèínajú dnes poslednı tı¾deò 
++tohtoroèného rokovania. V závereènıch dòoch zamerajú svoju pozornos» najmä na
++program a rokovací poriadok závereènej etapy stretnutia.
+\ No newline at end of file
+diff -ruN -x*.dph* slovak/txt/text.txt.sedlak lng/slovak/txt/text.txt.sedlak
+--- slovak/txt/text.txt.sedlak	Thu Jan  1 01:00:00 1970
++++ lng/slovak/txt/text.txt.sedlak	Wed Dec 23 15:10:48 1998
+@@ -0,0 +1,3 @@
++Jozef Sedlák
++V na¹ej tradícií a¾ do ¹es»desiatych rokov nie je veµmi bohato zastúpená fotografická moderna. V tridsiatych rokoch Irena Bluhová alebo Milo¹ Dohnány tvorivo rozvíjali podnety autorov ako Moholy Nagy èi Jaromír Funke. Na konci pä»desiatych rokov v diele Juraja ©ajmovièa alebo Alexandra Strelingera sa objavili pokusy o prekonanie reportá¾nej podstaty fotografickej tvorby smerom k poetickej ¹tylizácii. V ¹es»desiatych rokoch sa u nás pevne udomácnilo presvedèenie, ¾e fotografia je svojbytnım vizuálnym vyjadrovacím systémom, ktorı sa neobmedzuje len na fotografiu krajiny èi sociálnu dokumentárnu tvorbu. Anton ©tubòa, Ladislav Borodáè èi ¥ubomír Rapo¹ vyzdvihli samonosné sebestaèné hodnoty fotografie, ktorá sa mô¾e konfrontova» aj so ¹trukturálnou abstrakciou, aj s umením objektu, aj s op-artom. V sedemdesiatych rokoch nasledovalo obdobie, ktoré fotografiu u nás premenilo na dekoratívne médium - autori sa predháòali v tom, kto zrealizuje lukratívnej¹iu monumentálnu fotografickú vızdobu v ministerskıch budovách, nemocniciach a ¹kolách. Komunisti tolerovali a podporovali µúbivı dekoratívny formalizmus, vyprázdnenı a bez akejkoµvek duchovnej håbky. Iba v neoficiálnej reportá¾nej tvorbe sa uchoval vírus hodnotnej fotografie.
++V tejto situácii Jozef Sedlák vstúpil do moderného mlèanlivého vizuálneho umenia. V jeho reakcii na aktuálnu dobovú situáciu slovenskej fotografie sa stretá viacero vrstiev. Najpodstatnej¹ím znakom je návrat k modernistickej viere v zmysel tvorivého gesta a mágiu umenia, presvedèenie, ktoré v ¹es»desiatych rokoch prinieslo autentické a originálne hodnoty, kım zdegenerovali v politickom ornamente sedemdesiatych rokov. Sedlák navrátil fotografiu k fascinácii schátranımi priestormi, pavuèinami prasklín v múroch èi chladnım prostredím odvrátenej strany priemyselnej civilizácie. Iba¾e - na rozdiel od podobnıch motívov zo ¹es»desiatych rokov - Sedlák dbá o u¹µachtilos» tvaru, melódiu diela formuje zo ¹irokého spektra odtieòov sivej a z elegancie ¹truktúr. Obnovuje vieru v objaviteµskú silu umenia, ale nevzdáva sa ani estétstva zrodeného na pôde formálnej exhibície sedemdesiatych rokov, keï sa tak "zvıtvaròovalo", a¾ celkom zmizlo umenie.
+diff -ruN -x*.dph* slovak/txt/text.txt.sikula lng/slovak/txt/text.txt.sikula
+--- slovak/txt/text.txt.sikula	Thu Jan  1 01:00:00 1970
++++ lng/slovak/txt/text.txt.sikula	Tue Dec 29 00:02:40 1998
+@@ -0,0 +1,13 @@
++Vincent ©ikula: Skú¹ka
++Muzikantské skú¹ky odjak¾iva bıvali v po¾iarnej zbrojnici. Miestnos» je pomerne
++malá a e¹te zaprataná kadejakım haraburdím. Na stenách sú rozve¹ané hadice, 
++náhradné rozstrekovaèe a pri dverách visia aj dve poµnice. 
++Uprostred miestnosti stojí podlhovastı stôl na ktorı si hudobníci polo¾ia noty.
++Stolièiek niet a to je vlastne vıhoda, lebo keby boli stolièky, ani by sa 
++v¹etci hudobníci do miestnosti nepomestili. Kúsok od dverí je malé mre¾ované
++okienko. Decká, èo bıvajú na blízku, sa zbehnú, keï poèujú hra». Vy¹kriabu sa
++k mre¾ovanému okienku a nazízajú dnu. Strıco Toma¹oviè alebo strıco zahru¹ka 
++vybehnú ka¾dú chvíµu von, odháòajú decká èiapkou. Tie sa v¾dy rozpàchnu, no 
++len èo sa vráti strıco Toma¹oviè do vnútra, lezú k okienku zas. Strıco Toma¹oviè
++sa postaví vedµa kontrá¹ov, zaène sa prehrabáva» v notách. Vy neviete, èo sú to
++kontrá¹i? Kontrá¹ je muzikant, ktorı kontruje.  
+\ No newline at end of file
+diff -ruN -x*.dph* slovak/wfv.dic lng/slovak/wfv.dic
+--- slovak/wfv.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/wfv.dic	Thu Jan  1 01:00:00 1970
+@@ -1 +0,0 @@
+-akist agist
+diff -ruN -x*.dph* slovak/wh.dic lng/slovak/wh.dic
+--- slovak/wh.dic	Sat Mar 25 00:12:01 2000
++++ lng/slovak/wh.dic	Tue Dec  1 15:19:09 1998
+@@ -1,58 +1,5 @@
+-# dosti neúplnı seznam slov obsaenıch ve zjišovacích otázkách
+-^èo$ èoQ
+-^kto$ ktoQ
+-^kedy$ kedyQ
+-^ako$ akoQ
+-^akoe$ akoeQ
+-^akı$ akıQ
+-^aká$ akáQ
+-^aké$ akéQ
+-^akého$ akéhoQ
+-^akej$ akejQ
+-^akému$ akémuQ
+-^akú$ akúQ
+-^akom$ akomQ
+-^akım$ akımQ
+-^akou$ akouQ
+-^akıe$ akıeQ
+-^èí$ èíQ
+-^èia$ èiaQ
+-^èie$ èieQ
+-^èie$ èieQ
+-^dokia¾$ dokia¾Q
+-^pokia¾$ pokiaíQ
+-^odkia¾$ odkia¾Q
+-^kade$ kadeQ
+-^skade$ skadeQ
+-^pokade$ pokadeQ
+-^odkade$ odkadeQ
+-^kadee$ kadeeQ
+-^skadee$ skadeeQ
+-^kadia¾$ kadia¾Q
+-^odkadia¾$ odkadia¾Q
+-^skadia¾$ skadia¾Q
+-^kde$ kdeQ
+-^kdee$ kdeeQ
+-^dokedy$ dokedyQ
+-^odkedy$ odkedyQ
+-^ko¾ko$ ko¾koQ
+-^ko¾kokrát$ ko¾kokrátQ
+-^ko¾korakı$ ko¾korakıQ
+-^ko¾konásobnı$ ko¾konáasobnıQ
+-^ko¾kı$ ko¾kıQ
+-^ko¾ká$ ko¾káQ
+-^ko¾ké$ ko¾kéQ
+-^ktorı$ ktorıQ
+-^ktorá$ ktoráQ
+-^ktoré$ ktoréQ
+-^ktorıe$ ktorıeQ
+-^kı$ kıQ
+-^ká$ káQ
+-^ké$ kéQ
+-^naèo$ naèoQ
+-^preèo$ preèoQ
+-^zaèo$ zaèoQ
+- 
++# dosti neúplnı seznam slov obsa¾enıch ve zji¹»ovacích otázkách
++
+ ^kto$	ktoQ
+ ^koho$	kohoQ
+ ^komu$	komuQ
+@@ -69,6 +16,7 @@
+ ^èieho$	èiehoQ
+ ^èích$	èíchQ
+ ^èími$	èímiQ
++^èíma$	èímaQ
+ 
+ ^ktorı$		ktorıQ
+ ^ktoré$		ktoréQ
+@@ -80,8 +28,9 @@
+ ^ktorım$	ktorımQ
+ ^ktorí$		ktoríQ
+ ^ktorıch$	ktorıchQ
+-^ktorej$	ktorejQ
++^ktorejm$	ktorejmQ
+ ^ktorımi$	ktorımiQ
++^ktorejma$	ktorejmaQ
+ ^ktorıma$	ktorımaQ
+ ^ktorej$	ktorejQ
+ ^ktorejch$	ktorejchQ
+@@ -99,15 +48,15 @@
+ ^akımi$		akımiQ
+ ^akej$		akejQ
+ 
+-^ko¾kı$		ko¾kıQ
+-^ko¾ké$		ko¾kéQ
+-^ko¾ká$		ko¾káQ
+-^ko¾kého$	ko¾kéhoQ
+-^ko¾kému$	ko¾kémuQ
+-^ko¾kú$		ko¾kúQ
+-^ko¾kom$	ko¾komQ
+-^ko¾kım$	ko¾kımQ
+-^ko¾kí$		ko¾kíQ
++^koµkı$		koµkıQ
++^koµké$		koµkéQ
++^koµká$		koµkáQ
++^koµkého$	koµkéhoQ
++^koµkému$	koµkémuQ
++^koµkú$		koµkúQ
++^koµkom$	koµkomQ
++^koµkım$	koµkımQ
++^koµkí$		koµkíQ
+ 
+ 
+ #...plus zapomenuté tvary
+@@ -116,16 +65,16 @@
+ ^odekdy$	odekdyQ
+ ^dokedy$	dokedyQ
+ ^kde$	kdeQ
+-^kadia¾$	kadia¾Q
+-^odkia¾$	odkia¾Q
++^kadiaµ$	kadiaµQ
++^odkiaµ$	odkiaµQ
+ ^kam$	kamQ
+-^ko¾ko$	ko¾koQ
+-^ko¾kımi$	ko¾kımiQ
++^koµko$	koµkoQ
++^koµkımi$	koµkımiQ
+ ^zaèo$	zaèoQ
+ ^naèo$	naèoQ
+ ^ak$	akQ
+ ^preèo$	preèoQ
+-^akoe$	akoeQ
++^ako¾e$	ako¾eQ
+ ^akoto$	akotoQ
+-^èoe$	èoeQ
++^èo¾e$	èo¾eQ
+ ^oèo$	oèoQ

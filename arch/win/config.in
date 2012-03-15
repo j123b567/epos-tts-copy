@@ -136,17 +136,16 @@
 #define FORGET_ENUM_BITFIELDS 1
 
 /* Defining this initially may save you some headaches */
-/* #undef IGNORE_REGEX_RULES */
+/* #undef IGNORE_REGEX_RULES 1 */
 
-/* Define unless using an obscure regex library and having some luck */
+/* Define except when using an obscure regex library and having extra luck */
 #define HAVE_RM_SO 1
 
 /* Defining this is necessary with any DOS/NT version */
 #define FORGET_SOUND_IOCTLS 1
 
-/* Define if using mmsystem.lib for output */
-#define HAVE_MMSYSTEM_H  1
+/* Define if using the mmsystem for output */
+#define HAVE_MMSYSTEM_H 1
 
 /* Define if Epos should run as an NT service */
 #define HAVE_WINSVC_H  1
-

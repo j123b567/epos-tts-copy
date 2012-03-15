@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>               The Epos Speech System: Text-To-Speech Control Protocol  (TTSCP)  (version 0) </TITLE>
+ <TITLE>               The Epos Speech System: Text-To-Speech Control Protocol (version 0) </TITLE>
  <LINK HREF="epos-5.html" REL=next>
  <LINK HREF="epos-3.html" REL=previous>
  <LINK HREF="epos.html#toc4" REL=contents>
@@ -12,7 +12,7 @@
 <A HREF="epos-3.html">Previous</A>
 <A HREF="epos.html#toc4">Contents</A>
 <HR>
-<H2><A NAME="ttscp"></A> <A NAME="s4">4. Text-To-Speech Control Protocol  (TTSCP)  (version 0) </A></H2>
+<H2><A NAME="ttscp"></A> <A NAME="s4">4. Text-To-Speech Control Protocol (version 0) </A></H2>
 
 <P>
 <P>TTSCP is a client-server connection-oriented,
@@ -221,9 +221,9 @@ total length of the RIFF form. (Epos never actually takes advantage
 of this rule.)
 <P>This format allows storing labels (i.e. pointers to specific
 positions within the waveform); Epos does use this feature
-if enabled e.g. using the
-<A HREF="epos-3.html#labelphones-option">label_phones option</A>.
-<P>
+if enabled e.g. using the 
+<A HREF="epos-3.html#labelphones-option">label_phones option</A>
+to label phone and/or segment boundaries within the waveform.
 <P>
 <H2><A NAME="ss4.3">4.3 TTSCP Commands</A>
 </H2>
@@ -401,6 +401,10 @@ Any comment on this issue is welcome.
 "option value" pair. The server may ignore this command altogether
 with an error code 442. In any case, this setting should never
 alter the execution environment of existing and/or future sessions.
+(In Epos, setting a static option using <CODE>setl</CODE>, which is rarely
+allowed and even less often actually done, affects all connections
+in the same way; but all voice, language and global options
+fully follow this standard.)
 The server will reply with an error code 412 if the value assigned
 is illegal, or with 451 if the server is configured not to allow
 to change this parameter (may depend on the current authentication status).
@@ -671,7 +675,7 @@ with code 5xx or higher. It may also quit at any time just after
 sending a "done" command to the server; the server will however
 confirm that command with a reply of 600 before disconnecting,
 and this is the only 6xx response code defined at the moment.
-<P>Replies of 8xx except 800 are reserved for cases of severe server
+<P>Replies of 8xx except 80x are reserved for cases of severe server
 misconfiguration, or detected programming bugs. Their meanings
 are very implementation dependent (implementations are encouraged
 not to issue them except in emergency). If such a reply is ever
@@ -740,6 +744,7 @@ code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 415     </TD><TD> no or bad stream</TD></TR><TR><TD>
 416     </TD><TD> no parameter allowed</TD></TR><TR><TD>
 417     </TD><TD> parameter missing</TD></TR><TR><TD>
+418     </TD><TD> bad format or encoding</TD></TR><TR><TD>
 421     </TD><TD> output voice busy</TD></TR><TR><TD>
 422     </TD><TD> out of memory</TD></TR><TR><TD>
 423     </TD><TD> nothing to interrupt</TD></TR><TR><TD>
@@ -769,6 +774,7 @@ code </TD><TD> error type </TD><TD> suggested action</TD></TR><TR><TD>
 464     </TD><TD> input triggered OS incompatibility</TD></TR><TR><TD>
 465     </TD><TD> i/o problem : error on close()</TD></TR><TR><TD>
 466     </TD><TD> command stuck</TD></TR><TR><TD>
+467     </TD><TD> fatal signal</TD></TR><TR><TD>
 471     </TD><TD> tcpsyn received invalid waveform</TD></TR><TR><TD>
 472     </TD><TD> unresolved remote tcpsyn server</TD></TR><TR><TD>
 473     </TD><TD> unreachable remote tcpsyn server</TD></TR><TR><TD>
@@ -787,6 +793,7 @@ of errors (internal errors).
 <CENTER><TABLE BORDER><TR><TD>
 <BR>
 600     </TD><TD> session ended normally</TD></TR><TR><TD>
+601     </TD><TD> server reinitializing as requested</TD></TR><TR><TD>
 800     </TD><TD> server shutting down as requested by client</TD></TR><TR><TD>
 801     </TD><TD> error explicitly reported in config files</TD></TR><TR><TD>
 811     </TD><TD> rules file syntax</TD></TR><TR><TD>
@@ -796,6 +803,7 @@ of errors (internal errors).
 841     </TD><TD> cannot open necessary configuration file</TD></TR><TR><TD>
 842     </TD><TD> no voices configured</TD></TR><TR><TD>
 843     </TD><TD> up-to-date configuration files not found</TD></TR><TR><TD>
+844     </TD><TD> no unicode maps found</TD></TR><TR><TD>
 861     </TD><TD> internal error: impossible branch of execution</TD></TR><TR><TD>
 862     </TD><TD> internal error: invariance violation</TD></TR><TR><TD>
 863     </TD><TD> internal error: buffer overflow</TD></TR><TR><TD>
@@ -804,6 +812,8 @@ of errors (internal errors).
 869     </TD><TD> double fault</TD></TR><TR><TD>
 871     </TD><TD> network unreachable</TD></TR><TR><TD>
 872     </TD><TD> server already running</TD></TR><TR><TD>
+881     </TD><TD> too many syntax errors in rule files</TD></TR><TR><TD>
+882     </TD><TD> infinite include cycle</TD></TR><TR><TD>
 
 <CAPTION>       TTSCP session termination codes as issued by Epos</CAPTION>
 </TD></TR></TABLE></CENTER>

@@ -4,11 +4,11 @@
 ; metod implementovaných v nnet.cc
 
 
-#include "slovak.rul"
+@include "slovak.rul"
 
 ;#warn Now applying extra nnet rules
 
- segments ~				; pryè s difony
+ diphones ~				; pryè s difony
 
  regress 0>%(!_0) word			; pøidat na konce slov procentítka
 ;dosud: subst  neurpunc.dic  syll

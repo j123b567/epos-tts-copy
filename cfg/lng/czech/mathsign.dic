@@ -2,6 +2,7 @@
 # pøíklad øe¹ení jednoduchıch znaèek; dolar a støí¹ka tu bıt nesmìjí
 
 +	~plus~
+\d	~teèka~
 \-	~a¾~
 \m	~mínus~
 =	~rovná~se~

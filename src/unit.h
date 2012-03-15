@@ -33,6 +33,7 @@
 
 #define SMOOTH_CQ_SIZE    16		// max smooth request length, see unit::smooth()
 
+class marker;
 
 class unit
 {
@@ -54,15 +55,17 @@ class unit
     
 	inline bool subst(hash *table, int total_length,
 		char*s1b,char*s1e,char*s2b,char*s3b,char*s3e); //inner, see implem.
-	void syll_break(char *sonority, unit *before);    //Implements the side-syllable hack
+	void syll_break(char *sonority, unit *before);
 	void syllabify(char *sonority);  //May split "father" just before "this", if sonority minimum
-	void sseg(hash *templates, char symbol, int *quantity);
+//	void sseg(hash *templates, char symbol, int *quantity);
 	void seg(hash *segm_inventory);  //Will create up to one segment. Go see it if curious.
     
 	void sanity();                    //check that this unit is sanely linked to the others
 	void insane(const char *token);   //called exclusively by sanity() in case of a problem
     
-	int f,i,t;
+//	int f,i,t;
+	float t;
+	marker *m;
     public:
 	bool scope;                       //true=don't pass on Next/Prev requests
 		unit(UNIT layer, parser *);
@@ -73,6 +76,8 @@ class unit
                                       //Writes the segments out to an array of
                                       // struct segment. Returns: how many written
                                       // starting_at==0 for the first segment
+	int write_ssif_head(char *whither); // ^ how many chars written
+	int write_ssif(char *whither, int starting_at, int bs);
 	void show_phones();	      // printf() the phones
 	void nnet_out(const char *filename, const char *dirname);
 	void fout(char *filename);        //stdout if NULL
@@ -80,7 +85,7 @@ class unit
 	char *gather(char *buffer_start, char *buffer_end, bool suprasegm);
 	char *gather(int *l, bool delimited, bool suprasegm);	// returns length in *l
              // gather() returns the END of the string (which is unterminated!)
-        void insert(UNIT target, bool backwards, char what, bool *left, bool *right);
+        void insert(UNIT target, bool backwards, char what, charclass *left, charclass *right);
 //	void subst(UNIT target, hash *table, SUBST_METHOD method);
 	inline void subst();          //replace this unit by sb
 	bool subst(hash *table, SUBST_METHOD method);
@@ -88,7 +93,7 @@ class unit
 #ifdef WANT_REGEX
 	void regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl);
 #endif
-	void assim(UNIT target, bool backwards, char *fn, bool *left, bool *right);
+	void assim(UNIT target, bool backwards, charxlat *fn, charclass *left, charclass *right);
                                       //Will convert cont using fn[256] if left[Next]
                                       // and right[Prev] are both true. Backwards=regressive. 
 	void split(unit *before);         //Split this unit just before "before"
@@ -97,13 +102,15 @@ class unit
                                       // Will split units (syllables),
                                       // according to sonority[cont] of "target"
                                       // units (phones) contained there
-        void sseg(UNIT target, hash *templates);
+        bool contains(UNIT target, charclass *set);
+//        void sseg(UNIT target, hash *templates);
         			      // Take freq, time or intensity from the hash*
+	void prospoint(FIT_IDX what, int value, float position);
 	void contour(UNIT target, int *recipe, int rec_len,
 			int padd_start, FIT_IDX what, bool additive);
         void smooth(UNIT target, int *ratio, int base, int len, FIT_IDX what);
-        void project(UNIT target, int f, int i, int t);
-        void raise(bool *what, bool *when, UNIT whither, UNIT whence);
+        void project(UNIT target);
+        void raise(charclass *what, charclass *when, UNIT whither, UNIT whence);
         			      // Move characters between levels
 	void segs(UNIT target, hash *segm_inventory);
                                       //Will create the segments
@@ -131,7 +138,7 @@ class unit
 	static char *sb;		// subst buffer
 	static int sbsize;
 	static void done();		// free buffers
-	static void assert_sbsize(int);	// at least that big sbsize
+	static void assert_sbsize(int);	// ensure at least that big sbsize
 };
 
 // extern char * _subst_buff;

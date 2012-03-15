@@ -1,0 +1,565 @@
+patching file `WELCOME'
+Hunk #2 FAILED at 13.
+1 out of 3 hunks FAILED -- saving rejects to WELCOME.rej
+patching file `arch/unix/acconfig.h'
+patching file `arch/unix/listtmp'
+patching file `arch/unix/makeinst'
+patching file `arch/win/config.in'
+Hunk #3 FAILED at 144.
+1 out of 3 hunks FAILED -- saving rejects to arch/win/config.in.rej
+patching file `arch/win/configure.bat'
+Hunk #2 FAILED at 27.
+1 out of 2 hunks FAILED -- saving rejects to arch/win/configure.bat.rej
+patching file `arch/win/convert.bat'
+patching file `arch/win/epos.dsp'
+Hunk #2 FAILED at 49.
+1 out of 8 hunks FAILED -- saving rejects to arch/win/epos.dsp.rej
+patching file `arch/win/epos.dsw'
+patching file `arch/win/epos.ini'
+patching file `arch/win/eposm.dsp'
+Hunk #2 FAILED at 49.
+1 out of 6 hunks FAILED -- saving rejects to arch/win/eposm.dsp.rej
+patching file `arch/win/say.dsp'
+patching file `cfg/cfg/default.ini'
+Hunk #1 FAILED at 21.
+Hunk #2 FAILED at 30.
+Hunk #3 FAILED at 54.
+3 out of 3 hunks FAILED -- saving rejects to cfg/cfg/default.ini.rej
+patching file `cfg/cfg/epos.ini'
+patching file `cfg/cfg/fixed.ini'
+Hunk #1 FAILED at 1.
+Hunk #2 FAILED at 64.
+Hunk #3 succeeded at 87 with fuzz 2 (offset 12 lines).
+2 out of 3 hunks FAILED -- saving rejects to cfg/cfg/fixed.ini.rej
+patching file `cfg/cfg/restr.ini'
+Hunk #3 FAILED at 66.
+1 out of 3 hunks FAILED -- saving rejects to cfg/cfg/restr.ini.rej
+patching file `cfg/cfg/winepos.ini'
+patching file `cfg/lng/czech/czech.ini'
+Hunk #1 FAILED at 9.
+1 out of 2 hunks FAILED -- saving rejects to cfg/lng/czech/czech.ini.rej
+patching file `cfg/lng/czech/czech.rul'
+patching file `cfg/lng/czech/main.dic'
+patching file `cfg/lng/czech/nnet.rul'
+patching file `cfg/lng/czech/numerals.rul'
+patching file `cfg/lng/czech/preps.dic'
+patching file `cfg/lng/czech/ptacek97.dph'
+patching file `cfg/lng/czech/syll.dic'
+patching file `cfg/lng/czech/trans.rul'
+patching file `cfg/lng/german/german.ini'
+patching file `cfg/lng/german/german.rul'
+patching file `cfg/lng/slovak/abbrevs.dic'
+Hunk #2 succeeded at 24 (offset 1 line).
+can't find file to patch at input line 1716
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|Only in epos-2.4/cfg/lng/slovak: basenum.dic
+|Only in epos-2.4/cfg/lng/slovak: hard.dic
+|Only in epos-2.4.40/cfg/lng/slovak: kadlec.dph
+|diff -rud epos-2.4.40/cfg/lng/slovak/main.dic epos-2.4/cfg/lng/slovak/main.dic
+|--- epos-2.4.40/cfg/lng/slovak/main.dic	Wed Dec 30 16:46:07 1998
+|+++ epos-2.4/cfg/lng/slovak/main.dic	Wed Aug  1 14:31:36 2001
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+2 out of 2 hunks ignored
+patching file `cfg/lng/slovak/mathsign.dic'
+patching file `cfg/lng/slovak/numerals.rul'
+patching file `cfg/lng/slovak/preps.dic'
+Hunk #1 FAILED at 1.
+1 out of 1 hunk FAILED -- saving rejects to cfg/lng/slovak/preps.dic.rej
+patching file `cfg/lng/slovak/slovak.ini'
+Hunk #1 FAILED at 1.
+1 out of 1 hunk FAILED -- saving rejects to cfg/lng/slovak/slovak.ini.rej
+patching file `cfg/lng/slovak/slovak.rul'
+Hunk #1 FAILED at 1.
+1 out of 1 hunk FAILED -- saving rejects to cfg/lng/slovak/slovak.rul.rej
+patching file `cfg/lng/slovak/trans.rul'
+Hunk #1 FAILED at 1.
+1 out of 1 hunk FAILED -- saving rejects to cfg/lng/slovak/trans.rul.rej
+patching file `cfg/lng/slovak/wh.dic'
+Hunk #1 FAILED at 1.
+1 out of 1 hunk FAILED -- saving rejects to cfg/lng/slovak/wh.dic.rej
+can't find file to patch at input line 2535
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|Only in epos-2.4/cfg/lng/slovak.prev: abbrevs.dic
+|Only in epos-2.4/cfg/lng/slovak.prev: basenum.dic
+|Only in epos-2.4.40/cfg/lng/slovak.prev: casual.dic
+|Only in epos-2.4.40/cfg/lng/slovak.prev: kadlec.dph
+|diff -rud epos-2.4.40/cfg/lng/slovak.prev/main.dic epos-2.4/cfg/lng/slovak.prev/main.dic
+|--- epos-2.4.40/cfg/lng/slovak.prev/main.dic	Wed Apr  8 10:52:36 1998
+|+++ epos-2.4/cfg/lng/slovak.prev/main.dic	Wed Dec 30 16:46:07 1998
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+1 out of 1 hunk ignored
+can't find file to patch at input line 2640
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|Only in epos-2.4/cfg/lng/slovak.prev: mathsign.dic
+|diff -rud epos-2.4.40/cfg/lng/slovak.prev/nnet.rul epos-2.4/cfg/lng/slovak.prev/nnet.rul
+|--- epos-2.4.40/cfg/lng/slovak.prev/nnet.rul	Thu Dec 31 19:22:32 1998
+|+++ epos-2.4/cfg/lng/slovak.prev/nnet.rul	Thu Mar  1 00:54:39 2001
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+1 out of 1 hunk ignored
+can't find file to patch at input line 2660
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|Only in epos-2.4/cfg/lng/slovak.prev: numerals.rul
+|Only in epos-2.4/cfg/lng/slovak.prev: palkova.rul
+|Only in epos-2.4/cfg/lng/slovak.prev: postp2.dic
+|diff -rud epos-2.4.40/cfg/lng/slovak.prev/postps.dic epos-2.4/cfg/lng/slovak.prev/postps.dic
+|--- epos-2.4.40/cfg/lng/slovak.prev/postps.dic	Wed Apr  8 10:52:36 1998
+|+++ epos-2.4/cfg/lng/slovak.prev/postps.dic	Wed Nov 18 19:01:21 1998
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+1 out of 1 hunk ignored
+can't find file to patch at input line 2676
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff -rud epos-2.4.40/cfg/lng/slovak.prev/preps.dic epos-2.4/cfg/lng/slovak.prev/preps.dic
+|--- epos-2.4.40/cfg/lng/slovak.prev/preps.dic	Wed Apr  8 10:52:36 1998
+|+++ epos-2.4/cfg/lng/slovak.prev/preps.dic	Wed Nov 18 19:01:21 1998
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+1 out of 1 hunk ignored
+can't find file to patch at input line 2718
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|Only in epos-2.4.40/cfg/lng/slovak.prev: ptacek97.dph
+|Only in epos-2.4.40/cfg/lng/slovak.prev: ptacek97.old.dph
+|Only in epos-2.4.40/cfg/lng/slovak.prev: seq.dic
+|Only in epos-2.4/cfg/lng/slovak.prev: skratky.dic
+|diff -rud epos-2.4.40/cfg/lng/slovak.prev/slovak.ini epos-2.4/cfg/lng/slovak.prev/slovak.ini
+|--- epos-2.4.40/cfg/lng/slovak.prev/slovak.ini	Mon Jun 14 00:54:39 1999
+|+++ epos-2.4/cfg/lng/slovak.prev/slovak.ini	Fri Jun 22 12:55:13 2001
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+2 out of 2 hunks ignored
+can't find file to patch at input line 2782
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff -rud epos-2.4.40/cfg/lng/slovak.prev/slovak.rul epos-2.4/cfg/lng/slovak.prev/slovak.rul
+|--- epos-2.4.40/cfg/lng/slovak.prev/slovak.rul	Thu Jul 30 11:55:48 1998
+|+++ epos-2.4/cfg/lng/slovak.prev/slovak.rul	Wed Aug  1 14:55:37 2001
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+1 out of 1 hunk ignored
+can't find file to patch at input line 3013
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff -rud epos-2.4.40/cfg/lng/slovak.prev/syll.dic epos-2.4/cfg/lng/slovak.prev/syll.dic
+|--- epos-2.4.40/cfg/lng/slovak.prev/syll.dic	Wed Apr  8 10:52:36 1998
+|+++ epos-2.4/cfg/lng/slovak.prev/syll.dic	Sat Dec  5 03:07:32 1998
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+1 out of 1 hunk ignored
+can't find file to patch at input line 3158
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff -rud epos-2.4.40/cfg/lng/slovak.prev/text.txt epos-2.4/cfg/lng/slovak.prev/text.txt
+|--- epos-2.4.40/cfg/lng/slovak.prev/text.txt	Fri Apr 10 09:33:30 1998
+|+++ epos-2.4/cfg/lng/slovak.prev/text.txt	Fri Jan  1 13:47:44 1999
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+1 out of 1 hunk ignored
+can't find file to patch at input line 3183
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|Only in epos-2.4.40/cfg/lng/slovak.prev: textl.txt
+|Only in epos-2.4/cfg/lng/slovak.prev: textn.txt
+|Only in epos-2.4.40/cfg/lng/slovak.prev: traditnl.dph
+|Only in epos-2.4/cfg/lng/slovak.prev: traditnl.dph.all
+|Only in epos-2.4/cfg/lng/slovak.prev: traditnl.dph.sk
+|Only in epos-2.4/cfg/lng/slovak.prev: trans.rul
+|Only in epos-2.4/cfg/lng/slovak.prev: txt
+|diff -rud epos-2.4.40/cfg/lng/slovak.prev/wh.dic epos-2.4/cfg/lng/slovak.prev/wh.dic
+|--- epos-2.4.40/cfg/lng/slovak.prev/wh.dic	Wed Apr  8 10:52:36 1998
+|+++ epos-2.4/cfg/lng/slovak.prev/wh.dic	Tue Dec  1 15:19:09 1998
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+1 out of 1 hunk ignored
+patching file `cfg/version'
+Hunk #1 FAILED at 1.
+1 out of 1 hunk FAILED -- saving rejects to cfg/version.rej
+patching file `cfg/voice/czech/kadlec-hp.ini'
+patching file `cfg/voice/czech/kadlec-hsn.ini'
+patching file `cfg/voice/czech/kadlec-hss.ini'
+patching file `cfg/voice/czech/kadlec-new.ini'
+patching file `cfg/voice/czech/kadlec.ini'
+patching file `cfg/voice/czech/kubec-f.ini'
+patching file `cfg/voice/czech/kubec-vq.ini'
+patching file `cfg/voice/czech/kubec.ini'
+patching file `cfg/voice/czech/r-kubec.ini'
+Hunk #1 FAILED at 9.
+1 out of 1 hunk FAILED -- saving rejects to cfg/voice/czech/r-kubec.ini.rej
+patching file `cfg/voice/czech/theimer.ini'
+patching file `cfg/voice/czech/vichova.ini'
+patching file `cfg/voice/slovak/kadlec.ini'
+patching file `cfg/voice/slovak/petriska.ini'
+patching file `doc/Changes'
+Hunk #2 FAILED at 953.
+1 out of 2 hunks FAILED -- saving rejects to doc/Changes.rej
+patching file `doc/Files'
+patching file `doc/Todo'
+Hunk #1 FAILED at 1.
+Hunk #2 succeeded at 17 (offset 7 lines).
+Hunk #3 FAILED at 31.
+Hunk #4 succeeded at 54 (offset 3 lines).
+2 out of 4 hunks FAILED -- saving rejects to doc/Todo.rej
+patching file `doc/english/devel.sgml'
+Hunk #2 FAILED at 239.
+1 out of 3 hunks FAILED -- saving rejects to doc/english/devel.sgml.rej
+patching file `doc/english/epos-1.html'
+Hunk #1 FAILED at 42.
+Hunk #2 succeeded at 73 (offset 2 lines).
+1 out of 2 hunks FAILED -- saving rejects to doc/english/epos-1.html.rej
+patching file `doc/english/epos-2.html'
+Hunk #4 FAILED at 249.
+1 out of 12 hunks FAILED -- saving rejects to doc/english/epos-2.html.rej
+patching file `doc/english/epos-3.html'
+Hunk #8 succeeded at 472 (offset 7 lines).
+Hunk #10 succeeded at 624 (offset 7 lines).
+Hunk #12 succeeded at 694 (offset 7 lines).
+Hunk #14 succeeded at 768 (offset 7 lines).
+Hunk #16 succeeded at 899 (offset 7 lines).
+Hunk #18 FAILED at 984.
+Hunk #19 succeeded at 1031 (offset 8 lines).
+Hunk #21 succeeded at 1137 (offset 9 lines).
+Hunk #22 succeeded at 1150 with fuzz 1 (offset 2 lines).
+Hunk #23 FAILED at 1175.
+Hunk #24 FAILED at 1208.
+Hunk #25 succeeded at 1283 (offset 7 lines).
+Hunk #26 succeeded at 1322 (offset 2 lines).
+3 out of 26 hunks FAILED -- saving rejects to doc/english/epos-3.html.rej
+patching file `doc/english/epos-4.html'
+Hunk #4 FAILED at 219.
+Hunk #5 succeeded at 302 (offset 2 lines).
+Hunk #7 succeeded at 451 (offset 2 lines).
+Hunk #9 succeeded at 477 (offset 2 lines).
+Hunk #11 succeeded at 566 (offset 2 lines).
+Hunk #13 succeeded at 612 (offset 2 lines).
+Hunk #15 succeeded at 703 (offset 2 lines).
+Hunk #17 succeeded at 763 (offset 2 lines).
+1 out of 17 hunks FAILED -- saving rejects to doc/english/epos-4.html.rej
+patching file `doc/english/epos-5.html'
+patching file `doc/english/epos-6.html'
+Hunk #1 FAILED at 2.
+1 out of 1 hunk FAILED -- saving rejects to doc/english/epos-6.html.rej
+patching file `doc/english/epos.html'
+Hunk #1 FAILED at 15.
+Hunk #2 succeeded at 69 (offset 1 line).
+1 out of 2 hunks FAILED -- saving rejects to doc/english/epos.html.rej
+patching file `doc/english/intro.sgml'
+Hunk #1 FAILED at 29.
+1 out of 1 hunk FAILED -- saving rejects to doc/english/intro.sgml.rej
+patching file `doc/english/options.sgml'
+Hunk #2 FAILED at 39.
+Hunk #3 succeeded at 48 (offset 1 line).
+Hunk #4 succeeded at 87 (offset 10 lines).
+Hunk #5 succeeded at 101 (offset 1 line).
+Hunk #6 succeeded at 239 (offset 10 lines).
+Hunk #7 succeeded at 315 (offset 1 line).
+Hunk #8 succeeded at 355 (offset 10 lines).
+Hunk #9 succeeded at 484 (offset 7 lines).
+Hunk #10 succeeded at 591 (offset 13 lines).
+Hunk #11 succeeded at 653 (offset 9 lines).
+Hunk #12 succeeded at 692 (offset 13 lines).
+Hunk #13 succeeded at 738 (offset 11 lines).
+Hunk #14 succeeded at 758 (offset 13 lines).
+Hunk #15 succeeded at 827 (offset 11 lines).
+Hunk #16 succeeded at 929 with fuzz 1 (offset 18 lines).
+Hunk #17 succeeded at 984 (offset 11 lines).
+Hunk #18 succeeded at 1020 (offset 18 lines).
+Hunk #19 FAILED at 1091.
+Hunk #20 succeeded at 1116 (offset 11 lines).
+Hunk #21 FAILED at 1133.
+Hunk #22 succeeded at 1164 with fuzz 1 (offset 18 lines).
+Hunk #23 succeeded at 1192 (offset 11 lines).
+Hunk #24 succeeded at 1259 (offset 20 lines).
+Hunk #25 succeeded at 1277 (offset 14 lines).
+Hunk #26 FAILED at 1310.
+Hunk #27 FAILED at 1349.
+Hunk #28 succeeded at 1361 (offset 18 lines).
+Hunk #29 succeeded at 1435 (offset 18 lines).
+Hunk #30 succeeded at 1492 (offset 18 lines).
+5 out of 30 hunks FAILED -- saving rejects to doc/english/options.sgml.rej
+patching file `doc/english/rules.sgml'
+Hunk #6 FAILED at 256.
+1 out of 14 hunks FAILED -- saving rejects to doc/english/rules.sgml.rej
+patching file `doc/english/security.sgml'
+patching file `doc/english/ttscp.sgml'
+Hunk #4 FAILED at 223.
+Hunk #5 succeeded at 311 (offset 2 lines).
+Hunk #6 succeeded at 450 (offset 4 lines).
+Hunk #7 succeeded at 473 (offset 2 lines).
+Hunk #8 succeeded at 493 (offset 4 lines).
+Hunk #9 succeeded at 502 (offset 2 lines).
+Hunk #10 succeeded at 546 (offset 4 lines).
+Hunk #11 succeeded at 597 (offset 2 lines).
+Hunk #12 succeeded at 611 (offset 4 lines).
+Hunk #13 succeeded at 649 (offset 2 lines).
+Hunk #14 succeeded at 729 (offset 4 lines).
+Hunk #15 succeeded at 755 (offset 2 lines).
+Hunk #16 succeeded at 806 (offset 4 lines).
+Hunk #17 succeeded at 823 (offset 2 lines).
+1 out of 17 hunks FAILED -- saving rejects to doc/english/ttscp.sgml.rej
+patching file `src/Makefile'
+Hunk #1 FAILED at 1.
+1 out of 1 hunk FAILED -- saving rejects to src/Makefile.rej
+patching file `src/Makefile.in'
+Hunk #1 FAILED at 40.
+Hunk #6 FAILED at 230.
+2 out of 6 hunks FAILED -- saving rejects to src/Makefile.in.rej
+patching file `src/agent.cc'
+Hunk #6 succeeded at 216 (offset 1 line).
+Hunk #7 FAILED at 310.
+Hunk #8 succeeded at 346 with fuzz 2 (offset 1 line).
+Hunk #9 FAILED at 433.
+Hunk #10 succeeded at 496 with fuzz 2 (offset 43 lines).
+Hunk #11 succeeded at 512 (offset 23 lines).
+Hunk #12 succeeded at 564 (offset 43 lines).
+Hunk #13 succeeded at 614 (offset 23 lines).
+Hunk #14 succeeded at 718 (offset 43 lines).
+Hunk #15 succeeded at 722 with fuzz 2 (offset 23 lines).
+Hunk #16 succeeded at 758 (offset 43 lines).
+Hunk #17 succeeded at 748 (offset 23 lines).
+Hunk #18 succeeded at 788 (offset 43 lines).
+Hunk #19 succeeded at 787 (offset 23 lines).
+Hunk #20 FAILED at 808.
+Hunk #21 FAILED at 818.
+Hunk #22 succeeded at 921 (offset 46 lines).
+Hunk #23 succeeded at 1048 (offset 23 lines).
+Hunk #24 succeeded at 1112 (offset 46 lines).
+Hunk #25 succeeded at 1136 (offset 23 lines).
+Hunk #26 succeeded at 1183 (offset 46 lines).
+Hunk #27 succeeded at 1269 (offset 23 lines).
+Hunk #28 succeeded at 1309 (offset 46 lines).
+Hunk #29 succeeded at 1307 (offset 23 lines).
+4 out of 29 hunks FAILED -- saving rejects to src/agent.cc.rej
+patching file `src/agent.h'
+patching file `src/block.cc'
+Hunk #2 FAILED at 97.
+1 out of 7 hunks FAILED -- saving rejects to src/block.cc.rej
+patching file `src/client.cc'
+Hunk #2 FAILED at 35.
+Hunk #4 succeeded at 166 (offset 3 lines).
+1 out of 5 hunks FAILED -- saving rejects to src/client.cc.rej
+patching file `src/client.h'
+patching file `src/common.h'
+Hunk #1 FAILED at 27.
+Hunk #2 FAILED at 68.
+2 out of 6 hunks FAILED -- saving rejects to src/common.h.rej
+patching file `src/config.h.in'
+Reversed (or previously applied) patch detected!  Assume -R? [n] 
+Apply anyway? [n] 
+Skipping patch.
+6 out of 6 hunks ignored -- saving rejects to src/config.h.in.rej
+patching file `src/configure'
+Hunk #43 FAILED at 2306.
+1 out of 53 hunks FAILED -- saving rejects to src/configure.rej
+patching file `src/configure.in'
+patching file `src/daemon.cc'
+Hunk #8 FAILED at 309.
+Hunk #9 FAILED at 340.
+Hunk #10 succeeded at 439 (offset 53 lines).
+Hunk #12 succeeded at 472 with fuzz 1 (offset 53 lines).
+Hunk #13 FAILED at 533.
+Hunk #14 succeeded at 496 (offset 4 lines).
+Hunk #15 FAILED at 513.
+4 out of 15 hunks FAILED -- saving rejects to src/daemon.cc.rej
+patching file `src/hash.cc'
+patching file `src/hashtmpl.cc'
+patching file `src/interf.cc'
+Hunk #2 succeeded at 16 (offset -1 lines).
+Hunk #4 succeeded at 49 (offset -1 lines).
+Hunk #5 succeeded at 68 with fuzz 1.
+Hunk #6 FAILED at 99.
+Hunk #7 FAILED at 124.
+Hunk #8 succeeded at 217 (offset 1 line).
+Hunk #10 succeeded at 289 (offset 1 line).
+Hunk #12 succeeded at 464 (offset 2 lines).
+Hunk #14 succeeded at 537 (offset 2 lines).
+Hunk #16 FAILED at 607.
+Hunk #17 FAILED at 621.
+Hunk #18 FAILED at 674.
+Hunk #19 succeeded at 728 (offset 11 lines).
+Hunk #21 succeeded at 833 (offset 11 lines).
+5 out of 21 hunks FAILED -- saving rejects to src/interf.cc.rej
+patching file `src/interf.h'
+patching file `src/ktdsyn.cc'
+patching file `src/ktdsyn.h'
+patching file `src/lpcsyn.cc'
+Hunk #3 FAILED at 90.
+Hunk #10 succeeded at 310 with fuzz 1.
+1 out of 11 hunks FAILED -- saving rejects to src/lpcsyn.cc.rej
+patching file `src/lpcsyn.h'
+patching file `src/monolith.cc'
+Hunk #3 FAILED at 35.
+1 out of 4 hunks FAILED -- saving rejects to src/monolith.cc.rej
+patching file `src/options.cc'
+Hunk #2 FAILED at 110.
+Hunk #3 succeeded at 285 with fuzz 1 (offset 54 lines).
+Hunk #4 FAILED at 327.
+Hunk #5 succeeded at 343 (offset 30 lines).
+Hunk #6 succeeded at 389 with fuzz 2 (offset 54 lines).
+Hunk #7 FAILED at 402.
+Hunk #8 succeeded at 464 (offset 31 lines).
+Hunk #9 succeeded at 495 (offset 54 lines).
+Hunk #10 FAILED at 549.
+Hunk #11 succeeded at 565 (offset 32 lines).
+Hunk #12 succeeded at 605 (offset 55 lines).
+Hunk #13 succeeded at 594 (offset 32 lines).
+Hunk #14 succeeded at 661 (offset 55 lines).
+Hunk #15 succeeded at 670 with fuzz 1 (offset 32 lines).
+Hunk #16 succeeded at 705 (offset 56 lines).
+Hunk #17 succeeded at 691 (offset 32 lines).
+Hunk #18 FAILED at 716.
+Hunk #19 FAILED at 733.
+Hunk #20 FAILED at 748.
+Hunk #21 FAILED at 779.
+Hunk #22 succeeded at 837 (offset 62 lines).
+Hunk #23 succeeded at 832 (offset 32 lines).
+Hunk #24 succeeded at 876 (offset 62 lines).
+Hunk #25 FAILED at 946.
+9 out of 25 hunks FAILED -- saving rejects to src/options.cc.rej
+patching file `src/options.h'
+Hunk #1 succeeded at 100 (offset 15 lines).
+Hunk #2 succeeded at 115 with fuzz 2 (offset 3 lines).
+patching file `src/options.lst'
+Hunk #2 FAILED at 340.
+Hunk #3 FAILED at 349.
+Hunk #4 FAILED at 359.
+Hunk #5 FAILED at 381.
+Hunk #6 FAILED at 396.
+Hunk #7 FAILED at 431.
+Hunk #8 succeeded at 630 with fuzz 2 (offset 141 lines).
+Hunk #9 FAILED at 666.
+Hunk #10 succeeded at 530 (offset -20 lines).
+Hunk #11 FAILED at 576.
+8 out of 11 hunks FAILED -- saving rejects to src/options.lst.rej
+patching file `src/parser.cc'
+Hunk #1 FAILED at 71.
+Hunk #2 FAILED at 134.
+Hunk #3 succeeded at 158 (offset 2 lines).
+Hunk #5 succeeded at 196 (offset 2 lines).
+Hunk #6 FAILED at 208.
+3 out of 6 hunks FAILED -- saving rejects to src/parser.cc.rej
+patching file `src/ptdsyn.cc'
+Hunk #1 succeeded at 96 with fuzz 1.
+Hunk #2 succeeded at 106 with fuzz 1.
+patching file `src/ptdsyn.h'
+patching file `src/qnxipc.cc'
+patching file `src/rule.cc'
+Hunk #8 FAILED at 365.
+Hunk #9 succeeded at 605 (offset 1 line).
+Hunk #11 succeeded at 718 (offset 1 line).
+Hunk #13 succeeded at 786 (offset 1 line).
+1 out of 14 hunks FAILED -- saving rejects to src/rule.cc.rej
+patching file `src/rx.c'
+patching file `src/say.cc'
+Hunk #5 FAILED at 152.
+Hunk #9 FAILED at 266.
+2 out of 12 hunks FAILED -- saving rejects to src/say.cc.rej
+patching file `src/synth.cc'
+Hunk #1 FAILED at 18.
+Hunk #2 succeeded at 30 with fuzz 1 (offset 1 line).
+Hunk #3 succeeded at 44 (offset 1 line).
+Hunk #4 FAILED at 58.
+Hunk #5 FAILED at 108.
+3 out of 5 hunks FAILED -- saving rejects to src/synth.cc.rej
+patching file `src/synth.h'
+Hunk #2 FAILED at 16.
+Hunk #3 FAILED at 39.
+Hunk #4 FAILED at 48.
+3 out of 4 hunks FAILED -- saving rejects to src/synth.h.rej
+patching file `src/tcpsyn.cc'
+patching file `src/tcpsyn.h'
+patching file `src/text.cc'
+Hunk #2 FAILED at 25.
+Hunk #3 FAILED at 44.
+Hunk #4 succeeded at 129 (offset -1 lines).
+2 out of 5 hunks FAILED -- saving rejects to src/text.cc.rej
+patching file `src/ttscp.cc'
+Hunk #3 succeeded at 129 (offset 1 line).
+Hunk #5 succeeded at 196 (offset 1 line).
+Hunk #7 succeeded at 259 (offset 1 line).
+Hunk #8 succeeded at 281 with fuzz 1.
+Hunk #9 succeeded at 297 with fuzz 1 (offset 1 line).
+patching file `src/unit.cc'
+Hunk #3 FAILED at 91.
+Hunk #4 succeeded at 138 (offset 9 lines).
+Hunk #5 succeeded at 233 (offset 46 lines).
+Hunk #6 succeeded at 286 (offset 18 lines).
+Hunk #7 succeeded at 333 with fuzz 1 (offset 47 lines).
+Hunk #8 succeeded at 317 (offset 19 lines).
+Hunk #9 FAILED at 394.
+Hunk #10 succeeded at 561 (offset 48 lines).
+Hunk #11 succeeded at 570 (offset 19 lines).
+Hunk #12 succeeded at 611 (offset 48 lines).
+Hunk #13 succeeded at 819 (offset 19 lines).
+Hunk #14 succeeded at 856 (offset 48 lines).
+Hunk #15 succeeded at 1102 (offset 88 lines).
+Hunk #16 succeeded at 1087 (offset 48 lines).
+Hunk #17 succeeded at 1149 (offset 88 lines).
+Hunk #18 succeeded at 1162 (offset 48 lines).
+2 out of 18 hunks FAILED -- saving rejects to src/unit.cc.rej
+patching file `src/unit.h'
+Hunk #2 succeeded at 43 (offset 1 line).
+Hunk #3 FAILED at 58.
+Hunk #4 FAILED at 70.
+Hunk #5 succeeded at 110 with fuzz 1 (offset 5 lines).
+2 out of 5 hunks FAILED -- saving rejects to src/unit.h.rej
+patching file `src/voice.cc'
+Hunk #3 FAILED at 150.
+Hunk #4 succeeded at 184 (offset 4 lines).
+Hunk #5 FAILED at 290.
+Hunk #6 succeeded at 340 (offset 2 lines).
+2 out of 6 hunks FAILED -- saving rejects to src/voice.cc.rej
+patching file `src/voice.h'
+Hunk #2 succeeded at 69 with fuzz 1 (offset 1 line).
+patching file `src/vrfy.cc'
+patching file `src/waveform.cc'
+Hunk #4 FAILED at 127.
+Hunk #5 succeeded at 196 (offset 7 lines).
+Hunk #7 succeeded at 309 (offset 7 lines).
+Hunk #9 succeeded at 359 (offset 7 lines).
+Hunk #11 succeeded at 432 (offset 7 lines).
+Hunk #12 FAILED at 451.
+Hunk #14 succeeded at 617 (offset 7 lines).
+Hunk #16 succeeded at 658 (offset 7 lines).
+Hunk #18 succeeded at 714 (offset 7 lines).
+Hunk #20 FAILED at 755.
+Hunk #21 succeeded at 797 (offset 15 lines).
+3 out of 22 hunks FAILED -- saving rejects to src/waveform.cc.rej
+patching file `src/waveform.h'

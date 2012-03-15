@@ -30,14 +30,15 @@ int submain()
 {
 	unit *root;
 
-	root = str2units(cfg->input_text);
+	root = str2units(scfg->input_text);
 	this_lang->ruleset->apply(root);
 //	fprintf(stdout,"*********************************************\n");
 	root->fout(NULL);
 
-	if (cfg->show_segs | cfg->play_segs | cfg->imm_segs | cfg->show_phones) {
-		if (cfg->play_segs) {
-			if (cfg->forking) {
+
+	if (scfg->show_segs | scfg->play_segs | scfg->imm_segs | scfg->show_phones) {
+		if (scfg->play_segs) {
+			if (scfg->forking) {
 				switch (fork()) {
 					case 0:	//ds_used_cnt++;
 						play_segments(root, this_voice);
@@ -47,11 +48,11 @@ int submain()
 				}
 			} else play_segments(root, this_voice);
 		}
-		if (cfg->show_phones) root->show_phones();
-		if (cfg->show_segs) show_segments(root);
+		if (scfg->show_phones) root->show_phones();
+		if (scfg->show_segs) show_segments(root);
 	}
 
-	if (cfg->neuronet) root->nnet_out(cfg->nnet_file, cfg->matlab_dir);
+	if (scfg->neuronet) root->nnet_out(scfg->nnet_file, scfg->matlab_dir);
 	delete(root);
 //	fprintf(stdout,"***** The End. ******************************\n");
 	return 0;

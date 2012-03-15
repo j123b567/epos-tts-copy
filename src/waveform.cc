@@ -101,12 +101,12 @@ static int downsample_factor(int working, int out)
 
 struct cue_point
 {
-	long name;
-	long pos;
-	char chunk[4];
-	long chunkstart;
-	long blkstart;
-	long sample_offset;
+	int name;
+	int pos;
+	int chunk[4];
+	int chunkstart;
+	int blkstart;
+	int sample_offset;
 };
 
 cue_point cue_point_template = { 0, 0, FOURCC_INIT("data"), 0, 0, 0 };
@@ -117,9 +117,9 @@ cue_point cue_point_template = { 0, 0, FOURCC_INIT("data"), 0, 0, 0 };
 struct ltxt
 {
 	char txt[4];
-	long len;
-	long cp_name;
-	long sample_count;
+	int len;
+	int cp_name;
+	int sample_count;
 	char purpose[4];
 	short country;
 	short language;
@@ -134,12 +134,14 @@ struct labl
 	long cp_name;
 };
 
-#define USA	 1		// FIXME (etc.)
-#define English  9
-#define American 1
-#define Boring_CodePage	437
 
-ltxt ltxt_template = { FOURCC_INIT("ltxt"), 0, 0, 0, FOURCC_INIT("dphl"), USA, English, American, Boring_CodePage };
+
+//#define USA	 1		// FIXME (etc.)
+//#define English  9
+//#define American 1
+//#define Boring_CodePage	437
+
+//ltxt ltxt_template = { FOURCC_INIT("ltxt"), 0, 0, 0, FOURCC_INIT("dphl"), USA, English, American, Boring_CodePage };
 labl labl_template = { FOURCC_INIT("labl"), 0, 0 };
 labl note_template = { FOURCC_INIT("note"), 0, 0 };
 
@@ -164,8 +166,13 @@ wavefm::wavefm(voice *v)
 	hdr.numchan = stereo ? 2 : 1;
 	hdr.sf1 = samp_rate; hdr.sf2 = stereo ? hdr.sf1 : 0;
 	hdr.avr1 = 2 * samp_rate; hdr.avr2 = stereo ? hdr.avr1 : 0;
+
+//	hdr.wlenB = samp_size_bytes; hdr.wlenb = v->samp_size;  <--pre 2.4.66 minus 2.4.40
+//	hdr.xnone = 0x010;					<--dtto
+
 	hdr.alignment = sizeof(SAMPLE); hdr.samplesize = sizeof(SAMPLE) << 3;
 	hdr.fmt_length = 0x010;
+
 //	written_bytes = 0;
 	hdr.total_length = - RIFF_HEADER_SIZE;
 //	hdr.total_length = hdr.written_bytes - RIFF_HEADER_SIZE;
@@ -180,8 +187,8 @@ wavefm::wavefm(voice *v)
 	buffer = NULL;
 	hdr.buffer_idx = 0;
 
-	cuehdr.len = 4;
 	cuehdr.n = adtlhdr.len = 0;
+	cuehdr.len = 4;
 	memcpy(cuehdr.string1, "cue ", 4);
 	memcpy(adtlhdr.string1, "LIST", 4);
 	memcpy(adtlhdr.string2, "adtl", 4);
@@ -253,7 +260,7 @@ static inline void set_samp_size(int fd, int samp_size_bits)
    #ifdef SNDCTL_DSP_GETFMTS
 	int mask = (unsigned int)-1;
 	ioctl (fd, SNDCTL_DSP_GETFMTS, &mask);
-	DEBUG(3,9,fprintf(STDDBG,"Hardware format mask is 0x%04x\n", mask);)
+	DBG(3,9,fprintf(STDDBG,"Hardware format mask is 0x%04x\n", mask);)
 	if (!(samp_size_bits & mask)) shriek(439, "Sampling rate not supported");
    #endif
 }
@@ -316,7 +323,7 @@ static const inline bool ioctlable(int fd)
 
 static const inline bool ioctlable(int fd)
 {
-	DEBUG(2,9,fprintf(STDDBG, "Sound ioctl's absent\n");)
+	DBG(2,9,fprintf(STDDBG, "Sound ioctl's absent\n");)
 	return false;
 }
 
@@ -407,7 +414,7 @@ void
 wavefm::detach(int)
 {
 	while (flush()) ;		// FIXME: think slow network write
-	DEBUG(2,9,fprintf(STDDBG,"Detaching waveform %s\n", ""););
+	DBG(2,9,fprintf(STDDBG,"Detaching waveform %s\n", ""););
 	sync_soundcard(fd);		// FIXME: necessary, but unwanted
 	if (cfg->wav_hdr && !ioctlable(fd)) write_header();
 	fd = -1;
@@ -424,16 +431,16 @@ wavefm::brk()
 void
 wavefm::attach(int d)
 {
-	DEBUG(2,9,fprintf(STDDBG,"Attaching waveform %s\n", ""););
+	DBG(2,9,fprintf(STDDBG,"Attaching waveform %s\n", ""););
 	fd = d;
 	translate();
 	hdr.total_length = get_total_len() - RIFF_HEADER_SIZE;
 	if (ioctlable(fd)) {
 		ioctl_attach();
 	}
-	DEBUG(0,9,fprintf(STDDBG,"(attached, now flushing predata)\n");)
+	DBG(0,9,fprintf(STDDBG,"(attached, now flushing predata)\n");)
 	if (hdr.buffer_idx) flush();
-	DEBUG(0,9,fprintf(STDDBG,"(predata flushed)\n");)
+	DBG(0,9,fprintf(STDDBG,"(predata flushed)\n");)
 	if (buff_size) buffer = buffer ? (SAMPLE *)xrealloc(buffer, buff_size * sizeof(SAMPLE)) : (SAMPLE *)xmalloc(buff_size);
 }
 
@@ -444,8 +451,8 @@ wavefm::attach()
 	int d;
 
 	if (fd != -1) shriek(862, "Nested voice::attach()");
-	if (!cfg->play_segs) cfg->local_sound_device = NULL_FILE;
-	output = compose_pathname(cfg->local_sound_device, cfg->wav_dir);
+	if (!scfg->play_segs) scfg->local_sound_device = NULL_FILE;
+	output = compose_pathname(scfg->local_sound_device, scfg->wav_dir);
 
 #ifdef S_IRGRP
 	d = open(output, O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK | O_BINARY, MODE_MASK);
@@ -491,7 +498,7 @@ wavefm::band_filter()
 	static double filt[9];
 	int i,j;
 	
-	DEBUG(1,9,fprintf(STDDBG,"Low-pass filter is applied\n");)
+	DBG(1,9,fprintf(STDDBG,"Low-pass filter is applied\n");)
 	for (i = 0; i < 9; i++) filt[i] = 0;
 
 	for (i = 0; i < hdr.buffer_idx; i++) {
@@ -516,11 +523,11 @@ wavefm::band_filter()
 inline void
 wavefm::translate_data(char *newbuff)
 {
-	DEBUG(1,9,fprintf(STDDBG,"(translating the data, too)");)
+	DBG(1,9,fprintf(STDDBG,"(translating the data, too)");)
 //	if (cfg->ulaw && this_voice->samp_size != 8) shriek(462, "Mu law implies 8 bit");
 	int ssbytes  = (this_voice->samp_size + 7) >> 3;  // sample size in bytes
 	int shift1 = (sizeof(int) - sizeof(SAMPLE)) << 3;
-	int shift2 = cfg->big_endian ? 0 : (sizeof(int) - ssbytes) << 3;
+	int shift2 = scfg->big_endian ? 0 : (sizeof(int) - ssbytes) << 3;
 	int unsign = ssbytes == 1 ? 0x80 : 0;
 	for (int i = 0; i < hdr.buffer_idx; i += downsamp) {
 		int sample = buffer[i];
@@ -548,7 +555,7 @@ wavefm::translate_data(char *newbuff)
 void
 wavefm::translate()
 {
-	DEBUG(1,9,fprintf(STDDBG,"Translating waveform, buffer_idx=%d\n", hdr.buffer_idx);)
+	DBG(1,9,fprintf(STDDBG,"Translating waveform, buffer_idx=%d\n", hdr.buffer_idx);)
 	if (translated || !hdr.buffer_idx) return;
 	
 	int working_size = sizeof (SAMPLE);
@@ -600,7 +607,7 @@ wavefm::translate()
 struct w_ophase
 {
 	bool inlined;
-	int  adjustment;
+	int adjustment;
 	char **buff;
 	int  *len;
 };
@@ -693,7 +700,7 @@ wavefm::flush()
 	
 	ooffset += written;
 
-	DEBUG(2,9,fprintf(STDDBG, "Flushing the signal\n");)
+	DBG(2,9,fprintf(STDDBG, "Flushing the signal\n");)
 //	hdr.total_length += written;
 	return true;
 }
@@ -701,8 +708,8 @@ wavefm::flush()
 bool
 wavefm::flush_deferred()
 {
-	DEBUG(2,9,fprintf(STDDBG, "Flushing the signal (deferred)\n");)
-	DEBUG(1,9,fprintf(STDDBG, fmt("adtlhdr.len is %d\n", adtlhdr.len));)
+	DBG(2,9,fprintf(STDDBG, "Flushing the signal (deferred)\n");)
+	DBG(1,9,fprintf(STDDBG, fmt("adtlhdr.len is %d\n", adtlhdr.len));)
 	written = 0;
 	if (hdr.buffer_idx + 4 <= buff_size)
 		return true;
@@ -740,7 +747,8 @@ wavefm::put_chunk(labl *chunk_template, const char *string)
 	*la = *chunk_template;
 	la->len = sizeof(labl) + varlen - RIFF_HEADER_SIZE;
 	la->cp_name = current_cp;
-	strcpy((char *)(la+1), string);
+	strcpy((char *)(la + 1), string);
+	decode_string((char *)(la + 1), this_lang->charset);
 	((char *)(la+1))[varlen - 1] = 0;	// padding if odd
 	adtlhdr.len += sizeof(labl) + varlen;
 }
@@ -756,12 +764,20 @@ wavefm::label(int pos, char *label, const char *note)
 	cp_buff[current_cp] = cue_point_template;
 	cp_buff[current_cp].name = current_cp + 1;	/* numbered starting from 1 */
 	cp_buff[current_cp].pos = cp_buff[current_cp].sample_offset = hdr.buffer_idx - pos;
+
+
+// FIXME! choose one of the following three solutions
+
+//	cp_buff[current_cp].pos /= samp_size_bytes;	// pos in samples, offset in bytes
+//	cp_buff[current_cp].pos /= sizeof(SAMPLE);	// pos in samples, offset in bytes
+//	cp_buff[current_cp].pos /= 1;			// pos in samples, offset in bytes
+
 	current_cp++;
 	cuehdr.len += sizeof(cue_point);
 	cuehdr.n++;
-
+	
 	if (!label) return;
-
+	
 	put_chunk(&labl_template, label);
 	put_chunk(&note_template, note);
 }

@@ -42,12 +42,13 @@ class text
 				// if description == NULL, please test exists() afterwards
 	~text();
 	bool exists();		// always true except when no description given to constructor
-	bool getline(char *line);    // return true on success, false on EOF
+	bool getline(wchar *line);    // return true on success, false on EOF
 	void rewind();		// let's start again
 	void rewind(bool warnings);
 	
 	char *current_file;
 	int   current_line;
+	int   charset;
 };
 
 #endif                    //#ifndef EPOS_TEXT

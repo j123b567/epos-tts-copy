@@ -326,8 +326,15 @@ under Debian and Red Hat distributions.  Please report
 to us any compilation issues which may be distribution related,
 these will be the most easy ones to solve.
 <P>
-<H3>Other UNIX clonesEpos is ported to other unicesfrom time to time as well, but there may be minor incompatibilitiesin recent code.  In this documentation, references to UNIX should beread as "tested on Linux, implemented using POSIX compliant interfacesand expected to be easy to get working on any other UNIX clone".</H3>
+<H3>Other UNIX clones</H3>
 
+<P>
+<P>Epos is ported to other unices
+from time to time as well, but there may be minor incompatibilities
+in recent code.  In this documentation, references to UNIX should be
+read as "tested on Linux, implemented using POSIX compliant interfaces
+and expected to be easy to get working on any other UNIX clone".
+<P>
 <P>
 <P>Epos uses the <CODE>autoconf</CODE> package to avoid portability pitfalls
 within the UNIX world.  Features like <CODE>syslog</CODE> are welcomed
@@ -341,7 +348,7 @@ by <CODE>autoconf</CODE>.
 a TCP-based TTSCP implementation, but also using a QNX specific
 interprocess communication interface.  See <CODE>src/qnxipc.cc</CODE>
 for details; be however aware that this code has never been completely
-debugged becasuse of a drop in our motivation.  You could help debug
+debugged because of a drop in our motivation.  You could help debug
 this easily if you really need this and provide us with a QNX machine.
 <P>
 <H3>Windows NT, Windows 2000</H3>
@@ -374,8 +381,8 @@ how to proceed step by step with Visual C++.
 <P>File input and output modules are not going to work
 with Windows sockets (whose incompatible implementation
 of the <CODE>select</CODE> call doesn't allow file decriptors at all).
-If you enable the <CODE>writefs</CODE> option, be aware of serious
-trouble after the first writing error such as disk full.
+If you enable the <CODE>writefs</CODE> option, Epos will crash
+after the first writing error such as disk full.
 Don't enable the <CODE>readfs</CODE> option.
 <P>
 <H3>Windows CE</H3>
