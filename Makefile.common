@@ -12,3 +12,5 @@ LDFLAGS = @LDFLAGS@ -L$(libdir)
 AM_CPPFLAGS = -I$(srcdir)/..
 CLEANFILES = *~ */*~ */*/*~ */*/*/*~ DEADJOE epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi
 MAINTAINERCLEANFILES = epos.html epos-?.html
+
+.DELETE_ON_ERROR:

@@ -1233,3 +1233,12 @@ for an exciting story, just skip it.
 2.5.10 from 2.5.9	12.6.03
 	- say now recognizes --help
 	- slightly less obscure error messages for newcomer mistakes
+
+2.5.11 from 2.5.10	19.6.03
+	- fixed a connect bug if say is run with no name resolver
+	- install-data-hook -> install-data-local
+	- didn't forget to install cfg/root
+	- installed configuration directories are now mode 755
+	- .DELETE_ON_ERROR in Makefile.common
+	- missing sgml2html doesn't interrupt a make any more
+

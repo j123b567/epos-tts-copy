@@ -168,6 +168,7 @@ int just_connect_socket(unsigned int ipaddr, int port)
 	if (!port) {
 		sd = just_connect_socket(ipaddr, TTSCP_PORT);
 		if (sd == -1) sd = just_connect_socket(ipaddr, TTSCP_PORT + 1);
+		if (sd != -1) return sd;
 		int public_addr = getaddrbyname(PUBLIC_TTSCP_SERVER);
 		if (public_addr == -1) return -1;
 		if (sd == -1) sd = just_connect_socket(public_addr, TTSCP_PORT + 1);

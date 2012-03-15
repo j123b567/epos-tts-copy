@@ -163,9 +163,7 @@ installcheck: installcheck-am
 install-exec-am:
 install-exec: install-exec-am
 
-install-data-am: install-pkgdataDATA
-	@$(NORMAL_INSTALL)
-	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
+install-data-am: install-pkgdataDATA install-data-local
 install-data: install-data-am
 
 install-am: all-am
@@ -213,19 +211,23 @@ maintainer-clean: maintainer-clean-am
 
 .PHONY: uninstall-pkgdataDATA install-pkgdataDATA tags distdir info-am \
 info dvi-am dvi check check-am installcheck-am installcheck \
-install-exec-am install-exec install-data-am install-data install-am \
-install uninstall-am uninstall all-redirect all-am all installdirs \
-mostlyclean-generic distclean-generic clean-generic \
-maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+install-exec-am install-exec install-data-local install-data-am \
+install-data install-am install uninstall-am uninstall all-redirect \
+all-am all installdirs mostlyclean-generic distclean-generic \
+clean-generic maintainer-clean-generic clean mostlyclean distclean \
+maintainer-clean
 
 
 export WPP386=-xs
 
+.DELETE_ON_ERROR:
+
 version: $(top_srcdir)/configure.in
 	@echo $(VERSION) > version
 
-install-data-hook:
-	cd $(srcdir) && find $(EASY_INSTALL) -type d -exec $(INSTALL_DATA) -d $(pkgdatadir)/{} \;
+install-data-local:
+	$(INSTALL_DATA) -d $(pkgdatadir)/root
+	cd $(srcdir) && find $(EASY_INSTALL) -type d -exec $(INSTALL_DATA) -d -m 755 $(pkgdatadir)/{} \;
 	cd $(srcdir) && find $(EASY_INSTALL) -type f -exec $(INSTALL_DATA) $(srcdir)/{} $(pkgdatadir)/{} \;
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

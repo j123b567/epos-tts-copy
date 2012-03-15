@@ -317,7 +317,7 @@ int yylex ()
 							 strlen (lex))
 			 && yytname[i][strlen (lex) + 1] == '"'
 			 && yytname[i][strlen (lex) + 2] == 0)
-		  return yytoknum [i]; //this is an undocumented feature: you must use yytoknum
+		  return yytoknum[i];	// in case of errors try return i;
 	}
 
 
