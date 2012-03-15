@@ -20,9 +20,12 @@
  *	its elements have their "depth" lower by one. These and maybe other
  *	assumptions about the structure can be found in unit::sanity().
  */
+ 
+#define LITERAL_ZERO		'0'
+#define ABSENT_CHARACTER	'\031'
 
-#define JUNCTURE           '0'    // scope boundary in assim environment
-#define DELETE_ME     JUNCTURE    // changing cont to this one is fatal
+#define JUNCTURE      ABSENT_CHARACTER    // scope boundary in assim environment
+#define DELETE_ME     ABSENT_CHARACTER    // changing cont to this one is fatal
 
 #define RATIO_TOTAL	   100	  // 100 % (unit::smooth percent sum)
 

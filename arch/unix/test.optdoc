@@ -11,7 +11,11 @@ if [ -d $dir ]; then
 fi
 mkdir -p $dir
 
-srcopts=`cat ../src/options.lst | grep '^STATIC\|^.STATIC\|^OPTION\|^LNG_OPTION\|^VOICE_OPTION' | awk -F\" '{ printf("%s ", $2); }' `
+srcopts=`cat ../src/options.lst \
+| grep '^STATIC\|^.STATIC\|^OPTION\|^LNG_OPTION\|^VOICE_OPTION' \
+| grep -v '^OPTIONAGGR\|^OPTIONITEM' \
+| awk '-F(' '{ printf("%s\n", $2); }' \
+| awk -F, '{ printf("%s ", $1); }' `
 for i in $srcopts; do
 	echo -n > $dir/$i
 #	ls $dir/$i
@@ -23,8 +27,10 @@ for i in $docopts; do
 	if rm $dir/$i 2>/dev/null; then 
 		echo -n >/dev/null
 	else
-		if [ $i != "name" -a $i != "perm_working*" -a $i != "perm_input*" ]; then
-			echo Phantom documented option: $i
+		if [ $i != "name"  ]; then
+			if echo $i | grep -v '\*' >/dev/null; then 
+				echo Phantom documented option: $i
+			fi
 		fi
 	fi
 done

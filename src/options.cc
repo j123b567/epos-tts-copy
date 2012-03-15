@@ -108,8 +108,8 @@ void cow_claim()
 //		printf("   lang %s(%p) was %d\n", l->name, l, l->cow);
 		l->cow++;
 		for (int j=0; j < l->n_voices; j++) {
-//			printf("      voice %s(%p) was %d\n", l->voices[j]->name, l->voices[j], l->voices[j]->cow);
-			l->voices[j]->cow++;
+//			printf("      voice %s(%p) was %d\n", l->voicetab[j]->name, l->voicetab[j], l->voicetab[j]->cow);
+			l->voicetab[j]->cow++;
 		}
 	}
 	cfg->cow++;
@@ -155,11 +155,11 @@ void cow_unclaim(configuration *that_cfg)
 		lang *l = that_cfg->langs[i];
 //		printf("   lang %s(%p) was %d\n", l->name, l, l->cow);
 		for (int j=0; j < l->n_voices; j++) {
-//			printf("      voice %s(%p) was %d\n", l->voices[j]->name, l->voices[j],l->voices[j]->cow);
-			if (!l->voices[j]->cow--) cow_free(l->voices[j], voiceoptlist, NULL);
+//			printf("      voice %s(%p) was %d\n", l->voicetab[j]->name, l->voicetab[j],l->voicetab[j]->cow);
+			if (!l->voicetab[j]->cow--) cow_free(l->voicetab[j], voiceoptlist, NULL);
 			/* * * fortunately, soft options are never strings * * */
 		}
-		if (!l->cow--) cow_free(l, langoptlist, l->voices);
+		if (!l->cow--) cow_free(l, langoptlist, l->voicetab);
 	}
 	if (!that_cfg->cow--) cow_free(that_cfg, optlist, that_cfg->langs), that_cfg = NULL;
 }
@@ -294,7 +294,7 @@ void restrict_options()
 		delete t;
 		return;		/* if no restrictions file, ignore it */
 	}
-	char *line = (char *)xmalloc(scfg->max_line);
+	char *line = (char *)xmalloc(scfg->max_line_len);
 	while (t->get_line(line)) {
 		char *status = split_string(line);
 		o = option_set->translate(line);
@@ -447,12 +447,12 @@ static inline const char *pre_set_unit_levels(const char *value)
 
 static inline void post_set_unit_levels(const char *)
 {
-	scfg->segm_level = str2enum(LEVNAME_SEGMENT, scfg->unit_levels, U_DEFAULT);
-	scfg->phone_level = str2enum(LEVNAME_PHONE, scfg->unit_levels, U_DEFAULT);
-	scfg->text_level = str2enum(LEVNAME_TEXT, scfg->unit_levels, U_DEFAULT);
+	scfg->_segm_level = str2enum(LEVNAME_SEGMENT, scfg->unit_levels, U_DEFAULT);
+	scfg->_phone_level = str2enum(LEVNAME_PHONE, scfg->unit_levels, U_DEFAULT);
+	scfg->_text_level = str2enum(LEVNAME_TEXT, scfg->unit_levels, U_DEFAULT);
 	scfg->default_scope = str2enum("word", scfg->unit_levels, U_DEFAULT);
-	if (scfg->default_scope == U_ILL) scfg->default_scope = scfg->text_level;
-	scfg->default_target = scfg->phone_level;
+	if (scfg->default_scope == U_ILL) scfg->default_scope = scfg->_text_level;
+	scfg->default_target = scfg->_phone_level;
 
 	int n;
 	for (n=0; enum2str(n, scfg->unit_levels); n++) ;
@@ -468,7 +468,7 @@ static inline void post_set_unit_levels(const char *)
 static inline const char *pre_base_dir(const char *value)
 {
 	if (value && value[0] != SLASH) {
-		size_t size = scfg->scratch ? scfg->scratch : 64;
+		size_t size = scfg->scratch_size ? scfg->scratch_size : 64;
 		char *abs = (char *)xmalloc(size);
 		while (!getcwd(abs, size - 1))
 			size *= 2, abs = (char *)xrealloc(abs, size);
@@ -635,7 +635,7 @@ bool set_option(epos_option *o, const char *val, void *base)
 		case O_STRING: 
 			if (val[0]) parse_cfg_str(const_cast<char *>(val));
    process_as_string:
-			D_PRINT(1, "Configuration option \"%s\" set to \"%s\"%s\n", o->optname, val, strchr(val, '\033') && scfg->normal_col ? scfg->normal_col : "");
+			D_PRINT(1, "Configuration option \"%s\" set to \"%s\"%s\n", o->optname, val, strchr(val, '\033') && scfg->normal_color ? scfg->normal_color : "");
 			if (*(char **)locus) free(*(char**)locus);
 			*(char**)locus = strdup(val);	// FIXME: should be forever if monolith etc. (maybe)
 			break;
@@ -645,8 +645,8 @@ bool set_option(epos_option *o, const char *val, void *base)
 			char *old;
 			old = *(char **)locus;
 			D_PRINT(1, "Configuration option \"%s\" adds \"%s\"%s to \"%s\"%s\n", o->optname,
-					val, strchr(val, '\033') && scfg->normal_col ? scfg->normal_col : "",
-					old ? old : "empty string", strchr(val, '\033') && scfg->normal_col ? scfg->normal_col : "");
+					val, strchr(val, '\033') && scfg->normal_color ? scfg->normal_color : "",
+					old ? old : "empty string", strchr(val, '\033') && scfg->normal_color ? scfg->normal_color : "");
 			if (!old) {
 				*(char **)locus = strdup(val);
 				break;
@@ -697,7 +697,7 @@ bool set_option(epos_option *o, const char *val, void *base)
  *	The order of cowing cfg, lang and voice, is important.
  */
 
-#define  VOICES_OFFSET  ((int)&((lang *)NULL)->voices)
+#define  VOICES_OFFSET  ((int)&((lang *)NULL)->voicetab)
 #define  VOICES_LENGTH  (this_lang->n_voices * sizeof(void *))
 
 bool set_option(epos_option *o, const char *value)
@@ -712,7 +712,7 @@ bool set_option(epos_option *o, const char *value)
 				return set_option(o, value, this_lang);
 		case OS_VOICE:	cow_configuration(&cfg);
 				cow((cowabilium **)&this_lang, sizeof(lang),   VOICES_OFFSET, VOICES_LENGTH);
-				cow((cowabilium **)&this_voice, sizeof(voice) + (this_lang->soft_options->items * sizeof(void *) >> 1), 0, 0);
+				cow((cowabilium **)&this_voice, sizeof(voice) + (this_lang->soft_opts->items * sizeof(void *) >> 1), 0, 0);
 				return set_option(o, value, this_voice);
 	}
 	return false;
@@ -760,7 +760,7 @@ bool voice_switch(const char *value)
 	cow((cowabilium **)&(this_lang), sizeof(lang), VOICES_OFFSET, VOICES_LENGTH);	//new
 
 	for (int i=0; i < this_lang->n_voices; i++)
-		if (!strcmp(this_lang->voices[i]->name, value)) {
+		if (!strcmp(this_lang->voicetab[i]->name, value)) {
 			this_lang->default_voice = i;
 			return true;
 		}
@@ -818,7 +818,7 @@ const char *format_option(epos_option *o)
 
 const char *format_option(const char *name)
 {
-	epos_option *o = option_struct(name, this_lang->soft_options);
+	epos_option *o = option_struct(name, this_lang->soft_opts);
 	if (!o) {
 		shriek(442, "Nonexistent option %s", name);
 		return NULL; /* unreachable */
@@ -859,14 +859,14 @@ void parse_cmd_line()
 			break;
 		case 1:
 			for (j = ar+1; *j; j++) switch (*j) {
-				case 'b': scfg->out_verbose=false; break;
+				case 'b': scfg->structured=false; break;
 //				case 'd': scfg->show_seg=true; break;
 //				case 'e': scfg->show_phones=true; break;
 				case 'f': scfg->forking=false; break;
 				case 'H': scfg->long_help=true;	/* fall through */
 				case 'h': scfg->help=true; break;
 				case 'p': scfg->pausing=true; break;
-				case 's': scfg->play_segs=true; break;
+				case 's': scfg->play_segments=true; break;
 				case 'v': scfg->version=true; break;
 				case 'D':
 					if (!scfg->debug) scfg->debug = true;
@@ -909,15 +909,15 @@ void parse_cmd_line()
 			break;
 		case 0:
 			if (!is_monolith) shriek(814, "Only options allowed at Epos server command line\nUse a client (e.g. \"say\") to specify text");
-			if (scfg->input_text && scfg->input_text!=ar) {
+			if (scfg->_input_text && scfg->_input_text != ar) {
 				if (!scfg->_warnings) break;
 				if (cfg->paranoid) shriek(814, "Quotes forgotten on the command line?");
-				scratch = (char *) xmalloc(strlen(ar)+strlen(scfg->input_text)+2);
-				sprintf(scratch, "%s %s", scfg->input_text, ar);
+				scratch = (char *) xmalloc(strlen(ar)+strlen(scfg->_input_text)+2);
+				sprintf(scratch, "%s %s", scfg->_input_text, ar);
 				ar = FOREVER(strdup(scratch));
 				free(scratch);
 			}
-			scfg->input_text = ar;
+			scfg->_input_text = ar;
 			break;
 		default:
 			if (scfg->_warnings) shriek(814, "Too many dashes");
@@ -932,7 +932,7 @@ void load_config(const char *filename, const char *dirname, const char *what,
 
 	if (!filename || !*filename) return;
 	D_PRINT(3, "Loading %s from %s\n", what, filename);
-	char *line = (char *)xmalloc(scfg->max_line + 2) + 2;
+	char *line = (char *)xmalloc(scfg->max_line_len + 2) + 2;
 	line[-2] = OPT_STRUCT_PREFIX[type];
 	line[-1] = ':';
 	text *t = new text(filename, dirname, "", what, true);
@@ -944,7 +944,7 @@ void load_config(const char *filename, const char *dirname, const char *what,
 			if (value[i]) i++;
 			value[i] = 0;		// clumsy: strip off trailing whitespace
 		}
-		if (!set_option(line - 2, value, whither, parent_lang ? parent_lang->soft_options : (hash_table<char, epos_option> *)NULL)) {
+		if (!set_option(line - 2, value, whither, parent_lang ? parent_lang->soft_opts : (hash_table<char, epos_option> *)NULL)) {
 			if (whither == cfg) {		// ...try also static_cfg
 				line[-2] = OPT_STRUCT_PREFIX[OS_STATIC];
 				if (!set_option(line - 2, value, scfg, (hash_table<char, epos_option> *)NULL))
@@ -1090,25 +1090,25 @@ void config_init()
 	parse_cmd_line();
 	restrict_options();
 	D_PRINT(3, "Base directory is %s\n", scfg->base_dir);
-	D_PRINT(2, "Using configuration file %s\n", scfg->inifile);
+	D_PRINT(2, "Using configuration file %s\n", scfg->cfg_file);
 
-	load_config(scfg->fixedfile);
+	load_config(scfg->fixed_ini_file);
 	parse_cmd_line();
 
 	check_cfg_version("version");
 
-	load_config(mlinis[scfg->ml]);
-	load_config(scfg->inifile);
+	load_config(mlinis[scfg->markup_language]);
+	load_config(scfg->cfg_file);
 	parse_cmd_line();
 	load_languages(scfg->languages);
 
-	if (!this_lang->voices || !this_voice) shriek(842, "No voices configured");
+	if (!this_lang->voicetab || !this_voice) shriek(842, "No voices configured");
 
 	scfg->_warnings = true;
 	parse_cmd_line();
-	scfg->loaded=true;
+	scfg->_loaded=true;
 	
-// 	hash_max_line = scfg->max_line;
+// 	hash_max_line = scfg->max_line_len;
 
 	if (scfg->version) version();
 	if (scfg->help || scfg->long_help) dump_help();

@@ -73,15 +73,15 @@ void *tcpsyn_appl(int bytes, int ctrld, int datad, int *size)
 	sputs(scratch, ctrld);
 	sputs("\r\n", ctrld);
 	do {
-		sgets(scratch, scfg->scratch, ctrld);
+		sgets(scratch, scfg->scratch_size, ctrld);
 		if (!strncmp("122 ", scratch, 4)) {
-			sgets(scratch, scfg->scratch, ctrld);
+			sgets(scratch, scfg->scratch_size, ctrld);
 			sscanf(scratch, " %d", &bytes);
 			if (bs != bytes) rec = rec ? (char *)xrealloc(rec, bytes)
 						   : (char *)xmalloc(bytes);
 		}
 		if (!strncmp("123 ", scratch, 4)) {
-			sgets(scratch, scfg->scratch, ctrld);
+			sgets(scratch, scfg->scratch_size, ctrld);
 			sscanf(scratch, " %d", &bytes);
 			sum += bytes;
 			if (sum > bs) rec = rec ? (char *)xrealloc(rec, sum)
@@ -109,7 +109,7 @@ void *tcpsyn_appl(int bytes, int ctrld, int datad, int *size)
 }
 
 /*
- *	For tcpsyn, loc denotes the remote server name and port
+ *	For tcpsyn, location denotes the remote server name and port
  */
 
 static int tcpsyn_connect_socket(unsigned int ipaddr, int port)
@@ -120,10 +120,10 @@ static int tcpsyn_connect_socket(unsigned int ipaddr, int port)
 	}
 
 	fd_set fds; FD_ZERO(&fds); FD_SET(sd, &fds);
-	timeval tv; tv.tv_sec = cfg->deadlk_timeout; tv.tv_usec = ZERO_DEADLK_TIMEOUT;
+	timeval tv; tv.tv_sec = cfg->deadlock_timeout; tv.tv_usec = ZERO_DEADLK_TIMEOUT;
 	if (select(sd+1, &fds, NULL, NULL, &tv) < 1) shriek(476, "Timed out - tcpsyn deadlock");
 
-	sgets(scratch, scfg->scratch, sd);
+	sgets(scratch, scfg->scratch_size, sd);
 	if (strncmp(scratch, "TTSCP spoken here", 18)) {
 		scratch[15] = 0;
 		shriek(474, "Protocol not recognized");
@@ -151,7 +151,7 @@ tcpsyn::tcpsyn(voice *v)
 	int port;
 	char *langname;
 	char *voicename;
-	char *remote_server = strdup(v->loc);
+	char *remote_server = strdup(v->location);
 	if (remote_server[0] != SERVERNAMESEP && remote_server[0] != LANGNAMESEP)
 		voicename = remote_server;
 	else voicename = NULL;

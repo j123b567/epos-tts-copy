@@ -91,11 +91,11 @@ lpcsyn::lpcsyn(voice *v)
 	for (i=0; i<rad; i++) ifilt[i] = 0;
 
 //	tseg = (char (*)[4])freadin(v->dptfile, v->inv_dir, "rt", "segment names");
-	seg_len = claim(v->counts, v->loc, scfg->inv_base_dir, "rb", "model counts", NULL);
+	seg_len = claim(v->counts, v->location, scfg->inv_base_dir, "rb", "model counts", NULL);
 	seg_offs[0] = 0;
 	for (i = 1; i < v->n_segs; i++)
 		seg_offs[i] = seg_offs[i-1] + (int)seg_len->data[i-1];	// cast to unsigned char * before [] if LPC sounds bad
-//	models = claim(v->models, v->loc, scfg->inv_base_dir, "rb", "lpc inventory");
+//	models = claim(v->models, v->location, scfg->inv_base_dir, "rb", "lpc inventory");
 //	delmod = seg_offs[440] + seg_len[440];
 }
 
@@ -174,7 +174,7 @@ void lpcsyn::synseg(voice *v, segment d, wavefm *w)	// voice not used
 	if (d.code > v->n_segs) shriek(463, "Segment number %d occurred, but the maximum is %d\n", d.code, v->n_segs);
 	numodel=(int)seg_len->data[d.code];	// cast to unsigned char * before [] if problems
 	if(!numodel) {
-		D_PRINT(3, "Unknown segment %d, %3s\n", d.code, d.code < v->n_segs ? "in range" : "out of range");
+		D_PRINT(2, "Unknown segment %d, %3s\n", d.code, d.code < v->n_segs ? "in range" : "out of range");
 		return;
 	}
 	/* nacti_mem_popis(code,numodel) */
@@ -189,9 +189,9 @@ void lpcsyn::synseg(voice *v, segment d, wavefm *w)	// voice not used
 		if(nvyrov < d.t / 2) {
 			if(!znely) m.lsyn=0, m.lsq=12288, m.nsyn=d.t-nvyrov;
 			else {
-				if(imodel==numodel-1) m.lsyn = v->samp_rate / d.f;
+				if(imodel==numodel-1) m.lsyn = v->inv_sampling_rate / d.f;
 				else {
-					zaklad = (v->samp_rate / d.f - lold) * 256 / numodel;
+					zaklad = (v->inv_sampling_rate / d.f - lold) * 256 / numodel;
 					m.lsyn = lold + zaklad*(imodel+1) / 256;
 				}
 				m.lsyn=m.lsyn+lincr;
@@ -205,13 +205,13 @@ void lpcsyn::synseg(voice *v, segment d, wavefm *w)	// voice not used
 		} else {
 			if(imodel!=numodel-1) m.nsyn=0, m.lsyn=0, m.lsq=12288;
 			else if(!znely) m.lsyn=0, m.lsq=12288, m.nsyn=minsynt;
-				else m.lsyn = v->samp_rate / d.f, m.lsq=lroot, m.nsyn=m.lsyn;
+				else m.lsyn = v->inv_sampling_rate / d.f, m.lsq=lroot, m.nsyn=m.lsyn;
 			nvyrov -= d.t;
 		}
 		D_PRINT(1, "Model %d\n", imodel+1);
 		if(m.nsyn>=minsynt) synmod(m, w);  //proved syntezu modelu
 	}
-	lold = v->samp_rate / d.f;
+	lold = v->inv_sampling_rate / d.f;
 }//hlask_synt
 
 
@@ -301,7 +301,7 @@ void shortoven(char *p, int l)
 lpcfloat::lpcfloat(voice *v) : lpcsyn(v)
 {
 // 	fcmodely = (fcmodel *)freadin(v->models, v->inv_dir, "rb", "float inventory");
-	models = claim(v->models, v->loc, scfg->inv_base_dir, "rb", "lpc inventory", floatoven);
+	models = claim(v->models, v->location, scfg->inv_base_dir, "rb", "lpc inventory", floatoven);
 }
 
 lpcint::lpcint(voice *v) : lpcsyn(v)
@@ -314,14 +314,14 @@ lpcint::lpcint(voice *v) : lpcsyn(v)
 	    kor_i = (int16_t *)(v->n_segs*2 + (char *)kor_t);
 	}
 #endif
-	models = claim(v->models, v->loc, scfg->inv_base_dir, "rb", "lpc inventory", intoven);
+	models = claim(v->models, v->location, scfg->inv_base_dir, "rb", "lpc inventory", intoven);
 }
 
 lpcvq::lpcvq(voice *v) :lpcsyn(v)
 {
-	codebook = claim(v->book, v->loc, scfg->inv_base_dir, "rb", "vector quant synthesis codebook", shortoven);
+	codebook = claim(v->codebook, v->location, scfg->inv_base_dir, "rb", "vector quant synthesis codebook", shortoven);
 	ener = (int16_t *)(256*16 + (char *)codebook->data);
-	models = claim(v->models, v->loc, scfg->inv_base_dir, "rb", "lpc inventory", vqoven);
+	models = claim(v->models, v->location, scfg->inv_base_dir, "rb", "lpc inventory", vqoven);
 }
 
 lpcvq::~lpcvq()

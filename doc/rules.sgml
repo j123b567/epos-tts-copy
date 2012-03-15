@@ -604,9 +604,8 @@ lip	5
   "no element", and it can be used to insert new units, delete the old ones,
   and to limit the change to the beginning or the end of the scope unit,
   respectively.  On the other hand, if the contents of some unit is literal <tt>0</tt>
-  before the application of this rule, it should, in theory, stay untouched.  Use e.g.
-  <tt>regex</tt> or <tt>subst</tt> rules to handle this case properly, as Epos presently
-  confuses no-element zeroes and real zero characters.
+  before the application of this rule, it will stay untouched.  This special
+  meaning of <tt>0</tt> with this rule type can be suppressed by escaping.
 
   Examples:   
 <tscreen><verb>

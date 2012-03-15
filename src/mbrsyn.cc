@@ -50,8 +50,8 @@ mbrsyn::restart_mbrola(voice *v)
 		close(q[0]);
 		char *inv_pathname;
 		char *mbrola_binary;
-		inv_pathname = compose_pathname(v->models, v->loc, scfg->inv_base_dir);
-		mbrola_binary = compose_pathname(cfg->mbrola_binary, v->loc, scfg->inv_base_dir);
+		inv_pathname = compose_pathname(v->models, v->location, scfg->inv_base_dir);
+		mbrola_binary = compose_pathname(cfg->mbrola_binary, v->location, scfg->inv_base_dir);
 		if (execl(mbrola_binary, mbrola_binary, "-e", inv_pathname, "-", "-.wav", NULL))
 			shriek(463, "Failed to exec mbrola %s with voice %s", mbrola_binary, inv_pathname);
 		break;

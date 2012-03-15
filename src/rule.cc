@@ -134,7 +134,7 @@ rule::cook(unit *root)
 	unit *u;
 #ifdef DEBUGGING
 		if (scfg->debug) current_debug_tag = dbg_tag;
-		if (scfg->showrule) fprintf(STDDBG, "[%s] %s %s\n",
+		if (scfg->show_rule) fprintf(STDDBG, "[%s] %s %s\n",
 			dbg_tag,
 			enum2str(code(), OPCODEstr), raw);
 #endif
@@ -184,7 +184,7 @@ rule::check_children()
 const char *
 rule::debug_tag()
 {
-	char *wholetag=(char *)FOREVER(xmalloc(scfg->max_line));
+	char *wholetag=(char *)FOREVER(xmalloc(scfg->max_line_len));
 
 #ifdef DEBUGGING
 	char *tmp;
@@ -279,7 +279,7 @@ hashing_rule::verify()
 	if (cfg->paranoid) {
 		load_hash();
 
-		if (scfg->lowmemory) {
+		if (scfg->memory_low) {
 			D_PRINT(2, "Hash table caching is disabled.\n"); //hashtabscache[rulist[i].param]->debug();
 			delete dict;
 			dict = NULL;
@@ -295,7 +295,7 @@ hashing_rule::load_hash()
 	dict = NULL;
 	if (*raw != DQUOT) {
 		dict = new hash(raw, this_lang->hash_dir, scfg->lang_base_dir, "dictionary",
-			scfg->hash_full, 0, 200, 5,
+			scfg->hashes_full, 0, 200, 5,
 			(char *) allow_id, false);
 	} else dict = literal_hash(raw);
 	if (!dict) shriek(463, "%s Unterminated argument", debug_tag());	// or out of memory
@@ -389,7 +389,7 @@ r_subst::apply(unit *root)
 
 	root->relabel(dict, method, target);
 
-	if (scfg->lowmemory) {
+	if (scfg->memory_low) {
 		D_PRINT(2, "Hash table caching is disabled.\n"); //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict = NULL;
@@ -428,15 +428,15 @@ r_seg::apply(unit *root)
 {
 	if (!dict) load_hash();
 	root->segs(target, dict);
-	if (scfg->lowmemory) {
+	if (scfg->memory_low) {
 		D_PRINT(2, "Hash table caching is disabled.\n"); //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict=NULL;
 	}
 
 
-	D_PRINT(1, "Segments w%s be dumped just after the segments rule\n", scfg->imm_segs?"ill":"on't");
-	if (scfg->imm_segs) {
+	D_PRINT(1, "Segments w%s be dumped just after the segments rule\n", scfg->immed_segments?"ill":"on't");
+	if (scfg->immed_segments) {
 		static segment d[SEG_BUFF_SIZE];   //every item is 16 bytes long
 		
 		int i = SEG_BUFF_SIZE;
@@ -529,7 +529,7 @@ r_prosody::apply(unit *root)
 	D_PRINT(1, "entering rules::sseg()\n");
 //	root->sseg(target, dict);
 	shriek(862, "no sseg");
-	if (scfg->lowmemory) {
+	if (scfg->memory_low) {
 		D_PRINT(2, "Hash table caching is disabled.\n"); //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict = NULL;
@@ -673,6 +673,23 @@ r_smooth::apply(unit *root)
  **	  one and in what environment
  ************************************************/
 
+static void switch_zeroes(char *s)
+{
+	int i, j;
+	for (i = 0, j = 0; s[i]; ) {
+		if (s[i] == LITERAL_ZERO) {
+			if (i && s[i - 1] == ESCAPE)
+				j--;
+			else {
+				s[j++] = ABSENT_CHARACTER;
+				i++;
+				continue;
+			}
+		}
+		s[j++] = s[i++];
+	}
+	s[j] = 0;
+}
 
 class r_regress: public rule
 {
@@ -697,6 +714,7 @@ class r_progress: public r_regress
 		r_progress(char *param);
 };
 
+
 r_regress::r_regress(char *param) : rule(param)
 {
 	char *aff;
@@ -707,19 +725,23 @@ r_regress::r_regress(char *param) : rule(param)
 	eff = strchr(aff=strdup(param),ASSIM_DELIM1);
 	if (!eff) shriek(811, "%s Bad param", debug_tag());
 	*eff++ = 0;
+	switch_zeroes(aff);
 
 	left = strchr(eff,ASSIM_DELIM2);
 	if(!left) shriek(811, "%s Bad param", debug_tag());
 	*left++ = 0;
+	switch_zeroes(eff);
 	
 	right = strchr(left,ASSIM_DELIM3);
 	if (!right) shriek(811, "%s Bad param", debug_tag());
 	*right++ = 0;
+	switch_zeroes(left);
 
 
 	char *tmp = strchr(right,ASSIM_DELIM4);
 	if (!tmp) shriek(811, "%s Bad param", debug_tag());
 	*tmp++ = 0;
+	switch_zeroes(right);
 	if (*tmp) shriek(811, "%s Strange appendix to param", debug_tag());
 	
 	D_PRINT(0, "Parsed assim param \"%s>%s(%s_%s)\"\n",aff,eff,left,right);
@@ -1206,7 +1228,7 @@ r_with::apply(unit *root)
 	if (!dict) {
 		if (*raw == DQUOT) dict = literal_hash(raw);
 		else dict = new hash(raw, this_lang->hash_dir, scfg->lang_base_dir, "dictionary",
-			scfg->hash_full, 0, 200, 3, DATA_EQUALS_KEY, false);
+			scfg->hashes_full, 0, 200, 3, DATA_EQUALS_KEY, false);
 	}
 	if (!dict) shriek(811, "%s Unterminated argument", debug_tag());	// or out of memory
 
@@ -1234,7 +1256,7 @@ class r_if: public cond_rule
 
 r_if::r_if(char *param, text *file, hash *vars) : cond_rule(param, file, vars)
 {
-	epos_option *o = option_struct(raw + (*raw == EXCLAM) , this_lang->soft_options);
+	epos_option *o = option_struct(raw + (*raw == EXCLAM) , this_lang->soft_opts);
 	if (!o) shriek(811, "%s Not an option: %s", debug_tag(), raw);
 	if (o->opttype != O_BOOL) shriek(811, "%s Not a truth value option: %s", debug_tag(), raw);
 	if (o->structype != OS_VOICE) shriek(811, "%s Not a voice option: %s", debug_tag(), raw);

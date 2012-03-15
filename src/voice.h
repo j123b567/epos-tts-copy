@@ -52,11 +52,11 @@ struct lang : public cowabilium
    #include "options.lst"
 
 	rules *ruleset;
-	hash_table<char, epos_option> *soft_options;
+	hash_table<char, epos_option> *soft_opts;
 	void *soft_defaults;
 	unsigned char *char_level;
 	int   n_voices;
-	voice **voices;
+	voice **voicetab;
 	int   default_voice;
 
    public:
@@ -102,7 +102,7 @@ struct voice : public cowabilium
 };
 
 #define this_lang  (cfg->langs[cfg->default_lang])
-#define this_voice (this_lang->voices[this_lang->default_voice])
+#define this_voice (this_lang->voicetab[this_lang->default_voice])
 
 struct epos_option;
 

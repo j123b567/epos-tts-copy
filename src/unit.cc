@@ -142,8 +142,8 @@ unit::write_segs(segment *whither, int first, int n)
 	if (!whither) shriek (861, "NULL ptr passed to write_segs() n=%d", n);
 	scope = true;
 	if (first && first == ifcache && iucache == this) tmpu=ocache;
-	else for (m = first, tmpu = LeftMost(scfg->segm_level); m--; tmpu = tmpu->Next(scfg->segm_level));
-	for (m=0; m<n && tmpu != &EMPTY; m++, tmpu = tmpu->Next(scfg->segm_level)) {
+	else for (m = first, tmpu = LeftMost(scfg->_segm_level); m--; tmpu = tmpu->Next(scfg->_segm_level));
+	for (m=0; m<n && tmpu != &EMPTY; m++, tmpu = tmpu->Next(scfg->_segm_level)) {
 		tmpu->sanity();
 		whither[m].code = tmpu->cont;
 		whither[m].f = tmpu->effective(Q_FREQ);
@@ -173,7 +173,7 @@ unit::write_segs(segment *whither, int first, int n)
  
 int
 unit::write_ssif_head(char *whither) {
-	return sprintf(whither, "%.3s %d ", decode_to_sampa(cont, this_voice->sampa_alt), effective(Q_TIME));
+	return sprintf(whither, "%.3s %d ", decode_to_sampa(cont, this_voice->sampa_alternate), effective(Q_TIME));
 }
 
 
@@ -192,9 +192,9 @@ unit::write_ssif(char *whither, int first, int len)
 	char *current = whither;
 	scope = true;
 	if (first == ifcache && iucache == this) tmpu=ocache;
-	else for (n = first, tmpu = LeftMost(scfg->phone_level); n--; tmpu = tmpu->Next(scfg->phone_level));
+	else for (n = first, tmpu = LeftMost(scfg->_phone_level); n--; tmpu = tmpu->Next(scfg->_phone_level));
 
-	for (; (current < whither + len - WSSIF_SAFETY) && tmpu != &EMPTY; tmpu = tmpu->Next(scfg->phone_level)) {
+	for (; (current < whither + len - WSSIF_SAFETY) && tmpu != &EMPTY; tmpu = tmpu->Next(scfg->_phone_level)) {
 		int l = tmpu->write_ssif_head(scratch);
 		memcpy(current, scratch, l);
 		current += l;
@@ -217,7 +217,7 @@ void
 unit::show_phones()
 {
 	unit *tmpu;
-	for (tmpu = LeftMost(scfg->phone_level); tmpu != &EMPTY; tmpu = tmpu->Next(scfg->phone_level))
+	for (tmpu = LeftMost(scfg->_phone_level); tmpu != &EMPTY; tmpu = tmpu->Next(scfg->_phone_level))
 		printf("%c %d %d %d\n", tmpu->cont,
 			tmpu->effective(Q_FREQ),
 			tmpu->effective(Q_INTENS),
@@ -236,13 +236,13 @@ unit::fout(char *filename)      //NULL means stdout
 	file *tmp;
 	outf = filename ? fopen(filename, "wt", "unit dump file") : cfg->stddbg;
 
-	tmp = claim(scfg->header_xscr, scfg->ini_dir, "", "rt", "transcription header", NULL);
+	tmp = claim(scfg->header, scfg->ini_dir, "", "rt", "transcription header", NULL);
 	fputs(tmp->data, outf);
 	unclaim(tmp);
 
 	fdump(outf);
 
-	tmp = claim(scfg->footer_xscr, scfg->ini_dir, "", "rt", "transcription footer", NULL);
+	tmp = claim(scfg->footer, scfg->ini_dir, "", "rt", "transcription footer", NULL);
 	fputs(tmp->data, outf);
 	unclaim(tmp);
 
@@ -274,41 +274,41 @@ unit::fdump(FILE *handle)        //this one does the real job
 	unit *tmpu;
     
 	sanity();
-	if (depth == scfg->phone_level) {
+	if (depth == scfg->_phone_level) {
 		colorize (depth, handle);
-		if (cont != NO_CONT || !scfg->out_swallow__) fputs(fmtchar(cont), handle);
+		if (cont != NO_CONT || !scfg->swallow_underbars) fputs(fmtchar(cont), handle);
 		colorize(-1, handle);
 		return;
 	}
-	if (scfg->out_prefix && !(cont == NO_CONT && scfg->out_swallow__)) {
+	if (scfg->prefix && !(cont == NO_CONT && scfg->swallow_underbars)) {
 		colorize(depth, handle);   //If you wanna disable this, go to interf.cc::colorize()   
 		fputs(fmtchar(cont), handle);
 		colorize(-1, handle);
 	}
-	if (scfg->out_verbose && scfg->out_opening[depth]) {
+	if (scfg->structured && scfg->begin[depth]) {
 		colorize(depth, handle);   //If you wanna disable this, go to interf.cc::colorize()   
-		fputs(scfg->out_opening[depth], handle);
+		fputs(scfg->begin[depth], handle);
 		colorize(-1,handle);
 	}
 	if ((tmpu = firstborn)) {
 		tmpu->fdump(handle);
 		tmpu = tmpu->next;
 		while (tmpu) {
-			if (scfg->out_verbose && scfg->out_separ[depth-1]) {
+			if (scfg->structured && scfg->separ[depth-1]) {
 				colorize(depth-1, handle);	
-				fputs(scfg->out_separ[depth-1], handle);
+				fputs(scfg->separ[depth-1], handle);
 				colorize(-1, handle);
 			}
 			tmpu->fdump(handle);
 			tmpu = tmpu->next;
 		}
 	}
-	if (scfg->out_verbose && scfg->out_closing[depth]) {
+	if (scfg->structured && scfg->close[depth]) {
 		colorize(depth,handle);
-		fputs(scfg->out_closing[depth],handle);
+		fputs(scfg->close[depth],handle);
 		colorize(-1,handle);
 	} else fputc(' ', handle);	
-	if (scfg->out_postfix && !(cont == NO_CONT && scfg->out_swallow__)) { 
+	if (scfg->postfix && !(cont == NO_CONT && scfg->swallow_underbars)) { 
 		colorize(depth, handle);   //If you wanna disable this, go to interf.cc::colorize()   
 		fputs(fmtchar(cont), handle);
 		if (m) fputs("[", handle);
@@ -457,8 +457,8 @@ unit::gather(char *buffer_now, char *buffer_end, bool suprasegm)
 	}
 	if(buffer_now >= buffer_end) 
 		return NULL;
-	if (cont != NO_CONT && (depth == scfg->phone_level
-				|| suprasegm && depth > scfg->phone_level)) {
+	if (cont != NO_CONT && (depth == scfg->_phone_level
+				|| suprasegm && depth > scfg->_phone_level)) {
 		*(buffer_now++) = (char)cont; 
 	}
 	return buffer_now;
@@ -477,7 +477,7 @@ unit::gather(int *l, bool delimited, bool suprasegm)
 		if (delimited) *b++ = '^';
 		r = gather(b, gb + gbsize - 2, suprasegm);
 		if (!r) {
-			if (gbsize >= scfg->maxtext) shriek(456, "buffer grown too long");
+			if (gbsize >= scfg->max_text_size) shriek(456, "buffer grown too long");
 			gbsize <<= 1;
 			gb = (char *)xrealloc(gb, gbsize);
 		}
@@ -683,7 +683,7 @@ unit::subst(hash *table, SUBST_METHOD method)
 bool
 unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 {
-	if (target == scfg->phone_level) return subst(table, method);
+	if (target == scfg->_phone_level) return subst(table, method);
 
 	char	*r;
 	unit	*u;
@@ -982,7 +982,7 @@ unit::analyze(UNIT target, hash *table, int unanal_unit_penalty, int unanal_part
 
 	static int vb_size = 0;
 
-	if (target != scfg->phone_level)
+	if (target != scfg->_phone_level)
 		shriek(462, "Analyze with target other than phone unimplemented");	// FIXME
 
 	int l;
@@ -1338,7 +1338,7 @@ unit::seg(hash *dinven)   //_d_descr should contain a segment name
 	int n;
 	for (n = dinven->translate_int(_d_descr); n >= 0; n -= OMEGA) {
 		D_PRINT(1, "Diphone number %d born\n", n % OMEGA);
-		insert_end(new unit(scfg->segm_level, n % OMEGA), NULL);
+		insert_end(new unit(scfg->_segm_level, n % OMEGA), NULL);
 		sanity();
 		D_PRINT(1, "...born and inserted\n");
 	}
@@ -1528,9 +1528,9 @@ void
 unit::do_sanity()
 {
 	if (this == NULL)			  EMPTY.insane ("this non-NULL");
-//	if (!firstborn && depth > scfg->phone_level)	insane ("having content");
+//	if (!firstborn && depth > scfg->_phone_level)	insane ("having content");
 	if (this == _unit_just_unlinked)		return;
-	if (depth > scfg->text_level && this != &EMPTY)	insane("depth");
+	if (depth > scfg->_text_level && this != &EMPTY)insane("depth");
 	if ((firstborn && 1) != (lastborn && 1))	insane("first == last");
 	if (firstborn && firstborn->depth+1 != depth)	insane("firstborn->depth");
 	if (lastborn && lastborn->depth+1 != depth)	insane("lastborn->depth");
@@ -1538,8 +1538,8 @@ unit::do_sanity()
 	if (lastborn && lastborn->next)			insane("lastborn->next");
 	if (prev && prev->next != this)			insane("prev->next");
 	if (next && next->prev != this)			insane("next->prev");
-	if (depth==scfg->text_level && father)		insane("TEXT.father");
-	if (cont < -128 || cont > 255 && depth > scfg->segm_level)	insane("content"); 
+	if (depth==scfg->_text_level && father)		insane("TEXT.father");
+	if (cont < -128 || cont > 255 && depth > scfg->_segm_level)	insane("content"); 
 
 	if (next && !m->disjoint(next->m)) insane("disjointness problem");
 	if (prev && !m->disjoint(prev->m)) insane("disjointness problem");
@@ -1548,7 +1548,7 @@ unit::do_sanity()
 	if (lastborn && !m->disjoint(lastborn->m)) insane("disjointness problem");
 	if (lastborn && lastborn->prev && !m->disjoint(lastborn->prev->m)) insane("disjointness problem");
 
-        if (scfg->allpointers) return;
+        if (scfg->ptr_trusted) return;
 	if (prev && (unsigned int) prev<0x8000000) insane("prev");
 	if (next && (unsigned int) next<0x8000000)  insane("next");
 	if (firstborn && (unsigned int) firstborn<0x8000000) insane("firstborn");

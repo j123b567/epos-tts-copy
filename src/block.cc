@@ -112,14 +112,14 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 	char *began_in = strdup(file->current_file);
 	int   began_at = file->current_line;
 
-	l = scfg->rules;
+	l = scfg->rules_in_block;
 	rulist = (rule **)xmalloc(sizeof(rule *) * l);
 	n_rules = 0; again = 1;
 	while((rulist[n_rules] = --again ? rulist[n_rules-1]
 					 : next_rule(file, vars, &again)) > END_OF_RULES) {
 //		rulist[n_rules]->set_dbg_tag(file);
 		if (++n_rules == l) {
-			l+=scfg->rules;
+			l+=scfg->rules_in_block;
 			rulist = (rule **)xrealloc(rulist, sizeof(rule *) * l);
 		}
 	}
@@ -181,9 +181,9 @@ block_rule::debug()
 {
 	int i;
 	for(i=0;i<n_rules;i++) {
-		if (i==current_rule) color(cfg->stddbg, scfg->curul_col);
-		if (i==current_rule || scfg->r_dbg_sh_all) rulist[i]->debug();
-		if (i==current_rule) color(cfg->stddbg, scfg->normal_col);
+		if (i==current_rule) color(cfg->stddbg, scfg->curr_rule_color);
+		if (i==current_rule || scfg->verbose) rulist[i]->debug();
+		if (i==current_rule) color(cfg->stddbg, scfg->normal_color);
 	}
 }
 
@@ -266,18 +266,18 @@ rules::rules(const char *filename, const char *dirname)
 	text *file;
 	hash *vars;
 
-	DBG(0, if (scfg->loaded) fprintf(STDDBG,"Configuration already loaded when constructing rules\n");)
+	DBG(0, if (scfg->_loaded) fprintf(STDDBG,"Configuration already loaded when constructing rules\n");)
 
-	if (!scfg->loaded) /* epos_init() */ shriek(862, "compiling rules too soon");
+	if (!scfg->_loaded) /* epos_init() */ shriek(862, "compiling rules too soon");
 	
 	file = new text(filename, dirname, scfg->lang_base_dir, "rules", false);
 	file->charset = this_lang->charset;
-	vars = new hash(scfg->vars|1);
+	vars = new hash(scfg->variables|1);
 	D_PRINT(2, "Rules shall be taken from %s\n", filename);
 	
 	body = new r_block(file, vars);
-	body->scope = scfg->text_level;
-	body->target = scfg->phone_level;
+	body->scope = scfg->_text_level;
+	body->target = scfg->_phone_level;
 #ifdef DEBUGGING
 	body->dbg_tag = strdup("root block");
 #endif
@@ -312,7 +312,10 @@ get_words(char *line, char**words, int max)
 		while (*line && strchr(WHITESPACE, *line)) *line++=0;
 		if (!*line || n==max) break;
 		words[n++] = line;
-		if (*line == DQUOT) line = strchr(line+1, DQUOT) + 1;
+		if (*line == DQUOT)
+			line = strchr(line+1, DQUOT) + 1;
+		else if (line[0] == EXCLAM && line[1] == DQUOT)
+			line = strchr(line+2, DQUOT) + 1;
 		else line += strcspn(line, WHITESPACE);
 	}
 	return n;
@@ -331,7 +334,7 @@ rule_weight(const char *word, text *file)
 	}
 	if ((word[i]|('a'-'A'))=='x' && !word[i+1] && i) {
 		if (!result) diatax("Zero weight");
-		if (result > scfg->mrw) diatax("Weight too large");
+		if (result > scfg->max_rule_weight) diatax("Weight too large");
 		return result;	// shriek if 0 ?
 	}
 	return 0;
@@ -368,7 +371,7 @@ resolve_vars(char *line, hash *vars, text *file)
 		} else *dest++ = *src++;
 	}
 	*dest=0;
-	strncpy(line+1, _resolve_vars_buff,scfg->max_line);          //Copy it back
+	strncpy(line+1, _resolve_vars_buff,scfg->max_line_len);          //Copy it back
 }
 
 

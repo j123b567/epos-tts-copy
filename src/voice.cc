@@ -107,33 +107,33 @@ lang::lang(const char *filename, const char *dirname) : cowabilium()
 	#include "options.lst"
 //	name = "(unnamed)";
 	ruleset = NULL;
-	soft_options = NULL;
+	soft_opts = NULL;
 	soft_defaults = NULL;
 	n_voices = 0;
-	voices = NULL;
+	voicetab = NULL;
 	default_voice = 0;
 	char_level = 0;
 	load_config(filename, dirname, "language", OS_LANG, this, NULL);
-	if (soft_opt_list) add_soft_opts(soft_opt_list);
-	if (voice_list) add_voices(voice_list);
+	if (soft_options) add_soft_opts(soft_options);
+	if (voices) add_voices(voices);
 }
 
 lang::~lang()
 {
-	for (int i=0; i<n_voices; i++) delete voices[i];
-	if (voices) free(voices);
+	for (int i=0; i<n_voices; i++) delete voicetab[i];
+	if (voicetab) free(voicetab);
 	if (ruleset) delete ruleset;
 	if (char_level) free(char_level);
-	if (soft_options) {
-		while (soft_options->items) {
-			char *tmp = soft_options->get_random();
+	if (soft_opts) {
+		while (soft_opts->items) {
+			char *tmp = soft_opts->get_random();
 			if (tmp[0] != 'V' || tmp[1] != ':')
 				tmp -= 2;
-			delete soft_options->remove(tmp);
-			delete soft_options->remove(tmp + 2);
+			delete soft_opts->remove(tmp);
+			delete soft_opts->remove(tmp + 2);
 			free(tmp);
 		}
-		delete soft_options;
+		delete soft_opts;
 	}
 	D_PRINT(3, "Disposed language %s\n", name);
 	cow_unstring(this, langoptlist);
@@ -153,10 +153,10 @@ lang::add_voice(const char *voice_name)
 	sprintf(filename, "%s.ini", voice_name);
 	sprintf(dirname, "%s%c%s", scfg->voice_base_dir, SLASH, name);
 	if (*voice_name) {
-		if (!voices) voices = (voice **)xmalloc(8*sizeof(void *));
+		if (!voicetab) voicetab = (voice **)xmalloc(8*sizeof(void *));
 		else if (!(n_voices-1 & n_voices) && n_voices > 4)  // if n_voices==8,16,32...
-			voices = (voice **)xrealloc(voices, (n_voices << 1) * sizeof(void *));
-		voices[n_voices++] = new(this) voice(filename, dirname, this);
+			voicetab = (voice **)xrealloc(voicetab, (n_voices << 1) * sizeof(void *));
+		voicetab[n_voices++] = new(this) voice(filename, dirname, this);
 	}
 	free(filename);
 	free(dirname);
@@ -209,18 +209,18 @@ lang::add_soft_option(const char *optname)
 		shriek(812, "Unterminated type spec in soft option %s in lang %s", optname, name);
 	if (option_struct(optname, NULL))
 		shriek(812, "Soft option name conflicts with a built-in option name %s in lang %s", optname, name);
-	if (soft_options) {
-		if (soft_options->translate(optname))
+	if (soft_opts) {
+		if (soft_opts->translate(optname))
 			shriek(812, "Soft option already exists in lang %s", name);
 		soft_defaults = xrealloc(soft_defaults,
-				(soft_options->items + 2) * sizeof(void *) >> 1);
+				(soft_opts->items + 2) * sizeof(void *) >> 1);
 	} else {
-		soft_options = new hash_table<char, epos_option>(30);
-		soft_options->dupkey = 0;
+		soft_opts = new hash_table<char, epos_option>(30);
+		soft_opts->dupkey = 0;
 		soft_defaults = xmalloc(sizeof(void *));
 	}
 
-	o.offset = sizeof(voice) + (soft_options->items * sizeof(void *) >> 1);
+	o.offset = sizeof(voice) + (soft_opts->items * sizeof(void *) >> 1);
 
 	char *tmp = (char *)xmalloc(strlen(optname) + 3);
 	strcpy(tmp + 2, optname);
@@ -228,8 +228,8 @@ lang::add_soft_option(const char *optname)
 	tmp[1] = ':';
 	o.optname = tmp + 2;
 
-	soft_options->add(o.optname - 2, &o);
-	soft_options->add(o.optname, &o);
+	soft_opts->add(o.optname - 2, &o);
+	soft_opts->add(o.optname, &o);
 
 	set_option(&o, dflt, (void *)((voice *)soft_defaults - 1));
 }
@@ -274,7 +274,7 @@ voice::voice(const char *filename, const char *dirname, lang *parent_lang) : cow
 
 	if (parent_lang->soft_defaults)
 		memcpy(this + 1, parent_lang->soft_defaults,
-			sizeof(void *) * parent_lang->soft_options->items >> 1);
+			sizeof(void *) * parent_lang->soft_opts->items >> 1);
 	
 	load_config(filename, dirname, "voice", OS_VOICE, this, parent_lang);
 	if (!parent_lang->default_voice) {
@@ -300,15 +300,15 @@ voice::voice(const char *filename, const char *dirname, lang *parent_lang) : cow
 void
 voice::claim_all()
 {
-	if (!segment_names && dptfile && *dptfile)
-		segment_names = claim(dptfile, loc, scfg->inv_base_dir, "rt", "segment names", NULL);
+	if (!segment_names && dpt_file && *dpt_file)
+		segment_names = claim(dpt_file, location, scfg->inv_base_dir, "rt", "segment names", NULL);
 	if (cfg->label_phones && !sl) {
 		sl = (sound_label *)xmalloc(sizeof(sound_label) * n_segs);
 		for (int i = 0; i < n_segs; i++) sl[i].pos = NO_SOUND_LABEL;
 		text *t;
-		if (!snlfile || !*snlfile) return;
-		t = new text(snlfile, loc, scfg->inv_base_dir, "sound labels", true);
-		char * l = (char *)xmalloc(scfg->max_line);
+		if (!snl_file || !*snl_file) return;
+		t = new text(snl_file, location, scfg->inv_base_dir, "sound labels", true);
+		char * l = (char *)xmalloc(scfg->max_line_len);
 		while (t->get_line(l)) {
 			int a, b, d; char c;
 			if (sscanf(l, "%d %d %c %d\n", &a, &b, &c, &d) == 3) {
@@ -339,8 +339,8 @@ voice::operator new(size_t size, lang *parent_lang)
 	if (size != sizeof(voice)) shriek(862, "I'm missing something");
 #endif
 	
-	if (!parent_lang || !parent_lang->soft_options) nso = 0;
-	else nso = parent_lang->soft_options->items >> 1;
+	if (!parent_lang || !parent_lang->soft_opts) nso = 0;
+	else nso = parent_lang->soft_opts->items >> 1;
 	return xmalloc(size + nso * sizeof(void *));
 }
 

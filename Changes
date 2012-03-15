@@ -1356,4 +1356,10 @@ for an exciting story, just skip it.
 	- changed some file owners, groups and modes (to non-root)
 	- utterance chunking made aggresive - max_utterance, split_utterance
 
+2.5.20 from 2.5.19	11.11.03
+	- some configure.in tests fixed (reported by Mirek Trmac)
+	- simplified options.lst (source code names = user names)
+	- fixed the  with !"... ..."    word splitting bug
+	- fixed two 0 disappearances in the rules
+	- r_regress and r_progress now use ABSENT_CHAR instead of '0'
 

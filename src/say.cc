@@ -82,8 +82,8 @@ void shriek(int, char *txt)
 
 int get_result(int sd)
 {
-	while (sgets(scratch, scfg->scratch, sd)) {
-		scratch[scfg->scratch] = 0;
+	while (sgets(scratch, scfg->scratch_size, sd)) {
+		scratch[scfg->scratch_size] = 0;
 //		printf("Received: %s\n", scratch);
 		switch(*scratch) {
 			case '1': continue;
@@ -115,8 +115,8 @@ char *get_data()
 {
 	char *b = NULL;
 	size = 0;
-	while (sgets(scratch, scfg->scratch, ctrld)) {
-		scratch[scfg->scratch] = 0;
+	while (sgets(scratch, scfg->scratch_size, ctrld)) {
+		scratch[scfg->scratch_size] = 0;
 		if (strchr("2468", *scratch)) { 	/* all done, write result */
 			if (*scratch != '2') shriek(scratch);
 			if (!size) shriek("No processed data received");
@@ -125,8 +125,8 @@ char *get_data()
 		}
 		if (!strncmp(scratch, "123 ", 4)) {
 			int count;
-			sgets(scratch, scfg->scratch, ctrld);
-			scratch[scfg->scratch] = 0;
+			sgets(scratch, scfg->scratch_size, ctrld);
+			scratch[scfg->scratch_size] = 0;
 			sscanf(scratch, "%d", &count);
 			b = size ? (char *)realloc(b, size + count + 1) : (char *)malloc(count + 1);
 			int limit = size + count;
@@ -314,9 +314,9 @@ void send_cmd_line(int argc, char **argv)
 		join:
 			if (data) {
 				int needed = strlen(data) + strlen(ar) + 2;
-				if (needed > scfg->scratch) {
+				if (needed > scfg->scratch_size) {
 					scratch = (char *)realloc(scratch, needed + 2);
-					scfg->scratch = needed;
+					scfg->scratch_size = needed;
 				}
 				sprintf(scratch, "%s %s", data, ar);
 				free(data);
@@ -384,7 +384,7 @@ int main(int argc, char **argv)
 	if (f) {
 		while (!feof(f)) {
 			*scratch = 0;
-			fgets(scratch, scfg->scratch, f);
+			fgets(scratch, scfg->scratch_size, f);
 			if (*scratch && !strchr(COMMENT_LINES, scratch[strspn(scratch, WHITESPACE)])) {
 				sputs(scratch, ctrld);
 				get_result(ctrld);

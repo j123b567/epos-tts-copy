@@ -150,9 +150,9 @@ static void encode_from_8bit(unsigned char *s, int cs, bool alloc)
 				alloc_code(u, *s, cs);
 				continue;
 			} else if (cfg->relax_input) {
-				if (encoders[cs][(unsigned char)cfg->dflt_char] == UNDEFINED)
+				if (encoders[cs][(unsigned char)cfg->default_char] == UNDEFINED)
 					shriek(431, "You specified relax_input but default_char is undefined");
-				else *s = encoders[cs][(unsigned char)cfg->dflt_char];
+				else *s = encoders[cs][(unsigned char)cfg->default_char];
 			} else shriek(431, "Parsing an unhandled character  '%c' - code %d", (unsigned int) *s, (unsigned int) *s);
 		} else *s = t;
 	} while (*s++);
@@ -222,7 +222,7 @@ int load_charset(const char *name)
 		if (!charsets) shriek(844, "Couldn't find unicode map for initial charset %s", name);
 		return CHARSET_NOT_AVAILABLE;
 	}
-	char *line = (char *)xmalloc(scfg->max_line);
+	char *line = (char *)xmalloc(scfg->max_line_len);
 	alloc_charset(name);
 	unsigned char *c = encoders[charset_list_len - 1];
 	unsigned char *d = decoders[charset_list_len - 1];
@@ -271,7 +271,7 @@ static void load_sampa(int alt, const char *filename)
 		shriek(844, "Couldn't find the SAMPA map %s", filename);
 	}
 //	t->raw = true;
-	char *line = (char *)xmalloc(scfg->max_line);
+	char *line = (char *)xmalloc(scfg->max_line_len);
 	while(t->get_line(line)) {
 		int u;
 		char x[4], dummy;

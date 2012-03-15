@@ -36,7 +36,7 @@ void D_PRINT(int, ...) {};
 struct pseudo_static_configuration
 {
 	int asyncing;
-	int scratch;
+	int scratch_size;
 	int paranoid;
 	int listen_port;
 };
@@ -289,7 +289,7 @@ int just_connect_socket(unsigned int ipaddr, int port)
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
 	if (!ipaddr) {
-//		gethostname(scratch, scfg->scratch);	// can be used instead of localhost
+//		gethostname(scratch, scfg->scratch_size);	// can be used instead of localhost
 		strcpy(scratch, "localhost");
 		ipaddr = getaddrbyname(scratch);
 		if (ipaddr == -1) return -1;
@@ -305,7 +305,7 @@ int connect_socket(unsigned int ipaddr, int port)
 	if (sd == -1) {
 		shriek(473, "Server unreachable (Epos not running?)\n");
 	}
-	if (!sgets(scratch, scfg->scratch, sd)) shriek(474, "Remote server listens but discards\n");
+	if (!sgets(scratch, scfg->scratch_size, sd)) shriek(474, "Remote server listens but discards\n");
 	if (strncmp(scratch, "TTSCP spoken here", 18)) {
 		scratch[15] = 0;
 		shriek(474, "Protocol not recognized");
@@ -324,7 +324,7 @@ bool running_at_localhost()
 char *get_handle(int sd)
 {
 	do {
-		sgets(scratch, scfg->scratch, sd);
+		sgets(scratch, scfg->scratch_size, sd);
 	} while (*scratch && strncmp(scratch, "handle: ", 8));
 	if (!*scratch) {
 		printf("NULL handle\n");
@@ -346,8 +346,8 @@ void xmit_option(const char *name, const char *value, int sd)
 
 int sync_finish_command(int ctrld)
 {
-	while (sgets(scratch, scfg->scratch, ctrld)) {
-		scratch[scfg->scratch] = 0;
+	while (sgets(scratch, scfg->scratch_size, ctrld)) {
+		scratch[scfg->scratch_size] = 0;
 //		printf("Received: %s\n", scratch);
 		switch(*scratch) {
 			case '1': continue;

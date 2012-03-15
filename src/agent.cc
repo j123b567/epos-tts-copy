@@ -334,19 +334,19 @@ class a_segs : public agent
 void
 a_segs::run()
 {
-	int sbs = cfg->sb_size ? cfg->sb_size : INIT_SEGS_BS;
+	int sbs = cfg->seg_buff_size ? cfg->seg_buff_size : INIT_SEGS_BS;
 	segment *d = (segment *)xmalloc((sbs + 1) * sizeof(segment));
 	segment *c = d + 1;
 	int n;
 	int items = 0;
 
 	unit *root = *(unit **)&inb;
-	root->project(scfg->segm_level);
+	root->project(scfg->_segm_level);
 again:
 	n = root->write_segs(c, position, sbs);
 	position += n;
 	items += n;
-	if (cfg->sb_size && n >= sbs) {
+	if (cfg->seg_buff_size && n >= sbs) {
 		d = (segment *)xrealloc(d, (sbs + 1 + position) * sizeof(segment));
 		c = d + 1 + position;
 		goto again;
@@ -373,19 +373,19 @@ class a_ssif : public agent
 void
 a_ssif::run()
 {
-	int ssifbs = cfg->ssifb_size ? cfg->ssifb_size : INIT_SSIF_BS;
+	int ssifbs = cfg->ssif_buff_size ? cfg->ssif_buff_size : INIT_SSIF_BS;
 	char *d = (char *)xmalloc((ssifbs + 1));
 	char *c = d /* + sizeof header */;
 	int n;
 	int items = 0;
 
 	unit *root = *(unit **)&inb;
-	root->project(scfg->phone_level);
+	root->project(scfg->_phone_level);
 again:
 	n = root->write_ssif(c, position, ssifbs);
 	position += n;
 	items += n;
-	if (cfg->ssifb_size && n >= ssifbs) {
+	if (cfg->ssif_buff_size && n >= ssifbs) {
 		d = (char *)xrealloc(d, (ssifbs + 1 + position));
 		c = d /* + sizeof header */ + strlen(d);		/* FIXME: efficiency */
 		goto again;
@@ -610,7 +610,7 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 	switch(*par) {
 		case '$': dc = data_conns->translate(par + 1);
 			  if (!dc) shriek(444, "Not a known data connection handle");
-			  else socket = (in == T_INPUT ? dc->c->config->sd_in : dc->c->config->sd_out);
+			  else socket = (in == T_INPUT ? dc->c->config->_sd_in : dc->c->config->_sd_out);
 			  break;
 		case '/': if (in == T_INPUT && !cfg->readfs)
 				shriek(454, "No filesystem inputs allowed");
@@ -782,8 +782,8 @@ a_output::report(bool total, int written)
 	if (foreground()) {
 		reply(total ? "122 total bytes" : "123 written bytes");
 		sprintf(scratch, " %d", written);
-		sputs(scratch, cfg->sd_out);
-		sputs("\r\n", cfg->sd_out);
+		sputs(scratch, cfg->_sd_out);
+		sputs("\r\n", cfg->_sd_out);
 	}
 }
 
@@ -1095,7 +1095,7 @@ a_protocol::~a_protocol()
 void a_protocol::run()
 {
 	int res;
-	res = sgets(buffer, cfg->max_net_cmd, cfg->sd_in, sgets_buff);
+	res = sgets(buffer, cfg->max_net_cmd, cfg->_sd_in, sgets_buff);
 	if (res < 0) {
 		disconnect();
 		return;
@@ -1111,7 +1111,7 @@ void a_protocol::run()
 		case PA_NEXT:
 			D_PRINT(0, "PA_NEXT\n");
 			if (strchr(sgets_buff, '\n')) schedule();
-			else block(cfg->sd_in);
+			else block(cfg->_sd_in);
 			return;
 		case PA_DONE:
 			D_PRINT(0, "PA_DONE\n");
@@ -1123,16 +1123,16 @@ void a_protocol::run()
 		default:
 			shriek(861, "Bad protocol action\n");
 	}
-	block(cfg->sd_in);		/* partial line read */
+	block(cfg->_sd_in);		/* partial line read */
 
 //	leave_context(i);
 
 //	non-blocking get_line etc.
 }
 
-a_ttscp::a_ttscp(int sd_in, int sd_out) : a_protocol()
+a_ttscp::a_ttscp(int _sd_in, int _sd_out) : a_protocol()
 {
-	c = new context(sd_in, sd_out);
+	c = new context(_sd_in, _sd_out);
 	c->enter();
 	
 	handle = (char *)malloc(cfg->handle_size + 1);
@@ -1146,14 +1146,14 @@ a_ttscp::a_ttscp(int sd_in, int sd_out) : a_protocol()
 		"extensions:\r\n"
 		"server: Epos\r\n"
 		"release: " VERSION "\r\n"
-		"handle: ", cfg->sd_out);
-	sputs(		handle, cfg->sd_out);
-	sputs(	"\r\n", cfg->sd_out);
+		"handle: ", cfg->_sd_out);
+	sputs(		handle, cfg->_sd_out);
+	sputs(	"\r\n", cfg->_sd_out);
 	ctrl = NULL;
 	deps = new hash_table<char, a_ttscp>(4);
 	deps->dupdata = deps->dupkey = false;
 	c->leave();
-	block(sd_in);
+	block(_sd_in);
 }
 
 /*
@@ -1166,7 +1166,7 @@ a_ttscp::~a_ttscp()
 	c->enter();
 	if (cfg->current_stream) delete cfg->current_stream;
 	cfg->current_stream = NULL;
-	D_PRINT(2, "deleted context closes fd %d and %d\n", cfg->sd_in, cfg->sd_out);
+	D_PRINT(2, "deleted context closes fd %d and %d\n", cfg->_sd_in, cfg->_sd_out);
 	c->leave();
 	while (deps->items) {
 		a_ttscp *tmp = deps->translate(deps->get_random());
@@ -1175,10 +1175,10 @@ a_ttscp::~a_ttscp()
 	}
 	delete deps;
 	c->enter();
-	if (cfg->sd_in != -1)
-		close_and_invalidate(cfg->sd_in);
-	if (cfg->sd_out != -1 && cfg->sd_out != cfg->sd_in)
-		close_and_invalidate(cfg->sd_out);
+	if (cfg->_sd_in != -1)
+		close_and_invalidate(cfg->_sd_in);
+	if (cfg->_sd_out != -1 && cfg->_sd_out != cfg->_sd_in)
+		close_and_invalidate(cfg->_sd_out);
 	if (data_conns->translate(handle) || ctrl_conns->translate(handle))
 		shriek(862, "Forgot to forget a_ttscp");
 
@@ -1238,7 +1238,7 @@ a_ttscp::run_command(char *cmd)
 	} catch (connection_lost *d) {
 		D_PRINT(2, "Releasing a TTSCP control connection, %d, %.60s\n", d->code, d->msg);
 		reply(d->code, d->msg);		/* just in case */
-		reply(201, fmt("debug %d", cfg->sd_in));
+		reply(201, fmt("debug %d", cfg->_sd_in));
 		delete d;
 		return PA_DONE;
 	}
@@ -1251,7 +1251,7 @@ a_ttscp::run_command(char *cmd)
 void
 a_ttscp::disconnect()
 {
-	D_PRINT(2, "ctrl conn %d lost\n", cfg->sd_in);
+	D_PRINT(2, "ctrl conn %d lost\n", cfg->_sd_in);
 	if (this != ctrl_conns->remove(handle) /* && this != data_conns->remove(handle) */ )
 		shriek(862, "Failed to disconnect a ctrl connection");
 	disconnector.disconnect(this);
@@ -1283,29 +1283,29 @@ a_accept::a_accept() : agent(T_NONE, T_NONE)
 	c = new context(-1, /*** dark errors ***/ DARK_ERRLOG);	//FIXME
 	c->enter();
 
-	cfg->sd_in = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	cfg->_sd_in = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	memset(&sa, 0, sizeof(sa));
-	gethostname(scratch, scfg->scratch - 1);
+	gethostname(scratch, scfg->scratch_size - 1);
 	sa.sin_family = AF_INET;
 	sa.sin_addr.s_addr = htonl(scfg->local_only ? INADDR_LOOPBACK : INADDR_ANY);
 	sa.sin_port = htons(scfg->listen_port);
-	setsockopt(cfg->sd_in, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
+	setsockopt(cfg->_sd_in, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
 	D_PRINT(3, "* Binding to the TTSCP port %d.\n", scfg->listen_port);
-	if (bind(cfg->sd_in, (sockaddr *)&sa, sizeof (sa))) shriek(871, "Could not bind");
-	if (listen(cfg->sd_in, 64)) shriek(871, "Could not listen");
-	make_nonblocking(cfg->sd_in);
+	if (bind(cfg->_sd_in, (sockaddr *)&sa, sizeof (sa))) shriek(871, "Could not bind");
+	if (listen(cfg->_sd_in, 64)) shriek(871, "Could not listen");
+	make_nonblocking(cfg->_sd_in);
 
 	ia.sin_family = AF_INET;
 	ia.sin_addr.s_addr = htonl(INADDR_ANY);
 	ia.sin_port = 0;
 
-	block(cfg->sd_in);
+	block(cfg->_sd_in);
 	c->leave();
 }
 
 a_accept::~a_accept()
 {
-	close (c->config->sd_in);
+	close (c->config->_sd_in);
 	delete c;
 }
 
@@ -1313,7 +1313,7 @@ void
 a_accept::run()
 {
 	static socklen_t sia = sizeof(sockaddr);	// Will __QNX__ complain?
-	int f = accept(cfg->sd_in, (sockaddr *)&ia, &sia);
+	int f = accept(cfg->_sd_in, (sockaddr *)&ia, &sia);
 	if (f == -1) {
 //		shriek(871, "Cannot accept() - network problem (errno %d)", errno);
 		D_PRINT(3, "Cannot accept() - errno %d! Madly looping.\n", errno);
@@ -1321,11 +1321,11 @@ a_accept::run()
 		return;
 	}
 	make_nonblocking(f);
-	D_PRINT(2, "Accepted %d (on %d).\n", f, cfg->sd_in);
+	D_PRINT(2, "Accepted %d (on %d).\n", f, cfg->_sd_in);
 	c->leave();
 	unuse(new a_ttscp(f, f));
 	c->enter();
-	block(cfg->sd_in);
+	block(cfg->_sd_in);
 }
 
 struct sched_aq

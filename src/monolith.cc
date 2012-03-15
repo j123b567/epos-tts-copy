@@ -55,14 +55,14 @@ int submain()
 {
 	unit *root;
 
-	root = str2units(scfg->input_text);
+	root = str2units(scfg->_input_text);
 	this_lang->ruleset->apply(root);
 //	fprintf(stdout,"*********************************************\n");
 	root->fout(NULL);
 
 
-	if (scfg->show_segs | scfg->play_segs | scfg->imm_segs | scfg->show_phones) {
-		if (scfg->play_segs) {
+	if (scfg->show_segments | scfg->play_segments | scfg->immed_segments | scfg->show_phones) {
+		if (scfg->play_segments) {
 			if (scfg->forking) {
 				switch (fork()) {
 					case 0:	//ds_used_cnt++;
@@ -74,7 +74,7 @@ int submain()
 			} else play_segments(root, this_voice);
 		}
 		if (scfg->show_phones) root->show_phones();
-		if (scfg->show_segs) show_segments(root);
+		if (scfg->show_segments) show_segments(root);
 	}
 
 //	if (scfg->neuronet) root->nnet_out(scfg->nnet_file, scfg->matlab_dir);
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 {
 	try {
 		argc_copy = argc, argv_copy = argv;
-		scfg->play_segs = true;
+		scfg->play_segments = true;
 		epos_init();
 		submain();
 //		epos_done();

@@ -273,7 +273,7 @@ hash::hash(const char *filename, const char *dirname, const char *treename,
 	ht = NULL;
 
 	dupkey = dupdata = true;
-	buff=(char *)xmalloc(scfg->max_line);
+	buff=(char *)xmalloc(scfg->max_line_len);
 
 	D_PRINT(0, "hash::hash: using file %s\n", filename);
 

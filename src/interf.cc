@@ -110,9 +110,9 @@ void shriek(int code, const char *fs, ...)
 		va_end(ap);
 	} else message = fs;
 
-	color(cfg->stdshriek, scfg->shriek_col);
+	color(cfg->stdshriek, scfg->fatal_color);
 	fprintf(cfg->stdshriek, "Error: %s (%d)\n", message, code); 
-	color(cfg->stdshriek, scfg->normal_col);
+	color(cfg->stdshriek, scfg->normal_color);
 
 #ifdef HAVE_SYSLOG_H
 	if (scfg->syslog)
@@ -152,7 +152,7 @@ char *fmt(const char *s, ...)
 {
 	va_list ap;
 	va_start(ap, s);
-	vsnprintf(scratch, scfg->scratch, s, ap);
+	vsnprintf(scratch, scfg->scratch_size, s, ap);
 	va_end(ap);
 	return scratch;
 }
@@ -219,10 +219,10 @@ void colorize(int level, FILE *handle)
 {
 	if (!scfg->colored) return; 
 	if (level==-1) {
-		if (scfg->normal_col) fputs(scfg->normal_col, handle);
+		if (scfg->normal_color) fputs(scfg->normal_color, handle);
 		return;
 	}
-	if (scfg->out_color[level]) fputs(scfg->out_color[level],handle);
+	if (scfg->color[level]) fputs(scfg->color[level],handle);
 }
 
 FIT_IDX fit(char c)
@@ -342,11 +342,11 @@ unit *str2units(const char *text)
 	unit *root;
 	parser *parsie;
 
-	if (text && (signed)strlen(text) > scfg->maxtext) shriek(456, "input too long");
+	if (text && (signed)strlen(text) > scfg->max_text_size) shriek(456, "input too long");
 
 	if (text && *text) parsie = new parser(text, PARSER_MODE_INPUT);
 	else parsie = new parser(this_lang->input_file, PARSER_MODE_FILE);
-	root=new unit(scfg->text_level, parsie);
+	root=new unit(scfg->_text_level, parsie);
 	delete parsie;
 	return root;
 }
@@ -449,7 +449,7 @@ char *limit_pathname(const char *filename, const char *dirname)
 {
 	char *p;
 	char *r;
-	if ((int)strlen(filename) >= scfg->scratch) shriek(864, "File name too long");
+	if ((int)strlen(filename) >= scfg->scratch_size) shriek(864, "File name too long");
 	strcpy(scratch, filename);
 	for (p = scratch; !IS_NOT_SLASH(*p); p++);
 	for (r = scratch; (*r = *p); p++, r++) {
@@ -540,7 +540,7 @@ file *claim(const char *filename, const char *dirname, const char *treename, con
 
 	f = fopen(pathname, flags, description);
 	if (!f && !description) return NULL;
-	if (fseek(f, 0, SEEK_END)) tmp = cfg->dev_txtlen;
+	if (fseek(f, 0, SEEK_END)) tmp = cfg->dev_text_len;
 	else tmp = ftell(f) + 1;
 	data = (char *)xmalloc(tmp);
 	fseek(f, 0, SEEK_SET);
@@ -573,7 +573,7 @@ void unclaim(file *ff)
 	if (ff->ref_count <= 0) shriek(461, "Forgot to unclaim()");
 	
 	if (!--ff->ref_count) {
-		if (scfg->lowmemory) uncache_file(NULL, ff, NULL);
+		if (scfg->memory_low) uncache_file(NULL, ff, NULL);
 	}
 }
 
@@ -596,7 +596,7 @@ static inline void release(char **buffer)
 static inline void compile_rules()
 {
 	int tmp = cfg->default_lang;
-	_next_rule_line = (char *)xmalloc(scfg->max_line+1);
+	_next_rule_line = (char *)xmalloc(scfg->max_line_len+1);
 	for (int i=0; i<cfg->n_langs; i++) {
 		cfg->default_lang = i;
 		if (cfg->langs[i]->n_voices) try {
@@ -628,7 +628,7 @@ void epos_init()	 //Some global sanity checks made here
 #ifdef HAVE_SYSLOG_H
 	openlog("epos", LOG_CONS, LOG_DAEMON);
 #endif
-	if (!scfg->loaded)cfg->stddbg = stdout,
+	if (!scfg->_loaded)cfg->stddbg = stdout,
 				cfg->stdshriek = stderr;
 	if (sizeof(int)<4*sizeof(char) || sizeof(int *)<4*sizeof(char)) 
 		shriek (862, "I need at least 32 bit arithmetic & pointery [%d]", sizeof(int));
@@ -643,7 +643,7 @@ void epos_init()	 //Some global sanity checks made here
 	srand(time(NULL));	// randomize
 #endif
 	load_default_charset();
-	if (!esctab) esctab = new charxlat(scfg->token_esc, scfg->value_esc, false);
+	if (!esctab) esctab = new charxlat(scfg->_token_esc, scfg->_value_esc, false);
 
 	config_init();
 
@@ -659,10 +659,10 @@ void epos_init()	 //Some global sanity checks made here
 		
 //	if (!_subst_buff) _subst_buff = (char *)xmalloc(MAX_GATHER+2);
 //	if (!_gather_buff) _gather_buff = (char *)xmalloc(MAX_GATHER+2);
-	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)xmalloc(scfg->max_line+1); 
+	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)xmalloc(scfg->max_line_len+1); 
 	if (!scratch) {
-		scratch = (char *)xmalloc(scfg->scratch+1);
-		scratch[scfg->scratch] = 0;
+		scratch = (char *)xmalloc(scfg->scratch_size+1);
+		scratch[scfg->scratch_size] = 0;
 	}
 	use_async_sputs();
 	
@@ -762,7 +762,7 @@ char *current_debug_tag = NULL;
 void debug_prefix(int lev, int area)
 {
 	unuse(lev); unuse(area);
-	color(STDDBG, scfg->normal_col);
+	color(STDDBG, scfg->normal_color);
 	if (current_debug_tag) fprintf(STDDBG, "[%s] ", current_debug_tag);
 }
 

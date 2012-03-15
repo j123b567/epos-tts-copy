@@ -91,8 +91,8 @@ int get_result(int c)
 {
 	char *mess;
 
-	while (sgets(scratch, scfg->scratch, ctrld[c])) {
-		scratch[scfg->scratch] = 0;
+	while (sgets(scratch, scfg->scratch_size, ctrld[c])) {
+		scratch[scfg->scratch_size] = 0;
 //		printf("[%-28s] Received on %d: %s\n", testname, c, scratch);
 		mess = scratch+strspn(scratch, "0123456789x ");
 		switch(*scratch) {

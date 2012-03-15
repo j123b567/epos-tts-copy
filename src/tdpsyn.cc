@@ -110,7 +110,7 @@ tdpsyn::tdpsyn(voice *v)
 
 	difpos = 0;
 
-	tdi = claim(v->models, v->loc, scfg->inv_base_dir, "rb", "inventory", NULL);
+	tdi = claim(v->models, v->location, scfg->inv_base_dir, "rb", "inventory", NULL);
 	hdr = (tdi_hdr *)tdi->data;
 	D_PRINT(0, "Got %d and config says %d\n", hdr->n_segs, v->n_segs);
 	if (v->n_segs != hdr->n_segs) shriek(463, "inconsistent n_segs");
@@ -127,7 +127,7 @@ tdpsyn::tdpsyn(voice *v)
 //	max_frame = 0;
 //	for (int k = 0; k < v->n_segs; k++) {
 //		int avpitch = average_pitch(diph_offs[k], diph_len[k]);
-//		int maxwin = avpitch + MAX_STRETCH; //(int)(w->samp_rate / 500);
+//		int maxwin = avpitch + MAX_STRETCH; //(int)(w->inv_samping_rate / 500);
 //		if (max_frame < maxwin) max_frame = maxwin;
 //	}
 //	max_frame++;
@@ -148,17 +148,17 @@ tdpsyn::tdpsyn(voice *v)
 		for (i = 0; i < LPC_PROS_ORDER; lpfilt[i++] = 0);
 		for (i = 0; i < MAX_OFILT_ORDER; ofilt[i++] = 0);
 		sigpos = 0;
-		lppstep = LP_F0_STEP * v->samp_rate / 1000;
+		lppstep = LP_F0_STEP * v->inv_sampling_rate / 1000;
 		lpestep = LP_DECIM * lppstep;
 		basef0 = v->init_f;
-		lppitch = v->samp_rate / basef0;;
+		lppitch = v->inv_sampling_rate / basef0;;
 	}
 
 	// init the smoothing filter
 	if (v->f0_smoothing) {
 		int i;
 		for (i = 0; i < MAX_OFILT_ORDER; smoothfilt[i++] = 0);
-		lppitch = v->samp_rate / basef0;
+		lppitch = v->inv_sampling_rate / basef0;
 	}
 }
 
@@ -240,7 +240,7 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 
 	}
 	else {				// in d.f is f0 contour value
-	pitch = v->samp_rate / d.f;
+	pitch = v->inv_sampling_rate / d.f;
 	  D_PRINT(0, "Version without lpc, pitch is %d\n", pitch);
 	}
 
@@ -339,7 +339,7 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 					// do remember the first output value from the lpc filter 
 					if (pitch_saved == 1) {
 					  pitch_saved = 2;
-					lppitch = (int)(v->samp_rate / (basef0 + outf0));
+					lppitch = (int)(v->inv_sampling_rate / (basef0 + outf0));
 					}
 					D_PRINT(0, "New values: outf0 : %f, lppitch : %d\n", outf0, lppitch);
 					outf0 = 0;

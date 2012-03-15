@@ -149,16 +149,16 @@ labl note_template = { FOURCC_INIT("note"), 0, 0 };
 
 wavefm::wavefm(voice *v)
 {
-	samp_rate = v->samp_rate;
+	samp_rate = v->inv_sampling_rate;
 //	samp_size_bytes = sizeof(SAMPLE);
 	channel = v->channel;
 	int stereo = channel==CT_MONO ? 0 : 1;
-	if (this_voice->samp_size <= 0 || (this_voice->samp_size >> 3) > (signed)sizeof(int))
-		shriek(447, "Invalid sample size %d", this_voice->samp_size);
-	if (cfg->ulaw && !cfg->wav_hdr)
-		this_voice->samp_size = 8, this_voice->out_rate = 8000;
-//	cfg->samp_size = cfg->samp_size + 7 & ~7;	// Petr had this
-	downsamp = downsample_factor(samp_rate, v->out_rate);
+	if (this_voice->sample_size <= 0 || (this_voice->sample_size >> 3) > (signed)sizeof(int))
+		shriek(447, "Invalid sample size %d", this_voice->sample_size);
+	if (cfg->ulaw && !cfg->wave_header)
+		this_voice->sample_size = 8, this_voice->out_sampling_rate = 8000;
+//	cfg->sample_size = cfg->sample_size + 7 & ~7;	// Petr had this
+	downsamp = downsample_factor(samp_rate, v->out_sampling_rate);
 	translated = false;
 
 	memcpy(hdr.string1, "RIFF", 4);
@@ -169,7 +169,7 @@ wavefm::wavefm(voice *v)
 	hdr.sf1 = samp_rate; hdr.sf2 = stereo ? hdr.sf1 : 0;
 	hdr.avr1 = 2 * samp_rate; hdr.avr2 = stereo ? hdr.avr1 : 0;
 
-//	hdr.wlenB = samp_size_bytes; hdr.wlenb = v->samp_size;  <--pre 2.4.66 minus 2.4.40
+//	hdr.wlenB = samp_size_bytes; hdr.wlenb = v->sample_size;  <--pre 2.4.66 minus 2.4.40
 //	hdr.xnone = 0x010;					<--dtto
 
 	hdr.alignment = sizeof(SAMPLE); hdr.samplesize = sizeof(SAMPLE) << 3;
@@ -418,7 +418,7 @@ wavefm::detach(int)
 	while (flush()) ;		// FIXME: think slow network write
 	D_PRINT(2, "Detaching waveform\n");
 	sync_soundcard(fd);		// FIXME: necessary, but unwanted
-	if (cfg->wav_hdr && !ioctlable(fd)) write_header();
+	if (cfg->wave_header && !ioctlable(fd)) write_header();
 	fd = -1;
 }
 
@@ -453,7 +453,7 @@ wavefm::attach()
 	int d;
 
 	if (fd != -1) shriek(862, "Nested voice::attach()");
-	if (!scfg->play_segs) scfg->local_sound_device = NULL_FILE;
+	if (!scfg->play_segments) scfg->local_sound_device = NULL_FILE;
 	output = compose_pathname(scfg->local_sound_device, scfg->wav_dir);
 
 #ifdef S_IRGRP
@@ -537,8 +537,8 @@ inline void
 wavefm::translate_data(char *newbuff)
 {
 	D_PRINT(1, "(translating the data, too)");
-//	if (cfg->ulaw && this_voice->samp_size != 8) shriek(462, "Mu law implies 8 bit");
-	int ssbytes  = (this_voice->samp_size + 7) >> 3;  // sample size in bytes
+//	if (cfg->ulaw && this_voice->sample_size != 8) shriek(462, "Mu law implies 8 bit");
+	int ssbytes  = (this_voice->sample_size + 7) >> 3;  // sample size in bytes
 	int shift1 = (sizeof(int) - sizeof(SAMPLE)) << 3;
 	int shift2 = scfg->_big_endian ? 0 : (sizeof(int) - ssbytes) << 3;
 	int unsign = ssbytes == 1 ? 0x80 : 0;
@@ -574,7 +574,7 @@ wavefm::translate()
 	int working_size = sizeof (SAMPLE);
 	working_size *= downsamp;
 
-	int target_size = this_voice->samp_size >> 3;
+	int target_size = this_voice->sample_size >> 3;
 	target_size *= (1 + (channel != CT_MONO));
 	
 //	if (downsamp != 1 && cfg->autofilter) band_filter();	//output is downsampled
@@ -595,10 +595,10 @@ wavefm::translate()
 		translate_data((char *)buffer);		// strange semantics
 	}
 	
-	if (this_voice->out_rate) samp_rate = this_voice->out_rate;
+	if (this_voice->out_sampling_rate) samp_rate = this_voice->out_sampling_rate;
 	hdr.sf1 = samp_rate;		if (hdr.sf2) hdr.sf2 = hdr.sf1;
 	hdr.avr1 = samp_rate * target_size;	if (hdr.avr2) hdr.avr2 = hdr.avr1;
-	hdr.alignment = target_size;	hdr.samplesize = this_voice->samp_size;
+	hdr.alignment = target_size;	hdr.samplesize = this_voice->sample_size;
 	if (cfg->ulaw) hdr.datform = IBM_FORMAT_MULAW;
    finis:
 	translated = true;
@@ -676,7 +676,7 @@ wavefm::get_ophase_len(const w_ophase *p)
 inline bool
 wavefm::update_ophase()
 {
-	if (!cfg->wav_hdr || (fd != -1 && ioctlable(fd))) {	// sound card treated specially
+	if (!cfg->wave_header || (fd != -1 && ioctlable(fd))) {	// sound card treated specially
 		if (ophase == 0) {
 			ophase++, ooffset = 0;
 		}

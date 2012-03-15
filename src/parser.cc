@@ -44,10 +44,10 @@ parser::parser(const char *string, int requested_mode)
 		if (!string || !*string) {
 			register signed char c;
 			int i = 0;
-			text = (unsigned char *)xmalloc(cfg->dev_txtlen+1);
+			text = (unsigned char *)xmalloc(cfg->dev_text_len+1);
 			if(!text) shriek(422, "Parser: Out of memory");
 			do text[i++] = c = getchar(); 
-				while(c!=-1 && c!=scfg->eof_char && i<cfg->dev_txtlen);
+				while(c != -1 && c != scfg->end_of_file && i < cfg->dev_text_len);
 			text[--i] = 0;
 			txtlen = i;
 		} else { 
@@ -74,10 +74,10 @@ parser::init()
 	D_PRINT(1, "Parser: has set up with %s\n", text);
 	current = text; 
 //	current--;
-//	do level = chrlev(*++current); while (level > scfg->phone_level && level < scfg->text_level);
+//	do level = chrlev(*++current); while (level > scfg->_phone_level && level < scfg->_text_level);
 		//We had to skip any garbage before the first phone
 
-	token = '0'; level = scfg->text_level; gettoken();
+	token = '0'; level = scfg->_text_level; gettoken();
 	t = 1;
 
 	D_PRINT(0, "Parser: initial level is %u.\n", level);
@@ -120,7 +120,7 @@ parser::identify_token()
 inline bool
 parser::is_garbage(UNIT level, UNIT last_level)
 {
-	return level <=last_level && level > scfg->phone_level && level < scfg->text_level;
+	return level <= last_level && level > scfg->_phone_level && level < scfg->_text_level;
 }
 
 unsigned char
@@ -133,10 +133,10 @@ parser::gettoken()
 	do {
 		token = identify_token();
 		if (char_level[token] == U_ILL && cfg->relax_input)
-			token = cfg->dflt_char;
+			token = cfg->default_char;
 		level = chrlev(token);
 		if (is_garbage(level, lastlev) && strchr(downgradables, token)) {
-			level = scfg->phone_level; 
+			level = scfg->_phone_level; 
 		}
 		t = 1;
 		current++;
@@ -161,8 +161,8 @@ parser::chrlev(unsigned char c)
 		return U_VOID;
 	if (char_level[c] == U_ILL)
 	{
-		if (cfg->relax_input && char_level[cfg->dflt_char] != U_ILL)
-			return char_level[cfg->dflt_char];
+		if (cfg->relax_input && char_level[cfg->default_char] != U_ILL)
+			return char_level[cfg->default_char];
 		DBG(3, fprintf(cfg->stdshriek, "Parser unhappily dumps core.\n%s\n", (char *)current - 2);)
 		shriek(431, "Parsing an unhandled character  '%c' - ASCII code %d", (unsigned int) c, (unsigned int) c);
 	}
@@ -203,7 +203,7 @@ void
 parser::init_tables(lang *l)
 {
 	int c;
-	UNIT u = scfg->phone_level;
+	UNIT u = scfg->_phone_level;
 
 	l->char_level = (unsigned char *)xmalloc(PARSER_MODES * 256);
 
@@ -212,8 +212,8 @@ parser::init_tables(lang *l)
 			transl_input[t][c] = (unsigned char)c;
 			l->char_level[t * CHARSET_SIZE + c] = U_ILL;
 		}
-		l->char_level[t * CHARSET_SIZE] = scfg->text_level;
-		for (u = scfg->phone_level; u < scfg->text_level; u = (UNIT)(u+1))
+		l->char_level[t * CHARSET_SIZE] = scfg->_text_level;
+		for (u = scfg->_phone_level; u < scfg->_text_level; u = (UNIT)(u+1))
 			regist(t, l->char_level + t * CHARSET_SIZE, u, l->perm[u]);
 			regist(t, l->char_level + t * CHARSET_SIZE, u,
 				t == PARSER_MODE_INPUT  ? l->perm_input[u]

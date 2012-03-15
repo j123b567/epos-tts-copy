@@ -71,7 +71,7 @@ void play_segments(unit *root, voice *v)
 	int i=BUFF_SIZE;
 
 	if (!v->syn) v->syn = setup_synth(v);
-	if (!scfg->play_segs && !scfg->show_segs) return;
+	if (!scfg->play_segments && !scfg->show_segments) return;
 	wavefm w(v);
 	for (int k=0; i==BUFF_SIZE; k+=BUFF_SIZE) {
 		i=root->write_segs(d+1,k,BUFF_SIZE);
@@ -91,12 +91,12 @@ void show_segments(unit *root)
 	int i=BUFF_SIZE;
 	voice *v = this_voice;
 	
-	if (!scfg->show_segs) return;
+	if (!scfg->show_segments) return;
 	v->claim_all();
 	for (int k=0; i==BUFF_SIZE; k+=BUFF_SIZE) {
 		i=root->write_segs(d,k,BUFF_SIZE);
 		for (int j=0;j<i;j++) {
-			if (scfg->seg_raw) fprintf(STDDBG,  "%5d", d[j].code);
+			if (scfg->show_raw_segs) fprintf(STDDBG,  "%5d", d[j].code);
 			fprintf(STDDBG," %.3s f=%d t=%d i=%d\n", d[j].code<v->n_segs && v->segment_names ? ((char(*)[4])v->segment_names->data)[d[j].code] : "?!", d[j].f, d[j].t, d[j].e);
 		}
 	}
@@ -153,17 +153,17 @@ synth::synsegs(voice *v, segment *d, int n, wavefm *w)
 				snprintf (tmp, 7, "%d", d[i].code);
 				// printf ("%d is segment code\n", d[i].code);
 				tmp[7] = 0;
-				w->label(0, tmp, enum2str(scfg->segm_level, scfg->unit_levels));
+				w->label(0, tmp, enum2str(scfg->_segm_level, scfg->unit_levels));
 			}
 			int oi = w->get_buffer_index();
 			synseg(v, x, w);
-			int len = (w->get_buffer_index() - oi) / (v->samp_size >> 3);
+			int len = (w->get_buffer_index() - oi) / (v->sample_size >> 3);
 			if (cfg->label_phones && v->sl[x.code].pos != NO_SOUND_LABEL) {
 				tmp[0] = v->sl[x.code].labl;
 				tmp[1] = 0;
 				int negoffs = (SOUND_LABEL_BASE - v->sl[x.code].pos)
 					* len >> SOUND_LABEL_SHIFT;
-				int level = cfg->label_sseg ? d[i].ll : scfg->phone_level;
+				int level = cfg->label_sseg ? d[i].ll : scfg->_phone_level;
 				w->label(negoffs, tmp, enum2str(level, scfg->unit_levels));
 			}
 			// label again (this time its the 'offset', if i undestood that right)

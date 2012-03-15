@@ -182,7 +182,7 @@ text::get_line(char *buffer)
 	if (!current) return false;	// EOF, again
 	
 	while (true) {
-		while(!fgets(buffer + l, scfg->max_line - l, current->f)) {
+		while(!fgets(buffer + l, scfg->max_line_len - l, current->f)) {
 			if (l) shriek(462, "Backslash at the end of %s", current_file);
 			else superfile();
 			if (!current) return false;
@@ -191,7 +191,7 @@ text::get_line(char *buffer)
 		global_current_line = current_line;
 		global_current_file = current_file;
 		D_PRINT(0, "text::get_line processing %s",buffer);
-		if ((int)strlen(buffer) + 1 >= scfg->max_line)
+		if ((int)strlen(buffer) + 1 >= scfg->max_line_len)
 			shriek(462, "Line too long in %s:%d", current_file, current_line);
 		if (buffer[strspn(buffer, WHITESPACE)] == PP_ESCAPE) {
 			handle_directive(buffer);

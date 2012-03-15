@@ -135,8 +135,8 @@ context::context(int std_in, int std_out)
 	}
 
 	uid = UID_ANON;
-	config->sd_in = std_in;
-	config->sd_out = std_out;
+	config->_sd_in = std_in;
+	config->_sd_out = std_out;
 	D_PRINT(1, "new context uses fd %d and %d\n", std_in, std_out);
 
 	sgets_buff = (char *)xmalloc(config->max_net_cmd);
@@ -258,14 +258,14 @@ static inline void make_server_passwd()
 	if (scfg->listen_port != TTSCP_PORT) return;
 
 	FILE *f;
-	char *filename = compose_pathname(scfg->pwdfile, "");
+	char *filename = compose_pathname(scfg->server_pwd_file, "");
 	if (filename && *filename && (f = fopen(filename, "w", NULL))) {
 		UNIX(chmod(filename, S_IRUSR));
 		fwrite(server_passwd, SERVER_PASSWD_LEN, 1, f);
 		fwrite("\n", 1, 1, f);
 		fclose(f);
-		free((char *)scfg->pwdfile);
-		scfg->pwdfile = filename;
+		free((char *)scfg->server_pwd_file);
+		scfg->server_pwd_file = filename;
 	}
 }
 
@@ -278,10 +278,10 @@ void server_shutdown()
 {
 	while (ctrl_conns->items) {
 		a_ttscp *tmp = ctrl_conns->translate(ctrl_conns->get_random());
-		sputs("800 shutdown requested\r\n", tmp->c->config->sd_out);
+		sputs("800 shutdown requested\r\n", tmp->c->config->_sd_out);
 		delete ctrl_conns->remove(tmp->handle);
 	}
-	if (scfg->pwdfile) remove(scfg->pwdfile);
+	if (scfg->server_pwd_file) remove(scfg->server_pwd_file);
 	try {
 		delete accept_conn;
 		delete ctrl_conns;
@@ -305,19 +305,19 @@ static void server_reinit_check()
 		server_reinit_req = false;
 		while (ctrl_conns->items) {
 			a_ttscp *tmp = ctrl_conns->translate(ctrl_conns->get_random());
-			sputs("601 reinit requested\r\n", tmp->c->config->sd_out);
-			block_table[tmp->c->config->sd_out] = NULL;
-			push_table[tmp->c->config->sd_out] = NULL;
-			FD_CLR(tmp->c->config->sd_out, &block_set);
-			FD_CLR(tmp->c->config->sd_out, &push_set);
+			sputs("601 reinit requested\r\n", tmp->c->config->_sd_out);
+			block_table[tmp->c->config->_sd_out] = NULL;
+			push_table[tmp->c->config->_sd_out] = NULL;
+			FD_CLR(tmp->c->config->_sd_out, &block_set);
+			FD_CLR(tmp->c->config->_sd_out, &push_set);
 			delete ctrl_conns->remove(tmp->handle);
 		}
 		while (data_conns->items) {
 			a_ttscp *tmp = data_conns->translate(data_conns->get_random());
-			block_table[tmp->c->config->sd_out] = NULL;
-			push_table[tmp->c->config->sd_out] = NULL;
-			FD_CLR(tmp->c->config->sd_out, &block_set);
-			FD_CLR(tmp->c->config->sd_out, &push_set);
+			block_table[tmp->c->config->_sd_out] = NULL;
+			push_table[tmp->c->config->_sd_out] = NULL;
+			FD_CLR(tmp->c->config->_sd_out, &block_set);
+			FD_CLR(tmp->c->config->_sd_out, &push_set);
 			delete data_conns->remove(tmp->handle);
 		}
 //		free_all_options();
@@ -482,15 +482,15 @@ void server_crashed(char *, a_ttscp *a, int why_we_crashed)
 	int w = why_we_crashed;
 	char code[]= "865";
 	if (w / 100 == 8) code[1] = (w % 100) / 10 + '0', code[2] = w % 10 + '0';
-	sputs(code, a->c->config->sd_out);
-	sputs(" shutdown, not your problem\n", a->c->config->sd_out);
+	sputs(code, a->c->config->_sd_out);
+	sputs(" shutdown, not your problem\n", a->c->config->_sd_out);
 }
 
 void lest_already_running()
 {
 	if (running_at_localhost()) {
-		if (scfg->pwdfile) free((char *)scfg->pwdfile);	// FIXME: set_option()
-		scfg->pwdfile = NULL;
+		if (scfg->server_pwd_file) free((char *)scfg->server_pwd_file);	// FIXME: set_option()
+		scfg->server_pwd_file = NULL;
 		shriek(872, "Already running\n");
 	}
 #ifdef ENETUNREACH
@@ -503,7 +503,7 @@ void init_thrown_exception(int errcode)
 {
 	ctrl_conns->forall(server_crashed, errcode);
 
-	if (scfg->pwdfile) remove(scfg->pwdfile);
+	if (scfg->server_pwd_file) remove(scfg->server_pwd_file);
 }
 
 int start_unix_daemon()

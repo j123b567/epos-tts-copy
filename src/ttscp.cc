@@ -35,8 +35,8 @@ a_accept *accept_conn = NULL;
 
 static inline void sendstring(const char *text)
 {
-	sputs(text, cfg->sd_out);
-	sputs("\r\n", cfg->sd_out);
+	sputs(text, cfg->_sd_out);
+	sputs("\r\n", cfg->_sd_out);
 }
 
 void reply(const char *text)
@@ -62,7 +62,7 @@ void reply(int code, const char *text)
 	c[2] = code % 10 + '0';
 	c[3] = ' ';
 	c[4] = 0;
-	sputs(c, cfg->sd_out);
+	sputs(c, cfg->_sd_out);
 	sendstring(text);
 }
 
@@ -100,8 +100,8 @@ int cmd_user(char *param, a_ttscp *)
 int cmd_pass(char *param, a_ttscp *)
 {
 	if (this_context->uid == UID_ANON) {
-		if (!strcmp(param, server_passwd) || scfg->dbg_pwd
-				&& !strcmp(param, scfg->dbg_pwd)) {
+		if (!strcmp(param, server_passwd) || scfg->debug_password
+				&& !strcmp(param, scfg->debug_password)) {
 			D_PRINT(2, "It's me!\n");
 			this_context->uid = UID_SERVER;
 			reply("200 OK");
@@ -153,7 +153,7 @@ static void strip(char *val)
 static inline int do_set(char *param, context *real)
 {
 	char *value = split_string(param);
-	epos_option *o = option_struct(param, this_lang->soft_options);
+	epos_option *o = option_struct(param, this_lang->soft_opts);
 	strip(value);
 
 	if (o) {
@@ -212,7 +212,7 @@ int cmd_help(char *param, a_ttscp *)
 			sendstring(scratch);
 		}
 
-		pathname = compose_pathname(param, cfg->help_dir);
+		pathname = compose_pathname(param, cfg->ttscp_help_dir);
 		f = fopen(pathname, "rt");
 		free(pathname);
 		if (!f) {
@@ -220,10 +220,10 @@ int cmd_help(char *param, a_ttscp *)
 			return PA_NEXT;
 		}
 		*scratch = ' ';
-		while (fgets(scratch + 1, scfg->scratch - 3, f)) {
+		while (fgets(scratch + 1, scfg->scratch_size - 3, f)) {
 			int l = strlen(scratch);
 			scratch[l-1] = '\r'; scratch[l] = '\n'; scratch[l+1] = 0;
-			sputs(scratch, cfg->sd_out);
+			sputs(scratch, cfg->_sd_out);
 		}
 	} else
 		for (ttscp_cmd *cmd = ttscp_cmd_set; cmd->name; cmd++) {
@@ -267,11 +267,11 @@ void cmd_restart(char *param)
 int do_show(char *param)
 {
 	int i;
-	epos_option *o = option_struct(param, this_lang->soft_options);
+	epos_option *o = option_struct(param, this_lang->soft_opts);
 
 	if (o) {
 		if (access_level(this_context->uid) >= o->readable) {
-			sputs(SHOW_SPACE, cfg->sd_out);
+			sputs(SHOW_SPACE, cfg->_sd_out);
 			sendstring(format_option(o));
 			reply("200 OK");
 		} else reply("451 Access denied");
@@ -303,12 +303,12 @@ int do_show(char *param)
 		if (!strcmp("voices", param)) {
 			int bufflen = 0;
 			for (i=0; i < this_lang->n_voices; i++)
-				bufflen += strlen(this_lang->voices[i]->name) + strlen(scfg->comma);
+				bufflen += strlen(this_lang->voicetab[i]->name) + strlen(scfg->comma);
 			char *result = (char *)xmalloc(bufflen + 1);
-			strcpy(result, this_lang->n_voices ? this_lang->voices[0]->name : "(empty list)");
+			strcpy(result, this_lang->n_voices ? this_lang->voicetab[0]->name : "(empty list)");
 			for (i=1; i < this_lang->n_voices; i++) {
 				strcat(result, scfg->comma);
-				strcat(result, this_lang->voices[i]->name);
+				strcat(result, this_lang->voicetab[i]->name);
 			}
 			sendstring(result);
 			free(result);

@@ -1522,13 +1522,6 @@ cd src
 	Any waveform files created by Epos without explicit directory
 	specification will be created in this directory.
 	Applies only to the monolithic Epos.
-<tag>--matlab&lowbar;dir <sl/dirname/</tag>
-	The value is a global directory name.
-	An input file for the experimental neural networks will be created
-	in the directory when the <tt/neuronet/ option is on.  Its name
-	is specified by the <tt/nnet&lowbar;file/ option.
-	Applies only to the monolithic Epos.
-
 </descrip>
 
 
