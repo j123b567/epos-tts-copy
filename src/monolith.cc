@@ -16,7 +16,7 @@
 
 #include "common.h"
 
-const bool is_monolith = 1;
+const bool is_monolith = true;
 
 #ifdef HAVE_UNISTD_H		// fork() only
 	#include <unistd.h>

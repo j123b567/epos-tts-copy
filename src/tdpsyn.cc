@@ -157,7 +157,7 @@ tdpsyn::tdpsyn(voice *v)
 	}
 
 	// init the smoothing filter
-	if (v->use_f0_smoothing) {
+	if (v->f0_smoothing) {
 		int i;
 		for (i = 0; i < MAX_OFILT_ORDER; smoothfilt[i++] = 0);
 		lppitch = v->samp_rate / basef0;
@@ -219,7 +219,7 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 			d.e = (d.e * 100 / v->init_i - 1000) * v->init_i / 100;
 		}
 
-	  if (v->use_bang_nnet) {
+	  if (v->bang_nnet) {
 	    // multiply with 13.4 if f0 filter is used
 	    exc = ((float) d.f) / 1000;
 	    // exc = (int) (((float) d.f) * 13.4);
@@ -246,7 +246,7 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 	  // printf ("Version without lpc, pitch is %d\n", pitch);
 	}
 
-	if (v->use_f0_smoothing) {
+	if (v->f0_smoothing) {
 		segment_pitch = pitch; // remember pitch for whole segment
 		if (lppitch > 0) {
 			pitch = lppitch; // use pitch from last segment
@@ -315,7 +315,7 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 					}
 
 					// skip f0 filter here
-					if (! (v->use_bang_nnet)) {
+					if (! (v->bang_nnet)) {
 					// if (1) {
 					ofilt[0] = synf0;
 					synf0 = 0;
@@ -379,7 +379,7 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 		}
 
 		// f0 smoothing, when chosen
-		if (v->use_f0_smoothing) {
+		if (v->f0_smoothing) {
 
 			smoothfilt[0] = segment_pitch;
 

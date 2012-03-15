@@ -460,7 +460,7 @@
 # undef stringify
 
 
-STATIC (use_dbg,    "use_debug",  BOOL, false)  // Whether to print any debug info at all
+STATIC (debug,           "debug", BOOL, false)  // Whether to print any debug info at all
 STATIC (debug_level,"debug_level", INT, 4)	// minimum level of debug messages
 
 STATIC (loaded, "",               BOOL, false)  // Do we have already compiled the .ini files?
@@ -569,9 +569,9 @@ VOICE_OPTION (inv_out_rate, out_rate, "out_sampling_rate", INT, 0)	// 0 means eq
 	// positive value specifies the required output rate (samp_rate divided by an integer)
 // VOICE_OPTION (f0_model, f0_model, "f0_modelling", STR, "classic")	// F0 contour modelling (classic, lpc, fujisaki)
 VOICE_OPTION (lpcprosody, lpcprosody, "lpcprosody", BOOL, false)	// F0 contour modelling using a linear prediction
-VOICE_OPTION (use_bang_nnet, use_bang_nnet, "use_bang_nnet", BOOL, false)	// F0 contour modelling using a linear prediction
-// VOICE_OPTION (use_nnet_phone, use_nnet_phone, "use_nnet_phone", BOOL, false)	// F0 contour with lpc but on the phone level
-VOICE_OPTION (use_f0_smoothing, use_f0_smoothing, "use_f0_smoothing", BOOL, false) // generated F0 shall be smoothed via filter after each pitchpuls
+VOICE_OPTION (bang_nnet, bang_nnet, "bang_nnet", BOOL, false)	// F0 contour modelling using a linear prediction
+// VOICE_OPTION (nnet_phone, nnet_phone, "nnet_phone", BOOL, false)	// F0 contour with lpc but on the phone level
+VOICE_OPTION (f0_smoothing, f0_smoothing, "f0_smoothing", BOOL, false) // generated F0 shall be smoothed via filter after each pitchpuls
 // VOICE_OPTION (additive_cont, additive_cont, "additive_cont", BOOL, false)  // rule "contour" additive mode
 
 OPTION (pros_factor, "pros_factor", INT, 1000)				// this controls how strong prosody is applied
@@ -586,7 +586,7 @@ OPTION (wav_hdr, "wave_header",	  BOOL, false)  // Should .wav output contain .w
 OPTION (ulaw, "ulaw",		  BOOL, false)	// Should .wav output use the mu law encoding?
 
 STATIC (daemon_log, "daemon_log",  STR, NULL)	// Log file of daemon.cc activities (TTSCP server)
-STATIC (use_syslog, "use_syslog", BOOL, true)	// Use syslogd for logging if available
+STATIC (syslog, "syslog",         BOOL, true)	// Use syslogd for logging if available
 STATIC (full_syslog,"full_syslog",BOOL, false)	// Use syslogd for logging all TTSCP traffic?
 STATIC (authpriv, "authpriv",     BOOL, false)  // Use authpriv facility for security relevant syslog messages?
 STATIC (log_codes, "log_codes",   BOOL, false)  // Should logged messages contain TTSCP codes?
@@ -650,6 +650,7 @@ STATIC (default_target, "default_target",         ELEM, 0)
 LNG_OPTIONARRAY (perm, "perm",			STR, NULL, UNIT_MAX)
 LNG_OPTIONARRAY (perm_input, "perm_input",	STR, NULL, UNIT_MAX)
 LNG_OPTIONARRAY (perm_working, "perm_working",	STR, NULL, UNIT_MAX)
+LNG_OPTION (downgradables, downgradables, "downgradables", STR, NULL)
 
 OPTIONARRAY (pros_weight, "pros_weight", INT, 1, UNIT_MAX)	// FIXME: make all these STATIC
 

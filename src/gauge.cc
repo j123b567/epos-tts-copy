@@ -302,7 +302,7 @@ void send_cmd_line(int argc, char **argv)
 					  wavfile = true;
 					  output_file = "said.wav"; break;
 				case 'D':
-					send_option("use_debug", "true");
+					send_option("debug", "true");
 					break;
 				default : shriek("Unknown short option");
 			}

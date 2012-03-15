@@ -131,7 +131,7 @@ synth::synsegs(voice *v, segment *d, int n, wavefm *w)
 	for (int i=0; i<n; i++) {
 		x.code = d[i].code;
 		x.t = v->init_t * d[i].t / 100;
-		if ((v->use_bang_nnet) && (v->lpcprosody)) {
+		if ((v->bang_nnet) && (v->lpcprosody)) {
 		  // excitation value from nnet
 		  x.f = d[i].f; // direct value from nnet to be passed
 		  // printf ("direct output value %d from nnet to %d!\n", d[i].f, x.f);
@@ -178,7 +178,7 @@ synth::synsegs(voice *v, segment *d, int n, wavefm *w)
 void
 synth::synssif(voice *v, char *, wavefm *w)
 {
-	shriek(861, "synth::synsiff is abstract");
+	shriek(462, "synth::synssif is abstract");
 }
 
 void
@@ -188,7 +188,8 @@ voidsyn::synseg(voice *, segment, wavefm *)
 }
 
 
-void voidsyn::synssif(voice *, char *, wavefm *)
+void
+voidsyn::synssif(voice *, char *, wavefm *)
 {
 	shriek(813, "Synthesis type absent");
 }

@@ -34,6 +34,8 @@ parser::parser(const char *string, int requested_mode)
 	}
 
 	char_level = this_lang->char_level + mode * CHARSET_SIZE;
+	downgradables = this_lang->downgradables;
+	if (!downgradables) downgradables = "";
 
 	if (is_file) {
 		if (!string || !*string) {
@@ -67,11 +69,12 @@ parser::init()
 	for(i = 0; i < txtlen; i++)
 		text[i] = transl_input[mode][text[i]];
 	D_PRINT(1, "Parser: has set up with %s\n", text);
-	current = text - 1; 
-	do level = chrlev(*++current); while (level > scfg->phone_level && level < scfg->text_level);
+	current = text; 
+//	current--;
+//	do level = chrlev(*++current); while (level > scfg->phone_level && level < scfg->text_level);
 		//We had to skip any garbage before the first phone
 
-	token = '0'; gettoken();
+	token = '0'; level = scfg->text_level; gettoken();
 	t = 1;
 
 	D_PRINT(0, "Parser: initial level is %u.\n", level);
@@ -85,6 +88,38 @@ parser::~parser()
 #define IS_DIGIT(x)	((x)>='0' && (x)<='9')
 #define IS_ASCII_LOWER_ALPHA(x) ((x)>='a' && (x)<='z')
 
+inline unsigned char
+parser::identify_token()
+{
+	switch (token = *current) {
+		case '.':
+			if (IS_DIGIT(current[1]))
+				return DECPOINT;
+			if (IS_ASCII_LOWER_ALPHA(current[1]))
+				return URLDOT;
+			if (current[1] == '.' && current[2] == '.') {
+				current += 2;
+				return DOTS;
+			}
+			break;
+		case '-':
+			if (IS_DIGIT(current[1]))
+				return current > text && IS_DIGIT(current[-1]) ? RANGE : MINUS;
+			while (current[1] == '-') current++;
+			break;
+//		case '<': if (cfg->stml) shriek(462, "STML not implemented"); else break;
+//		case '&': if (cfg->stml) shriek(462, "STML not implemented"); else break;
+		default : ;
+	}
+	return *current;
+}
+
+inline bool
+parser::is_garbage(UNIT level, UNIT last_level)
+{
+	return level <=last_level && level > scfg->phone_level && level < scfg->text_level;
+}
+
 unsigned char
 parser::gettoken()
 {
@@ -93,44 +128,16 @@ parser::gettoken()
 	UNIT lastlev = level;
 	unsigned char ret = token;
 	do {
-		switch (token = *current) {
-			case '.':
-				if (IS_DIGIT(current[1])) {
-					token = DECPOINT;
-					break;
-				}
-				if (IS_ASCII_LOWER_ALPHA(current[1])) {
-					token = URLDOT;
-					break;
-				}
-				if (current[1] == '.' && current[2] == '.') {
-					current += 2;
-					token = DOTS;
-					break;
-				}
-				break;
-			case '-':
-				if (IS_DIGIT(current[1])) {
-					token = current > text && IS_DIGIT(current[-1]) ? RANGE : MINUS;
-					break;
-				}
-				while (current[1] == '-') current++;
-				break;
-//			case '<': if (cfg->stml) shriek(462, "STML not implemented"); else break;
-//			case '&': if (cfg->stml) shriek(462, "STML not implemented"); else break;
-			default : ;
-		}
+		token = identify_token();
 		if (char_level[token] == U_ILL && cfg->relax_input)
 			token = cfg->dflt_char;
 		level = chrlev(token);
-//		f = i = t = 0;
+		if (is_garbage(level, lastlev) && strchr(downgradables, token)) {
+			level = scfg->phone_level; 
+		}
 		t = 1;
-//		if (level == scfg->text_level) {
-//			D_PRINT(2, "Parser: end of text reached, changing the policy\n");
-//			return ret;
-//		}
 		current++;
-	} while (level <= lastlev && level > scfg->phone_level && level < scfg->text_level);
+	} while (is_garbage(level, lastlev));
 		// (We are skipping any empty units, except for phones.)
 	D_PRINT(0, "Parser: char requested, '%c' (level %u), next: '%c' (level %u)\n", ret, lastlev, *current, level);
 

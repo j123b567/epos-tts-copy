@@ -165,7 +165,8 @@ The data is passed between modules in one of the following formats:
 <itemize>
 	<item> plain ASCII text
 	<item> Spoken Text Markup Language (STML)
-	<item> phonetic structure of the text
+	<item> phonetic structure of the text (TSR)
+	<item> Speech Synthesizer Input Format (SSIF)
 	<item> sequence of segments
 	<item> waveform file
 </itemize>
@@ -189,6 +190,33 @@ Conversion to plain ASCII text dismisses prosody.
 
 Conversion to plain ASCII text or STML dismisses segment layer if any.
 
+<sect2> Speech Synthesizer Input Format
+<p>
+
+This format has been introduced by the MBROLA synthesizer
+development team.  Together with the "sequence of segments"
+it is one of the two possible input formats to a speech
+synthesizer in Epos.  With the MBROLA synthesizer you have
+to use SSIF.
+
+SSIF is line oriented, each line corresponding to a single phone;
+the line contains several whitespace separated components.
+
+The first component is the SAMPA notation of the phone;
+the second component is its duration in milliseconds.
+
+Subsequent components are prosody points.  Each prosody point
+is enclosed in parentheses and consists of two or three
+integers separated by commas.  The first value locates
+the prosody point within the phone per cent (e.g. the value
+of <tt/99/ corresponds to just before the end of the phone);
+the second value indicates the desired pitch at that prosody
+point (the value of <tt/100/ indicates the default pitch);
+the third value, which is not currently supported by MBROLA,
+and which is optional, indicates the intensity at that point.
+It is the responsibility of the synthesizer to do piecewise
+linear interpolation between prosody points.
+
 <sect2> Sequence of Segments
 <p>
 
@@ -198,10 +226,11 @@ intensity (volume) and time factor (speed). The initial segment is dummy
 in this sequence. The corresponding prosodic parameters are undefined.
 They should preferably be zero.
 
-This format is going to be replaced by a human readable format with
-the ability to specify multiple pitch points per segment.  For the time
-being, the integer values should be encoded as 32-bit little endian
+The integer values should be encoded as 32-bit little endian
 integers.  
+
+This format is currently being replaced by SSIF, although it will
+remain to be supported for some additional period time.
 
 <sect2> Waveform
 <p>
@@ -539,14 +568,16 @@ processing. All of them have fixed names and types.
 <hline>
  name	  | input format | output format | notes@
 <hline>
- chunk	  | plain text	| plain text		| splits text@
- join	  | plain text	| plain text		| joins texts@
- raw	  | plain text	| TSR			| parses text@
- stml	  | STML text	| TSR			| parses STML@
- rules	  | TSR		| TSR			| @
+ chunk	  | plain text	| plain text		| splits text @
+ join	  | plain text	| plain text		| joins texts @
+ raw	  | plain text	| TSR			| parses text @
+ stml	  | STML text	| TSR			| parses STML @
+ rules	  | TSR		| TSR			| apply rules @
  print	  | TSR		| plain text		| @
- diphs	  | TSR		| segments		| extract segments@
- synth	  | segments	 | waveform		| speech synthesis@
+ dump	  | TSR		| SSIF			| extract SSIF @
+ diphs	  | TSR		| segments		| extract segments @
+ syn	  | SSIF	| waveform		| speech synthesis @
+ synth	  | segments	| waveform		| speech synthesis @
 <hline>
 </tabular>
 <caption> Available processing modules </caption>
@@ -594,6 +625,11 @@ user-readable output.  The conversion should be as straightforward
 as possible and should not emit any special formatting character
 sequences.  Ideally, the successive application of the <tt/raw/ and
 <tt/print/ modules should not significantly alter the text.
+
+<sect3> <tt> dump </tt> 
+<p>
+
+...
 
 <sect3> <tt> diphs </tt> 
 <p>
@@ -650,6 +686,7 @@ brackets.  The available data types are indicated by letters listed in
  t | plain text  @
  s | STML text  @
  i | the server-internal text structure representation @
+ p | SSIF @
  d | segments @
  w | waveform @
 <hline>

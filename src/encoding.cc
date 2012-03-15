@@ -40,6 +40,8 @@ bool sampa_updated = false;
 
 void init_enc()
 {
+	cfg->charset = 0;
+
 	encoders = (unsigned char **)xmalloc(sizeof(unsigned char *));
 	decoders = (unsigned char **)xmalloc(sizeof(unsigned char *));
 	charsets = (wchar_t **)xmalloc(sizeof(wchar_t *));

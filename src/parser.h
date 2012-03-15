@@ -37,6 +37,7 @@ class parser
 	// to be initialized in the constructor:
 	static unsigned char transl_input[PARSER_MODES][CHARSET_SIZE];
 	unsigned char *char_level;	// just a cached value
+	const char *downgradables;
 	
 	int mode;	// the first index to CHAR_LEVEL and TRANSL_INPUT
 
@@ -49,6 +50,8 @@ class parser
 	UNIT level;		// contains the UNIT level of the next symbol
 //	int f, i, t;		// f, i, t of the next symbol (usually zero)
 	float t;
+	unsigned char identify_token();
+	static bool is_garbage(UNIT level, UNIT last_level);
 	unsigned char gettoken(); // gets the next symbol
 	UNIT chrlev(unsigned char c);  // what level c is to be analysed at
 	void done();		// shriek if some input left

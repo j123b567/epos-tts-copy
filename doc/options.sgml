@@ -1052,7 +1052,7 @@ This subsection lists some options defined for each language.  Additional
 language dependent options are certain directory and file names and possibly
 others.  As every voice is associated with a single language (two voices
 may share a multilingual segment inventory if desired), every voice dependent
-option is thence language dependent.
+option is also language dependent.
 
 <descrip>
 <tag>--name <sl/voicename/</tag>
@@ -1103,6 +1103,19 @@ option is thence language dependent.
 	specified by the <tt/perm*/ options to be permitted
 	during internal re-parses.  The characters will
 	however not be permitted in the initial parse of the input text.
+<tag>--downgradables <sl/set/</tag>
+	Additional permisible characters at the phone level.
+	Whereas all of the <tt/perm*/ options must specify disjoint
+	sets of characters for each language, this option typically
+	consists of characters which are listed as permisible for
+	higher levels than the phone level, too.  The characters
+	are parsed at the higher level if possible.  If that would
+	however constitute an empty suprasegmental unit (i.e. there
+	are no preceding phones since the beginning of the text or
+	since the last unit of the same or even higher level),
+	the character will be parsed at the phone level at this
+	particular occurence.  This affects both the initial parse
+	and later re-parses.
 <tag>--charset <sl/charset/</tag>
 	The character set to be used with the current language
 	(especially in rules, voice configuration; also in text
@@ -1473,7 +1486,7 @@ change them in the configuration files instead and request Epos
 	The value is a file name. This option can be used to set the file
 	where various information about the Epos process is recorded.
 	At the moment that is of little practical use except for debugging.
-<tag>--use&lowbar;syslog</tag>
+<tag>--syslog</tag>
 	Log all TTSCP error messages with syslogd, if the syslog facility
 	is available.  Due to the internal design of Epos, some of these
 	messages are never actually sent over TTSCP to anyone - for example,
@@ -1565,7 +1578,7 @@ level | debugging messages | easy invocation | comment @
 Both options in this subsection are <ref id="static" name="static">.
 
 <descrip>
-<tag>--use&lowbar;debug</tag>
+<tag>--debug</tag>
 	This option must be <tt/on/ to provide any debugging information (except for
 	daemon activity logging controlled by <ref id="daemon-log-option" 
 	name="the daemon&lowbar;log option"> and syslog logging.

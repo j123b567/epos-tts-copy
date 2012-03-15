@@ -668,13 +668,6 @@ bool set_option(epos_option *o, const char *value)
 
 static inline bool set_option(char *name, const char *value)
 {
-//	option *o = option_struct(name, NULL);
-//	... tvorba indexu ...
-//	char *tmp;
-//	if ((tmp = strchr(name, INDEXER)) {
-//		UNIT x = str2enum(tmp + 1, scfg->unit_levels, U_ILL);
-//		if (x == U_ILL) 
-//	}
 	return set_option(option_struct(name, NULL), value);
 }
 
@@ -823,7 +816,7 @@ void parse_cmd_line()
 				case 's': scfg->play_segs=true; break;
 				case 'v': scfg->version=true; break;
 				case 'D':
-					if (!scfg->use_dbg) scfg->use_dbg=true;
+					if (!scfg->debug) scfg->debug = true;
 					dees++;
 //					else if (scfg->_warnings)
 //						scfg->always_dbg--;
@@ -962,36 +955,70 @@ static inline void version()
 	fprintf(cfg->stdshriek, "This is Epos version %s, bug reports to \"%s\" <%s>\n", VERSION, MAINTAINER, MAIL);
 }
 
-static inline void dump_help()
+static char opttype_letter(OPT_TYPE ot)
 {
-	int i,j,k;
+	switch (ot) {
+		case O_STRING: return 's';
+		case O_INT: return 'n';
+		case O_CHAR: return 'c';
+		case O_BOOL: return 'b';
 
-	printf("usage: %s [options] ['Text to be processed.']\n", argv_copy[0]);
-	printf(" -b  bare format (no frills)\n");
-//	printf(" -d  show segments\n");
-//	printf(" -e  show phones\n");
-	printf(" -f  disable forking (detaching) the daemon\n");
-	printf(" -n  same as --neuronet --rules_file nnet.rul\n");
-	printf(" -p  pausing - show every intermediate state\n");
-	printf(" -s  speak it\n");
-	printf(" -v  show version\n");
-	printf(" -D  debugging info (more D's - more detailed)\n");
-	printf(" -   keyboard input\n");
-	printf(" --long_options    ...see src/options.lst or 'epos -H' for these\n");
-	if (!scfg->long_help) exit(0);
+		case O_UNIT:
+		case O_LANG:
+		case O_VOICE:
+		case O_CHARSET:
+			return 'l';
+		case O_MARKUP:
+		case O_SYNTH:
+		case O_CHANNEL:
+			return 'f';
+		default: return '?';
+	}
+}
 
-	printf("Long option types: (b) boolean,    (c) character, (e) special enumerated\n");
-	printf("                   (n) int number, (s) string,    (u) unit level\n");
+static void dump_long_opts(char *label, epos_option *list)
+{
+	int i, j, k;
 	k = 0;
-	for (i=0; optlist[i].optname;i++) {
-		if (*optlist[i].optname) {
-			printf("--%s(%c)", optlist[i].optname, "bueeeencseee"[optlist[i].opttype]);
-			for (j = -(signed int)strlen(optlist[i].optname)-5; j <= 0; j += 26) k++;
-			for (; j>0; j--) printf(" ");
+	printf("\n%s:\n", label);
+	for (i = 0; list[i].optname; i++) {
+		if (*list[i].optname) {
+			printf("--%s(%c)", list[i].optname, opttype_letter(list[i].opttype));
+			for (j = -(signed int)strlen(list[i].optname) - 5; j <= 0; j += 26) k++;
 			if (k >= 3) printf("\n"), k=0;
+			else for (; j > 0; j--) printf(" ");
 		}
 	}
 	printf("\n");
+}
+
+static inline void dump_help()
+{
+
+	if (is_monolith) {
+		printf(" You probably don't want to use this monolithic binary.\n");
+		printf(" The usage is somewhere between 'say' and 'epos',\n");
+		printf(" but the details are not documented, maintained nor supported.\n");
+		exit(0);
+	}
+
+	printf("usage: %s [options]\n", argv_copy[0]);
+	printf(" -f  disable forking (detaching) the daemon\n");
+	printf(" -p  pausing - show every intermediate state\n");
+	printf(" -v  show version\n");
+	printf(" -D  debugging info (more D's - more detailed)\n");
+	printf(" --some_long_option    ...see src/options.lst or 'epos -H' for these\n");
+	printf("(use one of the clients (e.g. 'say') to pass input to Epos)\n");
+	if (!scfg->long_help) exit(0);
+
+	printf("Long option types:\n");
+	printf("        (b) boolean,  (c) character,  (n) integer,  (s) string,\n");
+	printf("        (f) fixed choice: source-level fixed,\n");
+        printf("        (l) list of choices: configurable\n");
+	dump_long_opts("Static options", staticoptlist);
+	dump_long_opts("Global options", optlist);
+	dump_long_opts("Language dependent options", langoptlist);
+	dump_long_opts("Voice dependent options", voiceoptlist);
 	exit(0);
 }
 

@@ -1279,3 +1279,18 @@ for an exciting story, just skip it.
 	- use_nnet_phone changed to a soft option and renamed to nnet_phone
 	- added arch/unix/test.version to assist make distcheck
 
+2.5.15 from 2.5.14	8.8.03
+	- renamed INFINITY in unit.cc to avoid a conflict with C99
+	- updated the --help and -H outputs for all three command lines
+	- removed superfluous "use_" from the few affected boolean opts
+	- fixed charset setting while cfg re-read
+	- documented TTSCP modules dump and [p]
+	- changed some 86x errors to 46x
+
+2.5.16 from 2.5.15	12.8.03
+	- new LPC inventories (silent diphone added)
+	- cfg/inv now always includes kubec-vq, vichova-vq
+	- vrfy doesn't kill the temporary server but uses "down"
+	- config.guess, config.sub updated
+	- option "downgradables" solves several parser limitations
+	- adapted doc/intro.sgml to get the history closer to current reality

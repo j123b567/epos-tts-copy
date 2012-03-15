@@ -1036,6 +1036,7 @@ void a_disconnector::run()
 	if (!last) shriek(861, "Spurious disconnect");
 	delete to_delete[--last];
 	to_delete[last] = NULL;
+	D_PRINT(0, "Disconnect finished, last is %d\n", last);
 }
 
 void a_disconnector::disconnect(a_protocol *moriturus)
@@ -1045,6 +1046,7 @@ void a_disconnector::disconnect(a_protocol *moriturus)
 		to_delete = (a_protocol **)xrealloc(to_delete, max * sizeof(void *));
 	}
 	to_delete[last++] = moriturus;
+	D_PRINT(0, "Disconnect requested, last is %d\n", last);
 	schedule();
 }
 

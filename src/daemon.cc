@@ -100,7 +100,7 @@ class wsa_init			/* initialise winsock before main() is entered  */
 int start_nt_service();
 #endif
 
-const bool is_monolith = 0;
+const bool is_monolith = false;
 
 
 #define DARK_ERRLOG 2	/* 2 == stderr; for global stdshriek and stddbg output */
@@ -324,13 +324,6 @@ static void server_reinit_check()
 		accept_conn = new a_accept();
 	}
 }
-
-/*
-static void unix_sigfatal(int)
-{
-	shriek(467, "Helemese! A fatal signal occured.\n");
-}
-*/
 
 static void unix_sigterm(int)
 {

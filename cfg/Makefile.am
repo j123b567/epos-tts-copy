@@ -3,7 +3,7 @@
 include $(top_srcdir)/Makefile.common
 
 pkgdata_DATA = version
-EASY_INSTALL = cfg lng voice mappings ttscp root
+EASY_INSTALL = cfg lng voice inv mappings ttscp root
 
 version: $(top_srcdir)/configure.in
 	@echo $(VERSION) > version

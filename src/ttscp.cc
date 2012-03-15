@@ -42,7 +42,7 @@ static inline void sendstring(const char *text)
 void reply(const char *text)
 {
 #ifdef HAVE_SYSLOG_H
-	if (scfg->use_syslog && (scfg->full_syslog || text[0] > '2')) {
+	if (scfg->syslog && (scfg->full_syslog || text[0] > '2')) {
 		if (text[3] != ' ' || text[0] > '9')
 			shriek(461, "Ill-formed TTSCP error code supplied");
 		syslog(severity(text[0]*100 + text[1]*10 + text[2] - '0'*111),

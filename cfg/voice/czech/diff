@@ -1,0 +1,21 @@
+--- vichova.ini	Sun Apr  6 21:17:08 2003
++++ ../../../newlpc/newlpc/voice/czech/vichova.ini	Mon Aug 11 21:21:41 2003
+@@ -2,15 +2,13 @@
+ 
+ counts			"lvichova.dat"
+ models			"mvichova.int"
+-codebook		 ""
+ dpt_file		"traditnl.dpt"
+-traditional_dph		on
+-
++codebook		 ""
+ type			lpc-int
+ location		lpc
+-n_segs			441
++n_segs			442
+ init_f			200
+-init_t			100
++init_t			80
+ init_i			100
+ inv_sampling_rate		8000
+ 

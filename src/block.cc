@@ -177,7 +177,7 @@ block_rule::apply_current(unit *root)
 		u->scope = true;
 		D_PRINT(0, "block_rule::apply current_rule %d\n", current_rule);
 #ifdef DEBUGGING
-		if (scfg->use_dbg) current_debug_tag = r->dbg_tag;
+		if (scfg->debug) current_debug_tag = r->dbg_tag;
 		if (scfg->showrule) fprintf(STDDBG, "[%s] %s %s\n",
 			r->dbg_tag,
 			enum2str(r->code(), OPCODEstr), r->raw);

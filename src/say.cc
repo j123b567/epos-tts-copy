@@ -223,6 +223,7 @@ void dump_help()
 	printf(" -t  use the traditional lower level synthesizer interface\n");
 	printf(" -u  use utterance chunking\n");
 	printf(" -w  write the waveform to ./said.wav\n");
+	printf(" --some_long_option     ...as documented (or listed by 'epos -H')\n");
 }
 
 void send_cmd_line(int argc, char **argv)
@@ -297,8 +298,8 @@ void send_cmd_line(int argc, char **argv)
 					  wavfile = true;
 					  output_file = "said.wav"; break;
 				case 'D':
-					send_option("use_debug", "true");
-			//		if (!scfg->use_dbg) scfg->use_dbg=true;
+					send_option("debug", "true");
+			//		if (!scfg->debug) scfg->debug=true;
 			//		else if (scfg->warnings)
 			//			scfg->always_dbg--;
 					break;

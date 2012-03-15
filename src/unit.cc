@@ -1007,7 +1007,7 @@ unit::syllabify(UNIT target, char *sonor)
 	}
 }
 
-const int INFINITY = 300000000;
+const int INFINITE_BADNESS = 300000000;
 
 void
 unit::analyze(UNIT target, hash *table, int unanal_unit_penalty, int unanal_part_penalty)
@@ -1036,7 +1036,7 @@ unit::analyze(UNIT target, hash *table, int unanal_unit_penalty, int unanal_part
 	for (int i = 1; i < l; i++) {
 		char tmp = b[i];
 		b[i] = 0;
-		vb[i].badness = INFINITY;
+		vb[i].badness = INFINITE_BADNESS;
 		for (int j = 0; j < i; j++) {
 			char *r = j >= i - table->longest ? table->translate(b + j) : 0;
 			int badness = r ? atoi(r)

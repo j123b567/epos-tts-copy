@@ -330,7 +330,11 @@ void invoke(void (*test)(), const char *name)
 char * const exec_argv[] = {
 	"epos",
 	"--forking=off",
-	"--listen_port=" stringify(TTSCP_PORT) ,
+	"--listen_port=" stringify(TTSCP_PORT),
+	"--debug_password=make_check",
+	"--base_dir=" stringify(SOURCEDIR) "/../../cfg",
+	"--language=czech",
+	"--voice=kubec-vq",
 	NULL
 };
 char * const exec_envp[] = {
@@ -384,7 +388,7 @@ int main(int argc, char **argv)
 	invoke(random_data_test, "random data test");
 	testname = "closing everything";
 
-	for (int i=0; i<5; i++) {
+	for (int i = 0; i < 5; i++) {
 		sputs("delh ", ctrld[i]);
 		sputs(dhandle[i], ctrld[i]);
 		sputs("\r\ndone\r\n", ctrld[i]);
@@ -393,10 +397,11 @@ int main(int argc, char **argv)
 		close(datad[i]);
 		close(ctrld[i]);
 	}
-	sputs("done\r\n", ctrld[6]);
+	sputs("pass make_check\r\ndown\r\n", ctrld[6]);
 	close(ctrld[6]);
 //	printf("Tests successfully passed.\n");
-	if (epos_pid) kill(epos_pid, SIGHUP);
+//	if (epos_pid) kill(epos_pid, SIGTERM);
+	sleep(1);
 	return 0;
 }
 

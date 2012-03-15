@@ -86,11 +86,13 @@ CLEANFILES = *~ *.wav core gmon.out matlab.in tmp.0* dmalloc hackfile \
 		profile.log said.* 0\?tmp DEADJOE *.old *.local \
 		epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi
 
-AM_CXXFLAGS = -w -DEPOS -ggdb -DDATADIR=$(datadir) -DPREFIXDIR=$(prefix)
+AM_CXXFLAGS = -w -DEPOS -ggdb -DDATADIR=$(datadir) -DPREFIXDIR=$(prefix) $(OTHER_CXXFLAGS)
 AM_YFLAGS = -d -t
 LDFLAGS = @LDFLAGS@ -L$(libdir)
 AM_CPPFLAGS = -I$(srcdir)/..
 MAINTAINERCLEANFILES = epos.html epos-?.html
+
+OTHER_CXXFLAGS = -DSOURCEDIR=$(srcdir)
 
 noinst_PROGRAMS = vrfy
 

@@ -114,7 +114,7 @@ void shriek(int code, const char *fs, ...)
 	color(cfg->stdshriek, scfg->normal_col);
 
 #ifdef HAVE_SYSLOG_H
-	if (scfg->use_syslog)
+	if (scfg->syslog)
 		if (scfg->log_codes) syslog(LOG_DAEMON | severity(code), "%3d %s", code, message);
 		else syslog(LOG_DAEMON | severity(code), "%s", message);
 	unuse(l_errno);
@@ -615,31 +615,6 @@ static inline void compile_rules()
  
 void use_async_sputs();
 
-/*************** delete all this
-
-void epos_init(int argc_, char**argv_)	 //Some global sanity checks made here
-{
-	static const char * CFG_FILE_OPTION = "--cfg_file";
-	register int optlen=strlen(CFG_FILE_OPTION);
-	register char *result;
-	
-	argc=argc_; argv=argv_;
-	
-//	cow_claim();
-//	cow_configuration(&cfg);
-
-	if ((result=getenv(CFG_FILE_ENVIR_VAR))) scfg->inifile=result;
-	for (int i=1; i<argc-1; i++) if (!strncmp(argv[i], CFG_FILE_OPTION, optlen)) {
-		switch (argv[i][optlen]) {
-			case 0:	  scfg->inifile=argv[++i]; break;
-			case '=': scfg->inifile=argv[i]+optlen+1; break;
-			default:  ;// another option, most likely a bug ;
-		}
-	}
-	epos_init();
-}
-
-***************************/
 void epos_init()	 //Some global sanity checks made here
 {
 #ifdef HAVE_SYSLOG_H
@@ -666,10 +641,10 @@ void epos_init()	 //Some global sanity checks made here
 	config_init();
 
 #ifdef DEBUGGING
-	if (scfg->use_dbg && scfg->stddbg_file && *scfg->stddbg_file)
+	if (scfg->debug && scfg->stddbg_file && *scfg->stddbg_file)
 		cfg->stddbg = fopen(scfg->stddbg_file,"w","debugging messages");
 #else
-	if (scfg->use_dbg) shriek(813, "Either disable debugging in config file, or #define it in interf.h");
+	if (scfg->debug) shriek(813, "Either disable debugging in config file, or #define it in interf.h");
 #endif
 	cfg->stdshriek = stderr;
 	if (scfg->stdshriek_file && *scfg->stdshriek_file)
