@@ -1502,3 +1502,8 @@ contributed in this way much more often than explicitly indicated here.     ]
 	- adjusted n_segs and betty.dph for tdi-based voices to cover recent segment additions
 		(in machac.tdi and violka.tdi - upgrade those to the GPL'd versions)
 	- fix: response to some pseudoempty inputs on big-endians
+
+2.5.36 from 2.5.35	9.8.05
+	- fix: DESTDIR support (Jeremy Huddleston)
+	- fix: removed the unused and non-portable hash to hostent in hashi.cc
+
