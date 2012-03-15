@@ -14,7 +14,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 //#include "ktdsyn.h"
 //#include "ptdsyn.h"
 #include "tdpsyn.h"

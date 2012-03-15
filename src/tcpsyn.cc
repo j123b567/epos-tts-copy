@@ -15,7 +15,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 #include "tcpsyn.h"
 #include "client.h"
 

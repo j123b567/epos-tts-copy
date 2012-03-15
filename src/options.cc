@@ -14,7 +14,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 
 #include "slab.h"
 SLABIFY(configuration, cfg_slab, 2, shutdown_cfgs)

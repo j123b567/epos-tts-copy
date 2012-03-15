@@ -9,8 +9,8 @@ Compiling and installation on a UNIX machine:
  1. ./configure
  2. make
  3. make install   (with sufficient rights to install cfg files under /usr/share/epos)
- 4. install speech segment inventories (downloadable separately) if required
-	(untar them starting from /usr/share/epos/inv)
+ 4. install speech segment inventories (see cfg/inv/README for an explanation;
+	untar them starting from /usr/share/epos/inv)
 
 Running on a UNIX machine:
  epos   starts a speech daemon  
@@ -28,7 +28,7 @@ Compiling with Visual C++ and installation on a Windows NT (Windows 2000 etc.) m
  4. cd ..\..\src
  5. run VC and open the workspace file epos.dsw
  6. build all the projects - at least instserv, epos and say
- 7. install speech segment inventories (downloadable separately) if required
+ 7. install speech segment inventories (see cfg/inv/README) if required
 	(copy them to the cfg\\inv directory and untar them there)
  8. run instserv.exe (it should compile into the same directory as epos.exe,
     else it won't find epos.exe) with sufficient rights to install Epos
@@ -47,22 +47,20 @@ the Internet, or epos.ure.cas.cz is unreachable or misconfigured
 Epos will revert to a low quality voice distributed with Epos for this
 purpose.  (In some versions of Epos the default voice is supposed
 to be installed locally.  Be creative.  Use "say -l" to find out
-the order of the voices.)
+the order of the voices.  Use "say --voice xxxxxxx 'Some text'" to
+use a specific voice.)
 
 System requirements:
 
  Any decent C++ compiler, for example gcc 2.8 or later.
 	Good choices also include MS Visual C++, Watcom C++; otherwise
 	"decent" means "recent".
- If using the GNU assembler, gas version 2.9 or newer is recommended
-	otherwise Epos will compile incorrectly and may segfault
-	at the moment the first exception is thrown
-	(gas is often named /usr/bin/as and comes with binutils)
+ (If using the GNU assembler, gas version 2.9 or newer is recommended.)
 
 More info:
 
  1. read doc/*.sgml (or, in the compiled form: epos.dvi or epos.html or epos.txt)
- 2. there are other interesting files under "doc"
+ 2. there are other relevant files under "doc"
  3. browse http://epos.ure.cas.cz/ (mostly identical to (1))
  4. have a look at the files under cfg (or /usr/share/epos)
  5. read the source under src

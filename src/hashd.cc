@@ -15,10 +15,9 @@
  *
  */
 
-#include "common.h"
-
-#include "hash.cc"	/* will include hash.h, hashtmpl.cc" */
-
+#include "epos.h"
+#include "hash.h"
+#include "hashtmpl.h"
 #include "agent.h"	/* class a_ttscp */
 
 /*

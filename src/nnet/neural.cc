@@ -30,7 +30,7 @@
 #ifndef EPOS_NEURAL_CC
 #define EPOS_NEURAL_CC
 
-#include "common.h"
+#include "epos.h"
 #include "neural.h"
 #include "xmlutils.h"
 #include <errno.h>

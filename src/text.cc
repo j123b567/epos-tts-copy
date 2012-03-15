@@ -14,7 +14,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 
 //enum DIRECTIVE {DI_INCL, DI_WARN, DI_ERROR};
 

@@ -83,7 +83,7 @@ LINK32=link.exe
 # Name "say - Win32 Debug"
 # Begin Group "Source Files"
 
-# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# PROP Default_Filter "cpp;c;cxx;cc;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
 SOURCE=.\say.cpp

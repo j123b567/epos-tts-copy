@@ -83,7 +83,7 @@ LINK32=link.exe
 # Name "eposm - Win32 Debug"
 # Begin Group "Source Files"
 
-# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# PROP Default_Filter "cpp;c;cxx;cc;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
 SOURCE=./client.cpp
@@ -99,15 +99,10 @@ SOURCE=./function.cpp
 # Begin Source File
 
 SOURCE=./hash.cpp
+# End Source File
+# Begin Source File
 
-!IF  "$(CFG)" == "eposm - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "eposm - Win32 Debug"
-
-# ADD CPP /Od
-
-!ENDIF 
-
+SOURCE=./hashi.cpp
 # End Source File
 # Begin Source File
 
@@ -115,11 +110,11 @@ SOURCE=./interf.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=./ktdsyn.cpp
+SOURCE=./lpcsyn.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=./lpcsyn.cpp
+SOURCE=./mbrsyn.cpp
 # End Source File
 # Begin Source File
 
@@ -132,10 +127,6 @@ SOURCE=./options.cpp
 # Begin Source File
 
 SOURCE=./parser.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=./ptdsyn.cpp
 # End Source File
 # Begin Source File
 
@@ -173,10 +164,78 @@ SOURCE=./voice.cpp
 
 SOURCE=./waveform.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\nnet\enumstring.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\map.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\matrix.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\neural.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\neural_parse.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\perceptron.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\percinit.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\percstruct.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\set.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\stream.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\traindata.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\utils.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\xml.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\xml_parse.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\xmltempl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\xmlutils.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=./common.h
+# End Source File
 # Begin Source File
 
 SOURCE=./defaults.h
@@ -184,6 +243,10 @@ SOURCE=./defaults.h
 # Begin Source File
 
 SOURCE=./encoding.h
+# End Source File
+# Begin Source File
+
+SOURCE=./epos.h
 # End Source File
 # Begin Source File
 
@@ -252,6 +315,102 @@ SOURCE=./voice.h
 # Begin Source File
 
 SOURCE=./waveform.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\base.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\enumstring.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\iterator.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\map.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\matrix.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\neural.cc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\neural.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\neural_parse.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\nnettypes.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\pair.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\perceptron.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\percstruct.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\set.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\slowstring.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\stream.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\traindata.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\trainprocess.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\utils.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\vector.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\xml.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\xml_parse.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\xmlstream.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\xmltempl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\nnet\xmlutils.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

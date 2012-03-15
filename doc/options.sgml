@@ -1330,7 +1330,7 @@ option is also language dependent.
 <tag>--sampa&lowbar;alternate <sl/name/</tag>
 	For MBROLA voices, you can indicate non-standard SAMPA
 	variants here; the value of <tt/SAMPA/ means the standard SAMPA; for voices
-	where there is no SAMPA notation fixed yet, this
+	where there is no SAMPA notation fixed yet,
 	a different name should be used.  The alternative SAMPA
 	mapping to Unicode will be loaded from file
 	<tt/sampa-alt-name.txt/ where <tt/name/ is specified by this

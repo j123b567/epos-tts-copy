@@ -21,7 +21,7 @@
  *	configurability, so the monolithic Epos is slow   :-)
  */
 
-#include "common.h"
+#include "epos.h"
 #include "client.h"
 
 const bool is_monolith = true;
@@ -57,7 +57,6 @@ int submain()
 
 	root = str2units(scfg->_input_text);
 	this_lang->ruleset->apply(root);
-//	fprintf(stdout,"*********************************************\n");
 	root->fout(NULL);
 
 
@@ -85,6 +84,12 @@ int submain()
 
 int main(int argc, char **argv)
 {
+	fprintf(stdout,"***************************************************\n");
+	fprintf(stdout,"*  This binary \"eposm\" is an obsolete monolithic  *\n");
+	fprintf(stdout,"*  incarnation of Epos and is NOT SUPPORTED.      *\n");
+	fprintf(stdout,"*  Read the WELCOME file if you feel lost.        *\n");
+	fprintf(stdout,"***************************************************\n");
+
 	try {
 		argc_copy = argc, argv_copy = argv;
 		scfg->play_segments = true;

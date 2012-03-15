@@ -28,7 +28,7 @@
  *	gets under control.
  */
 
-#include "common.h"
+#include "epos.h"
 #include "client.h"
 #include "agent.h"
 
@@ -111,7 +111,7 @@ const bool is_monolith = false;
 context *master_context = NULL;
 context *this_context = NULL;
 
-context::context(int std_in, int std_out)
+context::context(socky int std_in, socky int std_out)
 {
 	config = cfg;
 
@@ -135,8 +135,8 @@ context::context(int std_in, int std_out)
 	}
 
 	uid = UID_ANON;
-	config->_sd_in = std_in;
-	config->_sd_out = std_out;
+	config->_sd_in =  (int)std_in;
+	config->_sd_out = (int)std_out;
 	D_PRINT(1, "new context uses fd %d and %d\n", std_in, std_out);
 
 	sgets_buff = (char *)xmalloc(config->max_net_cmd);
@@ -267,7 +267,7 @@ void server_shutdown()
 {
 	while (ctrl_conns->items) {
 		a_ttscp *tmp = ctrl_conns->translate(ctrl_conns->get_random());
-		sputs("800 shutdown requested\r\n", tmp->c->config->_sd_out);
+		sputs("800 shutdown requested\r\n", tmp->c->config->get__sd_out());
 		delete ctrl_conns->remove(tmp->handle);
 	}
 	if (scfg->server_pwd_file) remove(scfg->server_pwd_file);
@@ -294,19 +294,19 @@ static void server_reinit_check()
 		server_reinit_req = false;
 		while (ctrl_conns->items) {
 			a_ttscp *tmp = ctrl_conns->translate(ctrl_conns->get_random());
-			sputs("601 reinit requested\r\n", tmp->c->config->_sd_out);
-			block_table[tmp->c->config->_sd_out] = NULL;
-			push_table[tmp->c->config->_sd_out] = NULL;
-			FD_CLR(tmp->c->config->_sd_out, &block_set);
-			FD_CLR(tmp->c->config->_sd_out, &push_set);
+			sputs("601 reinit requested\r\n", tmp->c->config->get__sd_out());
+			block_table[tmp->c->config->get__sd_out()] = NULL;
+			push_table[tmp->c->config->get__sd_out()] = NULL;
+			FD_CLR(tmp->c->config->get__sd_out(), &block_set);
+			FD_CLR(tmp->c->config->get__sd_out(), &push_set);
 			delete ctrl_conns->remove(tmp->handle);
 		}
 		while (data_conns->items) {
 			a_ttscp *tmp = data_conns->translate(data_conns->get_random());
-			block_table[tmp->c->config->_sd_out] = NULL;
-			push_table[tmp->c->config->_sd_out] = NULL;
-			FD_CLR(tmp->c->config->_sd_out, &block_set);
-			FD_CLR(tmp->c->config->_sd_out, &push_set);
+			block_table[tmp->c->config->get__sd_out()] = NULL;
+			push_table[tmp->c->config->get__sd_out()] = NULL;
+			FD_CLR(tmp->c->config->get__sd_out(), &block_set);
+			FD_CLR(tmp->c->config->get__sd_out(), &push_set);
 			delete data_conns->remove(tmp->handle);
 		}
 //		free_all_options();
@@ -471,8 +471,8 @@ void server_crashed(char *, a_ttscp *a, int why_we_crashed)
 	int w = why_we_crashed;
 	char code[]= "865";
 	if (w / 100 == 8) code[1] = (w % 100) / 10 + '0', code[2] = w % 10 + '0';
-	sputs(code, a->c->config->_sd_out);
-	sputs(" shutdown, not your problem\n", a->c->config->_sd_out);
+	sputs(code, a->c->config->get__sd_out());
+	sputs(" shutdown, not your problem\n", a->c->config->get__sd_out());
 }
 
 void lest_already_running()

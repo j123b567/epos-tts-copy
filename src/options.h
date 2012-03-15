@@ -45,6 +45,9 @@ struct configuration : public cowabilium	//Some description & defaults can be fo
 
 	void *operator new(size_t size);
 	void operator delete(void *ptr);
+
+	socky int get__sd_out() { return (socky int)_sd_out; };
+	socky int get__sd_in()  { return (socky int)_sd_in;  };
 };
 
 #define CONFIG_STATIC_DECLARE

@@ -7,7 +7,7 @@
 #define yydebug neuraldebug
 #define yynerrs neuralnerrs
 
-#include "common.h"
+#include "epos.h"
 #include "neural.h"
 #include "utils.h" // toString
 #include <errno.h>

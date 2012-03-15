@@ -15,7 +15,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 #include "mbrsyn.h"
 
 #ifdef HAVE_UNISTD_H
@@ -28,9 +28,25 @@
 	#include <signal.h>
 #endif
 
+#ifdef HAVE_PROCESS_H
+	#include <process.h>
+#endif
+
+#ifdef HAVE_IO_H
+	#include <io.h>
+#endif
+
+#ifndef HAVE_PIPE
+	#ifdef HAVE__PIPE
+		inline int pipe(int arg[2]) { return _pipe(arg, 1000000, 0); };
+	#else
+		#error Apparently you have neither pipe() nor _pipe()
+	#endif
+#endif
+
+
 #define there there_pipe[1]
 #define back  back_pipe[0]
-
 
 void
 mbrsyn::restart_mbrola(voice *v)
@@ -72,7 +88,9 @@ mbrsyn::mbrsyn(voice *v)
 
 mbrsyn::~mbrsyn()
 {
+#ifdef HAVE_KILL
 	kill(pid, SIGQUIT);
+#endif
 	close(there_pipe[0]);
 	close(there_pipe[1]);
 	close(back_pipe[0]);

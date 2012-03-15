@@ -16,7 +16,7 @@
  *	(operators) using perfect hashing techniques.
  */
 
-#include "common.h"
+#include "epos.h"
 
 #define EXCL '!'
 #define MAX_SIZE 256	// please change to scfg after Epos goes unicode

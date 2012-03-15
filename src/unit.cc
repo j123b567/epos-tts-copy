@@ -14,7 +14,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 #include "nnet/neural.h"
 
 #define QUESTION_MARK      '?'    // ignored context character (in segment names)
@@ -552,7 +552,7 @@ unit::subst(hash *table, char *body, char *suffix)
 	char *resultant;
 	int safe_grow;
 
-	if (body < gb || suffix && suffix <= body || suffix && suffix - gb > strlen(gb) || gblen != strlen(gb))
+	if (body < gb || suffix && suffix <= body || suffix && suffix - gb > (int)strlen(gb) || gblen != (int)strlen(gb))
 		shriek(862, "inner subst called with inconsistent parameters");
 
 	D_PRINT(0, "inner unit::subst called with BUFFER %s MAIN %s SUFFIX %s; total len %d\n",gb,body,suffix,gblen);
@@ -665,8 +665,6 @@ unit::subst(hash *table, regex_t *fastmatch)
 bool
 unit::subst(hash *table, regex_t *fastmatch, SUBST_METHOD method)
 {
-	char   *tail;
-
 	char *b;
 	
 	
@@ -734,7 +732,7 @@ unit::relabel(hash *table, regex_t *fastmatch, SUBST_METHOD method, UNIT target)
 	char	*r;
 	unit	*u;
 	unit	*v;
-	int len, i, j , n;
+	int len, i, n;
 	
 	*gb='^';
 	u = v = LeftMost(target);
@@ -901,8 +899,6 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 inline void 
 unit::assim(charxlat *fn, charclass *left, charclass *right)
 {
-	unit *tmpu;
-
 	D_PRINT(1, "inner unit::assim %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());
 	D_PRINT(1,"   env is %c %c\n",
 			left->ismember(Prev(depth)->inside())+'0',
@@ -1325,13 +1321,14 @@ unit::project(UNIT target)			// FIXME optimize
 	sanity();
 	if (target == depth) return;
 	if (target < depth) {
+		unit *u;
 		float sum = 0;
-		for (unit *u = firstborn; u; u = u->next) {
+		for (u = firstborn; u; u = u->next) {
 			sum += u->t;
 		}
 
 		project_one_level(sum);
-		for (unit *u = firstborn; u; u = u->next)
+		for (u = firstborn; u; u = u->next)
 			u->project(target);
 	} else shriek(899, "project upwards");
 }

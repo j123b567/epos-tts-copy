@@ -16,8 +16,8 @@
  *
  *	The GNU General Public License can be found in file doc/COPYING.
  *
- *	This is the main header file. You should only include this one
- *	no matter what do you want to do with this code.
+ *	This header file is shared by the server side and client side.
+ *	It is the only file the clients need to include.
  *
  */
 
@@ -31,6 +31,10 @@
 
 #include "config.h"
 
+#ifndef VERSION
+	#include "..\arch\version.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>           // just exit() in shriek(), malloc &co...
 #include <stdarg.h>
@@ -40,10 +44,14 @@
 #else
 	/* the following list is probably incomplete/buggy, please
 	   report any ports which do need to actually use this     */
-	typedef short int int16_t
-	typedef int int32_t
-	typedef unsigned short int uint16_t
-	typedef unsigned int uint32_t
+	typedef short int int16_t;
+	typedef int int32_t;
+	typedef unsigned short int uint16_t;
+	typedef unsigned int uint32_t;
+#endif
+
+#ifdef HAVE_ERRNO_H
+	#include <errno.h>
 #endif
 
 #ifdef HAVE_STRING_H
@@ -57,105 +65,17 @@
 #endif
 
 #ifndef HAVE_STRDUP
-	char *strdup(const char *);
+	inline char *strdup(const char *src) { return strcpy((char *)malloc(strlen(src)+1), src); };
 #endif
-
-#ifndef HAVE_STRCASECMP
-#ifdef  HAVE_STRICMP
-	#define strcasecmp stricmp	// if only stricmp is defined
-	#define strncasecmp strnicmp
-#endif
-#endif
-
-#ifdef WANT_DMALLOC
-	#include <dmalloc.h>
-#endif			      // new and delete are overloaded in interf.cc !
-
-#ifndef  IGNORE_REGEX_RULES_OR_THE_FASTMATCH_OPTIMIZATION
-	#define WANT_REGEX    // About always, we want to use the regex code
-#endif
-
-#ifdef WANT_REGEX
-   extern "C" {
-	#ifdef HAVE_RX_H
-		#include <rx.h>
-	#else
-	    #ifdef HAVE_REGEX_H
-		#include <regex.h>
-	    #else
-		#include "rx.h"
-	    #endif
-	#endif
-   }
-#else
-	typedef void regex_t;
-#endif
-
-
-enum SUBST_METHOD {M_EXACT=0, M_SUBSTR=4, M_PROPER=7, M_LEFT=8, M_RIGHT=16, M_ONCE=32, M_NEGATED=64};
-enum REPARENT {M_DELETE, M_RIGHTWARDS, M_LEFTWARDS};
-enum FIT_IDX {Q_FREQ, Q_INTENS, Q_TIME};
-enum OUT_ML { ML_NONE, ML_ANSI, ML_RTF};
-#define OUT_MLstr "none:ansi:rtf:"
-#define FITstr	"f:i:t:"
-#define BOOLstr "false:true:off:on:no:yes:disabled:enabled:-:+:n:y:0:1:non::"
-#define LIST_DELIM	 ':'
-
-typedef char UNIT;
-#define UNIT_MAX 12
-#define U_ILL		127
-#define U_DEFAULT	126
-#define U_INHERIT	125
-#define U_VOID		120
-
-extern int unused_variable;
-#define unuse(x) (unused_variable = (int)(x));
-
-extern const bool is_monolith;
-
-struct file;
-struct epos_option;
-class  unit;
-
-class stream;
-
-typedef char wchar;
 
 #include "exc.h"
-#include "hash.h"
-#include "text.h"
-#include "voice.h"
-#include "function.h"
-#include "options.h"
-#include "interf.h"
-#include "parser.h"
-#include "unit.h"
-#include "rule.h"              //See rules.h for additional #defines and enums
-#include "waveform.h"
-#include "synth.h"
-#include "encoding.h"
 
-#define MAX_PATHNAME       256	  // only load_language uses this
+struct segment {	/* This structure is part of an obsolete interface. */
+	int16_t code;
+	char nothing;
+	char ll;
+	int f,e,t;
+};
 
-#ifdef HAVE_UNISTD_H
-	#define SLASH              '/'
-	#define NULL_FILE	   "/dev/null"
-	#define MODE_MASK	   (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
-	#define O_BINARY	   0
-#else
-	#define SLASH              '\\'
-	#define NULL_FILE	   "NUL"
-	#define MODE_MASK	   (S_IREAD | S_IWRITE)
-#endif
-
-#if defined(HAVE_WINSOCK_H) || defined(HAVE_WINSOCK2_H)
-	#define HAVE_WINSOCK
-	#define socky unsigned
-#else
-	#define socky signed
-#endif
 
 #endif   //#ifndef EPOS_COMMON_H
-
-
-

@@ -558,8 +558,6 @@ OPTION (readfs,		BOOL, false) // may read files in the pseudo_root_dir?
 OPTION (writefs,	BOOL, false) // may write files in the pseudo_root_dir?
 OPTION (deadlock_timeout,INT, 0)	// remote voice timeout
 VOICE_OPTION (location,	STR, NULL)
-// OPTION (_sd,		INT, 0)	// network socket of the current session
-						// (can also be used to detect the daemon mode)
 OPTION (_sd_in,		INT, -1)	// current input network socket
 OPTION (_sd_out,	INT, -1)	// current output network socket
 

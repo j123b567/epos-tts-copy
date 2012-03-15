@@ -46,7 +46,7 @@ struct derived : public base\
 
 DERIVE_EXCEPTION(any_exception, command_failed)
 DERIVE_EXCEPTION(any_exception, connection_lost)
-DERIVE_EXCEPTION(any_exception, fatal_error)	/* wild pointers found and worse   */
+DERIVE_EXCEPTION(any_exception, fatal_error)
 
 
 #undef DERIVE_EXCEPTION

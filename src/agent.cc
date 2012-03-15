@@ -14,7 +14,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 #include "agent.h"
 #include "client.h"
 #include "slab.h"
@@ -429,7 +429,7 @@ inline char *utt_break(char *t)		/* returns ptr past the last char */
 	} else return r;
 
 	if (r - t > scfg->max_utterance) {
-		if (scfg->split_utterance < strlen(t))
+		if (scfg->split_utterance < (int)strlen(t))
 			r = t + scfg->split_utterance;
 	}
 
@@ -621,7 +621,7 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 	switch(*par) {
 		case '$': dc = data_conns->translate(par + 1);
 			  if (!dc) shriek(444, "Not a known data connection handle");
-			  else socket = (in == T_INPUT ? dc->c->config->_sd_in : dc->c->config->_sd_out);
+			  else socket = (in == T_INPUT ? dc->c->config->get__sd_in() : dc->c->config->get__sd_out());
 			  break;
 		case '/': if (in == T_INPUT && !cfg->readfs)
 				shriek(454, "No filesystem inputs allowed");
@@ -793,8 +793,8 @@ a_output::report(bool total, int written)
 	if (foreground()) {
 		reply(total ? "122 total bytes" : "123 written bytes");
 		sprintf(scratch, " %d", written);
-		sputs(scratch, cfg->_sd_out);
-		sputs("\r\n", cfg->_sd_out);
+		sputs(scratch, cfg->get__sd_out());
+		sputs("\r\n", cfg->get__sd_out());
 	}
 }
 
@@ -1103,7 +1103,7 @@ a_protocol::~a_protocol()
 void a_protocol::run()
 {
 	int res;
-	res = sgets(buffer, cfg->max_net_cmd, cfg->_sd_in, sgets_buff);
+	res = sgets(buffer, cfg->max_net_cmd, cfg->get__sd_in(), sgets_buff);
 	if (res < 0) {
 		disconnect();
 		return;
@@ -1119,7 +1119,7 @@ void a_protocol::run()
 		case PA_NEXT:
 			D_PRINT(0, "PA_NEXT\n");
 			if (strchr(sgets_buff, '\n')) schedule();
-			else block(cfg->_sd_in);
+			else block(cfg->get__sd_in());
 			return;
 		case PA_DONE:
 			D_PRINT(0, "PA_DONE\n");
@@ -1131,14 +1131,14 @@ void a_protocol::run()
 		default:
 			shriek(861, "Bad protocol action\n");
 	}
-	block(cfg->_sd_in);		/* partial line read */
+	block(cfg->get__sd_in());		/* partial line read */
 
 //	leave_context(i);
 
 //	non-blocking get_line etc.
 }
 
-a_ttscp::a_ttscp(int _sd_in, int _sd_out) : a_protocol()
+a_ttscp::a_ttscp(socky int _sd_in, socky int _sd_out) : a_protocol()
 {
 	c = new context(_sd_in, _sd_out);
 	c->enter();
@@ -1154,9 +1154,9 @@ a_ttscp::a_ttscp(int _sd_in, int _sd_out) : a_protocol()
 		"extensions:\r\n"
 		"server: Epos\r\n"
 		"release: " VERSION "\r\n"
-		"handle: ", cfg->_sd_out);
-	sputs(		handle, cfg->_sd_out);
-	sputs(	"\r\n", cfg->_sd_out);
+		"handle: ", cfg->get__sd_out());
+	sputs(		handle, cfg->get__sd_out());
+	sputs(	"\r\n", cfg->get__sd_out());
 	ctrl = NULL;
 	deps = new hash_table<char, a_ttscp>(4);
 	deps->dupdata = deps->dupkey = false;
@@ -1174,7 +1174,7 @@ a_ttscp::~a_ttscp()
 	c->enter();
 	if (cfg->current_stream) delete cfg->current_stream;
 	cfg->current_stream = NULL;
-	D_PRINT(2, "deleted context closes fd %d and %d\n", cfg->_sd_in, cfg->_sd_out);
+	D_PRINT(2, "deleted context closes fd %d and %d\n", cfg->get__sd_in(), cfg->get__sd_out());
 	c->leave();
 	while (deps->items) {
 		a_ttscp *tmp = deps->translate(deps->get_random());
@@ -1183,10 +1183,10 @@ a_ttscp::~a_ttscp()
 	}
 	delete deps;
 	c->enter();
-	if (cfg->_sd_in != -1)
-		close_and_invalidate(cfg->_sd_in);
-	if (cfg->_sd_out != -1 && cfg->_sd_out != cfg->_sd_in)
-		close_and_invalidate(cfg->_sd_out);
+	if (cfg->get__sd_in() != -1)
+		close_and_invalidate(cfg->get__sd_in());
+	if (cfg->get__sd_out() != -1 && cfg->get__sd_out() != cfg->get__sd_in())
+		close_and_invalidate(cfg->get__sd_out());
 	if (data_conns->translate(handle) || ctrl_conns->translate(handle))
 		shriek(862, "Forgot to forget a_ttscp");
 
@@ -1246,7 +1246,7 @@ a_ttscp::run_command(char *cmd)
 	} catch (connection_lost *d) {
 		D_PRINT(2, "Releasing a TTSCP control connection, %d, %.60s\n", d->code, d->msg);
 		reply(d->code, d->msg);		/* just in case */
-		reply(201, fmt("debug %d", cfg->_sd_in));
+		reply(201, fmt("debug %d", cfg->get__sd_in()));
 		delete d;
 		return PA_DONE;
 	}
@@ -1259,7 +1259,7 @@ a_ttscp::run_command(char *cmd)
 void
 a_ttscp::disconnect()
 {
-	D_PRINT(2, "ctrl conn %d lost\n", cfg->_sd_in);
+	D_PRINT(2, "ctrl conn %d lost\n", cfg->get__sd_in());
 	if (this != ctrl_conns->remove(handle) /* && this != data_conns->remove(handle) */ )
 		shriek(862, "Failed to disconnect a ctrl connection");
 	disconnector.disconnect(this);
@@ -1268,7 +1268,7 @@ a_ttscp::disconnect()
 void make_nonblocking(int f)
 {
 #ifdef HAVE_WINSOCK
-	ioctlsocket((unsigned int)f, FIONBIO, (unsigned int *)&make_nonblocking);	// &make_nonblocking is a dummy non-NULL pointer
+	ioctlsocket((unsigned long int)f, FIONBIO, (unsigned long int *)&make_nonblocking);	// &make_nonblocking is a dummy non-NULL pointer
 #else
 	fcntl(f, F_SETFL, O_NONBLOCK);
 #endif

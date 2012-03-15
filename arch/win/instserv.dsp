@@ -87,10 +87,10 @@ LINK32=link.exe
 # Name "instserv - Win32 Debug"
 # Begin Group "Source Files"
 
-# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# PROP Default_Filter "cpp;c;cxx;cc;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\INSTALL.CPP
+SOURCE=.\install.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"

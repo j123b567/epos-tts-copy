@@ -7,7 +7,7 @@
 #define yydebug xmldebug
 #define yynerrs xmlnerrs
 
-#include "common.h"
+#include "epos.h"
 #include "neural.h"
 #include "utils.h" // toString
 #include <errno.h>
@@ -147,7 +147,7 @@ int yylex ()
 {
 	//DBG (0,10,fprintf(STDDBG,"yylex source: %s\n", bison_row));
 
-	if (ixml >= strlen (sxml))
+	if (ixml >= (int)strlen(sxml))
 		return 0; // EOF
 
 	if (ixml == 0)

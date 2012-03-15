@@ -18,7 +18,7 @@
 
 #define THIS_IS_A_TTSCP_CLIENT
 
-#include "config.h"	/* You can usually remove this item */
+#include "common.h"
 
 #ifdef HAVE_WINSVC_H
 	bool start_service();
@@ -28,9 +28,14 @@
 	bool stop_service() { return true; }
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#ifndef HAVE_TERMINATE
+
+void terminate(void)
+{
+	abort();
+}
+
+#endif
 
 #ifdef HAVE_ERRNO_H
 	#include <errno.h>
@@ -71,8 +76,6 @@ void shriek(int, char *txt)
 }
 
 
-#define EPOS_COMMON_H	// this is a lie
-#include "exc.h"
 #include "client.cc"
 
 int get_result(int sd)
@@ -449,22 +452,5 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-#ifndef HAVE_STRDUP
-
-char *strdup(const char*src)
-{
-	return strcpy((char *)malloc(strlen(src)+1), src);
-}
-
-#endif   // ifdef HAVE_STRDUP
-
-#ifndef HAVE_TERMINATE
-
-void terminate(void)
-{
-	abort();
-}
-
-#endif
 
 

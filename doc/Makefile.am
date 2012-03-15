@@ -40,8 +40,9 @@ epos.info: epos.sgml
 #/usr/lib/texmf/source/latex/misc/linuxdoc-sgml.sty: /usr/lib/sgml-tools/linuxdoc-sgml.sty
 #	@ln -s /usr/lib/sgml-tools/linuxdoc-sgml.sty $@
 
-header.sgml: ../configure.in
+header.sgml: ../configure.ac
 	@ echo Source code version may have changed, documentation adjusted.
 	@ touch header.sgml
 
 EXTRA_DIST = $(CONTENTS) header.sgml footer.sgml Todo Intro Files FAQ FORMATS
+

@@ -515,6 +515,7 @@ next_rule(text *file, hash *vars, int *count)
 		delete e;
 	}
 	shriek(811, "Too many errors");
+	return NULL;
 }
 
 rule *

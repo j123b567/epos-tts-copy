@@ -14,7 +14,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 #include "agent.h"
 #include "client.h"
 
@@ -35,8 +35,8 @@ a_accept *accept_conn = NULL;
 
 static inline void sendstring(const char *text)
 {
-	sputs(text, cfg->_sd_out);
-	sputs("\r\n", cfg->_sd_out);
+	sputs(text, cfg->get__sd_out());
+	sputs("\r\n", cfg->get__sd_out());
 }
 
 void reply(const char *text)
@@ -62,7 +62,7 @@ void reply(int code, const char *text)
 	c[2] = code % 10 + '0';
 	c[3] = ' ';
 	c[4] = 0;
-	sputs(c, cfg->_sd_out);
+	sputs(c, cfg->get__sd_out());
 	sendstring(text);
 }
 
@@ -223,7 +223,7 @@ int cmd_help(char *param, a_ttscp *)
 		while (fgets(scratch + 1, scfg->scratch_size - 3, f)) {
 			int l = strlen(scratch);
 			scratch[l-1] = '\r'; scratch[l] = '\n'; scratch[l+1] = 0;
-			sputs(scratch, cfg->_sd_out);
+			sputs(scratch, cfg->get__sd_out());
 		}
 	} else
 		for (ttscp_cmd *cmd = ttscp_cmd_set; cmd->name; cmd++) {
@@ -271,7 +271,7 @@ int do_show(char *param)
 
 	if (o) {
 		if (access_level(this_context->uid) >= o->readable) {
-			sputs(SHOW_SPACE, cfg->_sd_out);
+			sputs(SHOW_SPACE, cfg->get__sd_out());
 			sendstring(format_option(o));
 			reply("200 OK");
 		} else reply("451 Access denied");

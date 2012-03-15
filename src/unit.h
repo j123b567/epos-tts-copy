@@ -15,7 +15,7 @@
  *	This file defines the "main" structure we use as the internal structure
  *	for representing the text we're going to process. One instance of this 
  *	class can be a segment, phone, syllable, ... , whole text (see UNIT
- *	defined in common.h), depending on its "depth". Its contents is a
+ *	defined in epos.h), depending on its "depth". Its contents is a
  *	bi-directional linked list between "firstborn" and "lastborn"; all of
  *	its elements have their "depth" lower by one. These and maybe other
  *	assumptions about the structure can be found in unit::sanity().

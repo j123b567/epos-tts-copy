@@ -53,7 +53,10 @@
 #define HAVE_STRERROR 1
 
 /* Define if you have the stricmp function.  */
-#define HAVE_STRICMP */
+#define HAVE_STRICMP 1
+
+/* Define if you have the _pipe function.  */
+#define HAVE__PIPE 1
 
 /* Define if you have the <errno.h> header file.  */
 #define HAVE_ERRNO_H 1
@@ -63,6 +66,9 @@
 
 /* Define if you have the <io.h> header file.  */
 #define HAVE_IO_H 1
+
+/* Define if you have the <process.h> header file.  */
+#define HAVE_PROCESS_H 1
 
 /* Define if you have the <linux/kd.h> header file.  */
 /* #undef HAVE_LINUX_KD_H */
@@ -150,6 +156,8 @@
 /* Define if Epos should run as an NT service */
 #define HAVE_WINSVC_H  1
 
-/* Define if uou have this header file */
+/* Define if you have this header file */
 #define HAVE_WINDOWS_H	1
 
+/* Define if you have this header file */
+#define HAVE_DIRECT_H

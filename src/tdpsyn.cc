@@ -18,7 +18,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 #include "tdpsyn.h"
 #include <math.h>
 

@@ -14,7 +14,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 #include "slab.h"
 
 SLABIFY(parser, parser_slab, 64, shutdown_parser);

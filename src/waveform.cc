@@ -15,7 +15,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 #include "client.h"
 
 #ifdef HAVE_FCNTL_H

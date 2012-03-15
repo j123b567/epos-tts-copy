@@ -14,7 +14,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 #include "exc.cc"
 
 #ifdef HAVE_TIME_H
@@ -36,6 +36,17 @@
 		#include <winsock.h>
 	#endif
 #endif
+
+#ifndef HAVE_VSNPRINTF
+int vsnprintf(char *str, size_t size, const char *format, ...)
+{
+	va_list ap;
+	va_start(ap, format);
+	int ret = vsprintf(str, format, ap);
+	va_end(ap);
+	return ret;
+}
+#endif	// ifdef HAVE_VSNPRINTF
 
 #ifdef HAVE_IO_H
 	#include <io.h>
@@ -817,15 +828,6 @@ void call_abort()
 #endif
 }
 
-//#ifndef HAVE_STRDUP
-
-char *strdup(const char*src)
-{
-	return strcpy((char *)xmalloc(strlen(src)+1), src);
-}
-
-//#endif   // ifdef HAVE_STRDUP
-
 #ifndef HAVE_TERMINATE
 
 void terminate(void)
@@ -843,14 +845,4 @@ int fork()
 #endif   // ifdef HAVE_FORK
 
 
-#ifndef HAVE_VSNPRINTF
-int vsnprintf(char *str, size_t size, const char *format, ...)
-{
-	va_list ap;
-	va_start(ap, format);
-	int ret = vsprintf(str, format, ap);
-	va_end(ap);
-	return ret;
-}
-#endif	// ifdef HAVE_VSNPRINTF
 

@@ -23,7 +23,7 @@
  */
 
 #ifndef WITHOUT_EPOS_INCLUDES
-	#include "common.h"
+	#include "epos.h"
 	#include "client.h"
 	#include "agent.h"
 #endif

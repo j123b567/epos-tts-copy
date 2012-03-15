@@ -90,14 +90,6 @@ void unclaim(file *);
 class unit;
 void process_segments(unit *root);
 
-struct segment {
-	int16_t code;
-	char nothing;
-	char ll;
-	int f,e,t;
-};
-
-
 #define DQUOT		'"'            //used when parsing the .ini file
 #define ESCAPE		'\\'
 #define EXCLAM		'!'

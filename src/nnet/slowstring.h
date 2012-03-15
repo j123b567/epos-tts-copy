@@ -231,6 +231,19 @@ CBasicString<T> CBasicString<T>::substr(int pos, int n) const
 	return retVal;
 }
  
+template<class T>
+void CBasicString<T>::replace (const CBasicString<T> &source, const CBasicString<T> &target)
+{
+	if (!data) return;
+	CString rest = *this, result = "";
+	char *pos;
+	while (pos = strstr (rest.data, source)) {
+		result += rest.substr (0,pos-rest.data) + target;
+		rest = rest.substr (pos-rest.data+strlen(source));
+	}
+	result += rest;
+	*this = result;
+} 
 
 
 template class CBasicString<char>;

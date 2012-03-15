@@ -19,7 +19,7 @@
 #define yydebug xmldebug
 #define yynerrs xmlnerrs
 
-#include "common.h"
+#include "epos.h"
 #include "neural.h"
 #include "utils.h" // toString
 #include <errno.h>

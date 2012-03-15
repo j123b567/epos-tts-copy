@@ -16,7 +16,7 @@
  
 #ifndef FORGET_CHARSETS
   
-#include "common.h"
+#include "epos.h"
 
 #define UNUSED 0
 #define UNDEFINED 0
@@ -98,6 +98,7 @@ static inline unsigned char do_alloc_code(wchar_t c, unsigned char hint)
 	}
 	D_PRINT(2, "Want to allocate charcode unicode %d, original enc %d\n", c, hint);
 	shriek(447, "Epos internal character table overflow");
+	return 0;
 
 }
 

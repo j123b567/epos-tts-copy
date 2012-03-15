@@ -14,7 +14,7 @@
  *
  */
  
-#include "common.h"
+#include "epos.h"
 
 #ifdef HAVE_FCNTL_H
 	#include <fcntl.h>

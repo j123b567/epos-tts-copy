@@ -21,33 +21,30 @@
  *	at the moment it prevents using client.o for actual client stuff.
  */
 
-#ifndef EPOS_COMMON_H
-#include "common.h"
-#endif
-
-
 #ifdef THIS_IS_A_TTSCP_CLIENT
 
-#define INITIAL_SCRATCH_SPACE 16384
-void D_PRINT(int, ...) {};
-#define xmalloc malloc
-#define xrealloc realloc
+	#define INITIAL_SCRATCH_SPACE 16384
+	void D_PRINT(int, ...) {};
+	#define xmalloc malloc
+	#define xrealloc realloc
 
-struct pseudo_static_configuration
-{
-	int asyncing;
-	int scratch_size;
-	int paranoid;
-	int listen_port;
-};
+	struct pseudo_static_configuration
+	{
+		int asyncing;
+		int scratch_size;
+		int paranoid;
+		int listen_port;
+	};
 
-pseudo_static_configuration pseudocfg = {1, INITIAL_SCRATCH_SPACE, 0, TTSCP_PORT};
+	pseudo_static_configuration pseudocfg = {1, INITIAL_SCRATCH_SPACE, 0, TTSCP_PORT};
 
-pseudo_static_configuration *scfg = &pseudocfg;
+	pseudo_static_configuration *scfg = &pseudocfg;
 
-char *scratch = (char *)malloc(INITIAL_SCRATCH_SPACE + 2);
-
+	char *scratch = (char *)malloc(INITIAL_SCRATCH_SPACE + 2);
+#else
+	#include "epos.h"
 #endif
+
 
 #define PUBLIC_TTSCP_SERVER   "epos.ure.cas.cz"
 
@@ -85,10 +82,6 @@ char *scratch = (char *)malloc(INITIAL_SCRATCH_SPACE + 2);
 		#include <winsock.h>
 		#define HAVE_WINSOCK
 	#endif
-#endif
-
-#ifdef HAVE_ERRNO_H
-	#include <errno.h>
 #endif
 
 #ifdef HAVE_SYS_TYPES_H

@@ -16,7 +16,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 #include "lpcsyn.h"
 
 #ifdef HAVE_FCNTL_H

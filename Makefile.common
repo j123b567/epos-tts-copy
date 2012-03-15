@@ -5,11 +5,11 @@ export WPP386=-xs
 
 CLEANFILES = *~ *.wav core gmon.out matlab.in tmp.0* dmalloc hackfile \
 		profile.log said.* 0\?tmp DEADJOE *.old *.local \
-		epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi
+		epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi \
+		epos-?.html epos.html
 AM_CXXFLAGS = -w -DEPOS -ggdb -DBASE_DIR=$(pkgdatadir) $(OTHER_CXXFLAGS)
 AM_YFLAGS = -d -t
-LDFLAGS = @LDFLAGS@ -L$(libdir)
+AM_LDFLAGS = -L$(libdir)
 AM_CPPFLAGS = -I$(srcdir)/..
-MAINTAINERCLEANFILES = epos.html epos-?.html
 
 .DELETE_ON_ERROR:

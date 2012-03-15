@@ -60,7 +60,7 @@ class context
 
 	char *sgets_buff;	/* not touched upon context switch */
 
-	context(int std_in, int std_out);
+	context(socky int std_in, socky int std_out);
 	~context();
 	void enter();
 	void leave();
@@ -165,7 +165,7 @@ class a_ttscp : public a_protocol
 	a_ttscp *ctrl;
 	hash_table<char, a_ttscp> *deps;
 	char *handle;
-	a_ttscp(int sd_in, int sd_out);
+	a_ttscp(socky int sd_in, socky int sd_out);
 	virtual ~a_ttscp();
 	virtual bool brk();
 	virtual void disconnect();

@@ -1402,3 +1402,17 @@ in this way much more often than explicitly indicated here.     ]
 	- TTSCP header documented not to be terminated by an empty line (Mirek)
 	- (Cz, Sk) "female" soft option to indicate voice gender
 	- removed pseudo root dir "root" from the distribution
+
+2.5.23 from 2.5.22	16.2.04
+	- Win32 portability fixes, getcwd replacement, arch/version.h
+	- the derived HTML documentation is no longer distributed
+	- split epos.h off common.h
+	- reorganized the hash table code
+	- eposm is now noinst and displays an obsolescence notice
+	- improved WELCOME and cfg/inv/README
+	- due to an automake upgrade: AM_LDFLAGS instead of LDFLAGS
+	- due to an autoconf upgrade: got rid of acconfig.h, quoting
+	- renamed configure.in to configure.ac
+	- configuration::get__sd_in/out() sockified access functions
+
+

@@ -16,7 +16,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 
 #ifdef HAVE_WINDOWS_H
 	#include <windows.h>
@@ -1136,7 +1136,7 @@ void
 r_debug::apply(unit *root)
 {
 	if(strstr(raw,"tsrtool")) {
-#ifdef HAVE_MMSYSTEM_H		// The TSR debuging tool is up to now available only in the M$WIN port of the epos
+#ifdef HAVE_WINDOWS_H		// The TSR debuging tool is up to now available only in the Win32 port
 		HINSTANCE hDLL = LoadLibrary("tsrtool.dll");
 		if (hDLL != NULL)
 		{

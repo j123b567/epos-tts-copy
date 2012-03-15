@@ -14,7 +14,7 @@
  *
  */
 
-#include "common.h"
+#include "epos.h"
 #include "client.h"
 #include "agent.h"
 
@@ -44,7 +44,7 @@ class a_replier : public agent
 };
 
 a_replier **replier_table = (a_replier **)xmalloc(1);
-int n_repliers = 0;
+socky int n_repliers = 0;
 
 a_replier::a_replier(socky int s) : agent(T_NONE, T_NONE)
 {
@@ -111,7 +111,7 @@ int async_sputs(socky int sd, const char *buffer, int len)
 	if (result != -1) {
 		if (sd >= n_repliers) {
 			replier_table = (a_replier **)xrealloc(replier_table, (sd + 1) * sizeof(a_replier *));
-			for (int i = n_repliers; i < sd; i++)
+			for (socky int i = n_repliers; i < sd; i++)
 				replier_table[sd] = NULL;
 			n_repliers = sd + 1;
 		}
@@ -137,7 +137,7 @@ void use_async_sputs()
 
 void free_replier_table()
 {
-	for (int i = 0; i < n_repliers; i++)
+	for (socky int i = 0; i < n_repliers; i++)
 		delete replier_table[i];
 	free(replier_table);
 }
