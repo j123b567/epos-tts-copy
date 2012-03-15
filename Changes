@@ -1474,3 +1474,6 @@ in this way much more often than explicitly indicated here.     ]
 	- r_absol reshaped as a hashing_rule
 	- average phone length databases based on two corpora
 		(affects mbrsyn voices for better or for worse)
+
+2.5.31 from 2.5.30	25.5.05
+	- Mac OS X (big endian) fixes

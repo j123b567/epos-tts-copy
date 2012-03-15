@@ -858,7 +858,7 @@ wavefm::get_ophase_len(const w_ophase *p)
 		tmp = (long int)p->len;
 	} else {
 		tmp = *(int *)((char *)this + (long int)p->len);
-		if (translated) {
+		if (translated && p == &ophases[1]) {	// FIXME - remove the 2nd clause after labels work on big-endians, too
 			tmp = from_le32s(tmp);
 		}
 	}
