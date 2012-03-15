@@ -1,3 +1,0 @@
-Set an operating parameter like setl, but globally, that is,
-for all connections that will be created from now on.
-You must authenticate as the server first.
