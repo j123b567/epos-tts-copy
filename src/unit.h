@@ -112,7 +112,7 @@ class unit
         bool contains(UNIT target, charclass *set);
 //        void sseg(UNIT target, hash *templates);
         			      // Take freq, time or intensity from the hash*
-        void absol(UNIT target);
+        void absol(hash *dict, UNIT target);
 	void prospoint(FIT_IDX what, int value, float position);
 	void contour(UNIT target, int *recipe, int rec_len,
 			int padd_start, FIT_IDX what, bool additive);

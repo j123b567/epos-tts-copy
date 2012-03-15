@@ -128,3 +128,13 @@ you've changed).
 This procedure not only makes it perfectly clear how to reproduce the bug,
 but it will also (almost) prevent it from reappearing after we fix it.
 
+
+
+Q: I'm a MS Windows user and I don't know how to download, install
+and operate a C++ compiler.  Is there a precompiled Win32 binary of Epos?
+A:
+You can try this link:
+http://epos.ure.cas.cz/download/bin/win32/epos2.4.79.exe 
+to download a less recent, but pretty stable binary version of Epos.
+
+

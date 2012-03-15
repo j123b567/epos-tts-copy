@@ -1,6 +1,6 @@
-DATA_FILES = portaudio/			\
+DATA_FILES = portaudio			\
 portaudio/README			\
-regex/					\
+regex					\
 regex/rx.c				\
 regex/rx.h				\
 regex/Makefile.am			\

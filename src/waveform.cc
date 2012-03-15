@@ -688,14 +688,16 @@ inline void
 wavefm::translate_data(char *newbuff)
 {
 	D_PRINT(1, "(translating the data, too)");
-//	if (cfg->ulaw && this_voice->sample_size != 8) shriek(462, "Mu law implies 8 bit");
-	int ssbytes  = (this_voice->sample_size + 7) >> 3;  // sample size in bytes
-	int shift1 = (sizeof(int) - sizeof(SAMPLE)) << 3;
-	int shift2 = scfg->_big_endian ? 0 : (sizeof(int) - ssbytes) << 3;
-	int unsign = ssbytes == 1 ? 0x80 : 0;
 
 	bool ulaw = cfg->ulaw;
 	bool native_byte_order = (fd == localsound);
+
+//	if (ulaw && this_voice->sample_size != 8) shriek(462, "Mu law implies 8 bit");
+	int ssbytes  = (this_voice->sample_size + 7) >> 3;  // sample size in bytes
+	int shift1 = (sizeof(int) - sizeof(SAMPLE)) << 3;
+	int shift2 = (scfg->_big_endian && native_byte_order) ? 0 : (sizeof(int) - ssbytes) << 3;
+	int unsign = ssbytes == 1 ? 0x80 : 0;
+
 
 	for (int i = 0; i < hdr.buffer_idx; i += downsamp) {
 		int sample = buffer[i];

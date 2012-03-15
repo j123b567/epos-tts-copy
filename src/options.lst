@@ -407,7 +407,7 @@
  */
 
 #ifndef BASE_DIR
-	# define BASE_DIR /usr/share/epos
+	# define BASE_DIR /usr/local/share/epos
 #endif
 
 STATIC (base_dir,	STR, strdup(stringify(BASE_DIR)))// base path to everything

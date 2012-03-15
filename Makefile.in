@@ -40,7 +40,7 @@ ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
-AM_CXXFLAGS = -w -DEPOS -ggdb -DBASE_DIR=$(pkgdatadir) $(OTHER_CXXFLAGS)
+AM_CXXFLAGS = -w -DEPOS -ggdb -DBASE_DIR=$(pkgdatadir) $(OTHER_CXXFLAGS) $(CONFIGURED_CXXFLAGS)
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -48,6 +48,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CONFIGURED_CXXFLAGS = @CONFIGURED_CXXFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
@@ -152,7 +153,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 SUBDIRS = libs src cfg arch doc
 
-EXTRA_DIST = Makefile.common Changes WELCOME
+EXTRA_DIST = Makefile.common Changes WELCOME WELCOME.MacOSX
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -166,9 +167,10 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/configure \
-	$(top_srcdir)/Makefile.common Makefile.am THANKS aclocal.m4 \
-	config.guess config.h.in config.sub configure configure.ac \
-	depcomp install-sh ltmain.sh missing mkinstalldirs ylwrap
+	$(top_srcdir)/Makefile.common Makefile.am THANKS acinclude.m4 \
+	aclocal.m4 config.guess config.h.in config.sub configure \
+	configure.ac depcomp install-sh ltmain.sh missing mkinstalldirs \
+	ylwrap
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -188,7 +190,7 @@ $(top_builddir)/config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 $(srcdir)/configure:  $(srcdir)/configure.ac $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
 	cd $(srcdir) && $(AUTOCONF)
 
-$(ACLOCAL_M4):  configure.ac 
+$(ACLOCAL_M4):  configure.ac acinclude.m4
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 
 config.h: stamp-h1

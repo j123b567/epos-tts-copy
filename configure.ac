@@ -2,7 +2,7 @@
 dnl Process this file with autoconf to produce a configure script
 
 AC_INIT(src/unit.cc)
-AM_INIT_AUTOMAKE(epos, 2.5.29)
+AM_INIT_AUTOMAKE(epos, 2.5.30)
 AC_PREFIX_DEFAULT(/usr/local)
 
 CCC="g++ c++ cc++ gcc cc"
@@ -16,21 +16,22 @@ if test $GXX = yes; then
 	else AM_CXXFLAGS=-O
 fi
 
-AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
+AC_SUBST(CONFIGURED_CXXFLAGS)
 AC_SUBST(AM_CXXFLAGS)
 AC_PROG_MAKE_SET
+AC_PROG_LIBTOOL
 
 AC_ARG_WITH(dmalloc, AC_HELP_STRING([--with-dmalloc], [dmalloc debugging library (developers only)]),
 	if test $withval = yes; then
-		CXXFLAGS="${CXXFLAGS} -DWANT_DMALLOC"
+		AM_CXXFLAGS="${AM_CXXFLAGS} -DWANT_DMALLOC"
 		LIBS="$LIBS -ldmalloc -L/usr/local/lib"
 	fi
 )
 dnl AC_ARG_WITH(regex, --with-regex       regular expression substitution, , )
 AC_ARG_ENABLE(charsets, AC_HELP_STRING([--enable-charsets], [allow automatic conversions between character sets]),
 	if test x$enableval = xno; then
-		CXXFLAGS="${CXXFLAGS} -DFORGET_CHARSETS"
+		AM_CXXFLAGS="${AM_CXXFLAGS} -DFORGET_CHARSETS"
 	fi,
 )
 AC_ARG_ENABLE(portaudio, AC_HELP_STRING([--enable-portaudio], [alternative sound output method]),
@@ -97,7 +98,7 @@ AC_HAVE_HEADERS(fcntl.h)
 AC_HAVE_HEADERS(direct.h)
 AC_HAVE_FUNCS(strerror vsnprintf strdup fork getegid strcasecmp stricmp getcwd gethostname gettimeofday qnx_name_attach abort kill pipe _pipe)
 
-AC_CACHE_CHECK("for glibc regex error codes",
+AC_CACHE_CHECK([for glibc regex error codes],
    epos_cv_symb_regeend,
    AC_TRY_COMPILE(
 	#include <sys/types.h>
@@ -121,7 +122,7 @@ if test "$epos_cv_symb_regeend" = yes; then
    AC_DEFINE([HAVE_REG_EEND], [], [ Define if your regex library defines the REG_EEND and REG_ESIZE error codes ])
 fi
 
-AC_CACHE_CHECK("for regmatch_t.rm_so",
+AC_CACHE_CHECK([for regmatch_t.rm_so],
    epos_cv_struct_rm_so,
    AC_TRY_COMPILE(
 	#include <sys/types.h>
@@ -146,7 +147,7 @@ if test "$epos_cv_struct_rm_so" = yes; then
 fi
 
 
-AC_CACHE_CHECK("for terminate",
+AC_CACHE_CHECK([for terminate],
    epos_cv_fn_terminate,
    AC_TRY_COMPILE(
 	[ #include <stdlib.h> ],
@@ -159,7 +160,7 @@ if test "$epos_cv_fn_terminate" = yes; then
    AC_DEFINE([HAVE_TERMINATE], [], [ Define if you have the built-in terminate function. ])
 fi
 
-AC_CACHE_CHECK("for explicit template instatiations",
+AC_CACHE_CHECK([for explicit template instatiations],
    epos_cv_c_templ_inst,
    AC_TRY_COMPILE(
 	[ template <class any_type> class some_type{}; template class some_type<int>; ]	,
@@ -173,7 +174,7 @@ if test "$epos_cv_c_templ_inst" = yes; then
 )
 fi
 
-AC_CACHE_CHECK("for socklen_t",
+AC_CACHE_CHECK([for socklen_t],
    epos_cv_type_socklen,
    AC_TRY_COMPILE(
 	#ifdef HAVE_SYS_SOCKET_H
@@ -206,7 +207,7 @@ broken_enum_bitfields_test='\
 	}\
 	'
 
-AC_CACHE_CHECK("for broken enum bitfields",
+AC_CACHE_CHECK([for broken enum bitfields],
    epos_cv_c_broken_enum_bitfields,
    AC_TRY_RUN(
 	$broken_enum_bitfields_test,
@@ -217,6 +218,11 @@ AC_CACHE_CHECK("for broken enum bitfields",
 if test "$epos_cv_c_broken_enum_bitfields" = yes; then
    AC_DEFINE([BROKEN_ENUM_BITFIELDS], [], [ Define if your compiler incorrectly treats enum bit fields as signed ])
 fi
+
+EPOS_CXX_OPTION(mafwks,
+	[mac audio frameworks],
+	["-framework CoreAudio -framework AudioToolbox"])
+CONFIGURED_CXXFLAGS="$CONFIGURED_CXXFLAGS $mafwks"
 
 
 AM_CONFIG_HEADER(config.h)

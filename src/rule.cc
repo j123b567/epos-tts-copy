@@ -565,7 +565,7 @@ r_seg::apply(unit *root)
  ************************************************/
 
 
-class r_absol: public rule
+class r_absol: public hashing_rule
 {
 	virtual OPCODE code() {return OP_ABSOL;};
    public:
@@ -573,9 +573,8 @@ class r_absol: public rule
 	virtual void apply(unit *root);
 };
 
-r_absol::r_absol(char *param) : rule(param)
+r_absol::r_absol(char *param) : hashing_rule(param)
 {
-	if (strcmp(param, "t")) shriek(811, "%s: Impossible absolutize request", debug_tag());
 }
 
 /************************************************
@@ -585,7 +584,17 @@ r_absol::r_absol(char *param) : rule(param)
 void
 r_absol::apply(unit *root)
 {
-	root->absol(target);
+	if (!dict) load_hash();
+
+//	if (target == U_PHONE) root->subst(dict, method);
+
+	root->absol(dict, target);
+
+	if (scfg->memory_low) {
+		D_PRINT(2, "Hash table caching is disabled.\n"); //hashtabscache[rulist[i].param]->debug();
+		delete dict;
+		dict = NULL;
+	}
 }
 
 

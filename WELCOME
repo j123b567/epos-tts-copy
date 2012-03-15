@@ -8,9 +8,9 @@ Compiling and installation on a UNIX machine:
 
  1. ./configure
  2. make
- 3. make install   (with sufficient rights to install cfg files under /usr/share/epos)
+ 3. make install   (with sufficient rights to install cfg files under /usr/local/share/epos)
  4. install speech segment inventories (see cfg/inv/README for an explanation;
-	untar them starting from /usr/share/epos/inv)
+	untar them starting from /usr/local/share/epos/inv)
 
 Running on a UNIX machine:
  eposd       starts a speech daemon  
@@ -62,7 +62,7 @@ More info:
  1. read doc/*.sgml (or, in the compiled form: epos.dvi or epos.html or epos.txt)
  2. there are other relevant files under "doc"
  3. browse http://epos.ure.cas.cz/ (mostly identical to (1))
- 4. have a look at the files under cfg (or /usr/share/epos)
+ 4. have a look at the files under cfg (or /usr/local/share/epos)
  5. read the source under src
 (The last two steps are optional.)
 

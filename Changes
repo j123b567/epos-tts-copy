@@ -1468,4 +1468,9 @@ in this way much more often than explicitly indicated here.     ]
 	- Vogon language (unit testing infrastructure)
 	- FAQ: report bugs by writing the tests
 	- say-epos option -x to turn off the synthesis (transcribe only)
-	
+2.5.30 from 2.5.29	24.5.05
+	- Win fix: #define FORGET_PORTAUDIO 1
+	- doc fixes (wrt default install path, PortAudio, Mac OS X)
+	- r_absol reshaped as a hashing_rule
+	- average phone length databases based on two corpora
+		(affects mbrsyn voices for better or for worse)

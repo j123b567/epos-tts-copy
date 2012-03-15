@@ -9,7 +9,7 @@ AUTOMAKE_OPTIONS=1.4 foreign
 
 SUBDIRS = libs src cfg arch doc
 
-EXTRA_DIST=Makefile.common Changes WELCOME
+EXTRA_DIST=Makefile.common Changes WELCOME WELCOME.MacOSX
 
 #distcleancheck:
 #	@@:

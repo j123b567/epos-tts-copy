@@ -13,7 +13,7 @@ version: $(top_srcdir)/configure.ac
 # In case of problems with the installation please note
 # that all you need is a recursive copy
 # of the content of this directory to the "right" place,
-# such as cp -r * /usr/share/epos
+# such as cp -r * /usr/local/share/epos
 
 install-data-local: installdirs
 	@cd $(srcdir) && for i in $(DATA_DIRS); do \

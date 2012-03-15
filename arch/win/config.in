@@ -150,6 +150,9 @@
 /* Defining this is necessary with any DOS/NT version */
 #define FORGET_SOUND_IOCTLS 1
 
+/* Defining this is necessary with any DOS/NT version */
+#define FORGET_PORTAUDIO 1
+
 /* Define if using the mmsystem for output */
 #define HAVE_MMSYSTEM_H 1
 

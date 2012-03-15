@@ -1112,16 +1112,32 @@ unit::contains(UNIT target, charclass *set)
 }
 
 void
-unit::absol(UNIT target)
+unit::absol(hash *dict, UNIT target)
 {
+#ifdef LAME_ABSOLUTIZATION
 	if (target == depth) {
 		if (strchr("aeiou", cont)) t *= 1.3;
 		if (strchr("·ÈÌÛ˙AEO", cont)) t *= 1.7;
 		if (strchr("ptkbdg", cont)) t *= 0.9;
 	} else if (target < depth) {
 		for (unit *u = firstborn; u; u = u->next)
-			u->absol(target);
+			u->absol(dict, target);
 	} else shriek(463, "Tried to absolutize upwards");
+#else
+	if (target == depth) {
+		char req[2];
+		req[1] = 0;
+		req[0] = cont;
+		int timing = dict->translate_int(req);
+		if (timing == -1) {
+			shriek(469, "No timings?  FIXME");
+		}
+		t = t * timing / 100;	// FIXME 100
+	} else if (target < depth) {
+		for (unit *u = firstborn; u; u = u->next)
+			u->absol(dict, target);
+	} else shriek(463, "Tried to absolutize upwards");
+#endif
 	
 }
 
