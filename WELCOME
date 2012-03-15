@@ -20,7 +20,7 @@ Compiling and installation on a UNIX machine:
  3. make
  4. make install   (as root - will install cfg files under /usr/lib/epos)
  5. install speech segment inventories (downloadable separately) if required
-	(untar them starting from the root)
+	(untar them into the "inv" installation directory)
 
 Running on a UNIX machine:
  epos   starts a speech daemon  
@@ -47,10 +47,10 @@ Then try to run "say.exe some text" with sufficient privileges to hear Epos spea
 
 ----------------------------------------------------------------
 
-The default configuration speaks Czech using the local sound card and
-the public TTSCP server at epos.ure.cas.cz. If you don't have a sound
-card, you might wish to try "say -w 'Some text'" to create said.wav
-which is an MS Windows-style .wav file. If you are not connected to
+The default configuration speaks Czech using the local sound card.
+If you don't have a sound card, you might wish to try
+"say -w 'Some text'" to create said.wav which is
+an MS Windows-style .wav file. If you are not connected to
 the Internet, or epos.ure.cas.cz is unreachable or misconfigured (not
 unusual), go to /usr/lib/epos/lng/czech/czech.ini and move the word
 "theimer" to the first position in the "voices" list option. This will

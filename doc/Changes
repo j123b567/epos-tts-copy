@@ -1232,3 +1232,6 @@ for an exciting story, just skip it.
 
 2.4.83 from 2.4.82	7.3.05
 	- restricted setting of pausing via TTSCP
+
+2.4.84 from 2.4.83	2.7.05
+	- adjusted for use with the advanced voices in epos-tdp.tgz
