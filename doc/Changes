@@ -1226,4 +1226,9 @@ for an exciting story, just skip it.
 	- (Cz) "pøes" voicing assimilation behavior fixed
 	- negated dictionaries (r_prep, r_postp, r_with), M_NEGATED
 
+2.4.82 from 2.4.81	29.11.04
+	- fixed a broken Winsock treatment of WSAECONNRESET
+	- some minor fixes, WELCOME file updated
 
+2.4.83 from 2.4.82	7.3.05
+	- restricted setting of pausing via TTSCP

@@ -1,4 +1,13 @@
 
+NOTE: this version of Epos, i.e. 2.4, is _stable_.  This means
+1) we have already fixed all the bugs
+2) we will be loath to fix any counterexamples to (1)
+   as everybody is busy with 2.5 or later.
+3) serious bugs may get fixed anyway.  Reporters shall be remembered.
+
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+
 This is Epos, a freely distributable language independent Text-to-Speech
 system. See doc/COPYING for distribution conditions.
 

@@ -169,11 +169,17 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 	{
 		int result = send(fd, (const char *)buffer, size, 0);
 		if (result == -1) {
-			if (WSAGetLastError() == WSAEWOULDBLOCK) {
+			int error = WSAGetLastError();
+			switch (error) {
+			case WSAEWOULDBLOCK:
 				errno = EAGAIN;
 				return -1;
+			case WSAENOTSOCK:
+				return write(fd, (const char *)buffer, size);
+			default:
+				errno = error;
+				return -1;
 			}
-			return write(fd, (const char *)buffer, size);
 		}
 		return result;
 	}
@@ -182,11 +188,17 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 	{
 		int result = recv(fd, (char *)buffer, size, 0);
 		if (result == -1) {
-			if (WSAGetLastError() == WSAEWOULDBLOCK) {
+			int error = WSAGetLastError();
+			switch (error) {
+			case WSAEWOULDBLOCK:
 				errno = EAGAIN;
 				return -1;
+			case WSAENOTSOCK:
+				return read(fd, (char *)buffer, size);
+			default:
+				errno = error;
+				return -1;
 			}
-			return read(fd, (char *)buffer, size);
 		}
 		return result;
 	}
