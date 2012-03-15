@@ -11,10 +11,7 @@ name czech
 input_file  "text.txt"
 rules_file  "czech.rul"
 
-voices theimer:machac:violka:machac8:violka16:violka8:r-kubec:r-vichov\
-:vichova:kubec-f:kadlec:kubec-vq:kubec:mbr:jiri\
-:machac_bang:machac_bang_smooth:machac_lpc_bang:machac_lpc_bang_phone:machac_lpp\
-:machac_bang8:machac_lpc_bang8:machac_lpc_bang_phone8:machac_lpp8
+voices theimer:machac:violka:machac8:violka16:violka8:r-kubec:r-vichov:vichova:kubec-f:kadlec:kubec-vq:kubec:mbr:
 
 fallback_voice	"theimer"
 permanent_fallbacks   on

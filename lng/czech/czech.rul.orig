@@ -57,39 +57,19 @@ if use_prosody
 {
 	if   lpcprosody
 	{
-		if use_bang_nnet
-		{
-			if use_nnet_phone 
-			{
-				nnet prosody_lpc_bang_phone.neu sent phone
-			}
-			if !use_nnet_phone
-			{
-				nnet prosody_lpc_bang.neu sent syll
-			}
-		}
-		if !use_bang_nnet
-		{
-			@include "lpcpros.rul"
-		}
+		@include "lpcpros.rul"
+		#@include "prosody.rul"
 	}
 	if   !lpcprosody
 	{
-		if use_bang_nnet
-		{
-			nnet prosody_bang.neu sent syll
-		}
-		if !use_bang_nnet
-		{
 		if   naive_prosody
 		{
-			@include "naive.rul"
+	@include "naive.rul"
 		}
 		if   !naive_prosody
 		{
 			@include "prosody.rul"
 		}
-	}
 	}
 }
 
@@ -162,8 +142,7 @@ if  absolute_time
 
 if	tsr_tool
 {
-	debug dumpunit text
-#	debug elem phone
+#	debug tsrtool text
 }
 
 

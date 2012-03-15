@@ -10,8 +10,6 @@ mbrola_binary	""
 label_seg	false
 label_phones	false
 label_sseg	false
-pros_factor	1000
-label_f0	false
 autofilter	true
 wave_header	false
 ulaw		false

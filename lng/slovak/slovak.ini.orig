@@ -1,0 +1,39 @@
+name slovak
+
+@include "encoding.ini"
+
+rules_file	slovak.rul
+
+voices		igor:petriska:kadlec
+
+fallback_voice	petriska
+permanent_fallbacks on
+
+soft_options	a_colons(b)=true\
+:spellout(b)=false\
+:colloquial(b)=false\
+:gen_ordinals(b)=false\
+:roman(b)=true\
+:reduce_groups(b)=true\
+:aecg(b)=true\
+:phr_break(b)=true\
+:slovak_dph(b)=false\
+:kadlec_dph(b)=false\
+:glottal_stop(b)=false\
+:diphtongs(b)=false
+
+
+rules_dir   slovak
+hash_dir    slovak
+input_dir   slovak
+
+init_f	100
+init_i	100
+init_t	100
+
+perm@phone   "aáäbcèdïeéìfghiíjklµåmnòoóôpqrøàs¹t»uúùvwxyýz¾AÁÄBCÈDÏEÉÌFGHIÍJKL¥ÅMNÒOÓÔPQRØÀS©T«UÚÙVWXYÝZ®+=/<>[]{}_@$%^'`\"&*()0123456789\.\-\m\\\\#\Y\Z\W|"
+perm@syll    ""
+perm@word    " ~\X\t\n\r"  ## \X ?  ~?
+perm@colon   ",-"
+perm@sent    ";:.!?\~"
+

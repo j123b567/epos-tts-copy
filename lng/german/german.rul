@@ -1,56 +1,112 @@
-#
-#	provisorische Regeln, Jirka Hanika <geo@ff.cuni.cz>
-#
-#
+$big	= ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ
+$little = abcdefghijklmnopqrstuvwxyzäöü
 
-$voiced    = bdgvzZh¾
-$voiceless = ptkfscx¹
-$fric      = sz¹¾fvhxß
-$afric     = cZè®
-$stop      = ptkbdg
-$nasal     = mnN
-$sonant    = jlr$nasal
-$short     = aeiouäöüy
-$long      = áéíóúäöüý
-#$diphtong  = OAE
-$vowel     = $short$long    #...$diphtong
-$consonant=$voiced$voiceless$sonant
-$everywhere= !_!
-$sonority  = 0'<$fric$afric${stop}$nasal<lrj<$vowel
+# substitute these if they were in input, because they are used
+# in the dictionary
+regress \_>\ (!_!) word phone
+regress \+>\ (!_!) word phone
+regress \=>\ (!_!) word phone 
+regress \'>\ (!_!) word phone
+regress \%>\ (!_!) word phone
 
- regress   0>s(x_!)
- regress   u0>0v(q_!)
- regress   0>v(q_!)                ; Rozlo¾ení x,q na ks, kv
- regress   xq>k($everywhere)
- regress   h>x(c_!)                ; Spøe¾ka ch > x
- progress  c>0(!_x)
- progress  s>¹(!_x)
- regress   x>0(¹_!)
- regress   i>í(!_e)
- regress   e>0(í_!)
+subst     hadi-bomp/bomp_epos_exact.dic  word phone
 
- regress   s>¹(0$consonant_$voiceless)
- regress   z>c($everywhere)
- regress   s>ß(s_!)
- regress   s>0(!_ß)
- regress   sß>zs($everywhere)
- regress   e>a(!_i)
- regress   i>j(a_!)
- regress   v>f($everywhere)
- regress   w>v($everywhere)
+# some magic for words whose substitution did not work
 
+# when the input isonly CAPS then say the word letter-by-letter
+near *$big word phone
+{
+	# regress	$little>$big(!_!)	phone phone
+	regress 0>+(!0_!)		phone phone
+	syll 0<+	word phone
+	regress	\+>0(!_!) word phone
+	subst     hadi-bomp/bomp_suppl.dic syll phone
+	syll 0<\+	word phone
 
- regress   $voiced>${voiceless}(!_$voiceless&0')       	; Asimilace znìlosti
- regress   $voiceless>$voiced(!_$voiced!v)
+}
+
+# try the upper-case version
+near *!\+ word phone
+{
+	regress $little>$big(0_!) word phone
+	subst     hadi-bomp/bomp_epos_exact.dic  word phone
+	syll 0<\+	word phone
+}
+
+#try the lower-case version
+near *!\+ word phone
+{
+	regress $big>$little(0_!) word phone
+	subst     hadi-bomp/bomp_epos_exact.dic  word phone
+	syll 0<\+	word phone
+}
 
 
- subst     ../czech/syll.dic		; Rozsadit vokály
 
- syll      $sonority	syll	; Rozklad_na_slabiky
+#convert all to lower case, try the rule which searches for word-parts
+near *!\+ word phone
+{
+	regress $big>$little(!_!) word phone
+	mysubst     hadi-bomp/bomp_epos_all.dic  word phone
 
- regress   0>q(!_0)
- regress   $short>$long(!_0h)   syll
- regress   q>0(!_0)
- regress   h>0($long_!)		syll
+	regex /XAXA/XA/ word 
 
- diphones  ../czech/kadlec.dph		colon
+	# throw away marks at beginning and end of word
+	regress X>0(0_!)	word phone
+	regress X>0(!_0)	word phone
+	regress A>0(0_!)	word phone
+	regress A>0(!_0)	word phone
+	# regress X>0(0_!)	word phone
+	# regress X>0(!_0)	word phone
+
+	# but we need one at the end
+	regress 0>X(!_0)	word phone
+	regress 0>A(!_0)	word phone
+
+	# raise X:X		word phone
+	syll 0<X		word phone
+	regress X>0(!_!)	syll phone
+	regress A>0(!_!)	syll phone
+	# regress X>0(!_!)	syll phone
+
+	debug dumpunit word
+
+	near *!\+ syll phone
+	{
+		debug dumpunit syll
+		subst hadi-bomp/bomp_epos_syll.dic	syll phone
+	}
+
+	# I want to delete every glottal stop that's not at the beginning of the word... shall I?
+	regress Q>X(0_!)	word phone
+	regress Q>0(!_!) 	word phone
+	regress X>Q(0_!)	word phone
+
+}
+
+
+# debug dumpunit text
+
+# split word into syllables
+regress	\+>0(!_!) word phone
+
+debug dumpunit text
+
+# raise F0 on main stress syllable
+near \' syll phone
+{
+	contour	f/+15*	syll phone
+}
+regress \'>0(!_!) word phone
+
+
+# lower F0 on second stress syllable
+near \= syll phone
+{
+	contour	f/-15*	syll phone
+}
+regress \=>0(!_!) word phone 
+
+
+
+segments  joerg.dph		colon

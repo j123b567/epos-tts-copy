@@ -76,11 +76,28 @@ pros_neutral_f	100
 pros_eff_multiply_f	yes
 pros_eff_multiply_i	yes
 pros_eff_multiply_t	yes
-pros_factor 	1000
-label_f0	no
+
 
 #	Debugging options
 
+# focus_debug - see _DEBUG_AREA_ in interf.h. Unused value means no focus.
+# Legal values: interf, rules, elem, subst, assim, split, parser, synth, maybe others
+
 use_debug    no	
+focus_debug  none
+always_debug 3
+limit_debug  0
+
+
+interf_debug 3
+rules_debug  3
+elem_debug   3
+subst_debug  3
+assim_debug  3
+split_debug  3
+parser_debug 3
+synth_debug  3
+cfg_debug    3
+
 
 @include "epos.ini"	; this is NOT the last place where epos.ini is loaded
