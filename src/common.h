@@ -27,12 +27,14 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@cuni.cz"
-#define VERSION     "2.5.5"
+#define VERSION     "2.5.8"
+#define TTSCP_PORT  8778
 
 #include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>           // just exit() in shriek(), malloc &co...
+#include <stdarg.h>
 
 #ifdef HAVE_STRING_H
 	#include <string.h>
@@ -75,10 +77,8 @@ char *strdup(const char *);
    }
 #endif
 
-#define TTSCP_PORT	8778
 
-
-enum SUBST_METHOD {M_EXACT=0, M_END=1, M_BEGIN=2, M_BEGIN_OR_END=3, M_SUBSTR=4, M_PROPER=7, M_LEFT=8, M_RIGHT=16, M_ONCE=32};
+enum SUBST_METHOD {M_EXACT=0, M_END=1, M_BEGIN=2, M_BEGIN_OR_END=3, M_SUBSTR=4, M_PROPER=7, M_LEFT=8, M_RIGHT=16, M_ONCE=32, M_NEGATED=64, M_SEQ=128};
 enum REPARENT {M_DELETE, M_RIGHTWARDS, M_LEFTWARDS};
 enum FIT_IDX {Q_FREQ, Q_INTENS, Q_TIME};
 #define FITstr	"f:i:t:"
@@ -98,7 +98,7 @@ extern int unused_variable;
 extern const bool is_monolith;
 
 struct file;
-struct option;
+struct epos_option;
 class  unit;
 
 class stream;

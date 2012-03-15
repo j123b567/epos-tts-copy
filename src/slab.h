@@ -16,6 +16,9 @@
  *	It never gives up memory which it has (meta)allocated.
  */
 
+#ifndef SLAB_H
+#define SLAB_H
+
 #ifndef xmalloc
 	#define xmalloc malloc
 #endif
@@ -121,4 +124,6 @@ void shutdown_handler()			\
 {					\
 	slab_name.shutdown();		\
 }
+
+#endif		// SLAB_H
 

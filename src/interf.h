@@ -23,12 +23,6 @@
 
 enum OUT_ML { ML_NONE, ML_ANSI, ML_RTF};
 #define OUT_MLstr "none:ansi:rtf:"
-enum _DEBUG_AREA_ {_INTERF_, _RULES_, _ELEM_, _SUBST_, _ASSIM_, _SPLIT_,
-			_PARSER_=7, _SYNTH_=9, _CFG_=10, _DAEMON_=11, _NONE_=127}; 
-           //Don't touch this enum. We're gonna mix these identifiers and raw integer constants;
-           // this way, _INTERF_ will be treated as equal to zero, _RULES_ equal to one etc.
-#define DEBUG_AREAstr "interf:rules:elem:subst:assim:split::parser::synth:cfg:daemon:"
-
 
 void epos_init(int argc, char**argv);
 void epos_init();
@@ -44,8 +38,11 @@ void colorize(int level, FILE *handle);  // See this function in interf.cc for v
 
 // void check_lib_version(const char *s);
 
+#if 0
+
 char *fmt(const char *s, int userval);
 char *fmt(const char *s, int userval, int anotherval);
+char *fmt(const char *s, const char *t, int userval, const char *u);
 char *fmt(const char *s, const char *t, int userval, const char *u);
 char *fmt(const char *s, const char *t, int userval);
 char *fmt(const char *s, const char *t);
@@ -54,6 +51,9 @@ char *fmt(const char *s, const char *t, const char *u, int userval);
 char *fmt(const char *s, const char *t, const char *u, const char *v);
 char *fmt(const char *s, int userval, const char *u);
 char *fmt(const char *s, int userval, const char *u, const char *v);
+char *fmt(const char *s, int userval, int anotherval, int nextval, int lastval);
+
+#endif
 
 void user_pause();
 
@@ -147,20 +147,73 @@ extern charxlat *esctab;
 
 // bool privileged_exec();		// true if suid or sgid
 
-#define DEBUGGING     
-
-#ifdef DEBUGGING
+// #ifdef DEBUGGING
 
 extern char *current_debug_tag;
-bool debug_wanted(int lev, /*_DEBUG_AREA_*/ int area);
-void debug_prefix(int lev, int area);
+// bool debug_wanted(int lev, /*_DEBUG_AREA_*/ int area);
+// void debug_prefix(int lev, int area);
 
-#define DBG(xxx,yyy,zzz) {if(debug_wanted(xxx,yyy)) {debug_prefix(xxx,yyy);zzz;fflush(STDDBG);};}
-#define STDDBG  ::cfg->stddbg
+// #define DBG(xxx,yyy,zzz) {if(debug_wanted(xxx,yyy)) {debug_prefix(xxx,yyy);zzz;fflush(STDDBG);};}
+// #define STDDBG  cfg->stddbg
 
-#else       // ifndef DEBUGGING
-#define DBG(xxx,yyy,zzz) ; 
-#endif      // ifdef DEBUGGING
+// #else       // ifndef DEBUGGING
+// #define DBG(xxx,yyy,zzz) ; 
+// #endif      // ifdef DEBUGGING
+
+/*
+ *	For debugging output, please use D_PRINT at all times.
+ *	The first parameter to D_PRINT is the debugging message
+ *	level, and should be one of:
+ *		0  detailed non-systematic message
+ *		1  verbose message
+ *		2  informational message
+ *		3  warning, stage transition or other important message
+ *	Other parameters are a format string and optionally arguments
+ *	as for printf().
+ *
+ *	DO_PRINT is equivalent to D_PRINT except that the message
+ *	is printed unconditionally.  Use this for temporary ad hoc
+ *	selection of requested debugging messages and don't forget
+ *	to retreat to the original macro name.
+ *
+ *	DBG is a more general purpose macro.  It is equivalent to
+ *	D_PRINT except that other code than a call to fprintf
+ *	can be executed.  The code should however stay very simple
+ *	and be limited to debugging output of some kind, e.g.
+ *	dumping of arrays.
+ *
+ *	If DEBUGGING is not defined, all of these macros are
+ *	completely ignored.  This may speed up the code and conserve
+ *	some space.
+ */
+
+#define DEBUGGING
+
+#ifdef DEBUGGING
+	#define STDDBG stdout
+		#define DBG(x,z) if (x >= scfg->debug_level) { z }
+		#define D_PRINT dprint_normal
+	#define DO_PRINT dprint_always
+#else
+	#define STDDBG stdout
+	#define DBG(x,z)
+
+	#define D_PRINT dprint_never
+	#define DO_PRINT dprint_always
+#endif
+
+#ifdef __GNUC__
+	#define PRINTF_STYLE(x, y) __attribute__ ((format (printf, x, y)))
+#else
+	#define PRINTF_STYLE(x, y) /* format will not be checked */
+#endif
+		
+char *fmt(const char *s, ...) PRINTF_STYLE(1,2);
+
+void dprint_always    (int level, const char *s, ...) PRINTF_STYLE(2,3);
+void dprint_normal(int level, const char *s, ...) PRINTF_STYLE(2,3);
+inline void dprint_never     (int level, const char *s, ...) {}
+
 
 
 #ifdef WANT_DMALLOC

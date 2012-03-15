@@ -102,12 +102,12 @@ agent::agent(DATA_TYPE typein, DATA_TYPE typeout)
 	pendin = pendout = NULL; pendcount = 0;
 	c = NULL;
 	dep = NULL;
-	DBG(1,11,fprintf(STDDBG, "Creating a handler, intype %i, outtype %i\n", typein, typeout);)
+	D_PRINT(1, "Creating a handler, intype %i, outtype %i\n", typein, typeout);
 }
 
 agent::~agent()
 {
-//	DBG(1,11,fprintf(STDDBG, "Handler deleted.\n");)
+//	D_PRINT(1, "Handler deleted.\n");
 }
 
 inline void
@@ -121,21 +121,21 @@ void
 agent::timeslice()
 {
 	c->enter();
-	DBG(1,11,fprintf(STDDBG, "Timeslice for %s\n", name());)
-	DBG(0,11,fprintf(STDDBG, "pendcount %d, next->pendcount %d, pend_max %d\n", pendcount, next ? next->pendcount : -42, scfg->pend_max);)
+	D_PRINT(1, "Timeslice for %s\n", name());
+	D_PRINT(0, "pendcount %d, next->pendcount %d, pend_max %d\n", pendcount, next ? next->pendcount : -42, scfg->pend_max);
 	if (next && next->pendcount > scfg->pend_max) {
-		DBG(1,11,fprintf(STDDBG, "(satiated)\n");)
+		D_PRINT(1, "(satiated)\n");
 		c->leave();
 		return;
 	}
 	if (!inb && in != T_NONE) {
 		if (!pendin) {
 			/* We may take this path legally after an intr command */
-			DBG(2,11,fprintf(STDDBG, "No input of type %i; shrugging off\n", in);)
+			D_PRINT(2, "No input of type %i; shrugging off\n", in);
 			c->leave();
 			return;
 		}
-		DBG(2,11,fprintf(STDDBG, "Getting pending task, type %i\n", in);)
+		D_PRINT(2, "Getting pending task, type %i\n", in);
 		pend_ll *tmp = pendin;
 		inb = tmp->d;
 		pendin = tmp->next;
@@ -152,13 +152,22 @@ agent::timeslice()
 		agent_profile(name());
 	} catch (command_failed *e) {
 		if (!next) throw e;
-		DBG(2,11,fprintf(STDDBG, "Processing failed, %d, %.60s\n", e->code, e->msg);)
+		D_PRINT(2, "Processing failed, %d, %.60s\n", e->code, e->msg);
 		reply(e->code, e->msg);
 		delete e;
 		finis(true);
 	}
 	if (pendcount && !inb) schedule();
 	c->leave();
+
+	agent *tmp;
+	for (agent *a = dep; a; a = tmp) {
+		D_PRINT(1, "Scheduling %s because of %s\n", a->name(), name());
+		tmp = a->dep;
+		a->schedule();
+		a->dep = NULL;
+	}
+	dep = NULL;
 }
 
 bool
@@ -219,7 +228,7 @@ agent::finis(bool err)
 bool agent::brk()
 {
 	relax();
-	DBG(1,11,fprintf(STDDBG, "interrupting an agent, intype %i, outtype %i\n", in, out);)
+	D_PRINT(1, "interrupting an agent, intype %i, outtype %i\n", in, out);
 	return true;
 }
 
@@ -348,7 +357,7 @@ again:
 	}
 	d->code = items;
 	d->nothing = d->ll = 0;
-	DBG(1,11,fprintf(STDDBG, "agent segs generated %d segments\n", n);)
+	D_PRINT(1, "agent segs generated %d segments\n", n);
 	pass(d);
 }
 
@@ -385,7 +394,7 @@ again:
 		inb = NULL;
 		position = 0;
 	}
-	DBG(1,11,fprintf(STDDBG, "agent ssif generated %d items\n", n);)
+	D_PRINT(1, "agent ssif generated %d items\n", n);
 	pass(d);
 }
 
@@ -494,7 +503,7 @@ a_synth::run()
 	while (!this_voice->syn) init_syn();	// at most twice
 	wavefm *wfm = new wavefm(this_voice);
 	this_voice->syn->synsegs(this_voice, (segment *)inb + 1, ((segment*)inb)->code, wfm);
-	DBG(1,11,fprintf(STDDBG, "a_synth processes %d segments\n", ((segment *)inb)->code);)
+	D_PRINT(1, "a_synth processes %d segments\n", ((segment *)inb)->code);
 
 	free(inb);
 	inb = NULL;
@@ -515,7 +524,7 @@ a_syn::run()
 	while (!this_voice->syn) init_syn();	// at most twice
 	wavefm *wfm = new wavefm(this_voice);
 	this_voice->syn->synssif(this_voice, (char *)inb, wfm);
-//	DBG(1,11,fprintf(STDDBG, "a_synth processes %d segments\n", ((segment *)inb)->code);)
+//	D_PRINT(1, "a_synth processes %d segments\n", ((segment *)inb)->code);
 
 	free(inb);
 	inb = NULL;
@@ -568,7 +577,7 @@ socky int special_io(const char *name, DATA_TYPE intype)
 	return r;
 }
 
-void stretch_sleep_table(socky int);
+void stretch_sleep_tables(socky int);
 
 a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 {
@@ -599,14 +608,14 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 			/* if ever adding classes, take care of closing/nonclosing
 			 * the socket upon exit        */
 	}
-	if (socket >= 0) stretch_sleep_table(socket);
-	DBG(0,11,fprintf(STDDBG, "I/O agent is %p\n", this);)
+	if (socket >= 0) stretch_sleep_tables(socket);
+	D_PRINT(0, "I/O agent is %p\n", this);
 }
 
 a_io::~a_io()
 {
-	DBG(0,11,fprintf(STDDBG, "~a_io\n");)
-	if (close_upon_exit) async_close(socket);
+	D_PRINT(0, "~a_io\n");
+	if (close_upon_exit) close_and_invalidate(socket);
 }
 
 class a_input : public a_io
@@ -630,9 +639,9 @@ a_input::a_input(const char *par) : a_io(par, T_INPUT, T_TEXT)
 void a_input::run()
 {
 	int res;
-	DBG(0,11,fprintf(STDDBG, "Entering input agent\n");)
-	if (sleep_table[socket]) {
-		DBG(0,11,fprintf(STDDBG, "avoiding a nested input\n");)
+	D_PRINT(0, "Entering input agent\n");
+	if (block_table[socket]) {
+		D_PRINT(0, "avoiding a nested input\n");
 		block(socket);
 		return;
 	}
@@ -670,7 +679,7 @@ void a_input::run()
 				encode_string((char *)inb, this_lang->charset, false);
 			default: ;	/* otherwise no problem */
 		}
-		DBG(2,11,fprintf(STDDBG, "Read and about to process %s\n", (char *)dta);)
+		D_PRINT(2, "Read and about to process %s\n", (char *)dta);
 		inb = NULL;
 		toread = 0;	// superfluous
 		offset = 0;	// superfluous
@@ -681,13 +690,13 @@ void a_input::run()
 bool
 a_input::mktask(int size)
 {
-	DBG(2,11,fprintf(STDDBG, "%d bytes to be read\n", size);)
+	D_PRINT(2, "%d bytes to be read\n", size);
 	if (inb) return false;	// busy
 	toread = size;
 	inb = xmalloc(size + 1);
 	offset = 0;
 	block(socket);
-	DBG(1,11,fprintf(STDDBG, "Apply task has been scheduled\n");)
+	D_PRINT(1, "Apply task has been scheduled\n");
 	return true;
 }
 
@@ -710,7 +719,7 @@ class a_output : public a_io
 void
 a_output::run()
 {
-	if (sleep_table[socket]) {
+	if (push_table[socket]) {
 		push(socket);
 		return;
 	}
@@ -776,7 +785,7 @@ template <DATA_TYPE type> class oa_ascii : public a_output
 class oa_seg : public a_output
 {
 	virtual int insize() {
-		DBG(1,11,fprintf(STDDBG, "Sending %d segments\n", ((segment *)inb)->code);)
+		D_PRINT(1, "Sending %d segments\n", ((segment *)inb)->code);
 		return ((segment *)inb)->code * sizeof(segment);
 	}
    public:
@@ -800,7 +809,7 @@ oa_wavefm::run()
 {
 	wavefm *w = (wavefm *)inb;
 	
-	if (!attached && !sleep_table[socket]) {
+	if (!attached && !push_table[socket]) {
 		w->attach(socket);
 		report(false, w->written /* + sizeof(wave_header)*/);
 		attached = true;
@@ -815,7 +824,7 @@ oa_wavefm::run()
 		if (w->written) report(false, w->written);
 		report(true, w->written_bytes());
 		w->detach(socket);
-		DBG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n", w->written_bytes());)
+		D_PRINT(1, "oa_wavefm wrote %d bytes\n", w->written_bytes());
 		attached = false;
 		delete w;
 		inb = NULL;
@@ -833,7 +842,7 @@ oa_wavefm::brk()
 		report(false, w->written_bytes());
 		w->brk();
 		if (attached) w->detach(socket);
-		DBG(1,11,fprintf(STDDBG, "oa_wavefm wrote %d bytes\n", w->written_bytes());)
+		D_PRINT(1, "oa_wavefm wrote %d bytes\n", w->written_bytes());
 		attached = false;
 		relax();
 	}
@@ -908,7 +917,7 @@ stream::stream(char *s, context *pc) : agent(T_NONE, T_NONE)
 
 	do {
 		*tmp = 0;
-		DBG(1,11,fprintf(STDDBG, "Making agent out of %s\n", s);)
+		D_PRINT(1, "Making agent out of %s\n", s);
 		try {
 			a = make_agent(s, NULL); a->c = c;
 		} catch (command_failed *e) {
@@ -949,7 +958,7 @@ stream::release_agents()
 void
 stream::apply(agent *ref, int bytes)
 {
-	DBG(2,11,fprintf(STDDBG, "In stream::apply %p %p %d\n", head, ref, bytes);)
+	D_PRINT(2, "In stream::apply %p %p %d\n", head, ref, bytes);
 	callbk = ref;
 	head->mktask(bytes);
 }
@@ -973,13 +982,14 @@ stream::run()
 void
 stream::finis(bool err)		// FIXME: simplify
 {
-	DBG(2,11,fprintf(STDDBG, "submitted a subtask\n");)
+	if (err) reply("191 finis recovery");
+	D_PRINT(2, "submitted a subtask\n");
 	for (agent *a = head; a != this; a = a->next) {
 		if (a->inb || a->pendin) {
-			DBG(2,11,fprintf(STDDBG, "more subtasks are pending\n");)
+			D_PRINT(2, "more subtasks are pending\n");
 			if (err) {
 				a->relax();
-				DBG(2,11,fprintf(STDDBG, "subtasks discarded\n");)
+				D_PRINT(2, "subtasks discarded\n");
 				if  (callbk) callbk->schedule();
 				else shriek(862, "double fault - no callback");
 				callbk = NULL;
@@ -988,7 +998,7 @@ stream::finis(bool err)		// FIXME: simplify
 			return;
 		}
 	}
-	DBG(2,11,fprintf(STDDBG, "this has been the last subtask\n");)
+	D_PRINT(2, "this has been the last subtask\n");
 	if (!err) reply("200 output OK");
 	if (callbk) callbk->schedule();
 	else shriek(862, "no callback");
@@ -1064,20 +1074,22 @@ void a_protocol::run()
 
 	encode_string(buffer, this_lang->charset, false);	// FIXME (alloc->true)
 
+	encode_string(buffer, this_lang->charset, false);	// FIXME (alloc->true)
+
 	if ((int)strlen(buffer) >= cfg->max_net_cmd)
 		shriek(413, "Received command is too looong");
 	if (res > 0 && *buffer) switch (run_command(buffer)) {
 		case PA_NEXT:
-			DBG(0,11,fprintf(STDDBG, "PA_NEXT\n");)
+			D_PRINT(0, "PA_NEXT\n");
 			if (strchr(sgets_buff, '\n')) schedule();
 			else block(cfg->sd_in);
 			return;
 		case PA_DONE:
-			DBG(0,11,fprintf(STDDBG, "PA_DONE\n");)
+			D_PRINT(0, "PA_DONE\n");
 			disconnect();
 			return;
 		case PA_WAIT:
-			DBG(0,11,fprintf(STDDBG, "PA_WAIT\n");)
+			D_PRINT(0, "PA_WAIT\n");
 			return;
 		default:
 			shriek(861, "Bad protocol action\n");
@@ -1125,7 +1137,7 @@ a_ttscp::~a_ttscp()
 	c->enter();
 	if (cfg->current_stream) delete cfg->current_stream;
 	cfg->current_stream = NULL;
-	DBG(2,11,fprintf(STDDBG, "deleted context closes fd %d and %d\n", cfg->sd_in, cfg->sd_out);)
+	D_PRINT(2, "deleted context closes fd %d and %d\n", cfg->sd_in, cfg->sd_out);
 	c->leave();
 	while (deps->items) {
 		a_ttscp *tmp = deps->translate(deps->get_random());
@@ -1135,9 +1147,9 @@ a_ttscp::~a_ttscp()
 	delete deps;
 	c->enter();
 	if (cfg->sd_in != -1)
-		async_close(cfg->sd_in);
+		close_and_invalidate(cfg->sd_in);
 	if (cfg->sd_out != -1 && cfg->sd_out != cfg->sd_in)
-		async_close(cfg->sd_out);
+		close_and_invalidate(cfg->sd_out);
 	if (data_conns->translate(handle) || ctrl_conns->translate(handle))
 		shriek(862, "Forgot to forget a_ttscp");
 
@@ -1161,7 +1173,7 @@ a_ttscp::run_command(char *cmd)
 	char *keyword;
 	char *param;
 
-	DBG(2,11,fprintf(STDDBG, "[ cmd] %s\n", cmd);)
+	D_PRINT(2, "[ cmd] %s\n", cmd);
 
 	keyword = cmd + strspn (cmd, WHITESPACE);
 	param = keyword + strcspn(keyword, WHITESPACE);
@@ -1190,12 +1202,12 @@ a_ttscp::run_command(char *cmd)
 	try {
 		return ttscp_cmd_set[i].impl(param, this);
 	} catch (command_failed *e) {
-		DBG(2,11,fprintf(STDDBG, "Command failed, %d, %.60s\n", e->code, e->msg);)
+		D_PRINT(2, "Command failed, %d, %.60s\n", e->code, e->msg);
 		reply(e->code, e->msg);
 		delete e;
 		return PA_NEXT;
 	} catch (connection_lost *d) {
-		DBG(2,11,fprintf(STDDBG, "Releasing a TTSCP control connection, %d, %.60s\n", d->code, d->msg);)
+		D_PRINT(2, "Releasing a TTSCP control connection, %d, %.60s\n", d->code, d->msg);
 		reply(d->code, d->msg);		/* just in case */
 		reply(201, fmt("debug %d", cfg->sd_in));
 		delete d;
@@ -1210,7 +1222,7 @@ a_ttscp::run_command(char *cmd)
 void
 a_ttscp::disconnect()
 {
-	DBG(2,11,fprintf(STDDBG, "ctrl conn %d lost\n", cfg->sd_in);)
+	D_PRINT(2, "ctrl conn %d lost\n", cfg->sd_in);
 	if (this != ctrl_conns->remove(handle) /* && this != data_conns->remove(handle) */ )
 		shriek(862, "Failed to disconnect a ctrl connection");
 	disconnector.disconnect(this);
@@ -1249,7 +1261,7 @@ a_accept::a_accept() : agent(T_NONE, T_NONE)
 	sa.sin_addr.s_addr = htonl(scfg->local_only ? INADDR_LOOPBACK : INADDR_ANY);
 	sa.sin_port = htons(scfg->listen_port);
 	setsockopt(cfg->sd_in, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
-	DBG(3,11,fprintf(STDDBG, "[core] Binding to the TTSCP port.\n");)
+	D_PRINT(3, "[core] Binding to the TTSCP port.\n");
 	if (bind(cfg->sd_in, (sockaddr *)&sa, sizeof (sa))) shriek(871, "Could not bind");
 	if (listen(cfg->sd_in, 64)) shriek(871, "Could not listen");
 	make_nonblocking(cfg->sd_in);
@@ -1275,12 +1287,12 @@ a_accept::run()
 	int f = accept(cfg->sd_in, (sockaddr *)&ia, &sia);
 	if (f == -1) {
 //		shriek(871, fmt("Cannot accept() - network problem (errno %d)", errno));
-		DBG(3,11,fprintf(STDDBG, "Cannot accept() - errno %d! Madly looping.\n", errno);)
+		D_PRINT(3, "Cannot accept() - errno %d! Madly looping.\n", errno);
 		if (errno != EAGAIN) schedule();
 		return;
 	}
 	make_nonblocking(f);
-	DBG(2,11,fprintf(STDDBG, "[core] Accepted %d (on %d).\n", f, cfg->sd_in);)
+	D_PRINT(2, "[core] Accepted %d (on %d).\n", f, cfg->sd_in);
 	c->leave();
 	unuse(new a_ttscp(f, f));
 	c->enter();
@@ -1318,21 +1330,25 @@ agent *sched_sel()
 	sched_tail = sched_tail->prev;
 	delete tmp;
 	runnable_agents--;
-	DBG(1,11,fprintf(STDDBG, "Agent %s\n", r->name());)
+	D_PRINT(1, "Agent %s\n", r->name());
 	return r;
 }
 
-agent **sleep_table = (agent **)xmalloc(1);
+agent **block_table = (agent **)xmalloc(1);
+agent **push_table = (agent **)xmalloc(1);
 fd_set block_set;
 fd_set push_set;
 socky int select_fd_max = 0;
 
-void stretch_sleep_table(socky int fd)
+void stretch_sleep_tables(socky int fd)
 {
 	if (select_fd_max <= fd) {
-		sleep_table = (agent **)xrealloc(sleep_table, (fd + 1) * sizeof(agent *));
-		for ( ; select_fd_max <= fd; select_fd_max++)
-			sleep_table[select_fd_max] = NULL;
+		block_table = (agent **)xrealloc(block_table, (fd + 1) * sizeof(agent *));
+		push_table = (agent **)xrealloc(push_table, (fd + 1) * sizeof(agent *));
+		for ( ; select_fd_max <= fd; select_fd_max++) {
+			block_table[select_fd_max] = NULL;
+			push_table[select_fd_max] = NULL;
+		}
 	}
 }
 
@@ -1343,19 +1359,19 @@ void stretch_sleep_table(socky int fd)
 void
 agent::block(socky int fd)
 {
-	DBG(1,11,fprintf(STDDBG, "Sleeping on %d\n", fd);)
-	stretch_sleep_table(fd);
-	if (sleep_table[fd]) {
+	D_PRINT(1, "Sleeping on %d\n", fd);
+	stretch_sleep_tables(fd);
+	if (block_table[fd]) {
 		agent *a;
 
-		if (this == sleep_table[fd])
+		if (this == block_table[fd])
 			shriek(861, fmt("Resleeping on %d", fd));
 		if (!FD_ISSET(fd, &block_set))
 			shriek(861, fmt("Countersleeping on %d", fd));
-		for (a = sleep_table[fd]; a->dep; a = a->dep) ;
+		for (a = block_table[fd]; a->dep; a = a->dep) ;
 		a->dep = this;
 	} else {
-		sleep_table[fd] = this;
+		block_table[fd] = this;
 		FD_SET(fd, &block_set);
 	}
 	return;
@@ -1364,19 +1380,19 @@ agent::block(socky int fd)
 void
 agent::push(socky int fd)
 {
-	DBG(1,11,fprintf(STDDBG, "Pushing on %d\n", fd);)
-	stretch_sleep_table(fd);
-	if (sleep_table[fd]) {
+	D_PRINT(1, "Pushing on %d\n", fd);
+	stretch_sleep_tables(fd);
+	if (push_table[fd]) {
 		agent *a;
 
-		if (this == sleep_table[fd])
+		if (this == push_table[fd])
 			shriek(861, fmt("Resleeping on %d", fd));
 		if (!FD_ISSET(fd, &push_set))
 			shriek(861, fmt("Countersleeping on %d", fd));
-		for (a = sleep_table[fd]; a->dep; a = a->dep) ;
+		for (a = push_table[fd]; a->dep; a = a->dep) ;
 		a->dep = this;
 	} else {
-		sleep_table[fd] = this;
+		push_table[fd] = this;
 		FD_SET(fd, &push_set);
 	}
 	return;

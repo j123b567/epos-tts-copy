@@ -115,6 +115,9 @@
 /* Define if you have the <wait.h> header file.  */
 /* #undef HAVE_WAIT_H */
 
+/* Define if you have the <windows.h> header file.  */
+/* #undef HAVE_WINDOWS_H */
+
 /* Define if you have the c library (-lc).  */
 #define HAVE_LIBC 1
 

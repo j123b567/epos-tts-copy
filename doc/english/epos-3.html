@@ -158,6 +158,11 @@ The available escape sequences are listed in
 \- </TD><TD> range </TD><TD> (3) </TD><TD> 2-3 people</TD></TR><TR><TD>
 \m </TD><TD> minus </TD><TD> (4) </TD><TD> -1</TD></TR><TR><TD>
 \X </TD><TD> temporary </TD><TD> (31) </TD><TD></TD></TR><TR><TD>
+\Y </TD><TD> temporary </TD><TD> (30) </TD><TD></TD></TR><TR><TD>
+\Z </TD><TD> temporary </TD><TD> (29) </TD><TD></TD></TR><TR><TD>
+\W </TD><TD> temporary </TD><TD> (28) </TD><TD></TD></TR><TR><TD>
+\V </TD><TD> temporary </TD><TD> (27) </TD><TD></TD></TR><TR><TD>
+\U </TD><TD> temporary </TD><TD> (26) </TD><TD></TD></TR><TR><TD>
 </TD></TR></TABLE>
 <CAPTION>Escape sequences used in configuration files</CAPTION>
 </CENTER><BR>
@@ -688,7 +693,7 @@ Each line of the profile log corresponds to one timeslice of
 an agent.  First, the time spend before running the agent
 (after the last agent has finished).  Second, agent type.
 Third, time spent by the agent.  Both time intervals are given
-is microseconds and their accuracy depends on the
+in microseconds and their accuracy depends on the
 <CODE>gettimeofday</CODE> system call.  Using the profiler on a loaded
 machine is going to give almost meaningless results.</P>
 <DT><B>--debug_password <I>password</I> </B><DD><P>An alternative password for server-level authentication.  Can be

@@ -62,7 +62,6 @@
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
 #define CHARSET    int
-#define DEBUG_AREA _DEBUG_AREA_
 
 #define OPTION(member,name,type,default) type member;
 
@@ -118,7 +117,6 @@
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
 #define CHARSET    O_CHARSET
-#define DEBUG_AREA O_DBG_AREA
 
 #define OPTION(member,name,type,default) {"C:" name + 2, type, OS_CFG, A_PUBLIC, A_PUBLIC, true, false, (int)&((configuration *)NULL)->member},
 
@@ -154,7 +152,6 @@
 #define TYPE
 #define CHANNEL
 #define CHARSET
-#define DEBUG_AREA
 
 #define STRING_COPY(x) (x ? strdup(x) : NULL)
 
@@ -189,7 +186,6 @@
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
 #define CHARSET    int
-#define DEBUG_AREA _DEBUG_AREA_
 
 #define OPTIONAGGR(x)
 #define OPTIONITEM(w,x,y,z)
@@ -222,7 +218,6 @@
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
 #define CHARSET    O_CHARSET
-#define DEBUG_AREA O_DBG_AREA
 
 #define OPTIONAGGR(x)
 #define OPTIONITEM(w,x,y,z)
@@ -268,7 +263,6 @@
 #define TYPE
 #define CHANNEL
 #define CHARSET
-#define DEBUG_AREA
 
 #define STRING_COPY(x) (x ? strdup(x) : NULL)
 
@@ -295,7 +289,6 @@
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
 #define CHARSET    int
-#define DEBUG_AREA _DEBUG_AREA_
 
 // #define LNG_OPTIONAGGR(x) OPTIONAGGR(x)
 // #define LNG_OPTIONITEM(w,x,y,z) OPTIONITEM(w,x,y,z)
@@ -320,7 +313,6 @@
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
 #define CHARSET    O_CHARSET
-#define DEBUG_AREA O_DBG_AREA
 
 // #define LNG_OPTIONAGGR(x) OPTIONAGGR(x)
 // #define LNG_OPTIONITEM(w,x,y,z) OPTIONITEM(w,x,y,z)
@@ -368,7 +360,6 @@
 #define TYPE   SYNTH_TYPE
 #define CHANNEL    CHANNEL_TYPE
 #define CHARSET    int
-#define DEBUG_AREA _DEBUG_AREA_
 
 #undef STATIC_OPTION
 #define STATIC_OPTION(member,name,type,default) type member;
@@ -399,7 +390,6 @@
 #define TYPE   O_SYNTH
 #define CHANNEL    O_CHANNEL
 #define CHARSET    O_CHARSET
-#define DEBUG_AREA O_DBG_AREA
 
 #undef STATIC_OPTION
 #define STATIC_OPTION(member,name,type,default) {"S:" name + 2, type, OS_STATIC, A_PUBLIC, A_PUBLIC, true, false, (int)&((static_configuration *)NULL)->member},
@@ -471,22 +461,7 @@
 
 
 STATIC (use_dbg,    "use_debug",  BOOL, false)  // Whether to print any debug info at all
-
-STATIC (interf_dbg, "interf_debug",INT, 3)      // Debugging levels of various
-STATIC (rules_dbg,  "rules_debug", INT, 3)      // code categories. See debug.doc
-STATIC (elem_dbg,   "elem_debug",  INT, 3)      // 
-STATIC (subst_dbg,  "subst_debug", INT, 3)      // 
-STATIC (assim_dbg,  "assim_debug", INT, 3)      // 
-STATIC (split_dbg,  "split_debug", INT, 3)      // 
-STATIC (parser_dbg, "parser_debug",INT, 3)      // 
-STATIC (synth_dbg,  "synth_debug", INT, 3)	//
-STATIC (cfg_dbg,    "cfg_debug",   INT, 4)	//
-STATIC (daemon_dbg, "daemon_debug",INT, 3)	//
-
-STATIC (focus_dbg,  "focus_debug", DEBUG_AREA, _NONE_) 
-						// _DEBUG_AREA_ not affected by limit_debug 
-STATIC (always_dbg, "always_debug",INT, 3)      // Always debug this level and upwards
-STATIC (limit_dbg,  "limit_debug", INT, 0)      // Never debug under this level, unless focussed
+STATIC (debug_level,"debug_level", INT, 3)	// minimum level of debug messages
 
 STATIC (loaded, "",               BOOL, false)  // Do we have already compiled the .ini files?
 STATIC (fixedfile,"fixed_ini_file",STR, strdup("fixed.ini"))
@@ -592,6 +567,18 @@ VOICE_OPTION (sampa_alt, sampa_alt, "sampa_alternate", INT, 0)
 
 VOICE_OPTION (inv_out_rate, out_rate, "out_sampling_rate", INT, 0)	// 0 means equal to samp_rate
 	// positive value specifies the required output rate (samp_rate divided by an integer)
+//VOICE_OPTION (f0_model, f0_model, "f0_modelling", STR, "classic")	// F0 contour modelling (classic, lpc, fujisaki)
+VOICE_OPTION (lpcprosody, lpcprosody, "lpcprosody", BOOL, false)	// F0 contour modelling using a linear prediction
+VOICE_OPTION (use_bang_nnet, use_bang_nnet, "use_bang_nnet", BOOL, false)	// F0 contour modelling using a linear prediction
+VOICE_OPTION (use_nnet_phone, use_nnet_phone, "use_nnet_phone", BOOL, false)	// F0 contour with lpc but on the phone level
+VOICE_OPTION (use_f0_smoothing, use_f0_smoothing, "use_f0_smoothing", BOOL, false) // generated F0 shall be smoothed via filter after each pitchpuls
+VOICE_OPTION (additive_cont, additive_cont, "additive_cont", BOOL, false)  // rule "contour" additive mode
+
+OPTION (pros_factor, "pros_factor", INT, 1000)				// this controls how strong prosody is applied
+OPTION (label_f0, "label_f0", BOOL, false)
+
+// OPTION (dumpfilename, "dumpfilename", STR, "unitdumpfile.txt")  // name of file to dump if debug rule dumpunit executed
+
 OPTION (autofilter, "autofilter", BOOL, true)	// When downsampling, band filter as necessary
 
 OPTION (wav_hdr, "wave_header",	  BOOL, false)  // Should .wav output contain .wav file header?
@@ -704,7 +691,6 @@ STATICARRAY (out_color, "color",   STR, NULL, UNIT_MAX)
 #undef TYPE
 #undef CHANNEL
 #undef CHARSET
-#undef DEBUG_AREA
 
 #undef LNG_OPTIONARRAY
 #undef OPTIONARRAY

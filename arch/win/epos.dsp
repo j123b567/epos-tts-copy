@@ -99,6 +99,14 @@ SOURCE=.\daemon.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\encoding.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\function.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\hashd.cpp
 # End Source File
 # Begin Source File
@@ -112,6 +120,10 @@ SOURCE=.\ktdsyn.cpp
 # Begin Source File
 
 SOURCE=.\lpcsyn.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\nonblock.cpp
 # End Source File
 # Begin Source File
 
@@ -144,6 +156,10 @@ SOURCE=.\synth.cpp
 # Begin Source File
 
 SOURCE=.\tcpsyn.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\tdpsyn.cpp
 # End Source File
 # Begin Source File
 
@@ -191,7 +207,15 @@ SOURCE=.\defaults.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\encoding.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\exc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\function.h
 # End Source File
 # Begin Source File
 
@@ -248,6 +272,10 @@ SOURCE=.\synth.h
 # Begin Source File
 
 SOURCE=.\tcpsyn.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\tdpsyn.h
 # End Source File
 # Begin Source File
 

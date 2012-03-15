@@ -95,7 +95,7 @@ text::subfile(const char *filename)
 		current->f = stdin;
 	} else { 
 		char *pathname = compose_pathname(filename, dir, tree);
-		DBG(2,1,fprintf(STDDBG,"Text preprocessor opening %s\n", pathname);)
+		D_PRINT(2, "Text preprocessor opening %s\n", pathname);
 		current->f = fopen(pathname, "r", tag);
 		free(pathname);
 	}
@@ -113,15 +113,15 @@ text::superfile()
 	textlink *tmp;
 	if (current->filename) {
 		free(current_file);
-		current_file=current->filename;
-		current_line=current->line;
-		DBG(2,1,fprintf(STDDBG, "Text preprocessor returning to %s\n", current_file);)
+		current_file = current->filename;
+		current_line = current->line;
+		D_PRINT(2, "Text preprocessor returning to %s\n", current_file);
 	} else {
-		DBG(2,1,fprintf(STDDBG, "Text preprocessor reached the end of %s\n" , current_file);)
+		D_PRINT(2, "Text preprocessor reached the end of %s\n" , current_file);
 	}
 	fclose(current->f);
-	tmp=current;
-	current=tmp->prev;
+	tmp = current;
+	current = tmp->prev;
 	embed--;
 	delete tmp;
 }
@@ -166,7 +166,7 @@ text::getline(char *buffer)
 		current_line++;
 		global_current_line = current_line;
 		global_current_file = current_file;
-		DBG(0,1,fprintf(STDDBG,"text::getline processing %s",buffer);)
+		D_PRINT(0, "text::getline processing %s",buffer);
 		if ((int)strlen(buffer) + 1 >= scfg->max_line)
 			shriek(462, fmt("Line too long in %s:%d", current_file, current_line));
 		if (!raw && strip(buffer + l)) {
@@ -179,7 +179,7 @@ text::getline(char *buffer)
 		l = 0;
 
 		if (buffer[strspn(buffer, WHITESPACE)] != PP_ESCAPE) {
-			DBG(0,1,fprintf(STDDBG,"text::getline default is %s\n",buffer);)
+			D_PRINT(0, "text::getline default is %s\n",buffer);
 			if (!buffer[strspn(buffer,WHITESPACE)]) continue;
 			return true;	/* the common case */
 		}
@@ -191,6 +191,7 @@ text::getline(char *buffer)
 			continue;
 		} else if (begins(buffer, D_CHARSET)) {
 			charset = load_charset(get_quoted(buffer));
+			cfg->charset = charset;
 			if (charset == CHARSET_NOT_AVAILABLE)
 				shriek(812, fmt("%s:%d Charset not available", current_file, current_line));
 			continue;

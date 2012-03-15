@@ -43,7 +43,8 @@ void reply(const char *text)
 {
 #ifdef HAVE_SYSLOG_H
 	if (scfg->use_syslog && (scfg->full_syslog || text[0] > '2')) {
-		if (text[3] != ' ') shriek(461, "No TTSCP error code supplied");
+		if (text[3] != ' ' || text[0] > '9')
+			shriek(461, "Ill-formed TTSCP error code supplied");
 		syslog(severity(text[0]*100 + text[1]*10 + text[2] - '0'*111),
 			scfg->log_codes ? text : text+4);
 	}
@@ -101,7 +102,7 @@ int cmd_pass(char *param, a_ttscp *)
 	if (this_context->uid == UID_ANON) {
 		if (!strcmp(param, server_passwd) || scfg->dbg_pwd
 				&& !strcmp(param, scfg->dbg_pwd)) {
-			DBG(2,11,fprintf(STDDBG, "[core] It's me\n");)
+			D_PRINT(2, "[core] It's me\n");
 			this_context->uid = UID_SERVER;
 			reply("200 OK");
 			return PA_NEXT;
@@ -141,7 +142,7 @@ int cmd_intr(char *param, a_ttscp *a)
 static inline int do_set(char *param, context *real)
 {
 	char *value = split_string(param);
-	option *o = option_struct(param, this_lang->soft_options);
+	epos_option *o = option_struct(param, this_lang->soft_options);
 
 	if (o) {
 		if (access_level(this_context->uid) >= o->writable) {
@@ -254,7 +255,7 @@ void cmd_restart(char *param)
 int do_show(char *param)
 {
 	int i;
-	option *o = option_struct(param, this_lang->soft_options);
+	epos_option *o = option_struct(param, this_lang->soft_options);
 
 	if (o) {
 		if (access_level(this_context->uid) >= o->readable) {
@@ -324,7 +325,7 @@ int cmd_show(char *param, a_ttscp *a)
 
 int cmd_stream(char *param, a_ttscp *a)
 {
-	DBG(1,11,fprintf(STDDBG, "current_stream %p\n", cfg->current_stream);)
+	D_PRINT(1, "current_stream %p\n", cfg->current_stream);
 	if (cfg->current_stream) delete cfg->current_stream;
 	cfg->current_stream = NULL;
 	cfg->current_stream = new stream(param, a->c);
@@ -339,7 +340,7 @@ int cmd_apply(char *param, a_ttscp *a)
 		reply("414 Bad size");
 		return PA_NEXT;
 	}
-	DBG(2,11,fprintf(STDDBG, "cmd_apply calls %p\n", cfg->current_stream);)
+	D_PRINT(2, "cmd_apply calls %p\n", cfg->current_stream);
 	if (!cfg->current_stream) {
 		reply("415 strm command must be issued first");
 		return PA_NEXT;

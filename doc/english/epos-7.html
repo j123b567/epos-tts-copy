@@ -354,7 +354,7 @@ for details; be however aware that this code has never been completely
 debugged because of a drop in our motivation.  You could help debug
 this easily if you really need this and provide us with a QNX machine.</P>
 
-<H3>Windows NT, Windows 2000</H3>
+<H3>Windows NT, 2000, XP</H3>
 
 
 <P>See the <CODE>arch/win</CODE> directory for architectural differences from UNIX.
@@ -384,20 +384,22 @@ how to proceed step by step with Visual C++.</P>
 <P>File input and output modules are not going to work
 with Windows sockets (whose incompatible implementation
 of the <CODE>select</CODE> call doesn't allow file decriptors at all).
-If you enable the <CODE>writefs</CODE> option, Epos will crash
+If you do enable the <CODE>writefs</CODE> option, Epos will crash
 after the first writing error such as disk full.
-Don't enable the <CODE>readfs</CODE> option.</P>
+Don't try to enable the <CODE>readfs</CODE> option.</P>
 
 <H3>Windows CE</H3>
 
 
-<P>The port is planned soon, but not available at the moment.  Ask us if you
-need it.  Files specific for this port can be currently found at
+<P>The port was roughly done and found possible, but it is
+not maintained.  Ask us if you need it.  Files specific
+for this port can be currently found at
 <CODE>arch/win-ce</CODE>.</P>
 
 
 <P>An experienced Windows user can get a good estimate of this port's
-behavior from reading the sections on other versions of Windows.</P>
+behavior from reading the sections on other versions of Windows.
+The same holds for Windows XP embedded.</P>
 
 <H3>Windows 95, 98 etc.</H3>
 
@@ -440,7 +442,7 @@ can either try to adapt the QNX IPC proxy for your favourite IPC interface,
 or you can build the monolithic binary of Epos.  </P>
 <P>A bourne-compatible shell is helpful, as it allows to run a configure
 script.  Otherwise you have to write a <CODE>src/config.h</CODE> file by hand
-as we have done with the Windows port.  A plain old <CODE>make</CODE> utility
+as we have done with the Windows ports.  A plain old <CODE>make</CODE> utility
 helps the compilation process if your OS can emulate a UNIX development
 environment a little bit.</P>
 

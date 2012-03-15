@@ -3,6 +3,7 @@
 libdir=$1
 cfgdir=$2
 srcdir=$3
+includedir=/usr/local/include/epos
 
 bak=.old
 usr=.local
@@ -71,4 +72,7 @@ fi
 #	fi
 #fi
 
-
+if [ -d $includedir ]; then
+	cp *.h *.lst $includedir
+	echo Installing all header files in $includedir
+fi

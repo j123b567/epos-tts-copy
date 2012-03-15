@@ -105,6 +105,7 @@ void shriek(int code, const char *s)
 	if (scfg->use_syslog)
 		if (scfg->log_codes) syslog(LOG_DAEMON | severity(code), "%3d %s", code, s);
 		else syslog(LOG_DAEMON | severity(code), "%s", s);
+	unuse(l_errno);
 #else
 	FILE *h = fopen("epos.err","w");
 	if (h) {
@@ -138,64 +139,36 @@ void shriek(int code, const char *s)
 
 char error_fmt_scratch[MAX_ERR_LINE];
 
-char *fmt(const char *s, int i) 
+char *fmt(const char *s, ...) 
 {
-	sprintf(error_fmt_scratch, s, i);
+	va_list ap;
+	va_start(ap, s);
+	vsprintf(error_fmt_scratch, s, ap);
+	va_end(ap);
 	return error_fmt_scratch;
 }
 
-char *fmt(const char *s, const char *t, const char *u) 
+void tag_vfprintf(const char *fmt, va_list ap)
 {
-	sprintf(error_fmt_scratch, s, t, u);
-	return error_fmt_scratch;
+	if (!fmt || !*fmt) return;
+//	if (cfg->debug_tag) fprintf(STDDBG, "%-9s ", module_debug_tag);
+	vfprintf(STDDBG, fmt, ap);
 }
 
-char *fmt(const char *s, const char *t, int i)
+void dprint_normal(int level, const char *fmt, ...)
 {
-	sprintf(error_fmt_scratch, s, t, i);
-	return error_fmt_scratch;
+	va_list ap;
+	va_start(ap, fmt);
+	if (scfg->debug_level <= level) tag_vfprintf(fmt, ap);
+	va_end(ap);
 }
 
-char *fmt(const char *s, const char *t)
+void dprint_always(int level, const char *fmt, ...)
 {
-	sprintf(error_fmt_scratch,s,t);
-	return error_fmt_scratch;
-}
-
-char *fmt(const char *s, const char *t, const char *u, int i)
-{
-	sprintf(error_fmt_scratch, s, t, u, i);
-	return error_fmt_scratch;
-}
-
-char *fmt(const char *s, int i, int j)
-{
-	sprintf(error_fmt_scratch, s, i, j);
-	return error_fmt_scratch;
-}
-
-char *fmt(const char *s, const char *t, int i, const char *u)
-{
-	sprintf(error_fmt_scratch, s, t, i, u);
-	return error_fmt_scratch;
-}
-
-char *fmt(const char *s, const char *t, const char *u, const char *v)
-{
-	sprintf(error_fmt_scratch, s, t, u, v);
-	return error_fmt_scratch;
-}
-
-char *fmt(const char *s, int t, const char *u)
-{
-	sprintf(error_fmt_scratch, s, t, u);
-	return error_fmt_scratch;
-}
-
-char *fmt(const char *s, int t, const char *u, const char *v)
-{
-	sprintf(error_fmt_scratch, s, t, u, v);
-	return error_fmt_scratch;
+	va_list ap;
+	va_start(ap, fmt);
+	tag_vfprintf(fmt, ap);
+	va_end(ap);
 }
 
 void hash_shriek(const char *s1, const char *s2, int i)
@@ -285,10 +258,10 @@ UNIT str2enum(const char *item, const char *list, int dflt)
 			k++, j=item-1, i=strchr(i,LIST_DELIM);
 			if (!i) break;
 		}
-//		DBG(0,0,fprintf(STDDBG,"str2enum %s %s %d\n",i,j,k);)
+//		D_PRINT(0, "str2enum %s %s %d\n",i,j,k);
 	}
 	if(i && j && !*j) return (UNIT)k;
-	DBG(2,0,fprintf(STDDBG,"str2enum returns ILL for %s %s\n",item, list);)
+	D_PRINT(2, "str2enum returns ILL for %s %s\n",item, list);
 	return U_ILL;
 }
 
@@ -376,7 +349,7 @@ char *fntab(const char *s, const char *t)
 	else for (tmp=0;s[tmp]&&t[tmp];tmp++) tab[(unsigned char)(s[tmp])]=t[tmp];
 	
 	int ids = 0;
-	DBG(1,0,for (tmp = 0; tmp < 256; tmp++) if ((unsigned char)tab[tmp] == tmp) ids++;\
+	DBG(1,for (tmp = 0; tmp < 256; tmp++) if ((unsigned char)tab[tmp] == tmp) ids++;\
 	int globs = t[1] ? 0 : strlen(s);\
 	int rest = 256 - ids - globs;\
 	fprintf(STDDBG, "Adding a function, %d ids, %d being mapped to %c, and %d nontrivials\n", ids, globs, t[1] ? '#' : t[0], rest);)
@@ -391,14 +364,14 @@ bool *booltab(const char *s)
 	bool mode = true;
 	tab = (bool *)xcalloc(sizeof(bool), 256);         //should always return zero-filled array
 	
-	DBG(0,0,fprintf(STDDBG, "gonna booltab out of %s\n", s););
+	D_PRINT(0, "gonna booltab out of %s\n", s);
 	if (*s==EXCLAM) memset(tab, true, 256*sizeof(bool));
 	for(tmp=s; *tmp; tmp++) switch (*tmp) {
 		case EXCLAM: mode = !mode; break;
 		case ESCAPE: if (!*++tmp) tmp--;	// and fall through
 		default:  tab[(unsigned char)(*tmp)]=mode;
 	}
-	DBG(2,0,int yes = 0; for(int i = 0; i < 256; i++) if (tab[i]) yes++;\
+	DBG(2, int yes = 0; for(int i = 0; i < 256; i++) if (tab[i]) yes++;\
 	fprintf(STDDBG, "Adding a booltab, %d yes, %d no\n", yes, 256 - yes);)
 	return(tab);
 }
@@ -519,7 +492,7 @@ inline bool reclaim(file *ff, const char *flags, const char *description, void o
 	ff->data[len] = 0;
 	if (oven != NULL) oven(ff->data, len);
 	fclose(f);
-	DBG(1,0,fprintf(STDDBG, "cache update for %s\n", ff->filename);)
+	D_PRINT(1, "cache update for %s\n", ff->filename);
 	return true;
 }
 
@@ -542,7 +515,7 @@ file *claim(const char *filename, const char *dirname, const char *treename, con
 	ff = file_cache->translate(pathname);
 	if (ff) {
 		reclaim(ff, flags, description, oven);
-		DBG(1,0,fprintf(STDDBG, "cache hit on %s\n", pathname);)
+		D_PRINT(1, "cache hit on %s\n", pathname);
 		free(pathname);
 		ff->ref_count++;
 		return ff;
@@ -569,7 +542,7 @@ file *claim(const char *filename, const char *dirname, const char *treename, con
 	ff->filename = pathname;
 	ff->timestamp = get_timestamp(pathname);
 	file_cache->add(pathname, ff);
-	DBG(1,0,fprintf(STDDBG, "cache miss on %s\n", pathname);)
+	D_PRINT(1, "cache miss on %s\n", pathname);
 	return ff;
 }
 
@@ -580,8 +553,9 @@ void uncache_file(char *, file *ff, void *)	// the first argument is ignored
 
 void unclaim(file *ff)
 {
-	ff->ref_count--;
-	if (!ff->ref_count) {
+	if (ff->ref_count <= 0) shriek(461, "Forgot to unclaim()");
+	
+	if (!--ff->ref_count) {
 		if (scfg->lowmemory) uncache_file(NULL, ff, NULL);
 	}
 }
@@ -629,6 +603,8 @@ static inline void compile_rules()
  *	epos_catharsis(): to release as much as possible, but leave a way back
  */
  
+void use_async_sputs();
+
 /*************** delete all this
 
 void epos_init(int argc_, char**argv_)	 //Some global sanity checks made here
@@ -693,17 +669,18 @@ void epos_init()	 //Some global sanity checks made here
 //	if (!_gather_buff) _gather_buff = (char *)xmalloc(MAX_GATHER+2);
 	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)xmalloc(scfg->max_line+1); 
 	if (!scratch) scratch = (char *)xmalloc(scfg->scratch+1);
+	use_async_sputs();
 	
 	compile_rules();
 	update_sampa();
 
-	DBG(1,10,fprintf(STDDBG,"struct unit is %d bytes\n", (int)sizeof(unit));)
-	DBG(1,10,fprintf(STDDBG,"struct static_configuration is %d bytes\n", (int)sizeof(static_configuration));)
-	DBG(1,10,fprintf(STDDBG,"struct configuration is %d bytes\n", (int)sizeof(configuration));)
-	DBG(1,10,fprintf(STDDBG,"struct lang is %d bytes\n", (int)sizeof(lang));)
-	DBG(1,10,fprintf(STDDBG,"struct voice is %d bytes\n", (int)sizeof(voice));)
-	DBG(2,10,fprintf(STDDBG,"allocated %d chars, %d chars free\n", get_count_allocated(), 256 - get_count_allocated());)
-	DBG(1,10,fprintf(STDDBG,"charsets already in use are %s\n", charset_list);)
+	D_PRINT(1, "struct unit is %d bytes\n", (int)sizeof(unit));
+	D_PRINT(1, "struct static_configuration is %d bytes\n", (int)sizeof(static_configuration));
+	D_PRINT(1, "struct configuration is %d bytes\n", (int)sizeof(configuration));
+	D_PRINT(1, "struct lang is %d bytes\n", (int)sizeof(lang));
+	D_PRINT(1, "struct voice is %d bytes\n", (int)sizeof(voice));
+	D_PRINT(2, "allocated %d chars, %d chars free\n", get_count_allocated(), 256 - get_count_allocated());
+	D_PRINT(1, "charsets already in use are %s\n", charset_list);
 }
 
 void end_of_eternity();
@@ -776,34 +753,6 @@ bool privileged_exec()
 
 char *current_debug_tag = NULL;
 
-int  debug_config(int area)
-{
-	switch (area) {
-		case _INTERF_: return scfg->interf_dbg;
-		case _RULES_:  return scfg->rules_dbg;
-		case _ELEM_:   return scfg->elem_dbg;
-		case _SUBST_:  return scfg->subst_dbg;
-		case _ASSIM_:  return scfg->assim_dbg;
-		case _SPLIT_:  return scfg->split_dbg;
-		case _PARSER_: return scfg->parser_dbg;
-		case _SYNTH_:  return scfg->synth_dbg;
-		case _CFG_:    return scfg->cfg_dbg;
-		case _DAEMON_: return scfg->daemon_dbg;
-	}
-	shriek(861, fmt("Unknown debug area %d", area));
-	return 0;   // keep the compiler happy
-}
-
-bool debug_wanted(int lev, /*_DEBUG_AREA_*/ int area) 
-{
-	if (!scfg->use_dbg) return false;
-	if (scfg->always_dbg > 10 || scfg->always_dbg < 0) shriek(862, "cfg bogus"); //FIXME: hack
-	if (lev >= scfg->always_dbg) return true;
-	if (area == scfg->focus_dbg) return lev >= debug_config(area);
-	if (lev < scfg->limit_dbg)   return false;
-	return  lev >= debug_config(area);
-}
-
 void debug_prefix(int lev, int area)
 {
 	unuse(lev); unuse(area);
@@ -831,9 +780,9 @@ char *forever(void *heapptr)
 
 void end_of_eternity()
 {
-	DBG(3,0,fprintf(STDDBG,"Freeing %d permanent heap buffers.\n", forever_count);)
+	D_PRINT(3, "Freeing %d permanent heap buffers.\n", forever_count);
 	while (forever_count-- > 0) {
-		DBG(0,0,fprintf(STDDBG, "pointer number %d was %p\n", forever_count, forever_ptr_list[forever_count]);)
+		D_PRINT(0, "pointer number %d was %p\n", forever_count, forever_ptr_list[forever_count]);
 		free(forever_ptr_list[forever_count]);
 	}
 }

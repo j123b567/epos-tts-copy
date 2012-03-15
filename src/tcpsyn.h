@@ -17,6 +17,9 @@
  *	is unfortunately synchronous (waits for completion).
  */
 
+#ifndef EPOS_TCPSYN_H
+#define EPOS_TCPSYN_H
+
 class tcpsyn : public synth
 {
 	int cd;		/* control TTSCP connection	*/
@@ -29,4 +32,5 @@ class tcpsyn : public synth
 	virtual void synsegs(voice *v, segment *d, int count, wavefm *w);
 };
 
+#endif		// EPOS_TCPSYN_H
 

@@ -79,7 +79,7 @@ inline void mark_voice(int) {};
 #define TWENTY_EXTRA_OPTIONS EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO
 
 #define CONFIG_LANG_DESCRIBE
-option langoptlist[] = {
+epos_option langoptlist[] = {
 	#include "options.lst"
 
 	{"L:voice" + 2, O_VOICE, OS_LANG, A_PUBLIC, A_PUBLIC, false, false, 0},
@@ -90,7 +90,7 @@ option langoptlist[] = {
 };
 
 #define CONFIG_VOICE_DESCRIBE
-option voiceoptlist[] = {
+epos_option voiceoptlist[] = {
 	#include "options.lst"
 	{"", O_INT, OS_VOICE, A_PUBLIC, A_PUBLIC, false, false, -3},
 	{NULL, O_INT, OS_VOICE, A_PUBLIC, A_PUBLIC, false, false, -2},
@@ -134,7 +134,7 @@ lang::~lang()
 		}
 		delete soft_options;
 	}
-	DBG(3,10,fprintf(STDDBG,"Disposed language %s\n", name);)
+	D_PRINT(3, "Disposed language %s\n", name);
 	cow_unstring(this, langoptlist);
 	if (soft_defaults) free(soft_defaults);
 }
@@ -187,7 +187,7 @@ lang::add_soft_option(const char *optname)
 	else dflt = const_cast<char *>("");
 	char *closing = (char *)strchr(optname, CLOSING);
 
-	option o;
+	epos_option o;
 	o.opttype = O_BOOL;		// default type
 	o.structype = OS_VOICE;	// soft options can only be voice options
 	o.readable = o.writable = A_PUBLIC;	// ...no access restrictions on them
@@ -214,7 +214,7 @@ lang::add_soft_option(const char *optname)
 		soft_defaults = xrealloc(soft_defaults,
 				(soft_options->items + 2) * sizeof(void *) >> 1);
 	} else {
-		soft_options = new hash_table<char, option>(30);
+		soft_options = new hash_table<char, epos_option>(30);
 		soft_options->dupkey = 0;
 		soft_defaults = xmalloc(sizeof(void *));
 	}
@@ -258,7 +258,7 @@ lang::compile_rules()
 //	lang *tmp = this_lang;
 //	this_lang = this;
 	if (!lang_switch(name)) shriek(862, "cannot lang_switch to myself");
-	DBG(3,10,fprintf(STDDBG,"Compiling %s language rules, hash dir %s\n", name, hash_dir);)
+	D_PRINT(3, "Compiling %s language rules, hash dir %s\n", name, hash_dir);
 	ruleset = new rules(rules_file, rules_dir);
 //	this_lang = tmp;
 	cfg->default_lang = tmp;
@@ -324,7 +324,7 @@ voice::~voice()
 	if (sl) free(sl);
 //	if (buffer) detach();
 	if (syn) delete syn;
-	DBG(3,10,fprintf(STDDBG, "Disposing voice %s\n", name);)
+	D_PRINT(3, "Disposing voice %s\n", name);
 	cow_unstring(this, voiceoptlist);
 }
 

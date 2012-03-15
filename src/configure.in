@@ -29,6 +29,11 @@ AC_ARG_ENABLE(charsets, --enable-charsets    allow automatic conversions between
 		CFLAGS = "$CFLAGS -DFORGET_CHARSETS"
 	fi,
 )
+dnl AC_ARG_ENABLE(nnet, --enable-nnet    neural networks for prosody modelling,
+dnl 	if test $enableval = no; then
+dnl 		CFLAGS = "$CFLAGS - DFORGET_NNET"
+dnl 	fi,
+dnl )
 
 AC_LANG_CPLUSPLUS
 

@@ -679,8 +679,7 @@ a 2xx or a 4xx response, not to send otherwise. The client should
 treat the connection as terminated, whenever it receives any response
 with code 5xx or higher. It may also quit at any time just after
 sending a "done" command to the server; the server will however
-confirm that command with a reply of 600 before disconnecting,
-and this is the only 6xx response code defined at the moment.</P>
+confirm that command with a reply of 600 before disconnecting.</P>
 <P>Replies of 8xx except 80x are reserved for cases of severe server
 misconfiguration, or detected programming bugs. Their meanings
 are very implementation dependent (implementations are encouraged

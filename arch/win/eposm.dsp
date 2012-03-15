@@ -90,6 +90,14 @@ SOURCE=./client.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=./encoding.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=./function.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=./hash.cpp
 
 !IF  "$(CFG)" == "eposm - Win32 Release"
@@ -147,6 +155,10 @@ SOURCE=./tcpsyn.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=./tdpsyn.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=./text.cpp
 # End Source File
 # Begin Source File
@@ -168,6 +180,14 @@ SOURCE=./waveform.cpp
 # Begin Source File
 
 SOURCE=./defaults.h
+# End Source File
+# Begin Source File
+
+SOURCE=./encoding.h
+# End Source File
+# Begin Source File
+
+SOURCE=./function.h
 # End Source File
 # Begin Source File
 
@@ -212,6 +232,10 @@ SOURCE=./slab.h
 # Begin Source File
 
 SOURCE=./synth.h
+# End Source File
+# Begin Source File
+
+SOURCE=./tdpsyn.h
 # End Source File
 # Begin Source File
 

@@ -71,8 +71,8 @@ next:		if (++mult > scfg->hash_search)
 			if (*p != NOTHING && *p != s[j]) goto next;
 			*p = s[j];
 		}
-		DBG(1,0, fprintf(STDDBG, "%set of %d characters sized %d items, mult is %d\n",
-				neg ? "Antis" : "S", strlen(s), size, mult);)
+		D_PRINT(1, "%set of %d characters sized %d items, mult is %d\n",
+				neg ? "Antis" : "S", strlen(s), size, mult);
 		t = (T *)xrealloc(t, size * sizeof(T));
 		return;
 	}
@@ -140,8 +140,8 @@ next:		if (++mult > scfg->hash_search)
 			p->x = s[j]; 
 			p->y = r[j * k];
 		}
-		DBG(1,0, fprintf(STDDBG, "Function for %d characters sized %d items, mult is %d\n",
-				strlen(s), size, mult);)
+		D_PRINT(1, "Function for %d characters sized %d items, mult is %d\n",
+				strlen(s), size, mult);
 		t = (couple<T> *)xrealloc(t, size * sizeof(couple<T>));
 		return;
 	}

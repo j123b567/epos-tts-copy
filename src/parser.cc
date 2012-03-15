@@ -44,13 +44,13 @@ parser::parser(const char *filename, int mode)
 		}
 		txtlen = strlen((char *)text);
 	}
-	DBG(2,7,fprintf(STDDBG,"Allocated %u bytes for the main parser\n", txtlen);)
+	D_PRINT(2, "Allocated %u bytes for the main parser\n", txtlen);
 	init(ST_ROOT);
 }
 
 parser::parser(const char *str)
 {
-	DBG(1,7,fprintf(STDDBG,"Parser for %s is to be built\n",str);)
+	D_PRINT(1, "Parser for %s is to be built\n",str);
 	text = (unsigned char *)strdup(str);
 	txtlen = strlen(str);
 	init(ST_RAW);
@@ -63,7 +63,7 @@ parser::init(SYMTABLE symtab)
 
 	initables(symtab);
 	for(i=0; i<txtlen; i++) text[i]=TRANSL_INPUT [text[i]];
-	DBG(1,7,fprintf(STDDBG,"Parser: has set up with %s\n",text);)
+	D_PRINT(1, "Parser: has set up with %s\n",text);
 	current = text-1; 
 	do level = chrlev(*++current); while (level > scfg->phone_level && level < scfg->text_level);
 		//We had to skip any garbage before the first phone
@@ -71,7 +71,7 @@ parser::init(SYMTABLE symtab)
 	token = '0'; gettoken();		// new - hope this works
 	t = 1;
 
-	DBG(0,7,fprintf(STDDBG,"Parser: initial level is %u.\n",level);)
+	D_PRINT(0, "Parser: initial level is %u.\n",level);
 }
 
 parser::~parser()
@@ -94,11 +94,11 @@ parser::getchar()
 	f = i = t = 0;
 	level = chrlev(*current);   // level of the next character
 	if (level == U_TEXT) {
-		DBG(2,7,fprintf(STDDBG,"Parser: end of text reached, changing the policy\n");)
+		D_PRINT(2, "Parser: end of text reached, changing the policy\n");
 		initables(ST_EMPTY);
 		*current = NO_CONT;  // return '_' or something instead of quirky '\0'
 	}
-	DBG(0,7,fprintf(STDDBG,"Parser: char requested, '%c' (level %u), next: '%c' (level %u)\n",retchar, lastlev, *current, level);)
+	D_PRINT(0, "Parser: char requested, '%c' (level %u), next: '%c' (level %u)\n",retchar, lastlev, *current, level);
 
 	return(retchar);           // return the old char
 }
@@ -148,13 +148,13 @@ parser::gettoken()
 //		f = i = t = 0;
 		t = 1;
 //		if (level == scfg->text_level) {
-//			DBG(2,7,fprintf(STDDBG,"Parser: end of text reached, changing the policy\n");)
+//			D_PRINT(2, "Parser: end of text reached, changing the policy\n");
 //			return ret;
 //		}
 		current++;
 	} while (level <= lastlev && level > scfg->phone_level && level < scfg->text_level);
 		// (We are skipping any empty units, except for phones.)
-	DBG(0,7,fprintf(STDDBG,"Parser: char requested, '%c' (level %u), next: '%c' (level %u)\n", ret, lastlev, *current, level);)
+	D_PRINT(0, "Parser: char requested, '%c' (level %u), next: '%c' (level %u)\n", ret, lastlev, *current, level);
 
 	return ret;
 }
@@ -173,7 +173,7 @@ parser::chrlev(unsigned char c)
 	if (CHRLEV[c] == U_ILL)
 	{
 		if (cfg->relax_input && CHRLEV[cfg->dflt_char] != U_ILL) return CHRLEV[cfg->dflt_char];
-		DBG(2,7,fprintf(cfg->stdshriek,"Fatal: parser dumps core.\n%s\n",(char *)current-2);)
+		DBG(2, fprintf(cfg->stdshriek,"Fatal: parser dumps core.\n%s\n",(char *)current-2);)
 		shriek(431, fmt("Parsing an unhandled character  '%c' - ASCII code %d", (unsigned int) c, (unsigned int) c));
 	}
 	return(CHRLEV[c]);

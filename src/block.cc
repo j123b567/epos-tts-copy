@@ -166,7 +166,7 @@ block_rule::apply_current(unit *root)
 	rule *r;
 	unit *u;
 
-	DBG(0,2,root->fout(NULL);)
+	DBG(0, root->fout(NULL);)
 	r = rulist[current_rule];
 	
 	scope = r->scope;
@@ -175,7 +175,7 @@ block_rule::apply_current(unit *root)
 		unit *tmp_next = u->Next(scope);
 		tmpscope = u->scope;
 		u->scope = true;
-		DBG(0,1,fprintf(STDDBG, "block_rule::apply current_rule %d\n", current_rule);)
+		D_PRINT(0, "block_rule::apply current_rule %d\n", current_rule);
 #ifdef DEBUGGING
 		if (scfg->use_dbg) current_debug_tag = r->dbg_tag;
 		if (scfg->showrule) fprintf(STDDBG, "[%s] %s %s\n",
@@ -243,10 +243,10 @@ void
 r_choice::apply(unit *root)
 {
 	current_rule = rand() % n_rules;	//random, less than n_rules
-	DBG(2,1,fprintf(STDDBG,"Randomly chose rule [%s] %s %s\n",
+	D_PRINT(2, "Randomly chose rule [%s] %s %s\n",
 			rulist[current_rule]->dbg_tag,
 			enum2str(rulist[current_rule]->code(), OPCODEstr),
-			rulist[current_rule]->raw);)
+			rulist[current_rule]->raw);
 	apply_current(root);
 }
 
@@ -268,10 +268,10 @@ r_switch::apply(unit *root)
 	current_rule = root->count(target) - 1;
 	if (current_rule == -1) shriek(461, "An empty unit strikes a switch");
 	if (current_rule >= n_rules) current_rule = n_rules - 1;
-	DBG(1,1,fprintf(STDDBG,"Length-determined rule [%s] %s %s\n",
+	D_PRINT(1, "Length-determined rule [%s] %s %s\n",
 			rulist[current_rule]->dbg_tag,
 			enum2str(rulist[current_rule]->code(), OPCODEstr),
-			rulist[current_rule]->raw);)
+			rulist[current_rule]->raw);
 	apply_current(root);
 }
 
@@ -287,14 +287,14 @@ rules::rules(const char *filename, const char *dirname)
 	text *file;
 	hash *vars;
 
-	DBG(0,0,if (scfg->loaded) fprintf(STDDBG,"Configuration already loaded when constructing rules\n");)
+	DBG(0, if (scfg->loaded) fprintf(STDDBG,"Configuration already loaded when constructing rules\n");)
 
 	if (!scfg->loaded) /* epos_init() */ shriek(862, "compiling rules too soon");
 	
-	file=new text(filename, dirname, scfg->lang_base_dir, "rules", false);
+	file = new text(filename, dirname, scfg->lang_base_dir, "rules", false);
 	file->charset = this_lang->charset;
 	vars = new hash(scfg->vars|1);
-	DBG(3,1,fprintf(STDDBG,"Rules shall be taken from %s\n",filename);)
+	D_PRINT(3, "Rules shall be taken from %s\n", filename);
 	
 	body = new r_block(file, vars);
 	body->scope = scfg->text_level;
@@ -304,16 +304,16 @@ rules::rules(const char *filename, const char *dirname)
 #endif
 	body->check_children();
 	
-//	DBG(2,1,fprintf(STDDBG,"There're %d parsed rules in %s\n",n_rules,filename);)
-	DBG(0,1,fprintf(STDDBG,"rules will now release allocated memory\n");)
+//	D_PRINT(2, "There're %d parsed rules in %s\n",n_rules,filename);
+	D_PRINT(0, "rules will now release allocated memory\n");
 	delete vars;
 	delete file;
-	DBG(3,1,fprintf(STDDBG,"Rules parsed OK\n");)
+	D_PRINT(3, "Rules parsed OK\n");
 }
 
 rules::~rules()
 {
-	DBG(2,1,fprintf(STDDBG,"Deleting rules\n");)
+	D_PRINT(2, "Deleting rules\n");
 	delete body;
 }
 
@@ -364,7 +364,7 @@ rule_weight(const char *word, text *file)
  
 char *_resolve_vars_buff = NULL;
 
-inline void
+void
 resolve_vars(char *line, hash *vars, text *file)
 {
 	char *src; char *dest;
@@ -372,14 +372,14 @@ resolve_vars(char *line, hash *vars, text *file)
 	char takeout;
     
 	for(src=line+1,dest=_resolve_vars_buff;*src;) {
-		DBG(0,1,fprintf(STDDBG,"Cycling in rules::resolve_vars. Reading %s\n",src);)
+		D_PRINT(0, "Cycling in rules::resolve_vars. Reading %s\n",src);
 		if(*src==DOLLAR && --dest && src[-1]!=ESCAPE && dest++) {
 			if (*++src==CURLY) eov=strchr(++src,UNCURLY); 
 			else eov=src+strcspn(src,VAR_TERM);
 			if (!eov) diatax("Missing right brace");
 			takeout=*eov;
 			*eov=0;
-			DBG(0,1,fprintf(STDDBG,"Resolving \"%s\"\n",src);)
+			D_PRINT(0, "Resolving \"%s\"\n",src);
 			value = vars->translate(src);
 			if (!value) diatax("Undefined identifier");
 			strcpy(dest, value);
@@ -422,7 +422,7 @@ parse_rule(text *file, hash *vars, int *count)
 	
 	if(!file->getline(str)) return END_OF_RULES;
 	
-	DBG(0,1,fprintf(STDDBG,"str2rule should parse: %s\n",str);)
+	D_PRINT(0, "str2rule should parse: %s\n",str);
 	if(!str[strspn(str,WHITESPACE)]) goto next_line;
 	if (*str && strchr(str+1,DOLLAR))
 		resolve_vars(str, vars, file);			   //Var reference found?
@@ -440,7 +440,7 @@ parse_rule(text *file, hash *vars, int *count)
 	idx = get_words(str, word, MAX_WORDS_PER_LINE);
 	
 	weight = rule_weight(word[param], file);
-	DBG(0,1,fprintf(STDDBG, "Rule weight: %d\n", weight))
+	D_PRINT(0, "Rule weight: %d\n", weight);
 	if (weight) {
 		if (count) {
 			*count = weight;
@@ -460,8 +460,8 @@ parse_rule(text *file, hash *vars, int *count)
 		case 2: word[param+2] = NULL; 	/* and fall through */
 		case 3: break;
 
-		default: if (code==255)	diatax("Unknown rule type");
-			 else 		diatax("Extra stuff follows rule");
+		default: if (code == U_ILL) diatax("Unknown rule type");
+			 else   	    diatax("Extra stuff follows rule");
 	}
 		
 	scope = str2enum(word[param+1], scfg->unit_levels, U_DEFAULT);	/* no later */
@@ -476,6 +476,7 @@ parse_rule(text *file, hash *vars, int *count)
 	case OP_SEG:     result = new r_seg(word[param]); break;
 	case OP_ABSOL:	 result = new r_absol(word[param]); break;
 	case OP_SUBST:   result = new r_subst(word[param]); break;
+	case OP_MYSUBST: result = new r_mysubst(word[param]); break;
 #ifdef WANT_REGEX
 	case OP_REGEX:   result = new r_regex(word[param]); break;
 #else
@@ -502,6 +503,8 @@ parse_rule(text *file, hash *vars, int *count)
 	case OP_SWITCH:  result = new r_switch(file, vars); break;
 	case OP_SWEND:	 return END_OF_SWITCH;
 	case OP_NOTHING: result = new r_nothing(); break;
+	case OP_NNET:    result = new r_neural(word[param], vars); break;
+
 	default:  diatax("Unknown rule type"); goto next_line;  // to fool the compiler
 
 	}
@@ -513,7 +516,7 @@ parse_rule(text *file, hash *vars, int *count)
 	result->set_dbg_tag(file);
 	result->verify();
 	
-	DBG(0,1,fprintf(STDDBG,"str2rule about to return OK, %s\n", word[param]);)
+	D_PRINT(0, "str2rule about to return OK, %s\n", word[param]);
 
 	return result;
 }

@@ -90,11 +90,11 @@ static inline unsigned char do_alloc_code(wchar_t c, unsigned char hint)
 	if (epos_charset[hint] == UNUSED) return hint;
 	for (int i = 255; i ; i--) {
 		if (epos_charset[i] == UNUSED) {
-			DBG(2,10,fprintf(STDDBG, "Allocating charcode unicode %d, original enc %d, internal enc %d\n", c, hint, i);)
+			D_PRINT(2, "Allocating charcode unicode %d, original enc %d, internal enc %d\n", c, hint, i);
 			return i;
 		}
 	}
-	DBG(2,10,fprintf(STDDBG, "Want to allocate charcode unicode %d, original enc %d\n", c, hint);)
+	D_PRINT(2, "Want to allocate charcode unicode %d, original enc %d\n", c, hint);
 	shriek(447, "Epos internal character table overflow");
 
 }
@@ -122,7 +122,7 @@ static inline unsigned char alloc_code(wchar_t c, unsigned char hint, int cs)
 
 static inline wchar_t non_unicode_alloc_code(unsigned char request)
 {
-	DBG(2,10,fprintf(STDDBG, "Allocating charcode, non-unicode character %d\n", request);)
+	D_PRINT(2, "Allocating charcode, non-unicode character %d\n", request);
 	if (request < ' ' && epos_charset[request] == UNUSED || epos_charset[request] == request) return request;
 	else return UNDEFINED;
 }
@@ -136,6 +136,7 @@ int get_count_allocated()
 
 void encode_string(unsigned char *s, int cs, bool alloc)
 {
+
 	do {
 		int t = encoders[cs][*s];
 		if (t == UNDEFINED && *s) {
@@ -143,7 +144,7 @@ void encode_string(unsigned char *s, int cs, bool alloc)
 				wchar_t u = charsets[cs][*s];
 				if (u == UNDEFINED) u = non_unicode_alloc_code(*s);
 				if (u == UNDEFINED)
-					shriek(418, fmt(cs ? "Illegal character %c" : "Unspecified charset for character %c", *s));  // FIXME - filename
+					shriek(418, fmt(cs ? "Illegal character '%c' in int '%d'" : "Unspecified charset for character %c in int %d", *s, (unsigned int) *s));  // FIXME - filename
 				alloc_code(u, *s, cs);
 				continue;
 			} else if (cfg->relax_input) {
@@ -198,7 +199,7 @@ int load_charset(const char *name)
 	UNIT u = str2enum(name, charset_list, U_ILL);
 	if (u != U_ILL) return (int)u;
 	
-	DBG(3,10,fprintf(STDDBG, "Loading charset %s\n", name);)
+	D_PRINT(3, "Loading charset %s\n", name);
 	char *p = (char *)xmalloc(strlen(name) + 5);
 	strcpy(p, name);
 	strcat(p, ".txt");
@@ -244,7 +245,7 @@ void load_default_charset()
 
 void update_sampa(int alt, const char *filename)
 {
-	DBG(3,10,fprintf(STDDBG, "Loading %sSAMPA mappings\n", alt ? "alternate " : "");)
+	D_PRINT(3, "Loading %sSAMPA mappings\n", alt ? "alternate " : "");
 	text *t = new text(filename, scfg->unimap_dir, "", NULL, true);
 	if (!t->exists()) {
 		delete t;

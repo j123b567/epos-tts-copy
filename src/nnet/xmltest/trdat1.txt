@@ -1,0 +1,43 @@
+<trainingData>
+	<comment> Vstupy pro slabiky, dne 10.2.2002 </comment>
+
+	<epos_nn value="nnet/nn_7.txt"/>
+	<epos_prepare value = "1"/>
+	<epos_log value = "neurallog.txt"/>
+
+    <examineColumns value="1"/>
+    <dumpCfg value="results/trdata_%.txt"/>
+    <trainingDataFiles>
+        <file><streams>
+             <stream value="nnseries.txt"><type value="remote"/><delimiter value="TAB"/><encoding value="text"/></stream>
+        </streams></file>
+    </trainingDataFiles>
+    <ranges>
+        <range><from value="0"/><to value="-67"/><type value="train"/></range>
+        <range><from value="0"/><to value="0"/><type value="eval"/><rest value="1"/></range>
+    </ranges>
+	<columns>
+		<default>
+			<type value="float"/>
+			<use value="input"/>
+			<translate value="linear"/>
+			<window><left value="1"/><right value="1"/></window>
+		</default>
+		<column><use value="no"/><epos value="phone"/></column>
+		<column><epos value='count("syll","word") == 1 # monosylaba, zopakuj pro 4 sousedy vlevo a 2 vpravo '/></column>
+		<column><use value="no"/><epos value='count("word","sent") == 1 # izolované takty '/></column>
+		<column><epos value='count("syll","word") # poèet slabik ve slovì '/></column>
+		<column><epos value='index("syll","word") / count("syll","word") # poøadí slabiky ve slovì '/></column>
+		<column><epos value='index("word","colon") == 1 AND count("word","sent") > 1 # iniciální takt, ale nikoli izolovaný '/></column>
+		<column><epos value='index("word","colon") == count("word","colon") AND count("word","sent") > 1 # terminální takt, ale nikoli izolovaný '/></column>
+		<column><epos value='count("word","colon") '/></column>
+		<column><epos value='index("word","colon") / count("word","colon") '/></column>
+		<column><epos value='index("syll","word") == 1 # pøízvuk na první slabice '/></column>
+		<column><use value="no"/><epos value='cont (sonor ("phone","syll")) ' type="category" digits="1" translate="bools"/></column>
+		<column><use value="output"/><epos_output value='frequence'/>
+			<window><left value="0"/><right value="0"/></window>
+		</column>
+	</columns>
+    <series value="1"/>
+	<seriesSeparator value="------------------------------------------"/>
+</trainingData>

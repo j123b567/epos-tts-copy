@@ -1,0 +1,67 @@
+<trainingProcess>
+   <logName value="results/trproc_log.txt"/>
+    <dumpNN value="results/nn_%.txt"/>
+    <batches>
+        <batch><perceptronStructure>
+		<runWeightsPerturbation value="1"/>
+		<logErrors value="errors.txt"/>
+                <trainProcedure value="stableConjugateGradient"/>
+		<trainProcedur value="gradientDescent"/>
+		<trainProcedur value="LM"/>
+		<trainProcedur value="modifiedLM"/>
+                <layerTransferFuncs value="tansig-linear"/>
+                <weightInitProcedure value="random"/>
+		<dumpWeightsDelimiter value=";"/>
+		<layerSizes value="1-15-1"/>
+		<connectionRestriction value="layered"/>
+		<allRecurrentConnections>
+			<ecurrentConnections>
+				<start layer="1" to="0"/>
+				<end layer="1"/>
+			</ecurrentConnections>
+		</allRecurrentConnections>
+                <params>
+                    <learningRate value="0.001"/>
+                    <momentum value="0.2"/>
+                    <epsilon value="1e-005"/>
+                    <zeta value="1.5"/>
+                    <c value="0.5"/>
+                    <h value="0.005"/>
+                    <mi value="0.001"/>
+                    <mi_i value="2"/>
+                    <mi_d value="0.6"/>
+                </params>
+	</perceptronStructure>
+        <trials value="10"/>
+       	<stopOnSuccess value="0"/>
+
+<trainingData>
+    <columns>
+        <default><type value="float"/><translate value="none"/></default>
+        <column><use value="input"/></column>
+        <column><use value="output"/></column>
+    </columns>
+    <trainingDataFiles>
+        <file>
+            <streams>
+                <stream value="data_test1.txt"><type value="remote"/><delimiter value="TAB"/><encoding value="text"/></stream>
+            </streams>
+        </file>
+    </trainingDataFiles>
+    <ranges>
+        <range><from value="0"/><to value="0"/><type value="train"/></range>
+    </ranges>
+    <series value="0"/>
+</trainingData>
+
+	</batch>
+    </batches>
+    <learningGoal>
+        <goalMet value="0"/>
+        <error value="0.00005"/>
+        <time value="40000"/>
+        <epochs value="500000"/>
+        <minErrorImprovement value="0.0000001"/>
+        <badErrorImproveEpochs value="100"/>
+    </learningGoal>
+</trainingProcess>

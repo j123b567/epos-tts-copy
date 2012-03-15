@@ -128,7 +128,7 @@ context::context(int std_in, int std_out)
 		//	config->stdshriek =
 #endif
 	} else {
-		DBG(2,11,fprintf(STDDBG, "master context OK\n");)
+		D_PRINT(2, "master context OK\n");
 		cow_claim();
 		this_context = this;
 	}
@@ -136,7 +136,7 @@ context::context(int std_in, int std_out)
 	uid = UID_ANON;
 	config->sd_in = std_in;
 	config->sd_out = std_out;
-	DBG(1,11,fprintf(STDDBG, "new context uses fd %d and %d\n", std_in, std_out);)
+	D_PRINT(1, "new context uses fd %d and %d\n", std_in, std_out);
 
 	sgets_buff = (char *)xmalloc(config->max_net_cmd);
 	*sgets_buff = 0;
@@ -166,19 +166,17 @@ context::~context()
 void
 context::enter()
 {
-	DBG(1,11,fprintf(STDDBG, "enter_context(%p)\n", this);)
+	D_PRINT(1, "enter_context(%p)\n", this);
 	if (!this) {
-		DBG(2,11,fprintf(STDDBG, "(nothing to enter!)\n");)
+		D_PRINT(2, "(nothing to enter!)\n");
 		return;
 	}
 
 	if (this_context != master_context) shriek(462, "nesting contexts");
 
-//	::this_voice = this_voice;
-//	::this_lang = this_lang;
 	master_context->config = cfg;
 	cfg = config;
-	::this_context = this;
+	this_context = this;
 
 //	session_uid = uid;
 //	config->sd = index;	// should be unnecessary. Why not?
@@ -189,7 +187,7 @@ context::leave()
 {
 //	context *c = context_table[index];
 	if (!this) {
-		DBG(2,11,fprintf(STDDBG, "(nothing to leave!)\n");)
+		D_PRINT(2, "(nothing to leave!)\n");
 		return;
 	}
 	if (this_context != this) shriek(462, "leaving unentered context");
@@ -203,86 +201,10 @@ context::leave()
 //	::this_voice = master_context->this_voice;
 //	::this_lang = master_context->this_lang;
 	cfg = master_context->config;
-	::this_context = master_context;
+	this_context = master_context;
 //	session_uid = master_context->uid;
-	DBG(1,11,fprintf(STDDBG, "leave_context(%p)\n", this);)
+	D_PRINT(1, "leave_context(%p)\n", this);
 }
-
-/*
- *	nonblocking sgets - returns immediately.
- *	tries to get a line into buffer; if it can't,
- *	returns zero and partbuff will contain some (undefined)
- *	data, which should be passed to the next call to
- *	sgets() with this, but not another socket.
- *	The "space" argument limits both buffers.
- *
- *	Upon the first call with this socket, *partbuff must == 0.
- *
- *	returns:      0   partial line in partbuff or nothing to do
- *		positive  full line in buffer
- *		negative  error reading socket
- *
- *	Our policy is not to read the socket when we've got
- *	a partial line acquired in an earlier invocation.
- *	This is to avoid starvation by an over-active session.
- *	Such a session would however cause a lot of shifting
- *	strings back and forth between the buffers.
- */
-
-int sgets(char *buffer, int space, int sd, char *partbuff)
-{
-	int i, l;
-	int result = 0;
-
-	if (*partbuff) {
-		DBG(1,11,fprintf(STDDBG, "[core] Appending.\n");)
-		l = strlen(partbuff);
-		if (l > space) shriek(862, "sgets() holdback overflow"); // was: shriek(664)
-		if (l == space) goto too_long;
-		strcpy(buffer, partbuff);
-		if (strchr(buffer, '\n')) goto already_enough_text;
-	} else l = 0;
-	result = yread(sd, buffer + l, space - l);
-	if (result >= 0) buffer[l+result] = 0; else buffer[l] = 0;
-	if (result <= 0) {
-		if (result == -1 && errno == EAGAIN) {
-			DBG(2,11,fprintf(STDDBG, "Nothing to do: %d\n", sd);)
-			*buffer = 0;
-			return 0;
-		}
-		*partbuff = 0;	/* forgetting partial line upon EOF/error. Bad? */
-		*buffer = 0;
-		DBG(2,11,fprintf(STDDBG, "Error on socket: %d\n", sd);)
-		return -1;
-	}
-	l += result;
-
-already_enough_text:
-	for (i=0; i<l; i++) {
-		if (buffer[i] == '\n' || !buffer[i]) {
-			if (i && buffer[i-1] == '\r') buffer[i-1] = 0;
-			buffer[i] = 0;
-			if (++i < l) strcpy(partbuff, buffer+i);
-			else *partbuff = 0;
-			return 1;
-		}
-	}
-	if (i >= space) goto too_long;
-	buffer[i] = 0;
-	strcpy(partbuff, buffer);
-	DBG(1,11,fprintf(STDDBG, "[core] partial line read: %s\n", partbuff);)
-	*buffer = 0;
-	return 0;
-
-too_long:
-	strcpy(partbuff, "remark ");
-	DBG(2,11,fprintf(STDDBG, "[core] Too long command ignored");)
-	sputs("413 Too long\n", sd);
-	*buffer = 0;
-	return 0;
-}
-
-
 
 void make_rnd_passwd(char *buffer, int size)
 {
@@ -308,7 +230,13 @@ char server_passwd[SERVER_PASSWD_LEN + 2];
 static void detach()
 {
 	int i;
-        UNIX (ioctl(0, TIOCNOTTY);)          //Release the control terminal
+#ifdef TIOCNOTTY
+	ioctl(0, TIOCNOTTY);          //Release the control terminal
+#else
+	#ifdef HAVE_SETPGRP
+		setpgrp();
+	#endif
+#endif
 	if (!scfg->daemon_log || !*scfg->daemon_log)
 		return;
 	for (i=0; i<3; i++) close(i);
@@ -316,7 +244,7 @@ static void detach()
 			|| !open (NULL_FILE, O_RDWR|O_APPEND, MODE_MASK)) {
 		for (i=1; i<3; i++) dup(0);
 		scfg->colored = false;
-		DBG(3,11,fprintf(STDDBG, "\n\n\n\nEpos restarted at ");)
+		D_PRINT(3, "\n\n\n\nEpos restarted at ");
 		fflush(stdout);
 		system("/bin/date");
 	} else /* deep OS level trouble, contact authors */ call_abort();
@@ -325,7 +253,7 @@ static void detach()
 static inline void make_server_passwd()
 {
 	make_rnd_passwd(server_passwd, SERVER_PASSWD_LEN);
-	DBG(0,11,fprintf(STDDBG, "[core] server internal password is %s\n", server_passwd);)
+	D_PRINT(0, "[core] server internal password is %s\n", server_passwd);
 	if (scfg->listen_port != TTSCP_PORT) return;
 
 	FILE *f;
@@ -356,7 +284,8 @@ void server_shutdown()
 	delete data_conns;
 	delete master_context;
 //	cfg->n_langs = 0;	// otherwise the langs point into no man's land
-	free(sleep_table);
+	free(block_table);
+	free(push_table);
 	epos_done();
 	exit(0);
 }
@@ -368,14 +297,16 @@ static void server_reinit_check()
 		while (ctrl_conns->items) {
 			a_ttscp *tmp = ctrl_conns->translate(ctrl_conns->get_random());
 			sputs("601 reinit requested\r\n", tmp->c->config->sd_out);
-			sleep_table[tmp->c->config->sd_out] = NULL;
+			block_table[tmp->c->config->sd_out] = NULL;
+			push_table[tmp->c->config->sd_out] = NULL;
 			FD_CLR(tmp->c->config->sd_out, &block_set);
 			FD_CLR(tmp->c->config->sd_out, &push_set);
 			delete ctrl_conns->remove(tmp->handle);
 		}
 		while (data_conns->items) {
 			a_ttscp *tmp = data_conns->translate(data_conns->get_random());
-			sleep_table[tmp->c->config->sd_out] = NULL;
+			block_table[tmp->c->config->sd_out] = NULL;
+			push_table[tmp->c->config->sd_out] = NULL;
 			FD_CLR(tmp->c->config->sd_out, &block_set);
 			FD_CLR(tmp->c->config->sd_out, &push_set);
 			delete data_conns->remove(tmp->handle);
@@ -495,6 +426,32 @@ static bool select_socket(bool sleep)
 #define SCHED_SATIATED	64
 #define SCHED_WARN	30
 
+void notify_invalidate(socky int fd)
+{
+	FD_CLR(fd, &block_set);
+	FD_CLR(fd, &rd_set);
+	block_table[fd] = NULL;
+	FD_CLR(fd, &push_set);
+	FD_CLR(fd, &wr_set);
+	push_table[fd] = NULL;
+}
+
+void close_and_invalidate(socky int sd)
+{
+	notify_invalidate(sd);
+	async_close(sd);
+}
+
+void wakeup(socky int fd, agent **table, fd_set *set)
+{
+	agent *a = table[fd];
+	D_PRINT(2, a ? "Scheduling select(%d)ed agent\n"
+			: "sche sche scheduler\n", fd);
+	table[fd] = NULL;
+	FD_CLR(fd, set);
+	a->timeslice();
+}
+
 
 void server()
 {
@@ -503,24 +460,15 @@ void server()
 	while (!server_shutting_down) {
 		while (runnable_agents > SCHED_SATIATED
 					|| runnable_agents && !select_socket(false)) {
-			DBG(3,11,if (runnable_agents > SCHED_WARN) fprintf(STDDBG,"Busy! %d runnable agents\n", runnable_agents);)
+			DBG(3, if (runnable_agents > SCHED_WARN) fprintf(STDDBG,"Busy! %d runnable agents\n", runnable_agents);)
 			sched_sel()->timeslice();
 		}
 		select_socket(true);
-		for (fd=0; fd < select_fd_max; fd++) if (FD_ISSET(fd, &rd_set) || FD_ISSET(fd, &wr_set)) {
-			agent *a = sleep_table[fd];
-			DBG(2,11,fprintf(STDDBG, a ? "Scheduling select(%d)ed agent\n"
-					: "sche sche scheduler\n", fd);)
-			sleep_table[fd] = NULL;
-			int pushing = FD_ISSET(fd, &push_set);
-			FD_CLR(fd, &block_set);
-			FD_CLR(fd, &push_set);
-			a->timeslice();
-			if (a->dep && sleep_table[fd] == NULL) {
-				sleep_table[fd] = a->dep;
-				FD_SET(fd, pushing ? &push_set : &block_set);
-				a->dep = NULL;
-			}
+		for (fd = 0; fd < select_fd_max; fd++) {
+			if (FD_ISSET(fd, &wr_set))
+				wakeup(fd, push_table, &push_set);
+			if (FD_ISSET(fd, &rd_set))
+				wakeup(fd, block_table, &block_set);
 		}
 		server_reinit_check();
 	}

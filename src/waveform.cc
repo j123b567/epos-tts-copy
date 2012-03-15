@@ -1,7 +1,7 @@
 /*
  *	epos/src/waveform.cc
- *	(c) 1998-01 geo@cuni.cz
- *	(c) 2001 horak@ure.cas.cz
+ *	(c) 1998-02 geo@cuni.cz
+ *	(c) 2000-02 horak@ure.cas.cz
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -85,8 +85,10 @@ static int downsample_factor(int working, int out)
 	if (!out) return 1;
 	if (working == out) return 1;
 	if (working / 2 == out) return 2;
-	shriek(462, fmt("Currently, you can only get %d Hz and %d Hz output signal with this voice",
-		working, working / 2));
+	if (working / 3 == out) return 3;
+	if (working / 4 == out) return 4;
+	shriek(462, fmt("Currently, you can only get %d Hz, %d Hz, %d Hz or %d Hz output signal with this voice",
+		working, working / 2, working / 3, working / 4));
 	return 1;
 }
 
@@ -260,7 +262,7 @@ static inline void set_samp_size(int fd, int samp_size_bits)
    #ifdef SNDCTL_DSP_GETFMTS
 	int mask = (unsigned int)-1;
 	ioctl (fd, SNDCTL_DSP_GETFMTS, &mask);
-	DBG(3,9,fprintf(STDDBG,"Hardware format mask is 0x%04x\n", mask);)
+	D_PRINT(3, "Hardware format mask is 0x%04x\n", mask);
 	if (!(samp_size_bits & mask)) shriek(439, "Sampling rate not supported");
    #endif
 }
@@ -323,7 +325,7 @@ static const inline bool ioctlable(int fd)
 
 static const inline bool ioctlable(int fd)
 {
-	DBG(2,9,fprintf(STDDBG, "Sound ioctl's absent\n");)
+	D_PRINT(2, "Sound ioctl's absent\n");
 	return false;
 }
 
@@ -414,7 +416,7 @@ void
 wavefm::detach(int)
 {
 	while (flush()) ;		// FIXME: think slow network write
-	DBG(2,9,fprintf(STDDBG,"Detaching waveform %s\n", ""););
+	D_PRINT(2, "Detaching waveform\n");
 	sync_soundcard(fd);		// FIXME: necessary, but unwanted
 	if (cfg->wav_hdr && !ioctlable(fd)) write_header();
 	fd = -1;
@@ -431,16 +433,16 @@ wavefm::brk()
 void
 wavefm::attach(int d)
 {
-	DBG(2,9,fprintf(STDDBG,"Attaching waveform %s\n", ""););
+	D_PRINT(2, "Attaching waveform\n");
 	fd = d;
 	translate();
 	hdr.total_length = get_total_len() - RIFF_HEADER_SIZE;
 	if (ioctlable(fd)) {
 		ioctl_attach();
 	}
-	DBG(0,9,fprintf(STDDBG,"(attached, now flushing predata)\n");)
+	D_PRINT(0, "(attached, now flushing predata)\n");
 	if (hdr.buffer_idx) flush();
-	DBG(0,9,fprintf(STDDBG,"(predata flushed)\n");)
+	D_PRINT(0, "(predata flushed)\n");
 	if (buff_size) buffer = buffer ? (SAMPLE *)xrealloc(buffer, buff_size * sizeof(SAMPLE)) : (SAMPLE *)xmalloc(buff_size);
 }
 
@@ -490,22 +492,38 @@ static const int exp_lut[256] = {0,0,1,1,2,2,2,2,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4
 /* The following is a fixed (FIXME: generalize) low-pass band filter, 0 to 4 kHz */
 
 void
-wavefm::band_filter()
+wavefm::band_filter(int ds)
 {
-	const double a[9] = {1,-2.95588833875285,6.05358859038796,-8.21891083745587,8.44331226032319,-6.3984876438294,3.5670260078076,-1.33913357618129,0.282464627918022};
-	const double b[9] = {0.0085475284871725,0.0230290518801368,0.0495486106178739,0.0712620928385417,0.0820025736317015,0.0712620928385417,0.049548610617874,0.0230290518801368,0.00854752848717252};
+	const double a[3][9] = {{1,-2.95588833875285,6.05358859038796,
+				 -8.21891083745587,8.44331226032319,-6.3984876438294,
+				 3.5670260078076,-1.33913357618129,0.282464627918022},
+				{1,-5.64288854258764,15.23495961198290,
+				 -25.26198227870461,27.94306848298673,-21.03831667925559,
+				 10.52011230037758,-3.19916382894058,0.45524725438187},
+				{1,-6.42466721653009,18.92807679520927,
+				 -33.22220198267817,37.88644682915341,-28.70015825434698,
+				 14.09511202954144,-4.10429644762400,0.54321917883107}};
+	const double b[3][9] = {{0.0085475284871725,0.0230290518801368,0.0495486106178739,
+				0.0712620928385417,0.0820025736317015,0.0712620928385417,
+				0.049548610617874,0.0230290518801368,0.00854752848717252},
+				{0.00182487646825,-0.00196817471641,0.00491609616544,
+				-0.00250076958374,0.00529207410096,-0.00250076958374,
+				0.00491609616544,-0.00196817471641,0.00182487646825},
+				{0.00101813708883,-0.00274510939089,0.00509342597553,
+				 -0.00601560729994,0.00666275143843,-0.00601560729994,
+				 0.00509342597553,-0.00274510939089,0.00101813708883}};
 	
 	static double filt[9];
 	int i,j;
 	
-	DBG(1,9,fprintf(STDDBG,"Low-pass filter is applied\n");)
+	D_PRINT(1, "Low-pass filter is applied\n");
 	for (i = 0; i < 9; i++) filt[i] = 0;
 
 	for (i = 0; i < hdr.buffer_idx; i++) {
 		filt[0] = (double)(SIGNED_SAMPLE)buffer[i];
-		for (j=1;j<9;filt[0]=filt[0]-a[j]*filt[j++]);
+		for (j=1;j<9;filt[0]=filt[0]-a[ds-2][j]*filt[j++]);
 		double outsamp = 0;
-		for (j=0;j<9;outsamp=outsamp+b[j]*filt[j++]);
+		for (j=0;j<9;outsamp=outsamp+b[ds-2][j]*filt[j++]);
 //		printf("%d %f        ", buffer[i], (float)outsamp);
 		buffer[i] = (SAMPLE)(SIGNED_SAMPLE)outsamp;
 		for (j=8;j>0;j--) filt[j]=filt[j-1];		//FIXME: speed up
@@ -523,7 +541,7 @@ wavefm::band_filter()
 inline void
 wavefm::translate_data(char *newbuff)
 {
-	DBG(1,9,fprintf(STDDBG,"(translating the data, too)");)
+	D_PRINT(1, "(translating the data, too)");
 //	if (cfg->ulaw && this_voice->samp_size != 8) shriek(462, "Mu law implies 8 bit");
 	int ssbytes  = (this_voice->samp_size + 7) >> 3;  // sample size in bytes
 	int shift1 = (sizeof(int) - sizeof(SAMPLE)) << 3;
@@ -555,7 +573,7 @@ wavefm::translate_data(char *newbuff)
 void
 wavefm::translate()
 {
-	DBG(1,9,fprintf(STDDBG,"Translating waveform, buffer_idx=%d\n", hdr.buffer_idx);)
+	D_PRINT(1, "Translating waveform, buffer_idx=%d\n", hdr.buffer_idx);
 	if (translated || !hdr.buffer_idx) return;
 	
 	int working_size = sizeof (SAMPLE);
@@ -564,7 +582,12 @@ wavefm::translate()
 	int target_size = this_voice->samp_size >> 3;
 	target_size *= (1 + (channel != CT_MONO));
 	
-	if (downsamp != 1 && cfg->autofilter) band_filter();	//output is downsampled
+//	if (downsamp != 1 && cfg->autofilter) band_filter();	//output is downsampled
+	if (cfg->autofilter) {
+		if (downsamp == 2) band_filter(downsamp);	//output is downsampled
+		if (downsamp == 3) band_filter(downsamp);	//output is downsampled
+		if (downsamp == 4) band_filter(downsamp);	//output is downsampled
+	}
 	
 	if (downsamp == 1 && working_size == target_size && channel == CT_MONO
 						&& !cfg->ulaw) goto finis;
@@ -584,7 +607,7 @@ wavefm::translate()
 	if (cfg->ulaw) hdr.datform = IBM_FORMAT_MULAW;
    finis:
 	translated = true;
-	hdr.buffer_idx = hdr.buffer_idx * target_size / downsamp;
+	hdr.buffer_idx = (hdr.buffer_idx + 1) / downsamp * target_size;
 }
 
 /*
@@ -700,7 +723,7 @@ wavefm::flush()
 	
 	ooffset += written;
 
-	DBG(2,9,fprintf(STDDBG, "Flushing the signal\n");)
+	D_PRINT(2, "Flushing the signal\n");
 //	hdr.total_length += written;
 	return true;
 }
@@ -708,8 +731,8 @@ wavefm::flush()
 bool
 wavefm::flush_deferred()
 {
-	DBG(2,9,fprintf(STDDBG, "Flushing the signal (deferred)\n");)
-	DBG(1,9,fprintf(STDDBG, fmt("adtlhdr.len is %d\n", adtlhdr.len));)
+	D_PRINT(2, "Flushing the signal (deferred)\n");
+	D_PRINT(1, "adtlhdr.len is %d\n", adtlhdr.len);
 	written = 0;
 	if (hdr.buffer_idx + 4 <= buff_size)
 		return true;
@@ -810,7 +833,7 @@ void
 wavefm::chunk_become(char *p, int size)
 {
 	int l = *((int *)p+1);
-	DBG(2,9,fprintf(STDDBG, "Considering chunk %p+%d, %.4s len %d\n", p, size, p, *((int *)p+1));)
+	D_PRINT(2, "Considering chunk %p+%d, %.4s len %d\n", p, size, p, *((int *)p+1));
 	if (FOURCC_ID(p) == FOURCC_ID("RIFF")) {
 //		printf("RIFF here\n");
 		if (FOURCC_ID(p + RIFF_HEADER_SIZE) != FOURCC_ID("WAVE")) shriek(471, "Other RIFF than WAVE received");

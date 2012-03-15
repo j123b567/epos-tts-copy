@@ -1,0 +1,71 @@
+Bugs
+- decoding and encoding not done for non-text data types (ssif etc.)
+- better prosody modelling for monosyllaba
+- smooth not implemented
+- document [p] and dump
+- the --show_labels option is undoc and too idiosyncratic
+- theimer is broken
+- subst doesn't apply the first time
+- assignments to cfg probably do not cow the cfg properly
+- fix regress behavior wrt literal zero characters
+- sound labels are broken
+- say a @b
+- -H
+- parser discards garbage before the next phone - not always garbage
+
+Features
+- pause hierarchy rules
+- parsing rules (e.g. for angle/square brackets,
+  dots as opposed to periods, dollar signs)
+- grammatical marking
+- properly cased ordinal numerals
+- Roman numerals
+- URLs, email addresses...
+- STML parser
+- language dependent options on the server command line
+- asynchronous, more robust tcpsyn
+- tcpsyn - explicit voice options of local server should be used by the remote
+- mbrola
+- esd
+- Seela database (sp.? German morphology)
+- pause/resume in TTSCP
+- t i adjustment option
+- TCP wrappers & auth config & /etc/epos.users
+- reasonable logging
+- investigate the optimum pause lengths
+- integrate the neural network stuff
+- all rule and config file syntax errors should be reported in a single run
+- big-endian ovens
+- sighup (now no defaults.ini & bugs)
+
+Inventory omissions
+- unknown segment - no. 19 (consonant---r)
+- missing i/ (?i0) segments, "i" being any vowel, in traditnl.dph
+- segment 245 et al. is never used, syllabic r and glottal stops as well
+- su.psl et al. missing in kadlec et al.
+- cz "euthanasie": missing #eu in lpc
+- check whether ptacek97 handles diphtongs correctly
+
+Optimisations
+- sync_soundcard() should be replaced with an asyncro thing
+- ktdsyn and ptdsyn should not access the filesystem during normal operation
+- ptdsyn should also avoid fopen()
+- eliminate class connection_lost
+- static options (not changeable with setl, not cowed)
+- free some option value strings (for the master context and monolith)
+- initialiser lists instead of constructor code
+- remove code duplication in function.cc
+
+Miscelannea
+- QNX port
+- make install not robust (cfg not there, no binaries...)
+- iso8859-to-cp1250 conversions - get rid of the convertor if possible
+- examine the --input_text and --input_file options
+- document waveform labels in ttscp.sgml - waveform format description
+
+Should Check
+- behavior of intr with something other than oa_wavefm (may miss 123 or 122)
+- investigate segment free utterance handling
+- load_config skips trailing whitespace in a very strange way
+- TTSCP error codes, esp. those related to options and values, should be revised
+- what if I change max_line?

@@ -121,7 +121,7 @@ inline void lpcsyn::synmod(model mod, wavefm *w)
 	int i,k,ihilb = 0;
 	int gain,finp,iy,jrc[8],kz;	// were long - geo
 
-	DBG(1,9,printf("lsyn=%d nsyn=%d esyn=%d lsq=%d\n", mod.lsyn, mod.nsyn, mod.esyn, mod.lsq);)
+	D_PRINT(1, "lsyn=%d nsyn=%d esyn=%d lsq=%d\n", mod.lsyn, mod.nsyn, mod.esyn, mod.lsq);
 
 	if (cfg->paranoid && ipitch>0 && mod.lsyn>0 && ipitch + mod.lsyn - lastl)
 		shriek(862, "ihilb is undefined in synteza.synmod! Please contact the authors.\n");
@@ -168,12 +168,12 @@ void lpcsyn::synseg(voice *v, segment d, wavefm *w)	// voice not used
 	int i,imodel,lincr,incrl,numodel,zaklad,znely;
 	model m;
 //	if (cfg->ti_adj) shriek("Should call lpcvq::adjust(segment *), but can't"); // twice in this file
-	DBG(1,9,fprintf(STDDBG, "lpcsyn processing another segment\n"));
+	D_PRINT(1, "lpcsyn processing another segment\n");
 //	d.eproz=(d.eproz-100) / 9 + (cfg->ti_adj ? kor_i[d.hlaska]-15 : 0);
 	lincr=0;
 	numodel=(int)seg_len->data[d.code];	// cast to unsigned char * before [] if problems
 	if(!numodel) {
-		DBG(3,9,fprintf(STDDBG, "Unknown segment %d, %3s\n", d.code, d.code < v->n_segs ? "in range" : "out of range"));
+		D_PRINT(3, "Unknown segment %d, %3s\n", d.code, d.code < v->n_segs ? "in range" : "out of range");
 		return;
 	}
 	/* nacti_mem_popis(code,numodel) */
@@ -188,9 +188,9 @@ void lpcsyn::synseg(voice *v, segment d, wavefm *w)	// voice not used
 		if(nvyrov < d.t / 2) {
 			if(!znely) m.lsyn=0, m.lsq=12288, m.nsyn=d.t-nvyrov;
 			else {
-				if(imodel==numodel-1) m.lsyn=d.f;
+				if(imodel==numodel-1) m.lsyn = v->samp_rate / d.f;
 				else {
-					zaklad = (d.f-lold) * 256 / numodel;
+					zaklad = (v->samp_rate / d.f - lold) * 256 / numodel;
 					m.lsyn = lold + zaklad*(imodel+1) / 256;
 				}
 				m.lsyn=m.lsyn+lincr;
@@ -204,13 +204,13 @@ void lpcsyn::synseg(voice *v, segment d, wavefm *w)	// voice not used
 		} else {
 			if(imodel!=numodel-1) m.nsyn=0, m.lsyn=0, m.lsq=12288;
 			else if(!znely) m.lsyn=0, m.lsq=12288, m.nsyn=minsynt;
-				else m.lsyn=d.f, m.lsq=lroot, m.nsyn=m.lsyn;
+				else m.lsyn = v->samp_rate / d.f, m.lsq=lroot, m.nsyn=m.lsyn;
 			nvyrov -= d.t;
 		}
-		DBG(1,9,fprintf(STDDBG, "Model %d\n", imodel+1);)
+		D_PRINT(1, "Model %d\n", imodel+1);
 		if(m.nsyn>=minsynt) synmod(m, w);  //proved syntezu modelu
 	}
-	lold = d.f;
+	lold = v->samp_rate / d.f;
 }//hlask_synt
 
 
@@ -228,7 +228,7 @@ void lpcvq::frobmod(int imodel, segment d, model *m, int &incrl, int &znely)
 	i = vqm->adren-1 + d.e;
 	if (i>63) i=63;                    //uprava indexu
 	if (i<0) i=0;                      //(tabulka energii ma jen 64 poli)
-	DBG(1,9,fprintf(STDDBG, "energeia %d\n", i);)
+	D_PRINT(1, "energeia %d\n", i);
 	m->esyn = ener[i];                   //vyber energii z tabulky
 	for (i=0; i<rad; i++) m->rc[i] = cbook[vqm->adrrc-1][i];
 }
@@ -309,7 +309,7 @@ lpcint::lpcint(voice *v) : lpcsyn(v)
 #if 0
 	if (cfg->ti_adj) { //Needs some more hacking before use -- twice in this file
 //	    kor_t = (short int *)freadin("korekce.set", v->inv_dir, "rb", "integer inventory");
-		shriek(462, "Remove the comment above this message and adapt  the line to claim()/unclaim(), then remove this shriek()");
+		shriek(462, "Remove the comment above this message and adapt the line to claim()/unclaim(), then remove this shriek()");
 	    kor_i = (short int *)(v->n_segs*2 + (char *)kor_t);
 	}
 #endif

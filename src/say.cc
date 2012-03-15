@@ -332,7 +332,7 @@ void send_cmd_line(int argc, char **argv)
  *	are transmitted and synthesis and transcription procedures invoked.
  *	Last, general cleanup is done (the connections are gracefully closed.)
  *
- *	Note that the connection establishment code is less intuitive than it
+ *	Note that the connection establishment code is less intuitive than
  *	it could be because of paralelism oriented code ordering.
  */
 
@@ -344,8 +344,8 @@ int main(int argc, char **argv)
 #endif
 	start_service();		/* Windows NT etc. only */
 
-	ctrld = connect_socket(0, TTSCP_PORT);
-	datad = connect_socket(0, TTSCP_PORT);
+	ctrld = connect_socket(0, 0);
+	datad = connect_socket(0, 0);
 	sputs("data ", datad);
 	ch = get_handle(ctrld);
 	sputs(ch, datad);
@@ -376,8 +376,8 @@ int main(int argc, char **argv)
 	}
 /// #endif
 
-	say_data();
 	if (!wavstdout) trans_data();
+	say_data();
 //	printf("\n");
 	sputs("delh ", ctrld);
 	sputs(dh, ctrld);

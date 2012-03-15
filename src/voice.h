@@ -24,13 +24,14 @@ enum SYNTH_TYPE {
 	S_LPC_FLOAT = 4,
 	S_LPC_INT = 5,
 	S_LPC_VQ = 6,
+	S_FD = 7,
 	S_KTD = 8,
 	S_TDP = 9,
 	S_PTD = 10,
 	S_MBROLA = 12
 };
 
-#define STstr "none:internet:::lpc-float:lpc-int:lpc-vq::ktd:tdp:ptd::mbrola:"
+#define STstr "none:internet:::lpc-float:lpc-int:lpc-vq:fd:ktd:tdp:ptd::mbrola:"
 #define ST_MAX (S_MBROLA+1)
 
 enum CHANNEL_TYPE {CT_MONO, CT_LEFT, CT_RIGHT, CT_BOTH};
@@ -51,7 +52,7 @@ struct lang : public cowabilium
    #include "options.lst"
 
 	rules *ruleset;
-	hash_table<char, option> *soft_options;
+	hash_table<char, epos_option> *soft_options;
 	void *soft_defaults;
 	int   n_voices;
 	voice **voices;
@@ -102,8 +103,8 @@ struct voice : public cowabilium
 #define this_lang  (cfg->langs[cfg->default_lang])
 #define this_voice (this_lang->voices[this_lang->default_voice])
 
-struct option;
+struct epos_option;
 
-extern option langoptlist[];
-extern option voiceoptlist[];
+extern epos_option langoptlist[];
+extern epos_option voiceoptlist[];
 

@@ -15,13 +15,22 @@
  *	Note: the functions declared here often trash the scratch buffer.
  */
 
+#ifndef EPOS_CLIENT_H
+#define EPOS_CLIENT_H
 
+#if defined(HAVE_WINSOCK_H) || defined(HAVE_WINSOCK2_H)
+	#define HAVE_WINSOCK
+	#define socky unsigned
+#else
+	#define socky signed
+#endif
 
 /*
  *	The just_connect_socket() routine returns -1 if it cannot return a connected
  *	socket. The connect_socket() routine additionally checks if the remote side
  *	announces the TTSCP protocol of an acceptable version and calls shriek(4xx)
- *	if it doesn't.
+ *	if it doesn't.  Use 0 for address for localhost, 0 for port to attempt to
+ *	locate a public TTSCP server if no local one can be found.
  *
  *	Byte order: host byte order for the port number, network byte order for the addr.
  *	This is because the address has typically been acquired through gethostbyname(),
@@ -95,6 +104,10 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 
 	#ifdef HAVE_SIGNAL_H
 		#include <signal.h>
+	#endif
+
+	#ifdef HAVE_ERRNO_H
+		#include <errno.h>
 	#endif
 
 	inline void async_close(int fd)
@@ -181,16 +194,28 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 #endif	// HAVE_UNISTD_H
 
 /*
+ *	close_and_invalidate() is NOT supplied in client.cc and
+ *	may only be used by server-side code, or the client side
+ *	code can define it to call just async_close.  The purpose
+ *	of close_and_invalidate() is to remove all references to
+ *	the descriptor from the scheduler before closing it.
+ */
+ 
+void close_and_invalidate(socky int sd);
+
+/*
  *	The sgets() and sputs() routines provide a slow get line and put line
  *	interface, especially on TTSCP control connections. They are suitable
- *	for the client. They block until a line is received, which is a problem for
- *	tcpsyn.
+ *	for the client. sgets blocks until a line is received, which is a problem for
+ *	tcpsyn. sputs can be replaced by a callback fn assigned to sputs_replacement,
+ *	which is what the server side does to make it non-blocking.
  */
 
-int sgets(char *buffer, int buffer_size, int sd);
+extern int (*sputs_replacement)(socky int sd, const char *, int);
 
-inline int sputs(const char *buffer, int sd)
-{
-	if (!buffer) return 0;
-	return ywrite(sd, buffer, strlen(buffer));
-}
+int sgets(char *buffer, int buffer_size, int sd);
+int sputs(const char *buffer, int sd);
+
+
+#endif		// EPOS_CLIENT_H
+

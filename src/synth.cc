@@ -17,12 +17,17 @@
 #include "common.h"
 #include "ktdsyn.h"
 #include "ptdsyn.h"
+#include "tdpsyn.h"
 #include "lpcsyn.h"
 #include "mbrsyn.h"
 #include "tcpsyn.h"
 
 #define SOUND_LABEL_BASE	(1 << SOUND_LABEL_SHIFT)
 #define SOUND_LABEL_SHIFT	10
+
+#ifdef WIN32
+#define snprintf _snprintf
+#endif
 
 synth *setup_synth(voice *v)
 {
@@ -36,6 +41,7 @@ synth *setup_synth(voice *v)
 		case S_LPC_INT: return new lpcint(v);
 		case S_LPC_VQ:	return new lpcvq(v);
 		case S_KTD:	return new ktdsyn(v);
+		case S_TDP:	return new tdpsyn(v);
 		case S_PTD:	return new ptdsyn(v);
 		case S_MBROLA:  return new mbrsyn(v);
 		default:	shriek(861, "Impossible synth type");
@@ -48,9 +54,9 @@ synth *setup_synth(voice *v)
 void frob_segments(segment *d, int n, voice *v)
 {
 	for (int j=0;j<n;j++) {
-//		d[j].f=v->samp_rate * 100 / (d[j].f*cfg->inv_f0);  - fixed 8.7.98 by Petr
-		d[j].t=v->init_t * d[j].t / 100;            //corrections for t,f,i by Petr
-		d[j].f=v->samp_rate * 100 / (v->init_f * d[j].f);
+		d[j].t=v->init_t * d[j].t / 100;
+//		d[j].f=v->samp_rate * 100 / (v->init_f * d[j].f); //fixed 20.9.2002 by Petr
+		d[j].f=v->init_f * d[j].f / 100;
 		d[j].e=v->init_i * d[j].e / 100;
 	}
 }
@@ -72,7 +78,7 @@ void play_segments(unit *root, voice *v)
 		d[0].code = i; d[0].nothing = 0; d[0].ll = 0;
 //		frob_segments(d/*+1*/, i, v);		(moved to synth::synsegs)
 //		w.attach();
-		DBG(3,9,fprintf(STDDBG,"Using %s synthesis\n", enum2str(this_voice->type, STstr));)
+		D_PRINT(3, "Using %s synthesis\n", enum2str(this_voice->type, STstr));
 		v->syn->synsegs(v, d+1, i, &w);
 //		w.detach();
 	}
@@ -100,12 +106,12 @@ void show_segments(unit *root)
 
 synth::synth()
 {
-	DBG(1,9,fprintf(STDDBG,"A synthesis going to initialise\n");)
+	D_PRINT(1, "A synthesis going to initialise\n");
 }
 
 synth::~synth()
 {
-	DBG(1,9,fprintf(STDDBG,"A synthesis deconstructed\n");)
+	D_PRINT(1, "A synthesis deconstructed\n");
 }
 
 void
@@ -124,14 +130,29 @@ synth::synsegs(voice *v, segment *d, int n, wavefm *w)
 //	}
 	for (int i=0; i<n; i++) {
 		x.code = d[i].code;
-		x.t = v->init_t * d[i].t / 100;            // fixed 8.7.98 by Petr
-		x.f = v->samp_rate * 100 / (v->init_f * d[i].f);
+		x.t = v->init_t * d[i].t / 100;
+		if ((v->use_bang_nnet) && (v->lpcprosody)) {
+		  // excitation value from nnet
+		  x.f = d[i].f; // direct value from nnet to be passed
+		  // printf ("direct output value %d from nnet to %d!\n", d[i].f, x.f);
+		}
+		else {
+		  // all other methods process the value
+		x.f = v->init_f * d[i].f / 100;
+		  // yes, this is too complex! make it easier, please
+		  x.f = v->init_f - x.f;
+		  x.f = x.f * ((double) cfg->pros_factor) / 1000.0;
+		  x.f = v->init_f - x.f;
+		  // printf ("x.f after %d\n", x.f);
+		}
 		x.e = v->init_i * d[i].e / 100;
 		if (cfg->label_seg || cfg->label_phones) {
-			char tmp[4];
+			char tmp[7];
 			if (cfg->label_seg) {
-				strncpy(tmp, ((char(*)[4])v->segment_names->data)[d[i].code], 3);
-				tmp[3] = 0;
+				// strncpy(tmp, ((char(*)[4])v->segment_names->data)[d[i].code], 3);
+				snprintf (tmp, 7, "%d", d[i].code);
+				// printf ("%d is segment code\n", d[i].code);
+				tmp[7] = 0;
 				w->label(0, tmp, enum2str(scfg->segm_level, scfg->unit_levels));
 			}
 			int oi = w->get_buffer_index();
@@ -145,6 +166,10 @@ synth::synsegs(voice *v, segment *d, int n, wavefm *w)
 				int level = cfg->label_sseg ? d[i].ll : scfg->phone_level;
 //				FILE *f = fopen("02tmp", "a+"); fputs(enum2str(level, scfg->unit_levels), f); fputs("\n", f); fclose(f);
 				w->label(negoffs, tmp, enum2str(level, scfg->unit_levels));
+			}
+			// label again (this time its the 'offset', if i undestood that right)
+			if (cfg->label_f0) {
+				w->label (0, "-", "pitch");
 			}
 		} else 	synseg(v, x, w);
 	}

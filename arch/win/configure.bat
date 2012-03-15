@@ -8,10 +8,14 @@ cd ..\..\src
 move agent.cc agent.cpp
 if not exist client.cpp move client.cc client.cpp
 move daemon.cc daemon.cpp
+move encoding.cc encoding.cpp
+move function.cc function.cpp
+move daemon.cc daemon.cpp
 move unit.cc unit.cpp
 if not exist hash.cpp move hash.cc hash.cpp
 move hashd.cc hashd.cpp
 move interf.cc interf.cpp
+move nonblock.cc nonblock.cpp
 move options.cc options.cpp
 move ktdsyn.cc ktdsyn.cpp
 move ptdsyn.cc ptdsyn.cpp
@@ -22,6 +26,7 @@ move rule.cc rule.cpp
 move say.cc say.cpp
 move synth.cc synth.cpp
 move tcpsyn.cc tcpsyn.cpp
+move tdpsyn.cc tdpsyn.cpp
 move text.cc text.cpp
 move ttscp.cc ttscp.cpp
 move voice.cc voice.cpp

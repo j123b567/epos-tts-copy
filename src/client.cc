@@ -46,7 +46,7 @@ char scratch[SCRATCH_SPACE + 2];
 
 #endif
 
-
+#define PUBLIC_TTSCP_SERVER   "epos.ure.cas.cz"
 
 #include "client.h"
 
@@ -109,7 +109,10 @@ int sgets(char *buffer, int buffer_size, int sd)
 	for (i=0; i < buffer_size; i++) {
 		result = yread(sd, buffer+i, 1);
 		if (result == 0) return 0;
-		if (result == -1) return 0;		// error
+		if (result == -1) {
+			i--;
+			continue;		// error
+		}
 		if (buffer[i] == '\n' || !buffer[i]) {
 			if (i && buffer[i-1] == '\r') buffer[i-1] = 0;
 			buffer[i] = 0;
@@ -119,6 +122,32 @@ int sgets(char *buffer, int buffer_size, int sd)
 	buffer[i+1] = 0;
 	return 1;	// error though - FIXME
 }
+
+int (*sputs_replacement)(int sd, const char *, int) = NULL;
+
+int sputs(const char *buffer, int sd)
+{
+
+	int total;
+	int len = total = strlen(buffer);
+	int result;
+
+	if (!buffer) return 0;
+	if (sputs_replacement)
+		return sputs_replacement(sd, buffer, len);
+	else do {
+		result = ywrite(sd, buffer, len);
+		if (result == -1 && errno == EPIPE) return -1;
+//		if (result == -1 && errno == EAGAIN && ctrl_enque)
+//			ctrl_enque(sd, buffer, len);
+		if (result == -1) result = 0;
+		buffer += result;
+		len -= result;
+	} while (len);
+	return total;
+}
+
+
 
 int getaddrbyname(const char *inet_name)
 {
@@ -136,6 +165,13 @@ int just_connect_socket(unsigned int ipaddr, int port)
 	sockaddr_in addr;
 	int sd;
 
+	if (!port) {
+		sd = just_connect_socket(ipaddr, TTSCP_PORT);
+		if (sd == -1) sd = just_connect_socket(ipaddr, TTSCP_PORT + 1);
+		if (sd == -1) sd = just_connect_socket(getaddrbyname(PUBLIC_TTSCP_SERVER), TTSCP_PORT + 1);
+		if (sd == -1) sd = just_connect_socket(getaddrbyname(PUBLIC_TTSCP_SERVER), TTSCP_PORT);
+		return sd;
+	}
 
 	sd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sd == -1) shriek(464, "No socket\n");

@@ -15,6 +15,7 @@
  */
 
 #include "common.h"
+#include "nnet/neural.h"
 
 #define QUESTION_MARK      '?'    // ignored context character (in segment names)
 
@@ -45,7 +46,7 @@ unit::unit(UNIT layer, parser *parser)
 	t = 1;
 	m = NULL;
 	scope = false;
-	DBG(1,2,fprintf(STDDBG,"New unit %u, parser %u\n", layer, parser->level);)
+	D_PRINT(1, "New unit %u, parser %u\n", layer, parser->level);
 
 	while (parser->level < layer) insert_end(new unit((UNIT) (layer-1), parser),NULL);
 	if    (parser->level == layer) {
@@ -57,7 +58,7 @@ unit::unit(UNIT layer, parser *parser)
 		cont = parser->gettoken();
 	}
 
-	DBG(1,2,fprintf(STDDBG,"Finished a unit with %c\n",cont);)
+	D_PRINT(1, "Finished a unit with %c\n",cont);
 }
 
 /****************************************************************************
@@ -73,7 +74,7 @@ unit::unit(UNIT layer, int content)
 	t = 0;
 	m = NULL;
 	scope = false;
-	DBG(1,2,fprintf(STDDBG,"New unit %u, content %d\n", layer, content);)
+	D_PRINT(1, "New unit %u, content %d\n", layer, content);
 }
 
 /****************************************************************************
@@ -93,7 +94,7 @@ unit::unit()
 
 unit::~unit()
 {
-//	DBG(0,2,fprintf(STDDBG,"Disposing %c\n",cont);)
+//	D_PRINT(0, "Disposing %c\n",cont);
 	if (next) delete next;
 	if (firstborn) delete firstborn;
 }
@@ -333,10 +334,10 @@ unit::insert(UNIT target, bool backwards, char what, charclass *left, charclass 
 	unit *tmpu;
 
 	if (depth == target) {
-		DBG(1,4,fprintf(STDDBG,"inner unit::insert %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
-		DBG(1,4,fprintf(STDDBG,"   env is %c %c\n",
+		D_PRINT(1, "inner unit::insert %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());
+		D_PRINT(1, "   env is %c %c\n",
 				left->ismember(Prev(depth)->inside())+'0',
-				right->ismember(Next(depth)->inside())+'0');)
+				right->ismember(Next(depth)->inside())+'0');
 		if (left->ismember(cont) && right->ismember(Next(depth)->cont)) {
 			tmpu = new unit(depth, what);
 			tmpu->prev = this;
@@ -362,7 +363,7 @@ unit::insert(UNIT target, bool backwards, char what, charclass *left, charclass 
 			tmpu->t = t;
 //			tmpu->m = m->derived();
 		}
-		DBG(1,4,fprintf(STDDBG,"New contents: %c\n",cont);)
+		D_PRINT(1, "New contents: %c\n",cont);
 		return;
 	}
 
@@ -438,7 +439,7 @@ char *
 unit::gather(char *buffer_now, char *buffer_end, bool suprasegm)
 {    
 	unit *tmpu;
-//	DBG(0,3,fprintf(STDDBG,"Chroust! %d %s\n", buffer_end - buffer_now, buffer_now - 3);)
+//	D_PRINT(0, "Chroust! %d %s\n", buffer_end - buffer_now, buffer_now - 3);
 	for (tmpu = firstborn;tmpu && buffer_now < buffer_end; tmpu = tmpu->next) {
 		buffer_now = tmpu->gather(buffer_now, buffer_end, suprasegm);
 		if (!buffer_now) return NULL;
@@ -506,7 +507,7 @@ unit::subst()
 	unit   *tmpu;
 
 	parsie=new parser(sb);
-	DBG(0,3,fprintf(STDDBG,"innermost unit::subst - parser is ready\n");)
+	D_PRINT(0, "innermost unit::subst - parser is ready\n");
 	tmpu=new unit(depth,parsie);
 	if (cfg->paranoid) parsie->done();
 	sanity();
@@ -515,7 +516,7 @@ unit::subst()
 		return;
 	}
 	delete firstborn;
-	DBG(0,3,fprintf(STDDBG,"innermost unit::subst - gonna relink after subst\n");)
+	D_PRINT(0, "innermost unit::subst - gonna relink after subst\n");
 	firstborn = tmpu->firstborn;
 	lastborn  = tmpu->lastborn;
 	firstborn->set_father(this);
@@ -524,7 +525,7 @@ unit::subst()
 	tmpu->next = NULL;           //Paranoid
 	delete tmpu;
 	delete parsie;
-	DBG(0,3,fprintf(STDDBG,"innermost unit::subst - return to caller\n");)
+	D_PRINT(0, "innermost unit::subst - return to caller\n");
 }
 
 /****************************************************************************
@@ -538,7 +539,7 @@ unit::subst(hash *table, int l, char *prefix, char *prefix_end, char *body, char
 	char *resultant;
 	int safe_grow;
 
-	DBG(0,3,fprintf(STDDBG,"innermost unit::subst called with PREFIX %s %s MAIN %s SUFFIX %s %s\n",prefix,prefix_end,body,suffix,suffix_end);)
+	D_PRINT(0, "innermost unit::subst called with PREFIX %s %s MAIN %s SUFFIX %s %s\n",prefix,prefix_end,body,suffix,suffix_end);
 	sanity();
 	resultant = table->translate(body);
 	if (!resultant) return false;
@@ -558,10 +559,10 @@ unit::subst(hash *table, int l, char *prefix, char *prefix_end, char *body, char
 		*(sb + (prefix_end - prefix)) = 0;
 	} else *sb = 0;
 	strcat (sb, resultant);
-	DBG(1,3,fprintf(STDDBG,"innermost unit::subst result: %s\n",sb);)
+	D_PRINT(1, "innermost unit::subst result: %s\n",sb);
     
 	if (suffix && suffix_end - suffix > 0) strncat(sb, suffix, suffix_end - suffix);
-	DBG(1,3,fprintf(STDDBG,"innermost unit::subst - subst found: %s Resultant: %s\n", sb, resultant);)
+	D_PRINT(1, "innermost unit::subst - subst found: %s Resultant: %s\n", sb, resultant);
 	subst();
 	return true;
 }
@@ -592,7 +593,7 @@ unit::subst(hash *table, SUBST_METHOD method)
 		strend = gb + l;
 
 		// if (safe_grow>300) shriek("safe_grow");	// fixme
-		DBG(1,3,fprintf(STDDBG,"inner unit::subst %s, method %d\n", gb + 1, method);)
+		D_PRINT(1, "inner unit::subst %s, method %d\n", gb + 1, method);
 		sanity();
 		if (exact) {
 			if (subst(table, l, NULL, NULL, gb, NULL, NULL))
@@ -619,15 +620,99 @@ unit::subst(hash *table, SUBST_METHOD method)
 						goto break_home;
 			}
 		}
+
+		if (method & M_SEQ) {
+			// shriek(462, fmt("I reached rule mysubst!\n", 50));
+
+			// algorithm similar to M_BEGIN, but continue through the rest of the string, until nothing found and string processed
+			char* real_tail = strend;
+			char* real_begin = gb;
+			char* temp_tail;
+
+			int subst_amount;
+
+			char* temp_buffer = NULL;
+			
+			// stop if the whole string was processed
+			while (real_begin < real_tail) {
+				for (tail = real_tail;tail > real_begin; tail--) {
+					bool subst_result;
+					
+					if (real_begin == gb) {
+						subst_result = subst(table, l, gb, real_begin, real_begin, tail, strend);
+					}
+					else {
+						subst_result = subst(table, l, NULL, NULL, real_begin, tail, strend);
+					}
+						
+					if (subst_result) {
+						D_PRINT(1, "inner unit::subst has substituted %s\n", real_begin);
+						break;
+					}
+					else {
+						D_PRINT(1, "inner unit::%s could not be substituted\n", real_begin);
+					}
+					tail[0] = tail[-1]; tail[-1] = 0;
+				}
+
+				// undo the changes made to the string
+				for (temp_tail = tail; temp_tail <= real_tail; temp_tail++) {
+					temp_tail[-1] = temp_tail[0];
+					temp_tail[0] = 0;
+				}
+				
+				subst_amount = (int) ((tail) - (real_begin));
+
+				D_PRINT(1, "inner unit::subst has substituted %d letters\n", subst_amount);
+
+				if (temp_buffer == NULL) {
+					temp_buffer = (char *) xmalloc (1000);
+					memset (temp_buffer, 0, 1000);
+				}
+				if (subst_amount > 0) {
+					strcat (temp_buffer, sb);
+				}
+				else {
+					char tmp[2];
+					tmp[0] = real_begin[0];
+					tmp[1] = 0;
+					strcat (temp_buffer, tmp);
+				}
+
+				D_PRINT(1, "inner unit::subst temp_buffer contains %s \n", temp_buffer);
+				
+
+				if (tail == real_begin) {
+					// nothing was found
+					real_begin++;
+				}
+				else {
+					// found sth., skip the substituted string
+					real_begin = tail;
+				}
+			}
+			
+			if (sb != NULL) free (sb);
+			sb = temp_buffer;
+			subst();
+			goto break_home;
+	
+		}
 		cont = separ;
+		if (method & (M_LEFT | M_RIGHT) && method & M_NEGATED) {
+			unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS);
+		}
 		return i != cfg->multi_subst;
     
 		break_home:
 		cont = separ;
-		DBG(1,3,fprintf(STDDBG,"inner unit::subst has made the subst, relinking l/r, method %d\n", method);)
+		D_PRINT(1, "inner unit::subst has made the subst, relinking l/r, method %d\n", method);
 		sanity();
-		if (method & (M_LEFT | M_RIGHT)) 
-			return unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS), true;
+		if (method & (M_LEFT | M_RIGHT)) {
+			if (!(method & M_NEGATED))
+				unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS);
+			return true;
+		}
 		if (method & M_ONCE) return true;
 	}
 	shriek(463, fmt("Infinite substitution loop detected on \"%s\"", gb));
@@ -678,7 +763,7 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 	if ((method & M_LEFT) && !prev) return false;
 	if ((method & M_RIGHT) && !next) return false;
 	for (n=cfg->multi_subst; n; n--) {
-		DBG(1,3,fprintf(STDDBG,"unit::relabel %s, method %d\n", gb + 1, method);)
+		D_PRINT(1, "unit::relabel %s, method %d\n", gb + 1, method);
 		sanity();
 		if ((method & M_PROPER) == M_EXACT) {
 			gb[--len] = 0; len--;
@@ -716,7 +801,7 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 	sanity();
 
 commit:
-	DBG(1,3,fprintf(STDDBG,"inner unit::relabel has made the subst, relinking l/r, method %d\n", method);)    
+	D_PRINT(1, "inner unit::relabel has made the subst, relinking l/r, method %d\n", method);
 	for (i = 1; v != &EMPTY; i++) {
 		v->cont = gb[i];
 		v = v->Next(target);
@@ -755,10 +840,10 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 		strend = gb + l;
 //		if (!strend) return;	// gather overflow
 //		*strend=0;
-		DBG(1,3,fprintf(STDDBG,"unit::regex %s, subexps=%d\n", gb, subexps);)
+		D_PRINT(1, "unit::regex %s, subexps=%d\n", gb, subexps);
 		if (regexec(regex, gb, subexps + 1, subexp, 0)) return;
 		sanity();
-		DBG(1,3,fprintf(STDDBG,"unit::regex matched %s\n", gb);)
+		D_PRINT(1, "unit::regex matched %s\n", gb);
 		
 //		for (k = 0; k < subexp[0].rm_so; k++) sb[k] = gb[k];
 		k = subexp[0].rm_so;
@@ -810,15 +895,15 @@ unit::assim(UNIT target, bool backwards, charxlat *fn, charclass *left, charclas
 
 	sanity();
 	if (depth == target) {
-		DBG(1,4,fprintf(STDDBG,"inner unit::assim %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
-		DBG(1,4,fprintf(STDDBG,"   env is %c %c\n",
+		D_PRINT(1, "inner unit::assim %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());
+		D_PRINT(1,"   env is %c %c\n",
 				left->ismember(Prev(depth)->inside())+'0',
-				right->ismember(Next(depth)->inside())+'0');)
+				right->ismember(Next(depth)->inside())+'0');
 		if (right->ismember(Next(depth)->inside()) && left->ismember(Prev(depth)->inside())) {
 			if (cont == DELETE_ME) return;
 			cont = (unsigned char)fn->xlat(cont);
 			if (cont == DELETE_ME) unlink(M_DELETE);
-			DBG(1,4,fprintf(STDDBG,"New contents: %c\n", cont);)
+			D_PRINT(1, "New contents: %c\n", cont);
 		}
 		return;
 	}
@@ -840,8 +925,8 @@ unit::split(unit *before)
 {
 	unit *clone=new unit(*this);
 
-	DBG(1,5,fprintf(STDDBG,"Splitting in %c before %c, clone is %c\n", cont, before->inside(), clone->cont);
-		fout(NULL);)
+	D_PRINT(1, "Splitting in %c before %c, clone is %c\n", cont, before->inside(), clone->cont);
+	DBG(1, fout(NULL);)
 	clone->scope=false;
 	if(!(lastborn=before->prev))
 		shriek (463, "Attempted splitting a unit just at its boundary");
@@ -853,8 +938,8 @@ unit::split(unit *before)
 	clone->prev=this;
 	next=clone;
 	if (father && this==father->lastborn) father->lastborn=clone; 
-	DBG(1,5,fprintf(STDDBG,"is split in %c before %c, clone is %c\n", cont, before->inside(), clone->cont);
-		father->fout(NULL);)
+	D_PRINT(1, "is split in %c before %c, clone is %c\n", cont, before->inside(), clone->cont);
+	DBG(1, father->fout(NULL);)
 	sanity();
 } 
 
@@ -899,7 +984,7 @@ unit::syllabify(UNIT target, char *sonor)
 {
 	unit *tmpu, *tmpu_prev;
 	
-	DBG(0,5,fprintf(STDDBG,"unit::syllabify in level %d cont %c %c %c \n", depth,Prev(depth)->cont,cont,Next(depth)->cont);)
+	D_PRINT(0, "unit::syllabify in level %d cont %c %c %c \n", depth,Prev(depth)->cont,cont,Next(depth)->cont);
 	syll_pending=0;
 	for (tmpu=RightMost(target);tmpu!=&EMPTY; ) {
 		tmpu_prev = tmpu->Prev(tmpu->depth);
@@ -953,7 +1038,7 @@ unit::sseg(hash *templts, char symbol, int *quant)
 		adj=templts->translate_int(_sseg_question[i]);
 		if (adj==INT_NOT_FOUND) continue;
 
-		DBG(0,2,fprintf(STDDBG,"unit::sseg adjusts %c by %d in level %d\n", symbol, adj, depth);)
+		D_PRINT(0, "unit::sseg adjusts %c by %d in level %d\n", symbol, adj, depth);
 		*quant+=adj;
 		return;	
 	}
@@ -965,11 +1050,11 @@ unit::sseg(UNIT target, hash *templts)
 	unit *tmpu;
 	int  j,n;
 	
-	DBG(1,2,fprintf(STDDBG,"unit::sseg in level %d\n", depth);)
+	D_PRINT(1, "unit::sseg in level %d\n", depth);
 	n=0;
 	for (tmpu = RightMost(target); tmpu != &EMPTY; tmpu = tmpu->Prev(target)) n++;
 	for (j=n, tmpu = RightMost(target); j>0; j--, tmpu = tmpu->Prev(target)) {
-		DBG(0,5,fprintf(STDDBG,"unit::sseg question n=%d j=%d\n", n, j);)
+		D_PRINT(0, "unit::sseg question n=%d j=%d\n", n, j);
 		sprintf(_sseg_question[0], " /%d:%d", j, n);
 		sprintf(_sseg_question[1], " /%d:*", j);
 		sprintf(_sseg_question[2], " /%dlast:*", n-j+1);
@@ -999,7 +1084,7 @@ unit::sseg(UNIT target, hash *templts)
 void
 unit::prospoint(FIT_IDX what, int value, float position)
 {
-	DBG(1,2,fprintf(STDDBG, "Adding prosody point at %d\n", depth);)
+	D_PRINT(1, "Adding prosody point at %d\n", depth);
 	if (what == Q_TIME) t += ((float)value * 0.01);
 	else m = new marker(what, true /* extent */, value, m, position);
 }
@@ -1010,6 +1095,9 @@ unit::contour(UNIT target, int *recipe, int rec_len, int padd_start, FIT_IDX wha
 	unit *u;
 	int i;
 	int padd_count;
+
+	D_PRINT(1, "unit::contour (%d) %d %d ...\n", rec_len, recipe[0], recipe[1]);
+
 	for (u = LeftMost(target), i = (padd_start > -1);
 			i < rec_len && u != &EMPTY;
 			u = u->Next(target), i++)  /* just count'em */ ;
@@ -1059,7 +1147,7 @@ unit::smooth(UNIT target, int *recipe, int n, int rec_len, FIT_IDX what)
 	unit *u, *v;
 	int cq_wrap, j, k, avg;
 	
-	DBG(1,2,fprintf(STDDBG, "unit::smooth (%d:%d) %d %d ...\n", n, rec_len, recipe[0], recipe[1]);)
+	D_PRINT(1, "unit::smooth (%d:%d) %d %d ...\n", n, rec_len, recipe[0], recipe[1]);
 	u=v=LeftMost(target);
 	for (j = 0; j < n; j++) smooth_cq[j] = FIT(u, what);
 	for ( ; j < rec_len && u->Next(target) != &EMPTY; j++, u = u->Next(target))
@@ -1079,7 +1167,7 @@ unit::smooth(UNIT target, int *recipe, int n, int rec_len, FIT_IDX what)
 	}
 #else
 //	shriek(899, "no smooth");
-	DBG(3,2,fprintf(STDDBG, "No smooth!\n");)	// FIXME
+	D_PRINT(3, "No smooth!\n");	// FIXME
 #endif
 }
 
@@ -1090,13 +1178,13 @@ unit::smooth(UNIT target, int *recipe, int n, int rec_len, FIT_IDX what)
 void
 unit::project_extents()
 {
-	DBG(1,2,fprintf(STDDBG, "Projecting an extent from %d\n", depth);)	// FIXME
+	D_PRINT(1, "Projecting an extent from %d\n", depth);	// FIXME
 	for (marker *n = m; n; n = n->next)
 		if (!n->extent)
 			shriek(862, "Extent followed by a non-extent");
 
 	for (unit *u = firstborn; u; u = u->next) {
-		DBG(3,2,fprintf(STDDBG, "Moving prosody point to %d; q=%d, val=%d\n", u->depth, m->quant, m->par);)
+		D_PRINT(3, "Moving prosody point to %d; q=%d, val=%d\n", u->depth, m->quant, m->par);
 		u->m->merge(m->derived(), &u->m);
 	}
 	delete m;
@@ -1157,20 +1245,20 @@ unit::raise(charclass *whattab, charclass *whentab, UNIT whither, UNIT whence)
 {
 	if (whither != depth) shriek(861, "raise bad");
 	unit *tmpu, *tmpbig;
-	DBG(1,2,fprintf(STDDBG,"unit::raise moving from %d to %d\n",whence,whither);)
+	D_PRINT(1, "unit::raise moving from %d to %d\n",whence,whither);
 	if  (whither<=whence) shriek(462, "Raising downwards...huh...");
 	for (tmpbig = LeftMost(whither); tmpbig != &EMPTY; tmpbig = tmpbig->Next(whither)) {
 		if (whentab->ismember(tmpbig->cont)) {
-			DBG(1,2,fprintf(STDDBG,"unit::raise searching %c\n",tmpbig->cont);)
+			D_PRINT(1, "unit::raise searching %c\n",tmpbig->cont);
 			bool tmpscope = scope; scope = true;
 			for (tmpu = LeftMost(whence); tmpu != &EMPTY; tmpu = tmpu->Next(whence)) {
 				if (whattab->ismember(tmpu->cont)) {
-					DBG(0,2,fprintf(STDDBG,"unit::raise found %c\n",tmpu->cont);)
+					D_PRINT(0, "unit::raise found %c\n",tmpu->cont);
 					tmpbig->cont = tmpu->cont;
 				}
 			}
 			scope = tmpscope;
-		} else DBG(1,2,fprintf(STDDBG,"unit::raise NOT searching %c\n",tmpbig->cont););
+		} else D_PRINT(1, "unit::raise NOT searching %c\n",tmpbig->cont);
 
 	}
 }
@@ -1193,10 +1281,10 @@ unit::seg(hash *dinven)   //_d_descr should contain a segment name
 {
 	int n;
 	for (n = dinven->translate_int(_d_descr); n >= 0; n -= OMEGA) {
-		DBG(1,5,fprintf(STDDBG,"Diphone number %d born\n", n % OMEGA);)
+		D_PRINT(1, "Diphone number %d born\n", n % OMEGA);
 		insert_end(new unit(scfg->segm_level, n % OMEGA), NULL);
 		sanity();
-		DBG(1,5,fprintf(STDDBG,"...born and inserted\n");)
+		D_PRINT(1, "...born and inserted\n");
 	}
 }
 
@@ -1211,10 +1299,10 @@ unit::segs(UNIT target, hash *dinven)
 {
 	unit *tmpu;
 
-	DBG(0,5,fprintf(STDDBG,"Entering outer unit::segs in depth %d cont %c tar %d\n", depth, cont,target);)
+	D_PRINT(0, "Entering outer unit::segs in depth %d cont %c tar %d\n", depth, cont,target);
 	sanity();    
 	if (depth==target) {
-		DBG(1,5,fprintf(STDDBG,"unit::segs %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());)
+		D_PRINT(1, "unit::segs %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());
 		if (!dinven->items) {
 			delete firstborn, firstborn=lastborn=NULL;
 			return;
@@ -1230,10 +1318,10 @@ unit::segs(UNIT target, hash *dinven)
 		seg (dinven);
 		_d_descr[0]=Prev(depth)->inside();
 		seg (dinven);
-		DBG(1,5,fprintf(STDDBG,"unit::segs is done in: %c\n", cont);)
+		D_PRINT(1, "unit::segs is done in: %c\n", cont);
 	}
 	else for (tmpu = firstborn; tmpu; tmpu = tmpu->next) tmpu->segs(target, dinven);
-	DBG(1,5,fprintf(STDDBG,"Exiting outer unit::segs tar %d (finished)\n", target);)
+	D_PRINT(1, "Exiting outer unit::segs tar %d (finished)\n", target);
 	sanity();
 }
 
@@ -1246,7 +1334,7 @@ unit *_unit_just_unlinked=NULL;		//used by unlink(), ::epos_done(), sanity()
 void
 unit::unlink(REPARENT rmethod)
 {
-	DBG(1,2,fprintf(STDDBG,"unlinking depth=%d\n",depth);)
+	D_PRINT(1, "unlinking depth=%d\n",depth);
 	sanity();
 	if (next) next->prev=prev;
 		else if (father) father->lastborn=prev;
@@ -1257,17 +1345,17 @@ unit::unlink(REPARENT rmethod)
 		if (firstborn) delete firstborn;
 		break;
 	case M_RIGHTWARDS:
-		DBG(0,2,fprintf(STDDBG,"unlinking rightwards at level %d\n",depth);)
+		D_PRINT(0, "unlinking rightwards at level %d\n",depth);
 		if (next) next->insert_begin(firstborn, lastborn);
 		else shriek(861, "reparent impossible in unit::unlink");
 		break;
 	case M_LEFTWARDS:    
-		DBG(0,2,fprintf(STDDBG,"unlinking leftwards at level %d\n",depth);)
+		D_PRINT(0, "unlinking leftwards at level %d\n",depth);
 		if (prev) prev->insert_end(firstborn, lastborn);
 		else shriek(861, "reparent impossible in unit::unlink");
 		break;
 	}
-	DBG(0,2,fprintf(STDDBG," ...successfully unlinked\n");)
+	D_PRINT(0, " ...successfully unlinked\n");
 	firstborn = NULL;lastborn = NULL;
 	if (_unit_just_unlinked) {			// this could probably be simplified
 	        _unit_just_unlinked->next=NULL;		// to "delete this"
@@ -1276,10 +1364,10 @@ unit::unlink(REPARENT rmethod)
 	_unit_just_unlinked=this;
 
 	if (father && !father->firstborn) {
-		DBG(3,2,fprintf(STDDBG, "Unsafe unlink - may need more fixing\n"););	// as above
+		D_PRINT(3, "Unsafe unlink - may need more fixing\n");	// as above
 		father->unlink(M_DELETE);
 	}
-	DBG(0,2,fprintf(STDDBG,"unit deleted, farewell\n");)
+	D_PRINT(0, "unit deleted, farewell\n");
 }
 
 /****************************************************************************
@@ -1485,5 +1573,15 @@ unit::insane(const char *token)
     	if (father) father->fout(NULL);
 }
 
-#include "nnet.cc"
+void 
+unit::neural (UNIT target, CNeuralNet *neuralnet)
+{
+	D_PRINT (0, "applying neuralnet");
+	sanity ();
+
+	neuralnet->target = target;
+	neuralnet->run (this);
+}
+
+// #include "nnet.cc"
 

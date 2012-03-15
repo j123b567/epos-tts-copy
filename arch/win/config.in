@@ -149,3 +149,7 @@
 
 /* Define if Epos should run as an NT service */
 #define HAVE_WINSVC_H  1
+
+/* Define if uou have this header file */
+#define HAVE_WINDOWS_H	1
+

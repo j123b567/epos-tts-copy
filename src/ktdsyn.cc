@@ -51,7 +51,7 @@ ktdsyn::ktdsyn (voice *v)
 		po_u++;
 	}
 	fclose (f);
-	DBG(3,9,fprintf(STDDBG,"Time Domain synth OK\n");)
+	D_PRINT(3, "Time Domain synth OK\n");
 }
 
 
@@ -63,7 +63,7 @@ ktdsyn::~ktdsyn()
 
 void ktdsyn::synseg(voice *v, segment d, wavefm *w)
 {
-	DBG(1,9,fprintf(STDDBG, "Diphone %d for ktdsyn\n", d.code);)
+	D_PRINT(1, "Diphone %d for ktdsyn\n", d.code);
 	if (v->samp_size != 8) shriek(813, "ktd synth still supports only 8bit channels, sorry\n");
 
 	unsigned char *s_psl = new unsigned char[6000];
@@ -81,7 +81,7 @@ void ktdsyn::synseg(voice *v, segment d, wavefm *w)
 	uind = d.code;
 	pocimp = U[d.code].imp;
 	delka = ((double) d.t / 100 * (double) U[d.code].delk * 40 / 10 + 0.5); // ugly as microsoft code
-	peri = (int) (v->samp_rate / (8000/(double) d.f) + 0.5);
+	peri = v->samp_rate /  d.f;
 	pocp = (int) (delka / peri);
 
 	if (pocp > 1) {                                              \

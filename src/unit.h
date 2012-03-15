@@ -34,12 +34,15 @@
 #define SMOOTH_CQ_SIZE    16		// max smooth request length, see unit::smooth()
 
 class marker;
+class CNeuralNet;
 
 class unit
 {
 	friend void epos_catharsis();	  // necessary only #ifdef WANT_DMALLOC
 	friend class r_inside;
+	friend class t_neuralnet;	  // neuralnet directly writes into f,i,t
 
+    public:
 	unit *next, *prev;                //same layer
 	unit *firstborn, *lastborn;       //layer lower by one
 	unit *father;                     //layer greater by one
@@ -66,7 +69,7 @@ class unit
 //	int f,i,t;
 	float t;
 	marker *m;
-    public:
+//  public:
 	bool scope;                       //true=don't pass on Next/Prev requests
 		unit(UNIT layer, parser *);
 		unit(UNIT layer, int content); 
@@ -80,6 +83,8 @@ class unit
 	int write_ssif(char *whither, int starting_at, int bs);
 	void show_phones();	      // printf() the phones
 	void nnet_out(const char *filename, const char *dirname);
+	void filedump (char *filename);      // for external use of hierarchy information
+	void dumpunitrecursive (FILE *outf);
 	void fout(char *filename);        //stdout if NULL
 	void fprintln(FILE *outf);        //does not recurse, prints cont,f,i,t
 	char *gather(char *buffer_start, char *buffer_end, bool suprasegm);
@@ -94,8 +99,6 @@ class unit
 	void regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl);
 #endif
 	void assim(UNIT target, bool backwards, charxlat *fn, charclass *left, charclass *right);
-                                      //Will convert cont using fn[256] if left[Next]
-                                      // and right[Prev] are both true. Backwards=regressive. 
 	void split(unit *before);         //Split this unit just before "before"
                                       //not too robust
 	void syllabify(UNIT target, char *sonority);
@@ -142,6 +145,13 @@ class unit
 	static int sbsize;
 	static void done();		// free buffers
 	static void assert_sbsize(int);	// ensure at least that big sbsize
+
+	int getCont () const { return cont; }
+	int getDepth () const{ return depth; }
+
+	void neural (UNIT target, CNeuralNet *); 		//JA: Apply neural network described in some cfg file
+//	int getF () const	{ return f; }
+//	void setF (int ff)	{ f = ff; }
 };
 
 // extern char * _subst_buff;

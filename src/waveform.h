@@ -79,6 +79,7 @@ struct w_ophase;
 
 class wavefm
 {
+   protected:
 	wave_header hdr;
 	cue_header cuehdr;
 	adtl_header adtlhdr;
@@ -109,7 +110,7 @@ class wavefm
 	
 	void translate_data(char *new_buff);	/* recode data from buffer to new_buff */
 	void translate();	/* downsample, stereophonize, eightbitize or ulawize */
-	void band_filter();	/* low band filter applied if downsampling */
+	void band_filter(int ds);	/* low band filter applied if downsampling */
 	bool translated;
 	int downsamp;
 	
@@ -119,7 +120,8 @@ class wavefm
 	wavefm(voice *);
 	~wavefm();
 
-	int get_buffer_index() {return hdr.buffer_idx;};
+	int get_buffer_index() { return hdr.buffer_idx; };
+	char *get_buffer_data() {  return (char *)buffer; };
 	int written;		// bytes written by the last flush() only
 
 	bool flush();		// write out at least something
@@ -141,6 +143,19 @@ class wavefm
 		hdr.buffer_idx ++;
 	}
 
+	inline void sample(SAMPLE *b, int count)
+	{
+		while (buff_size < hdr.buffer_idx + count) {
+			int avail = buff_size - hdr.buffer_idx;
+			sample(b, avail);
+			b += avail;
+			count -= avail;
+			flush();
+		}
+		memcpy(buffer + hdr.buffer_idx, b, count * sizeof (SAMPLE));
+		hdr.buffer_idx += count;
+	}
+
 	void label(int position, char *label, const char *note);
 
 	void chunk_become(char *chunk_hdr, int chunk_size);
@@ -148,7 +163,4 @@ class wavefm
 
 	inline int written_bytes() { return hdr.total_length + RIFF_HEADER_SIZE; }
 };
-
-
-
 

@@ -1,0 +1,261 @@
+# Makefile.in should be processed by configure to yield Makefile
+
+OBJ=.o
+SRC=.cc
+COPY=cp
+CC=@CXX@
+LNK=@CXX@
+LDOPTS=-L/lib -L/usr/local/lib -L/usr/lib @LIBS@
+
+# The following line may be deleted if using any other compiler than Watcom C.
+export WPP386=-xs
+
+
+# Want an external debugging lib? Download dmalloc and uncomment the following.
+# DMALLOC_STATUS=-DWANT_DMALLOC
+# ifeq ($(DMALLOC_STATUS), -DWANT_DMALLOC)
+#    DMALLOC_LINK_OPT=-ldmalloc -L/usr/local/lib
+# endif
+
+# HOMEMADE_STRDUP=-DHOMEMADE_STRDUP
+
+#add -pg for profiling, -ggdb for gdb debugging
+
+CFLAGS=@CFLAGS@
+FLAGS=$(DMALLOC_STATUS) $(HOMEMADE_STRDUP) $(CFLAGS)
+LINKFLAGS=
+
+# SS     = ss
+
+prefix = @prefix@
+exec_prefix = $(prefix)
+bindir = @bindir@
+sbindir = @sbindir@
+libdir = @libdir@
+LIBDIR = $(libdir)/epos
+# LIBNAME = libepos.so.$(shell ../aux/makever)
+CFGDIR = $(LIBDIR)/cfg
+eposversionfile = $(LIBDIR)/version
+
+SHELL = /bin/sh
+
+HEADERS=common.h defaults.h unit.h parser.h rule.h text.h encoding.h interf.h function.h options.h hash.h synth.h voice.h exc.h
+MOREHEADERS=waveform.h ktdsyn.h ptdsyn.h lpcsyn.h tdpsyn.h mbrsyn.h tcpsyn.h slab.h rx.h client.h agent.h 
+SOURCES=parser.cc unit.cc marker.cc rule.cc block.cc text.cc encoding.cc interf.cc function.cc options.cc exc.cc hash.cc hashd.cc hashtmpl.cc synth.cc waveform.cc voice.cc say.cc options.lst nnet.cc monolith.cc daemon.cc agent.cc ttscp.cc client.cc qnxipc.cc ktdsyn.cc ptdsyn.cc lpcsyn.cc tdpsyn.cc mbrsyn.cc tcpsyn.cc rx.c gauge.cc
+DOSSOURCES=epos.cpp config.dos README.dos
+MODULES=parser.o unit.o rule.o text.o encoding.o interf.o function.o options.o synth.o ktdsyn.o ptdsyn.o lpcsyn.o tdpsyn.o mbrsyn.o tcpsyn.o voice.o waveform.o
+TARGETS=epos say vrfy gauge
+DOSES=  dos1250 dos1252 dospc2 dosil1 dosil2 doskam doskoi8 dosascii dosmac dosvga
+
+# the compilation proper may also depend on this makefile.
+# Linking always does.
+
+# MAKEFILE=
+MAKEFILE=Makefile
+
+.PHONY: all monolith mh install clean distclean tgz dist distdoc cfgsync date gdb pg dos $(DOSES) okay
+
+all: $(TARGETS)
+
+install : all $(SHELL) ../arch/unix/makeinst
+	@$(SHELL) ../arch/unix/makeinst $(libdir) $(LIBDIR) ../cfg
+#	install -m 0755 -o bin -g bin $(TARGETS) $(EXEDIR)
+#	install -m 0644 -o bin -g bin $(LIBRARY) $(LIBDIR)
+
+
+
+clean:  $(SHELL) ../arch/unix/listtmp
+	@if [ `cat $(CFGDIR)/epos.ini $(CFGDIR)/fixed.ini 2>/dev/null | grep 'use_debug *on\|use_debug *yes\|memory_low *on\|memory_low *yes'|wc -l` -ne 0 ];\
+		 then echo Debugging option seems to be set; fi
+	@rm -fr ../dos
+	@rm -f `$(SHELL) ../arch/unix/listtmp $(LIBDIR) $(TARGETS)`
+
+distclean: clean
+	@rm -f config.h Makefile config.cache config.log
+	@cp -f ../arch/unix/Makefile.dummy Makefile
+
+config.h.in: configure.in ../arch/unix/acconfig.h
+	@rm -f config.h.in
+	autoheader -l ../arch/unix
+
+configure: configure.in config.h.in
+	autoconf
+
+Makefile: configure Makefile.in
+	@./configure
+	@touch Makefile
+
+
+say	: say.o Makefile ../cfg/cfg/default.ini
+	@echo Building the client...
+	$(LNK) -o $@ say.o $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
+	@echo Type \"make install\" to install cfg files to $(LIBDIR)
+
+vrfy	: vrfy.cc client.cc
+	$(CC) $(LDOPTS) $(FLAGS) -o $@ vrfy.cc
+
+gauge	: gauge.o $(MAKEFILE)
+	$(CC) $(LDOPTS) $(FLAGS) -o $@ gauge.cc
+
+monolith mh : eposm
+
+eposm: monolith.o hash.o client.o $(MODULES) Makefile ../cfg/cfg/default.ini
+	$(LNK) -o $@ monolith.o client.o hash.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
+
+# static  : $(MODULES) monolith.o say.o Makefile ../cfg/cfg/default.ini
+#	$(LNK) -o say say.o $(LIBNAME) $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
+#	$(LNK) -o say say.o $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
+
+
+# $(LIBNAME)  : $(HEADERS) $(MODULES) Makefile ../cfg/cfg/default.ini
+#	$(LNK) -shared -o $@ $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) -Wl,-soname,$(LIBNAME) $(FLAGS)
+
+epos:	Makefile $(HEADERS) $(MODULES) hashd.o daemon.o agent.o ttscp.o nonblock.o client.o
+	@echo Building the daemon...
+# replace MODULES with LIBNAME in the following line to produce a shared daemon
+	$(LNK) -o $@ daemon.o agent.o ttscp.o nonblock.o client.o hashd.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
+#	@../arch/unix/rerunepos
+
+tgz: distclean $(SHELL) ../arch/unix/maketgz $(eposversionfile) cfgsync
+	@echo Building a .tgz package...
+	@$(SHELL) ../arch/unix/maketgz
+
+dist: distdoc tgz
+
+distdoc:
+	@$(MAKE) -C ../doc/english dist
+
+cfgsync: ../arch/unix/distcfg
+	@$(SHELL) ../arch/unix/distcfg
+
+date: $(SHELL) ../arch/unix/makedate
+	@echo -n 'Source files last modified '
+	@$(SHELL) ../arch/unix/makedate
+
+../cfg/cfg/default.ini: options.lst ../arch/unix/makedflt $(SHELL)
+	@$(SHELL) ../arch/unix/makedflt $@
+
+gdb: $(SHELL)
+	@$(SHELL) ../arch/unix/addcflag ggdb
+
+pg: $(SHELL)
+	@$(SHELL) ../arch/unix/addcflag pg
+
+dos:
+	@echo
+	@echo You must also specify how to encode Czech characters. Possible targets:
+	@echo  $(DOSES)
+	@echo 
+
+# $(DOSES): dos% :$(HEADERS) $(SOURCES) /usr/lib/cstocs/%.enc clean $(SHELL) ../arch/unix/cstodos cfgsync
+#	@echo Building a DOS distribution.
+#	@$(SHELL) ../arch/unix/cstodos $* "$(HEADERS) $(MOREHEADERS) $(SOURCES)" "$(DOSSOURCES)"
+
+$(SHELL):
+	@echo You should already have bash installed.
+	@if which bash >/dev/null; ln -s `which bash` $(SHELL); fi
+	@if [ -f $(SHELL) ]; then echo I\'ve tried to install it now.; fi
+
+
+$(CFGDIR)/fixed.ini:
+	#mkdir -p $(CFGDIR)
+	#@cp -f $(CFGDIR)/fixed.ini $(CFGDIR)/fixed.old.ini 2>/dev/null
+	#cp -f cfg/fixed.ini $(CFGDIR)
+
+okay: $(eposversionfile)
+	@echo Version stamp is okay.
+
+$(eposversionfile): common.h
+	@echo Updating version stamp.
+	@cat common.h | grep '#define.*VERSION' | cut -f 2 -d\" > $(eposversionfile)
+
+
+config.h: config.h.in
+	@sh ./configure
+	@touch config.h
+
+say.o: say.cc client.cc $(HEADERS) $(MAKEFILE) options.lst $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ say.cc
+
+monolith.o: monolith.cc $(HEADERS) $(MAKEFILE) options.lst $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ monolith.cc
+
+daemon.o: daemon.cc qnxipc.cc $(HEADERS) agent.h client.h $(MAKEFILE) options.lst $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ daemon.cc
+
+agent.o: agent.cc $(HEADERS) agent.h client.h waveform.h $(MAKEFILE) options.lst $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ agent.cc
+
+ttscp.o: ttscp.cc $(HEADERS) agent.h $(MAKEFILE) options.lst $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ ttscp.cc
+
+nonblock.o: nonblock.cc $(HEADERS) agent.h $(MAKEFILE) options.lst $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ nonblock.cc
+
+client.o: client.cc client.h $(MAKEFILE) options.lst $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ client.cc
+
+parser.o: common.h parser.h interf.h parser.cc voice.h options.h options.lst $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ parser.cc
+
+interf.o: common.h interf.h options.h voice.h interf.cc exc.cc options.lst $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ interf.cc
+
+function.o: function.h options.h interf.h unit.h function.cc options.lst $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ function.cc
+
+options.o: common.h interf.h options.h voice.h options.cc exc.cc options.lst $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ options.cc  -DBASE_DIR=$(LIBDIR)
+
+hash.o: hash.h hash.cc hashtmpl.cc defaults.h slab.h $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ hash.cc
+
+hashd.o: hash.h hash.cc hashd.cc hashtmpl.cc defaults.h slab.h $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ hashd.cc
+
+rule.o: $(HEADERS) rule.cc block.cc options.lst $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ rule.cc
+
+unit.o: $(HEADERS) unit.cc marker.cc nnet.cc options.lst $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ unit.cc
+
+text.o: common.h defaults.h hash.h interf.h options.lst $(MAKEFILE) text.cc $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ text.cc
+
+encoding.o: $(HEADERS) encoding.h encoding.cc options.lst $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ encoding.cc
+
+synth.o: synth.h synth.cc interf.h options.h options.lst waveform.h ktdsyn.h lpcsyn.h tdpsyn.h $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ synth.cc
+
+waveform.o: waveform.h waveform.cc interf.h options.lst $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ waveform.cc
+
+voice.o: voice.h waveform.h voice.cc interf.h options.h options.lst $(MAKEFILE) $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ voice.cc
+
+ktdsyn.o: ktdsyn.h waveform.h synth.h ktdsyn.cc interf.h options.lst $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ ktdsyn.cc
+
+ptdsyn.o: ptdsyn.h waveform.h synth.h ptdsyn.cc interf.h options.lst $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ ptdsyn.cc
+
+lpcsyn.o: lpcsyn.h waveform.h synth.h lpcsyn.cc interf.h options.lst $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ lpcsyn.cc
+
+mbrsyn.o: mbrsyn.h synth.h mbrsyn.cc waveform.h interf.h options.lst $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ mbrsyn.cc
+
+tdpsyn.o: tdpsyn.h waveform.h synth.h tdpsyn.cc interf.h options.lst $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ tdpsyn.cc
+
+tcpsyn.o: tcpsyn.h tcpsyn.cc client.h waveform.h interf.h options.lst $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ tcpsyn.cc
+
+gauge.o: gauge.cc client.cc $(HEADERS) $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ gauge.cc
+
+
+
+qnxipc.o: qnxipc.cc $(HEADERS) agent.h client.h client.cc
+	$(CC) $(FLAGS) -c -o $@ qnxipc.cc -DSTANDALONE_COMPILE 

@@ -53,13 +53,49 @@ regress  \~>.(!_!)	sent	sent
 regress  \;>.(!_!)	sent	sent
 regress  ->,(!_!)	sent	colon
 
-if   naive_prosody
+if use_prosody
 {
-	@include "naive.rul"
+	if   lpcprosody
+	{
+		if use_bang_nnet
+		{
+			if use_nnet_phone 
+			{
+				nnet prosody_lpc_bang_phone.neu sent phone
+			}
+			if !use_nnet_phone
+			{
+				nnet prosody_lpc_bang.neu sent syll
+			}
+		}
+		if !use_bang_nnet
+		{
+			@include "lpcpros.rul"
+		}
+	}
+	if   !lpcprosody
+	{
+		if use_bang_nnet
+		{
+			nnet prosody_bang.neu sent syll
+		}
+		if !use_bang_nnet
+		{
+		if   naive_prosody
+		{
+			@include "naive.rul"
+		}
+		if   !naive_prosody
+		{
+			@include "prosody.rul"
+		}
+	}
+	}
 }
-if   !naive_prosody
+
+if	tsr_tool
 {
-	@include "prosody.rul"
+#	debug tsrtool text
 }
 
 if    phr_break
@@ -122,4 +158,12 @@ if  absolute_time
 #
 
 # smooth   f/70\30     word segment
+
+
+if	tsr_tool
+{
+	debug dumpunit text
+#	debug elem phone
+}
+
 

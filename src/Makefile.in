@@ -21,7 +21,7 @@ export WPP386=-xs
 
 #add -pg for profiling, -ggdb for gdb debugging
 
-CFLAGS=@CFLAGS@
+CFLAGS=@CXXFLAGS@ -w -DEPOS -ggdb
 FLAGS=$(DMALLOC_STATUS) $(HOMEMADE_STRDUP) $(CFLAGS)
 LINKFLAGS=
 
@@ -40,11 +40,11 @@ eposversionfile = $(LIBDIR)/version
 SHELL = /bin/sh
 
 HEADERS=common.h defaults.h unit.h parser.h rule.h text.h encoding.h interf.h function.h options.h hash.h synth.h voice.h exc.h
-MOREHEADERS=waveform.h ktdsyn.h ptdsyn.h lpcsyn.h mbrsyn.h tcpsyn.h slab.h rx.h client.h agent.h 
-SOURCES=parser.cc unit.cc marker.cc rule.cc block.cc text.cc encoding.cc interf.cc function.cc options.cc exc.cc hash.cc hashd.cc hashtmpl.cc synth.cc waveform.cc voice.cc say.cc options.lst nnet.cc monolith.cc daemon.cc agent.cc ttscp.cc client.cc qnxipc.cc ktdsyn.cc ptdsyn.cc lpcsyn.cc mbrsyn.cc tcpsyn.cc rx.c
+MOREHEADERS=waveform.h ktdsyn.h ptdsyn.h lpcsyn.h tdpsyn.h mbrsyn.h tcpsyn.h slab.h rx.h client.h agent.h 
+SOURCES=parser.cc unit.cc marker.cc rule.cc block.cc text.cc encoding.cc interf.cc function.cc options.cc exc.cc hash.cc hashd.cc hashtmpl.cc synth.cc waveform.cc voice.cc say.cc options.lst nnet.cc monolith.cc daemon.cc agent.cc ttscp.cc client.cc qnxipc.cc ktdsyn.cc ptdsyn.cc lpcsyn.cc tdpsyn.cc mbrsyn.cc tcpsyn.cc rx.c gauge.cc nnet/stream/bang_fstream.cpp nnet/stream/bang_iostream.cpp nnet/stream/bang_istream.cpp nnet/stream/bang_ostream.cpp nnet/enumstring.cpp nnet/map.cpp nnet/matrix.cpp nnet/perceptron.cpp nnet/percinit.cpp nnet/percstruct.cpp nnet/set.cpp nnet/string.cpp nnet/traindata.cpp nnet/utils.cpp nnet/xml.cpp nnet/xml.y.tab.cpp nnet/xmltempl.cpp nnet/xmlutils.cpp nnet/neural.cc nnet/neural.tab.cc
 DOSSOURCES=epos.cpp config.dos README.dos
-MODULES=parser.o unit.o rule.o text.o encoding.o interf.o function.o options.o synth.o ktdsyn.o ptdsyn.o lpcsyn.o mbrsyn.o tcpsyn.o voice.o waveform.o
-TARGETS=epos say vrfy
+MODULES=parser.o unit.o rule.o text.o encoding.o interf.o function.o options.o synth.o ktdsyn.o ptdsyn.o lpcsyn.o tdpsyn.o mbrsyn.o tcpsyn.o voice.o waveform.o bang_fstream.o bang_iostream.o bang_istream.o bang_ostream.o enumstring.o map.o matrix.o perceptron.o percinit.o percstruct.o set.o string.o traindata.o utils.o xml.o xmltempl.o xmlutils.o neural.o neural.tab.o xml.y.tab.o
+TARGETS=epos say vrfy gauge
 DOSES=  dos1250 dos1252 dospc2 dosil1 dosil2 doskam doskoi8 dosascii dosmac dosvga
 
 # the compilation proper may also depend on this makefile.
@@ -94,6 +94,9 @@ say	: say.o Makefile ../cfg/cfg/default.ini
 vrfy	: vrfy.cc client.cc
 	$(CC) $(LDOPTS) $(FLAGS) -o $@ vrfy.cc
 
+gauge	: gauge.o $(MAKEFILE)
+	$(CC) $(LDOPTS) $(FLAGS) -o $@ gauge.cc
+
 monolith mh : eposm
 
 eposm: monolith.o hash.o client.o $(MODULES) Makefile ../cfg/cfg/default.ini
@@ -107,10 +110,10 @@ eposm: monolith.o hash.o client.o $(MODULES) Makefile ../cfg/cfg/default.ini
 # $(LIBNAME)  : $(HEADERS) $(MODULES) Makefile ../cfg/cfg/default.ini
 #	$(LNK) -shared -o $@ $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) -Wl,-soname,$(LIBNAME) $(FLAGS)
 
-epos:	Makefile $(HEADERS) $(MODULES) hashd.o daemon.o agent.o ttscp.o client.o
+epos:	Makefile $(HEADERS) $(MODULES) hashd.o daemon.o agent.o ttscp.o nonblock.o client.o
 	@echo Building the daemon...
 # replace MODULES with LIBNAME in the following line to produce a shared daemon
-	$(LNK) -o $@ daemon.o agent.o ttscp.o client.o hashd.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
+	$(LNK) -o $@ daemon.o agent.o ttscp.o nonblock.o client.o hashd.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
 #	@../arch/unix/rerunepos
 
 tgz: distclean $(SHELL) ../arch/unix/maketgz $(eposversionfile) cfgsync
@@ -186,6 +189,9 @@ agent.o: agent.cc $(HEADERS) agent.h client.h waveform.h $(MAKEFILE) options.lst
 ttscp.o: ttscp.cc $(HEADERS) agent.h $(MAKEFILE) options.lst $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ ttscp.cc
 
+nonblock.o: nonblock.cc $(HEADERS) agent.h $(MAKEFILE) options.lst $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ nonblock.cc
+
 client.o: client.cc client.h $(MAKEFILE) options.lst $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ client.cc
 
@@ -219,7 +225,7 @@ text.o: common.h defaults.h hash.h interf.h options.lst $(MAKEFILE) text.cc $(SH
 encoding.o: $(HEADERS) encoding.h encoding.cc options.lst $(MAKEFILE) $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ encoding.cc
 
-synth.o: synth.h synth.cc interf.h options.h options.lst waveform.h ktdsyn.h lpcsyn.h $(MAKEFILE) $(SHELL)
+synth.o: synth.h synth.cc interf.h options.h options.lst waveform.h ktdsyn.h lpcsyn.h tdpsyn.h $(MAKEFILE) $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ synth.cc
 
 waveform.o: waveform.h waveform.cc interf.h options.lst $(MAKEFILE) $(SHELL)
@@ -240,9 +246,61 @@ lpcsyn.o: lpcsyn.h waveform.h synth.h lpcsyn.cc interf.h options.lst $(MAKEFILE)
 mbrsyn.o: mbrsyn.h synth.h mbrsyn.cc waveform.h interf.h options.lst $(MAKEFILE)
 	$(CC) $(FLAGS) -c -o $@ mbrsyn.cc
 
+tdpsyn.o: tdpsyn.h waveform.h synth.h tdpsyn.cc interf.h options.lst $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ tdpsyn.cc
+
 tcpsyn.o: tcpsyn.h tcpsyn.cc client.h waveform.h interf.h options.lst $(MAKEFILE)
 	$(CC) $(FLAGS) -c -o $@ tcpsyn.cc
 
+gauge.o: gauge.cc client.cc $(HEADERS) $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ gauge.cc
 
+
+bang_fstream.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/stream/bang_fstream.cpp
+bang_iostream.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/stream/bang_iostream.cpp
+bang_istream.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/stream/bang_istream.cpp
+bang_ostream.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/stream/bang_ostream.cpp
+enumstring.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/enumstring.cpp
+map.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/map.cpp
+matrix.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/matrix.cpp
+perceptron.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/perceptron.cpp
+percinit.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/percinit.cpp
+percstruct.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/percstruct.cpp
+set.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/set.cpp
+string.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/string.cpp
+traindata.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/traindata.cpp
+utils.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/utils.cpp
+xml.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/xml.cpp
+xml.y.tab.o: nnet/xml.y.tab.cpp
+	$(CC) $(FLAGS) -c -o $@ nnet/xml.y.tab.cpp
+xmltempl.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/xmltempl.cpp
+xmlutils.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/xmlutils.cpp
+neural.o:
+	$(CC) $(FLAGS) -c -o $@ nnet/neural.cc
+neural.tab.o: nnet/neural.tab.cc
+	$(CC) $(FLAGS) -c -o $@ nnet/neural.tab.cc
 qnxipc.o: qnxipc.cc $(HEADERS) agent.h client.h client.cc
 	$(CC) $(FLAGS) -c -o $@ qnxipc.cc -DSTANDALONE_COMPILE 
+
+nnet/neural.tab.cc: nnet/neural.y
+	bison -o $@ -p neural $^
+
+nnet/xml.y.tab.cpp: nnet/xml.y
+	bison -o $@ -p xml $^

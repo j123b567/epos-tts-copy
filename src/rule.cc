@@ -18,10 +18,14 @@
 
 #include "common.h"
 
+#ifdef HAVE_WINDOWS_H
+	#include <windows.h>
+#endif
+
 #define SEG_BUFF_SIZE  1000 //unimportant
 
-#define OPCODEstr "subst:regex:postp:prep:segments:absolutize:prosody:contour:progress:regress:insert:syll:smooth:raise:debug:if:inside:near:with:{:}:[:]:<:>:nothing:error:"
-enum OPCODE {OP_SUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_SEG, OP_ABSOL, OP_PROSODY, OP_CONTOUR, OP_PROGRESS, OP_REGRESS, 
+#define OPCODEstr "nnet:subst:mysubst:regex:postp:prep:segments:absolutize:prosody:contour:progress:regress:insert:syll:smooth:raise:debug:if:inside:near:with:{:}:[:]:<:>:nothing:error:"
+enum OPCODE {OP_NNET, OP_SUBST, OP_MYSUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_SEG, OP_ABSOL, OP_PROSODY, OP_CONTOUR, OP_PROGRESS, OP_REGRESS, 
 	OP_INSERT, OP_SYLL, OP_SMOOTH, OP_RAISE, OP_DEBUG, OP_IF, OP_INSIDE, OP_NEAR, OP_WITH,
 	OP_BEGIN, OP_END, OP_CHOICE, OP_CHOICEND, OP_SWITCH, OP_SWEND, OP_NOTHING, OP_ERROR};
 		/* OP_BEGIN, OP_END and other OP's without parameters should come last
@@ -85,6 +89,7 @@ class hashing_rule: public rule
 {
    protected:
 	bool allow_id;
+	char negated;
 	hash *dict;
    public:
 		hashing_rule(char *param);
@@ -103,7 +108,7 @@ rule::rule(char *param)
 
 rule::~rule()
 {
-	DBG(0,1,fprintf(STDDBG, "rule::~rule, raw=%s, dbg_tag=%s\n", raw, dbg_tag););
+	D_PRINT(0, "rule::~rule, raw=%s, dbg_tag=%s\n", raw, dbg_tag);
 	if (raw) free(raw);
 #ifdef DEBUGGING
 	if (dbg_tag) free(dbg_tag);
@@ -123,7 +128,7 @@ void
 rule::set_dbg_tag(text *file)
 {
 #ifdef DEBUGGING
-	DBG(0,1,fprintf(STDDBG,"Debugging tag %s\n",file->current_file));
+//	D_PRINT(0, "Debugging tag %s\n", file->current_file);
 	sprintf(scratch, "%s:%d", file->current_file, file->current_line);
 	dbg_tag=strdup(scratch);
 #else
@@ -222,6 +227,8 @@ static char esc(char x)
 
 hashing_rule::hashing_rule(char *param) : rule(NULL)
 {
+	negated = 0;
+	if (*param == '!') param++, negated = 1;
 	if (*param == DQUOT) raw = strdup(param);
 	else raw = compose_pathname(param, this_lang->hash_dir, scfg->lang_base_dir);
 	dict = NULL;
@@ -237,11 +244,13 @@ hashing_rule::~hashing_rule()
 void
 hashing_rule::verify()
 {
+	if (negated > 1)
+		shriek(811, fmt("%s Unexpected negated dictionary", debug_tag()));
 	if (cfg->paranoid) {
 		load_hash();
 
 		if (scfg->lowmemory) {
-			DBG(2,2,fprintf(STDDBG,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
+			D_PRINT(2, "Hash table caching is disabled.\n"); //hashtabscache[rulist[i].param]->debug();
 			delete dict;
 			dict = NULL;
 		}
@@ -254,7 +263,7 @@ hashing_rule::load_hash()
 	if (dict) shriek(862, "unwanted load_hash");
 
 	if (*raw != DQUOT) {
-		dict = new hash(raw, scfg->hash_full, 0, 200, 3,
+		dict = new hash(raw, scfg->hash_full, 0, 200, 5,
 			(char *) allow_id, false, "dictionary %s not found", esc);
 	} else dict = literal_hash(raw);
 	if (!dict) shriek(463, fmt("%s Unterminated argument", debug_tag()));	// or out of memory
@@ -306,17 +315,26 @@ class r_postp: public r_subst
 r_subst::r_subst(char *param) : hashing_rule(param)
 {
 	method = M_SUBSTR;
+	negated *= 2;
 }
 
 r_prep::r_prep(char *param) : r_subst(param)
 {
 	method = M_RIGHT;
+	if (negated) {
+		method = (SUBST_METHOD)(method | M_NEGATED);
+		negated = 1;
+	}
 	allow_id = true;
 }
 
 r_postp::r_postp(char *param) : r_subst(param)
 {
 	method = M_LEFT;
+	if (negated) {
+		method = (SUBST_METHOD)(method | M_NEGATED);
+		negated = 1;
+	}
 	allow_id = true;
 }
 
@@ -324,7 +342,28 @@ void
 r_subst::set_level(UNIT scp, UNIT trg)
 {
 	rule::set_level(scp, trg);
-//	if (target != U_PHONE) shriek(fmt("%s Cannot substitute for non-phones",debug_tag()));
+}
+
+class r_mysubst: public hashing_rule
+{
+   protected:
+	SUBST_METHOD method;
+	virtual OPCODE code() {return OP_SUBST;};
+   public:
+		r_mysubst(char *param);
+	virtual void set_level(UNIT scope, UNIT target);
+	virtual void apply(unit *root);
+};
+
+r_mysubst::r_mysubst(char *param) : hashing_rule(param)
+{
+	method = (SUBST_METHOD) (M_SEQ | M_ONCE);
+}
+
+void
+r_mysubst::set_level(UNIT scp, UNIT trg)
+{
+	rule::set_level(scp, trg);
 }
 
 /************************************************
@@ -341,7 +380,23 @@ r_subst::apply(unit *root)
 	root->relabel(dict, method, target);
 
 	if (scfg->lowmemory) {
-		DBG(2,2,fprintf(STDDBG,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
+		D_PRINT(2, "Hash table caching is disabled.\n"); //hashtabscache[rulist[i].param]->debug();
+		delete dict;
+		dict = NULL;
+	}
+}
+
+void
+r_mysubst::apply(unit *root)
+{
+	if (!dict) load_hash();
+
+//	if (target == U_PHONE) root->subst(dict, method);
+
+	root->relabel(dict, method, target);
+
+	if (scfg->lowmemory) {
+		D_PRINT(2, "Hash table caching is disabled.\n"); //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict = NULL;
 	}
@@ -380,13 +435,13 @@ r_seg::apply(unit *root)
 	if (!dict) load_hash();
 	root->segs(target, dict);
 	if (scfg->lowmemory) {
-		DBG(2,2,fprintf(STDDBG,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
+		D_PRINT(2, "Hash table caching is disabled.\n"); //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict=NULL;
 	}
 
 
-	DBG(1,2,fprintf(STDDBG,"Segments w%s be dumped just after the segments rule\n", scfg->imm_segs?"ill":"on't");)
+	D_PRINT(1, "Segments w%s be dumped just after the segments rule\n", scfg->imm_segs?"ill":"on't");
 	if (scfg->imm_segs) {
 		static segment d[SEG_BUFF_SIZE];   //every item is 16 bytes long
 		
@@ -466,6 +521,7 @@ class r_prosody: public hashing_rule
 
 r_prosody::r_prosody(char *param) : hashing_rule(param)
 {
+	negated *= 2;
 }
 
 /************************************************
@@ -476,11 +532,11 @@ void
 r_prosody::apply(unit *root)
 {
 	if (!dict) load_hash();
-	DBG(1,1,fprintf(STDDBG,"entering rules::sseg()\n");)
+	D_PRINT(1, "entering rules::sseg()\n");
 //	root->sseg(target, dict);
 	shriek(862, "no sseg");
 	if (scfg->lowmemory) {
-		DBG(2,2,fprintf(STDDBG,"Hash table caching is disabled.\n");) //hashtabscache[rulist[i].param]->debug();
+		D_PRINT(2, "Hash table caching is disabled.\n"); //hashtabscache[rulist[i].param]->debug();
 		delete dict;
 		dict = NULL;
 	}
@@ -611,7 +667,7 @@ void
 r_smooth::apply(unit *root)
 {
 	
-	DBG(1,1,fprintf(STDDBG,"entering rules::smooth()\n");)
+	D_PRINT(1, "entering rules::smooth()\n");
 	root->project(target);
 	root->smooth(target, list, n, l, quantity);
 }
@@ -672,14 +728,14 @@ r_regress::r_regress(char *param) : rule(param)
 	*tmp++ = 0;
 	if (*tmp) shriek(811, fmt("%s Strange appendix to param", debug_tag()));
 	
-	DBG(0,4,fprintf(STDDBG,"Parsed assim param \"%s>%s(%s_%s)\"\n",aff,eff,left,right);)
+	D_PRINT(0, "Parsed assim param \"%s>%s(%s_%s)\"\n",aff,eff,left,right);
 
 	if (strlen(aff) != strlen(eff) && strlen(eff) != 1)
 		shriek(811, fmt("%s Bad param", debug_tag()));
 	fn = new charxlat(aff,eff,true); ltab = new charclass(left); rtab = new charclass(right);
 	free(aff);
 	
-	backwards=true;
+	backwards = true;
 }
 
 r_regress::~r_regress()
@@ -739,9 +795,9 @@ r_syll::r_syll(char *param) : rule(param)
 	for (tmp = param; *tmp && lv; tmp++) {
 		if (*tmp==LESS_THAN) lv++;
 		else son[(unsigned char)(*tmp)]=lv;
-		DBG(0,1,fprintf(STDDBG,"Giving to %c sonority %d\n", *tmp, lv);)
+		D_PRINT(0, "Giving to %c sonority %d\n", *tmp, lv);
 	}
-	DBG(0,1,fprintf(STDDBG,"rules::parse_syll going to call syllabify()\n");)
+	D_PRINT(0, "rules::parse_syll going to call syllabify()\n");
 }
 
 r_syll::~r_syll()
@@ -856,7 +912,7 @@ r_regex::r_regex(char *param) : rule(param)
 	param = strdup(scratch);
 
 	matchbuff = (regmatch_t *)xmalloc((parens+2)*sizeof(regmatch_t));
-	DBG(0,1,fprintf(STDDBG, "Compiling regex %s\n", param);)
+	D_PRINT(0, "Compiling regex %s\n", param);
 	result = regcomp(&regex, param, 0);
 	switch (result) {
 		case 0: break;
@@ -890,7 +946,7 @@ r_regex::r_regex(char *param) : rule(param)
 	if (tmp[1]) shriek(811, fmt("%s garbage follows replacement", debug_tag()));
 	*tmp=0;
 	repl=strdup(repl);
-	DBG(0,1,fprintf(STDDBG,"%s Regex is okay\n", debug_tag());)
+	D_PRINT(0, "%s Regex is okay\n", debug_tag());
 }
 
 #undef rshr
@@ -917,10 +973,14 @@ r_regex::apply(unit *root)
  **	  is applied
  ************************************************/
 
+//typedef UINT (CALLBACK* TSR_EVAL)(unit*);
+
+typedef int (*TSR_EVAL)(unit*);
 
 class r_debug: public rule
 {
 	virtual OPCODE code() {return OP_DEBUG;};
+	TSR_EVAL tsr_eval;
    public:
 		r_debug(char *param);
 	virtual void apply(unit *root);
@@ -933,11 +993,25 @@ r_debug::r_debug(char *param) : rule(param)
 void
 r_debug::apply(unit *root)
 {
+	if(strstr(raw,"tsrtool")) {
+#ifdef HAVE_MMSYSTEM_H		// The TSR debuging tool is up to now available only in the M$WIN port of the epos
+		HINSTANCE hDLL = LoadLibrary("tsrtool.dll");
+		if (hDLL != NULL)
+		{
+			tsr_eval = (TSR_EVAL)GetProcAddress(hDLL,"_tsr_eval");
+			if (!tsr_eval) shriek(445, "cannot get 'tsr_eval' function from tsrtool.dll");
+			//root->fout(NULL);
+			//printf("tsr_eval...\n");
+			tsr_eval(root);
+		}
+#endif
+	}
 	if(strstr(raw,"elem")) root->fout(NULL);
 //	if(strstr(raw,"rules")) ruleset->debug();
 //	else if(strstr(raw,"rule") && ruleset->current_rule+1 < ruleset->n_rules)
 //		ruleset->rulist[ruleset->current_rule+1]->debug();
 	if(strstr(raw,"pause")) user_pause();
+//	if(strstr(raw,"dumpunit")) root->filedump ((char*) cfg->dumpfilename);
 }
 
 /************************************************
@@ -1062,6 +1136,7 @@ class r_with: public cond_rule
 {
 	virtual OPCODE code() {return OP_WITH;};
 	hash *dict;
+	bool negated;
    public:
 		r_with(char *param, text *file, hash *vars);
 		~r_with();
@@ -1071,6 +1146,9 @@ class r_with: public cond_rule
 r_with::r_with(char *param, text *file, hash *vars) : cond_rule(param, file, vars)
 {
 	char *old = raw;
+
+	negated = false;
+	if (*raw == '!') raw++, negated = true;
 
 	if (*raw == DQUOT) raw = strdup(raw);
 	else raw = compose_pathname(raw, this_lang->hash_dir, scfg->lang_base_dir);
@@ -1094,7 +1172,7 @@ r_with::apply(unit *root)
 	}
 	if (!dict) shriek(811, fmt("%s Unterminated argument", debug_tag()));	// or out of memory
 
-	if (root->subst(dict, M_ONCE)) then->apply(root);
+	if (root->subst(dict, M_ONCE) ^ negated) then->apply(root);
 }
 
 
@@ -1118,7 +1196,7 @@ class r_if: public cond_rule
 
 r_if::r_if(char *param, text *file, hash *vars) : cond_rule(param, file, vars)
 {
-	option *o = option_struct(raw + (*raw == EXCLAM) , this_lang->soft_options);
+	epos_option *o = option_struct(raw + (*raw == EXCLAM) , this_lang->soft_options);
 	if (!o) shriek(811, fmt("%s Not an option: %s", debug_tag(), raw));
 	if (o->opttype != O_BOOL) shriek(811, fmt("%s Not a truth value option: %s", debug_tag(), raw));
 	if (o->structype != OS_VOICE) shriek(811, fmt("%s Not a voice option: %s", debug_tag(), raw));
@@ -1155,6 +1233,44 @@ class r_nothing: public rule
 	r_nothing() : rule(NULL) {};
 	virtual void apply(unit *) {};
 };
+
+
+/************************************************
+ r_neural  Neuralnet created by Jakub Adamek
+ 	    look at neural.cc, neural.h, unit.cc
+ **	 
+ ************************************************/
+
+#include "nnet/neural.h"
+
+class r_neural: public rule
+{
+protected:
+	virtual OPCODE code() {return OP_NNET;};
+	CNeuralNet *neuralnet;
+public:
+	r_neural (char *param, hash *vars);
+	virtual ~r_neural ();
+	virtual void apply(unit *root);
+};
+
+void
+r_neural::apply (unit *root)
+{
+	neuralnet->init();
+	root->neural (target, neuralnet);
+}
+
+r_neural::r_neural(char *param, hash *vars) : rule(param)
+{
+	raw = strdup(param);
+	neuralnet = new CNeuralNet (raw, vars);
+}
+
+r_neural::~r_neural ()
+{
+	if (neuralnet) delete neuralnet;
+}
 
 #include "block.cc"
 

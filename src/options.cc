@@ -115,9 +115,9 @@ void cow_claim()
 	cfg->cow++;
 }
 
-void cow_unstring(cowabilium *p, option *opts)
+void cow_unstring(cowabilium *p, epos_option *opts)
 {
-	for (option *o = opts; o->optname; o++) {
+	for (epos_option *o = opts; o->optname; o++) {
 		if (o->opttype != O_STRING || o->per_level) continue;
 		char **to_free = (char **)((char *)p + o->offset);
 		if (*to_free && (*(char **)((char *)p->parent + o->offset) != *to_free
@@ -137,7 +137,7 @@ static void cow_unsynth(voice *v)
 	if (v->sl != par->sl) free(v->sl);
 }
 
-static inline void cow_free(cowabilium *p, option *opts, void *extra)
+static inline void cow_free(cowabilium *p, epos_option *opts, void *extra)
 {
 	cow_unstring(p, opts);
 	if (opts == voiceoptlist) cow_unsynth((voice *)p);
@@ -145,7 +145,7 @@ static inline void cow_free(cowabilium *p, option *opts, void *extra)
 	if (extra) free(extra);
 }
 
-extern option optlist[];
+extern epos_option optlist[];
 
 void cow_unclaim(configuration *that_cfg)
 {
@@ -195,7 +195,7 @@ configuration::~configuration()
 // configuration master_cfg;
 
 #define CONFIG_DESCRIBE
-option optlist[]={
+epos_option optlist[]={
         #include "options.lst"
 
 	{"C:language" + 2, O_LANG, OS_CFG, A_PUBLIC, A_PUBLIC, false, false, 0},
@@ -223,7 +223,7 @@ inline static_configuration::static_configuration()
 #define TWENTY_EXTRA_OPTIONS	EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO EO 
 
 #define CONFIG_STATIC_DESCRIBE
-option staticoptlist[]={
+epos_option staticoptlist[]={
 	#include "options.lst"
 	{"", O_INT, OS_STATIC, A_PUBLIC, A_PUBLIC, false, false, -3},
 	TWENTY_EXTRA_OPTIONS
@@ -236,7 +236,7 @@ option staticoptlist[]={
 #undef TWENTY_EXTRA_OPTIONS
 
 
-hash_table<char, option> *option_set = NULL;
+hash_table<char, epos_option> *option_set = NULL;
 
 void configuration::shutdown()
 {
@@ -258,7 +258,7 @@ void configuration::shutdown()
  *	respectively), eating up minimum memory space only.
  */
 
-inline void put_into_option_set(option *o)
+inline void put_into_option_set(epos_option *o)
 {
 	if (*o->optname) {
 		option_set->add(o->optname, o);
@@ -268,11 +268,11 @@ inline void put_into_option_set(option *o)
 
 void make_option_set()
 {
-	option *o;
+	epos_option *o;
 
 	if (option_set) return;
 
-	option_set = new hash_table<char, option>(300);
+	option_set = new hash_table<char, epos_option>(300);
 	option_set->dupkey = option_set->dupdata = 0;
 
 	for (o = staticoptlist; o->optname; o++)put_into_option_set(o);
@@ -286,7 +286,7 @@ void make_option_set()
 
 void restrict_options()
 {
-	option *o;
+	epos_option *o;
 
 	text *t = new text(scfg->restr_file, scfg->ini_dir, "", NULL, true);
 	if (!t->exists()) {
@@ -319,9 +319,9 @@ void restrict_options()
 	delete t;
 }
 
-static void free_all_options(option *optlist, cowabilium *whence)
+static void free_all_options(epos_option *optlist, cowabilium *whence)
 {
-	option *o;
+	epos_option *o;
 	for (o = optlist; o->offset != -2; o++) ;
 	for ( ; o->offset != -3; o--) ;
 	for ( o++; o->offset != -2; o++) {
@@ -333,7 +333,7 @@ static void free_all_options(option *optlist, cowabilium *whence)
 			}
 		}
 		if (o->optname) {
-			DBG(1,10,fprintf(STDDBG, "Freeing an extra option %s\n", o->optname - 2);)
+			D_PRINT(1, "Freeing an extra option %s\n", o->optname - 2);
 			option_set->remove(o->optname);
 			option_set->remove(o->optname - 2);
 			free((char *)o->optname - 2);
@@ -351,11 +351,11 @@ void free_all_options()
 	free_all_options(staticoptlist, (cowabilium *)scfg);
 }
 
-option *alloc_option(option *optlist, OPT_STRUCT os)
+epos_option *alloc_option(epos_option *optlist, OPT_STRUCT os)
 {
-	DBG(1,10,int j = 0; option *p; for (p = optlist; p->offset != -2; p++) if (p->offset == -1) j++; fprintf(STDDBG, "Allocating an extra option, level %d out of %d free options\n", os, j);)
+	DBG(1, int j = 0; epos_option *p; for (p = optlist; p->offset != -2; p++) if (p->offset == -1) j++; fprintf(STDDBG, "Allocating an extra option, level %d out of %d free options\n", os, j);)
 
-	option *o;
+	epos_option *o;
 	for (o = optlist; ; o++) {
 		if (o->offset == -1) return o;
 		if (o->offset == -2) shriek(864, "No more options to allocate, add extra options");
@@ -365,14 +365,14 @@ option *alloc_option(option *optlist, OPT_STRUCT os)
 
 #define MAX_TOTAL_OPTION_NAME 64
 
-void alloc_level_options(option *optlist, OPT_STRUCT os, void *base, int levnum, const char *levname)
+void alloc_level_options(epos_option *optlist, OPT_STRUCT os, void *base, int levnum, const char *levname)
 {
 	char b[MAX_TOTAL_OPTION_NAME];
 
-	option *o;
+	epos_option *o;
 	for (o=optlist; o->optname; o++) {
 		if (o->per_level) {
-			option *p = alloc_option(optlist, os);
+			epos_option *p = alloc_option(optlist, os);
 			b[0] = OPT_STRUCT_PREFIX[os];
 			b[1] = ':';
 			strcpy(b+2, o->optname);
@@ -491,7 +491,7 @@ static inline const char *pre_init_f(const char *value)
  *		options it doesn't handle specially.
  */
 
-const char *invoke_set_action(option *o, const char *value)
+const char *invoke_set_action(epos_option *o, const char *value)
 {
 	const char *on = strchr(o->optname, ':') ? strchr(o->optname, ':') + 1 : o->optname;
 	if (!strcmp(on, "base_dir")) {
@@ -521,9 +521,9 @@ const char *invoke_set_action(option *o, const char *value)
 	return value;
 }
 
-option *option_struct(const char *name, hash_table<char, option> *softopts)
+epos_option *option_struct(const char *name, hash_table<char, epos_option> *softopts)
 {
-	option *o;
+	epos_option *o;
 
 	if (!option_set) shriek(862, "no config_init()");
 	if (!name || !*name) return NULL;
@@ -543,16 +543,16 @@ void parse_cfg_str(char *val)
 	bool tmp;
 	
 	tmp=0;
-	if (*val == DQUOT && *(brutto = val+strlen(val)-1) == DQUOT && brutto[-1] != ESCAPE) 
+	if (*val == DQUOT && *(brutto = val + strlen(val)-1) == DQUOT && brutto[-1] != ESCAPE) 
 		tmp = 1, *brutto = 0;       //If enclosed in double quotes, kill'em.
-	for (netto=val, brutto=val+tmp; *brutto; brutto++, netto++) {
+	for (netto=val, brutto = val + tmp; *brutto; brutto++, netto++) {
 		*netto = *brutto;
 		if (*brutto == ESCAPE) *netto = esctab->xlat(*++brutto);
 	}				//resolve escape sequences
 	*netto = 0;
 }
 
-template<class T> inline void set_enum_option(option *o, const char *val, char *list, char *locus)
+template<class T> inline void set_enum_option(epos_option *o, const char *val, const char *list, char *locus)
 {
 	parse_cfg_str(const_cast<char *>(val));
 	T tmp = (T)str2enum(val, list, U_ILL);
@@ -561,7 +561,7 @@ template<class T> inline void set_enum_option(option *o, const char *val, char *
 	*(T *)locus = tmp;
 }
 
-bool set_option(option *o, const char *val, void *base)
+bool set_option(epos_option *o, const char *val, void *base)
 {
 	int tmp;
 	if (!o) return false;
@@ -573,41 +573,37 @@ bool set_option(option *o, const char *val, void *base)
 			if (cfg->paranoid && (!val || tmp == U_ILL)) 
 				shriek(447, fmt("%s is used as a boolean value for %s", val, o->optname));
 			*(bool *)locus = tmp & 1;
-			DBG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to %s\n",
-				o->optname,enum2str(*(bool*)locus, BOOLstr));)
-			break;
-		case O_DBG_AREA:
-			*(_DEBUG_AREA_ *)locus=(_DEBUG_AREA_)str2enum(val, DEBUG_AREAstr,-1);
-			DBG(1,10,fprintf(STDDBG,"Debug focus set to %i\n",*(int*)locus);)
+			D_PRINT(1, "Configuration option \"%s\" set to %s\n",
+				o->optname,enum2str(*(bool*)locus, BOOLstr));
 			break;
 		case O_MARKUP:
 			set_enum_option<OUT_ML>(o, val, OUT_MLstr, locus);
-			DBG(1,10,fprintf(STDDBG,"Markup language option set to %i\n",*(int*)locus);)
+			D_PRINT(1, "Markup language option set to %i\n",*(int*)locus);
 			break;
 		case O_SYNTH:
 			set_enum_option<SYNTH_TYPE>(o, val, STstr, locus);
-			DBG(1,10,fprintf(STDDBG,"Synthesis type option set to %i\n",*(int*)locus);)
+			D_PRINT(1, "Synthesis type option set to %i\n",*(int*)locus);
 			break;
 		case O_CHANNEL:
-			set_enum_option<SYNTH_TYPE>(o, val, STstr, locus);
-			DBG(1,10,fprintf(STDDBG,"Channel type option set to %i\n",*(int*)locus);)
+			set_enum_option<CHANNEL_TYPE>(o, val, CHANNEL_TYPEstr, locus);
+			D_PRINT(1, "Channel type option set to %i\n",*(int*)locus);
 			break;
 		case O_UNIT:
 //			if((*(UNIT *)locus=str2enum(val, scfg->unit_levels, U_ILL))==U_ILL) 
 //				shriek(447, fmt("Can't set %s to %s", o->optname, val));
-			set_enum_option<SYNTH_TYPE>(o, val, STstr, locus);
-			DBG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to %d\n",o->optname,*(int *)locus);)
+			set_enum_option<UNIT>(o, val, scfg->unit_levels, locus);
+			D_PRINT(1, "Configuration option \"%s\" set to %d\n",o->optname,*(int *)locus);
 			break;
 		case O_INT:
 //			*(int *)locus=0;
 			int v;
 			if (!sscanf(val,"%d",&v)) shriek(447, "Unrecognized numeric parameter");
 			*(int *)locus = v;
-			DBG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to %d\n",o->optname,*(int *)locus);)
+			D_PRINT(1, "Configuration option \"%s\" set to %d\n",o->optname,*(int *)locus);
 			break;
 		case O_STRING: 
 			if (val[0]) parse_cfg_str(const_cast<char *>(val));
-			DBG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to \"%s\"\n",o->optname,val);)
+			D_PRINT(1, "Configuration option \"%s\" set to \"%s\"\n",o->optname,val);
 			if (*(char **)locus) free(*(char**)locus);
 			*(char**)locus = strdup(val);	// FIXME: should be forever if monolith etc. (maybe)
 			break;
@@ -616,7 +612,7 @@ bool set_option(option *o, const char *val, void *base)
 			parse_cfg_str(const_cast<char *>(val));
 			if (val[1]) shriek(447, fmt("Multiple chars given for a CHAR option %s", o->optname));
 			else *(char *)locus=*val;
-//			DBG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to \"%s\"\n",o->optname,val);)
+//			D_PRINT(1, "Configuration option \"%s\" set to \"%s\"\n",o->optname,val);
 			break;
 		case O_LANG:
 			if (!lang_switch(val)) shriek(443, "unknown language");
@@ -629,7 +625,7 @@ bool set_option(option *o, const char *val, void *base)
 			if ((tmp = load_charset(val)) == CHARSET_NOT_AVAILABLE)
 				shriek(447, fmt("Unknown charset %s", val));
 			*(int *)locus = tmp;
-			DBG(1,10,fprintf(STDDBG,"Charset set to %i\n",*(int*)locus);)
+			D_PRINT(1, "Charset set to %i\n",*(int*)locus);
 			break;
 		default: shriek(462, fmt("Bad option type %d", (int)o->opttype));
 	}
@@ -652,7 +648,7 @@ bool set_option(option *o, const char *val, void *base)
 #define  VOICES_OFFSET  ((int)&((lang *)NULL)->voices)
 #define  VOICES_LENGTH  (this_lang->n_voices * sizeof(void *))
 
-bool set_option(option *o, const char *value)
+bool set_option(epos_option *o, const char *value)
 {
 	if (!o) return false;
 	switch(o->structype) {
@@ -684,7 +680,7 @@ static inline bool set_option(char *name, const char *value)
 
 static inline void set_option_or_die(char *name, const char *value)
 {
-	option *o = option_struct(name, NULL);
+	epos_option *o = option_struct(name, NULL);
 	if (!o) shriek(814, fmt("Unknown option %s", name));
 	if (!cfg->langs && (o->structype == OS_LANG || o->structype == OS_VOICE || o->opttype == O_LANG))
 		return;
@@ -697,7 +693,7 @@ static inline void set_option_or_die(char *name, const char *value)
  *	For the following one, make sure that base is the correct type
  */
 
-static inline bool set_option(char *name, char *value, void *base, hash_table<char, option> *softopts)
+static inline bool set_option(char *name, char *value, void *base, hash_table<char, epos_option> *softopts)
 {
 	return set_option(option_struct(name, softopts), value, base);
 }
@@ -726,14 +722,12 @@ bool voice_switch(const char *value)
 	return false;
 }
 
-const char *format_option(option *o, void *base)
+const char *format_option(epos_option *o, void *base)
 {
 	char *locus = (char *)base + o->offset;
 	switch(o->opttype) {
 		case O_BOOL:
 			return *(bool *)locus ? "on" : "off";
-		case O_DBG_AREA:
-			return enum2str(*(int *)locus, DEBUG_AREAstr);
 		case O_MARKUP:
 			return enum2str(*(int *)locus, OUT_MLstr);
 		case O_SYNTH:
@@ -760,7 +754,7 @@ const char *format_option(option *o, void *base)
 	return NULL; /* unreachable */
 }
 
-const char *format_option(option *o)
+const char *format_option(epos_option *o)
 {
 	switch(o->structype) {
 		case OS_STATIC:return format_option(o, scfg);
@@ -774,7 +768,7 @@ const char *format_option(option *o)
 
 const char *format_option(const char *name)
 {
-	option *o = option_struct(name, this_lang->soft_options);
+	epos_option *o = option_struct(name, this_lang->soft_options);
 	if (!o) {
 		shriek(442, fmt("Nonexistent option %s", name));
 		return NULL; /* unreachable */
@@ -847,7 +841,20 @@ void parse_cmd_line()
 				case 2:
 				case 3:
 				case 4:
-					if (scfg->always_dbg > 4 - dees) scfg->always_dbg = 4 - dees;
+					if (scfg->debug_level > 4 - dees) scfg->debug_level = 4 - dees;
+					break;
+				default:
+					if (scfg->warnings) shriek(814, "Too many dees");
+					else break;
+			}
+			switch (dees) {
+				case 0:
+					break;
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+					if (scfg->debug_level > 4 - dees) scfg->debug_level = 4 - dees;
 					break;
 				default:
 					if (scfg->warnings) shriek(814, "Too many dees");
@@ -878,7 +885,7 @@ void load_config(const char *filename, const char *dirname, const char *what,
 	int i;
 
 	if (!filename || !*filename) return;
-	DBG(3,10,fprintf(STDDBG,"Loading %s from %s\n", what, filename);)
+	D_PRINT(3, "Loading %s from %s\n", what, filename);
 	char *line = (char *)xmalloc(scfg->max_line + 2) + 2;
 	line[-2] = OPT_STRUCT_PREFIX[type];
 	line[-1] = ':';
@@ -891,10 +898,10 @@ void load_config(const char *filename, const char *dirname, const char *what,
 			if (value[i]) i++;
 			value[i] = 0;		// clumsy: strip off trailing whitespace
 		}
-		if (!set_option(line - 2, value, whither, parent_lang ? parent_lang->soft_options : (hash_table<char, option> *)NULL)) {
+		if (!set_option(line - 2, value, whither, parent_lang ? parent_lang->soft_options : (hash_table<char, epos_option> *)NULL)) {
 			if (whither == cfg) {		// ...try also static_cfg
 				line[-2] = OPT_STRUCT_PREFIX[OS_STATIC];
-				if (!set_option(line - 2, value, scfg, (hash_table<char, option> *)NULL))
+				if (!set_option(line - 2, value, scfg, (hash_table<char, epos_option> *)NULL))
 					shriek(812, fmt("Bad option %s in %s:%d", line, t->current_file, t->current_line));
 				line[-2] = OPT_STRUCT_PREFIX[OS_CFG];
 			}
@@ -914,7 +921,7 @@ static inline void add_language(const char *lng_name)
 	char *filename = (char *)xmalloc(strlen(lng_name) + 6);
 	char *dirname = (char *)xmalloc(strlen(lng_name) + 6);
 
-	DBG(3,10, fprintf(STDDBG, "Adding language %s\n", lng_name);)
+	D_PRINT(3, "Adding language %s\n", lng_name);
 	sprintf(filename, "%s.ini", lng_name);
 	sprintf(dirname, "%s%c%s", scfg->lang_base_dir, SLASH, lng_name);
 	if (*lng_name) {
@@ -993,8 +1000,8 @@ void check_cfg_version(const char *filename)
 	file *f = claim(filename, "", "", "r", NULL, NULL);
 	if (!f) shriek(843, "Configuration files not installed or very old");
 	if (strncmp(f->data, VERSION, strlen(VERSION)) && cfg->paranoid) {
-		DBG(3,10,fprintf(STDDBG, "Expected version %s, found version %s\n",
-			VERSION, f->data);)
+		D_PRINT(3, "Expected version %s, found version %s\n",
+			VERSION, f->data);
 		shriek(843, "Configuration version bad");
 	}
 	unclaim(f);
@@ -1011,8 +1018,8 @@ void config_init()
 //		restrict_options(); 
 	parse_cmd_line();
 	restrict_options();
-	DBG(3,10,fprintf(STDDBG,"Base directory is %s\n", scfg->base_dir);)
-	DBG(2,10,fprintf(STDDBG,"Using configuration file %s\n", scfg->inifile);)
+	D_PRINT(3, "Base directory is %s\n", scfg->base_dir);
+	D_PRINT(2, "Using configuration file %s\n", scfg->inifile);
 
 	load_config(scfg->fixedfile);
 	parse_cmd_line();

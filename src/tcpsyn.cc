@@ -175,7 +175,7 @@ tcpsyn::tcpsyn(voice *v)
 	
 	cd = tcpsyn_connect_socket(a, port);
 	dd = tcpsyn_connect_socket(a, port);
-	DBG(1,9,fprintf(STDDBG, "tcpsyn uses port %d ctrl fd %d data fd %d\n", port, cd, dd);)
+	D_PRINT(1, "tcpsyn uses port %d ctrl fd %d data fd %d\n", port, cd, dd);
 
 	char *ctrl_handle = get_handle(cd);
 	sputs("data ", dd);
@@ -197,7 +197,7 @@ tcpsyn::tcpsyn(voice *v)
 	if (voicename)
 		tcpsyn_send_cmd(cd, "setl voice", voicename);
 	free(remote_server);
-	DBG(1,9,fprintf(STDDBG, "tcpsyn initialised\n");)
+	D_PRINT(1, "tcpsyn initialised\n");
 }
 
 tcpsyn::~tcpsyn()
@@ -211,8 +211,8 @@ tcpsyn::~tcpsyn()
 	if (err) shriek(475, fmt("Remote returned %d for delh", err));
 	err = sync_finish_command(cd);
 	if (err) shriek(475, fmt("Remote returned %d for done", err));
-	async_close(cd);
-	async_close(dd);
+	close_and_invalidate(cd);
+	close_and_invalidate(dd);
 	free(handle);
 }
 

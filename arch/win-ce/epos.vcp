@@ -1262,6 +1262,21 @@ SOURCE=.\STDLIB.CPP
 # End Source File
 # Begin Source File
 
+SOURCE=.\STDLIB.CPP
+
+!IF  "$(CFG)" == "epos - Win32 (WCE ARM) Release"
+
+!ELSEIF  "$(CFG)" == "epos - Win32 (WCE ARM) Debug"
+
+!ELSEIF  "$(CFG)" == "epos - Win32 (WCE x86em) Release"
+
+!ELSEIF  "$(CFG)" == "epos - Win32 (WCE x86em) Debug"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=synth.cpp
 
 !IF  "$(CFG)" == "epos - Win32 (WCE ARM) Release"

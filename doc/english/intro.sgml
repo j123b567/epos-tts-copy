@@ -40,10 +40,20 @@ using a custom, quite generic protocol for TTS data flow control,
 called TTSCP.  A simple TTSCP client utility named <tt/say/ has been provided
 with Epos, but there are many more specialized TTSCP clients in existence.
 
-Epos currently supports three main speech generation algorithms.  Two ones
+Epos currently supports several main speech generation algorithms.  Two older ones
 employ segment concatenation in the time domain; these have been contributed by
 Zdenek Kadlec, Masaryk University, Brno, and Martin Petriska, Slovak Technical
 University, Bratislava, respectively.  These algorithms, including low quality
+segment inventories, are available as part of Epos subject to GPL, as well
+as a linear prediction coding speech synthesizer written by Ellen V&iacute;chov&aacute;.
+Some additional synthesizers not under GPL are used with Epos; you can at
+least use the virtual speech synthesis to synthesize your own texts using
+some of them, if you are connected to the Internet. (Your text is partly
+processed and sent to our server.  Then the generated speech signal is sent
+back to you.)  The last option is to use the semi-free MBROLA speech
+synthesizer, though the MBROLA synthesizer itself is not a part of Epos.
+We are constantly working on improving the synthesizers.
+
 segment inventories, are available as part of Epos subject to GPL.  The third one
 is a linear prediction coding speech synthesis originally written by Ellen
 V&iacute;chov&aacute and rewritten from scratch for Epos.  Some of available

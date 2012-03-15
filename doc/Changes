@@ -1145,3 +1145,74 @@ for an exciting story, just skip it.
 2.5.5 from 2.5.4	15.4.03
 	- SAMPA translation
 	- fixes related to the prosody (mostly to unit::t)
+
+2.5.6 from 2.5.5	29.5.03
+	- incorporated a 2.4.66 to 2.4.81 patch
+		- added tdpsyn.cc, .h
+		- incl. 2.4.66 to 2.4.67 patch (mostly related to tdpsyn and
+			adjustments in Czech and Slovak language configuration)
+		- tdpsyn rewritten
+		- added tdpsyn to arch/win/configure.bat, arch/win/epos.dsp
+		- tdpsyn now handles missing diphones based on paranoid the obvious way
+		- added mappings/README
+		- added r-violka and r-machac voices
+		- (Sk) removed |'s before diphonization
+		- (Sk) fixed the v>w rule
+		- (Cz + Sk) fixed the capitalization just after a non-letter spelling bug
+		- (Cz + Sk) (v zátvorke) "v uvodzovkách" (punctuation rendering for short texts)
+		- (Cz + Sk) fixes for URL spelling rules
+		- tdpsyn.cc now uses memset and memcpy properly instead of initialization loops
+		- added tcpsyn.max_frame; made the out_buffer size fit the segment inventory
+		- faster waveform->sample(SAMPLE *, int) used by tdpsyn
+		- (Cz + Sk) Roman numerals
+		- say first transcribes, then speaks
+		- (Sk) fixed voicing loss in voiced-final + personal pronoun
+		- function.cc, .h, encoding.cc, .h added to arch/win project files
+		- (Sk) fixed "tretiemu", ")]}", and many spellout forms
+		- various minor code fixes
+		- tdpsyn bug (OLA frames omitted) fixed
+		- say now attempts to connect to a public TTSCP server if needed
+		- (Cz + Sk) Roman numerals rules made more robust
+		- a marginal URL spelling fix (word-initial l,r)
+		- (Cz + Sk) workaround rule for noisy pause diphones
+		- (Cz) ucircle spellout bug fixed
+		- cosmetic header and source file fixes, libeposaif
+		- joined Petr's diffs from 2.4.73:
+			- linear predictive prosody modelling (tdpsyn)
+			- TSR debugging tool support (Win only)
+			- 1/3 and 1/4 downsampling band-pass filters
+			- tdpsyn prosody modelling fix
+		- fixed triphone files (betty.dph and violka.tdi)
+		- fixed lpc prosody
+		- added additive_cont option (needed with lpc prosody model)
+		- gauge prototype
+		- client.cc: sputs replacement callbacks
+		- nonblock.cc - handles control connection congestion
+		- split sleep_table to block_table and push_table
+		- minor scheduler and client code fixes
+		- added 2.4.77 fixes
+		- some LP prosody fixes
+		- fixed d.f parameter, it's really F0 now!
+		- (Win32) fixed missing 2x socky @ client.h
+		- (Win32) fixed missing nonblock.cpp @ configure.bat & epos.dsw
+		- odd sized translated data bug fixed
+		- max AVL tree depth for dictionary-oriented rules increased
+		- added many cross-references, examples and etc. to rules.sgml
+		- (Cz) "pøes" voicing assimilation behavior fixed
+		- negated dictionaries (r_prep, r_postp, r_with), M_NEGATED
+	- minor patch related fixes (spelling, spacing etc.)
+
+2.5.7 from 2.5.6	2.6.03
+	- incorporated a 2.4.81 to 2.4.Daniel patch (see applied-diff-81-to-Daniel)
+		most changes by Daniel Sobe and Jakub Adamek
+		- experimental German configuration (BOMP interface unfinished)
+		- neural net prosody modeling
+		- F0 smoothing
+		- pros_factor option
+		- F0 labeling
+		- r_mysubst
+		- (Win32) minor fixes
+		- struct option -> epos_option
+
+2.5.8 from 2.5.7	4.6.03
+	- changed DBG's to D_PRINTs
