@@ -2,7 +2,7 @@
 dnl Process this file with autoconf to produce a configure script
 
 AC_INIT(src/unit.cc)
-AM_INIT_AUTOMAKE(epos, 2.5.24)
+AM_INIT_AUTOMAKE(epos, 2.5.25)
 AC_PREFIX_DEFAULT(/usr)
 
 CCC="g++ c++ cc++ gcc cc"
@@ -92,6 +92,7 @@ AC_CACHE_CHECK("for glibc regex error codes",
 	#endif
 	,
 	int result = REG_EEND;
+	int result2 = REG_ESIZE;
 	return 0;,
 	epos_cv_symb_regeend=yes,
 	epos_cv_symb_regeend=no)

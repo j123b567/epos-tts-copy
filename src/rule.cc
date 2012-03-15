@@ -323,10 +323,17 @@ static void compute_size(char *key, char *value, void *total)
 		+ 2 * begins_with_caret(key) + 2 * ends_with_dollar(key);
 }
 
-static void append_to_regex(char *key, char *value, void *str)
+struct buffie
 {
-	char *s = (char *)str;
-	int l = strlen(s);
+	char *buffer;
+	int offset;
+};
+
+static void append_to_regex(char *key, char *value, void *bp)
+{
+	buffie *b = (buffie *)bp;
+	char *s = b->buffer;
+	int l = b->offset;
 
 	if (begins_with_caret(key)) {
 		strcpy(s + l, "^\\");
@@ -340,23 +347,29 @@ static void append_to_regex(char *key, char *value, void *str)
 		l += 2;
 	}
 	strcpy(s + l, "\\|");
+	l += 2;
+	b->offset = l;
 }
 
 static regex_t *regex_from_hash(hash *h)
 {
 	int total = 3;	
 	h->forall(compute_size, &total);
-	char *b = (char *)xmalloc(total);
-	*b = 0;
-	h->forall(append_to_regex, b);
-	if (*b) b[strlen(b) - 2] = 0;
-	D_PRINT(1, "Fastmatch regex: %s\n", b);
+	char *buffer = (char *)xmalloc(total);
+	*buffer = 0;
+	buffie b;
+	b.buffer = buffer;
+	b.offset = 0;
+	h->forall(append_to_regex, &b);
+	if (b.offset > 2) b.buffer[b.offset - 2] = 0;
+	DO_PRINT(1, "Fastmatch regex: %s\n", b);
 	regex_t *r = (regex_t *)xmalloc(sizeof(regex_t));
-	if (regcomp(r, b, 0)) {
-		D_PRINT(3, "Failed to create a fastmatch from %.20s..., code=%d\n", b, regcomp(r, b, 0));
-		return 0;
+	int status = regcomp(r, b.buffer, 0);
+	if (status) {
+		D_PRINT(3, "Failed to create a fastmatch from %.20s..., code=%d\n", b.buffer, status);
+		r = 0;
 	}
-	free(b);
+	free(b.buffer);
 	return r;
 }
 
@@ -374,8 +387,12 @@ hashing_rule::load_hash()
 			scfg->hashes_full, 0, 200, 5, allow_id, false);
 	} else dict = literal_hash(raw);
 #ifdef WANT_REGEX
-	if (use_fastmatch)
+	if (use_fastmatch) {
 		fastmatch = regex_from_hash(dict);
+		if (!fastmatch) {
+			use_fastmatch = false;
+		}
+	}
 #endif
 	if (!dict) shriek(463, "%s Unterminated argument", debug_tag());	// or out of memory
 }
@@ -1073,10 +1090,12 @@ r_regex::r_regex(char *param) : rule(param)
 		case REG_BADPAT:
 #ifdef HAVE_REG_EEND
 		case REG_EEND:
-		case REG_ESIZE:
 #endif
 			rshr("too ugly");
 		case REG_ESPACE:
+#ifdef HAVE_REG_EEND		// EEND and ESIZE are glibc specific
+		case REG_ESIZE:
+#endif
 			rshr("too huge");
 		default: shriek(811, "%s Bad regex, regcomp returns %d", debug_tag(), result);
 	}
