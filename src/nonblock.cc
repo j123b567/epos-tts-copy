@@ -190,7 +190,11 @@ int async_sputs(socky int sd, const char *buffer, int len)
 		replier_table[sd]->write(buffer + result, len - result);
 		return len;
 	}
+#if defined(HAVE_WINSOCK_H) || defined(HAVE_WINSOCK2_H)
+        if (errno == EPIPE || errno == WSAECONNRESET) {
+#else
 	if (errno == EPIPE || errno == ECONNRESET) {
+#endif
 		return -1;
 	}
 	shriek(861, "sputs failed in an unknown way");

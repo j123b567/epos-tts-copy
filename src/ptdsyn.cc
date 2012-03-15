@@ -240,7 +240,7 @@ void ptdsyn::synseg(voice *v, segment d,wavefm *w)
  ta=new int[100];
  PSL=new sample_type[WAVEMAX];
  Fvz1=16000;// inventory sample rate
- fn=Fvz1/(double)d.f; 		// FIXME is it good ? fn  - frequency Fo [Hz]
+ fn=d.f; 		// FIXME is it good ? fn  - frequency Fo [Hz]
  ntime=(double)(dif[d.code].time*d.t)/100;// new time  [ms] (segment length)
  nperi=1000/fn;          //period of new signal [ms]
  nperiN=(int)(Fvz1/fn);

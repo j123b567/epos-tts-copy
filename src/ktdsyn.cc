@@ -81,7 +81,7 @@ void ktdsyn::synseg(voice *v, segment d, wavefm *w)
 	uind = d.code;
 	pocimp = U[d.code].imp;
 	delka = ((double) d.t / 100 * (double) U[d.code].delk * 40 / 10 + 0.5); // ugly as microsoft code
-	peri = (int) (v->samp_rate / (8000/(double) d.f) + 0.5);
+	peri = v->samp_rate /  d.f;
 	pocp = (int) (delka / peri);
 
 	if (pocp > 1) {                                              \

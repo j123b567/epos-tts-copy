@@ -188,9 +188,9 @@ void lpcsyn::synseg(voice *v, segment d, wavefm *w)	// voice not used
 		if(nvyrov < d.t / 2) {
 			if(!znely) m.lsyn=0, m.lsq=12288, m.nsyn=d.t-nvyrov;
 			else {
-				if(imodel==numodel-1) m.lsyn=d.f;
+				if(imodel==numodel-1) m.lsyn = v->samp_rate / d.f;
 				else {
-					zaklad = (d.f-lold) * 256 / numodel;
+					zaklad = (v->samp_rate / d.f - lold) * 256 / numodel;
 					m.lsyn = lold + zaklad*(imodel+1) / 256;
 				}
 				m.lsyn=m.lsyn+lincr;
@@ -204,13 +204,13 @@ void lpcsyn::synseg(voice *v, segment d, wavefm *w)	// voice not used
 		} else {
 			if(imodel!=numodel-1) m.nsyn=0, m.lsyn=0, m.lsq=12288;
 			else if(!znely) m.lsyn=0, m.lsq=12288, m.nsyn=minsynt;
-				else m.lsyn=d.f, m.lsq=lroot, m.nsyn=m.lsyn;
+				else m.lsyn = v->samp_rate / d.f, m.lsq=lroot, m.nsyn=m.lsyn;
 			nvyrov -= d.t;
 		}
 		DEBUG(1,9,fprintf(STDDBG, "Model %d\n", imodel+1);)
 		if(m.nsyn>=minsynt) synmod(m, w);  //proved syntezu modelu
 	}
-	lold = d.f;
+	lold = v->samp_rate / d.f;
 }//hlask_synt
 
 

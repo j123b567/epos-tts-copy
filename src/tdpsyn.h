@@ -3,7 +3,7 @@
  * 	(c) 2000-2002 Petr Horak, horak@petr.cz
  * 	(c) 2001-2002 Jirka Hanika, geo@cuni.cz
  *
- *	tdpsyn version 2.3 (19.3.2002)
+ *	tdpsyn version 2.5 (20.9.2002)
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

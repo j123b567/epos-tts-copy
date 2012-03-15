@@ -446,6 +446,7 @@ VOICE_OPTION (inv_out_rate, out_rate, "out_sampling_rate", INT, 0)	// 0 means eq
 	// positive value specifies the required output rate (samp_rate divided by an integer)
 //VOICE_OPTION (f0_model, f0_model, "f0_modelling", STR, "classic")	// F0 contour modelling (classic, lpc, fujisaki)
 VOICE_OPTION (lpcprosody, lpcprosody, "lpcprosody", BOOL, false)	// F0 contour modelling using a linear prediction
+VOICE_OPTION (additive_cont, additive_cont, "additive_cont", BOOL, false)  // rule "contour" additive mode
 
 OPTION (autofilter, "autofilter", BOOL, true)	// When downsampling, band filter as necessary
 

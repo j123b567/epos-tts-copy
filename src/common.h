@@ -27,7 +27,7 @@
 
 #define MAINTAINER  		"Jirka Hanika"
 #define MAIL        		"geo@cuni.cz"
-#define VERSION     		"2.4.78"
+#define VERSION     		"2.4.79"
 #define TTSCP_PORT		 8778
 
 #include "config.h"

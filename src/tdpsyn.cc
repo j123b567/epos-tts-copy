@@ -3,7 +3,7 @@
  * 	(c) 2000-2002 Petr Horak, horak@petr.cz
  * 	(c) 2001-2002 Jirka Hanika, geo@cuni.cz
  *
- *	tdpsyn version 2.3.3 (25.4.2002)
+ *	tdpsyn version 2.5.0 (20.9.2002)
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 #define LP_DECIM 10				/* F0 analysis decimation coeff. for linear prediction */
 #define LP_F0_ORD 4				/* order of F0 contour LP analysis */
 #define F0_FILT_ORD 9			/* F0 contour filter order */
-#define LP_EXC_MUL 1.33			/* LP excitation multipicator */
+#define LP_EXC_MUL 1.0			/* LP excitation multipicator */
 
 /* F0 contour filter coefficients */
 const double a[9] = {1,-6.46921563821389,18.43727805607084,-30.21344177474595,31.11962012720199,
@@ -188,11 +188,15 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 
 	/* lp prosody reconstruction filter excitation signal computing */
 	if (v->lpcprosody) { 	// in d.f is excitation signal value
-		exc = LP_EXC_MUL * (100 * v->samp_rate / d.f / v->init_f - 100);
+		if (d.e >= v->init_i * 9) {
+			for (i = 0; i < LPC_PROS_ORDER; lpfilt[i++] = 0);
+			d.e = (d.e * 100 / v->init_i - 1000) * v->init_i / 100;
+		}
+		exc = LP_EXC_MUL * (d.f - v->init_f);
 		pitch = lppitch;
 	}
-	else					// in d.f is f0 contour value
-	pitch = d.f;
+	else				// in d.f is f0 contour value
+	pitch = v->samp_rate / d.f;
 	slen = diph_len[d.code];
 	avpitch = average_pitch(diph_offs[d.code], slen);
 	maxwin = avpitch + MAX_STRETCH;

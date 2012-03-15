@@ -11,8 +11,8 @@ $nasal     = mnòN
 $NASAL     = MQÒW
 $sonant    = jlr$nasal
 $SONANT    = JLR$NASAL
-$short     = aeiouuyì
-$long      = áéíóúùıì
+$short     = aeiouuyìä
+$long      = áéíóúùıìöü
 $diphtong  = OAE
 $vowel     = $short$long$diphtong
 $VOWEL     = AEIOUUYÁÉÍÓÚÙİÌ
@@ -21,10 +21,15 @@ $everywhere= !_!
 $numbers   = 1234567890
 $sonority  = 0'<$voiceless$voiced$SONANT<$nasal<l<rj<$vowel   ;l<r viz "umrlec" etc. Ani systematické, ani bezpeèné.
 
-$lower_case = aábcèdïeéìfghiíjklmnòoópqrøs¹t»uúùvwxyız¾
-$upper_case = AÁBCÈDÏEÉÌFGHIÍJKLMNÒOÓPQRØS©T«UÚÙVWXYİZ®
+$lower_case = aáäbcèdïeéìfghiíjklmnòoóöpqrøs¹t»uúùüvwxyız¾
+$upper_case = AÁÄBCÈDÏEÉÌFGHIÍJKLMNÒOÓÖPQRØS©T«UÚÙÜVWXYİZ®
 $letter = ${lower_case}${upper_case}
 
+#  O¹etøení nìmeckıch pøehlásek
+
+ progress	ÄÖ>E(!_!)
+ progress	Ü>Y(!_!)
+ 
 #  \Z oznaèuje teèku oznaèující øadovou èíslovku.  Tu je nutno rozli¹it
 #  od teèky obyèejné, vìtu vydìlující, ne¾li se ztratí rozdíl mezi velkımi
 #  a malımi písmeny.  Následuje-li toti¾ za teèkou velké písmeno, posuzuje
@@ -41,6 +46,10 @@ $letter = ${lower_case}${upper_case}
 
 regex    /\\((.\{1,12\})\\)/v~závorce~\1/				colon
 regex    /"(.\{1,12\})"/v~uvozovkách~\1/					colon
+
+# rùzné zkratky
+
+subst   short.dic
 
 #  \d u¾ vydìlil parser, provizornì jako znak slovní úrovnì.  Úseky mezi
 #  vıskyty tohoto znaku (napø. teèka v URL) se hláskují, pokud neobsahují
@@ -68,10 +77,6 @@ near  *!\Wlr$vowel$VOWEL	word	phone
 regress  \W>0(!_!)
 regress  \X\Y>lr(0_!)
 
-# rùzné zkratky
-
-subst   short.dic
-
 # Pravidla pro ètení zkratek apod.: velké písmeno na jiném,
 #   ne¾ prvním místì ve slovì indikuje zkratku a hláskuje se.
 #   Stejnì tak jednotlivé písmeno pøed nebo za cifrou nebo
@@ -90,10 +95,12 @@ if	spellout
 subst	 abbrevs.dic							colon
 regress  ${upper_case}>${lower_case}($everywhere)			colon
 
-
 @include "numerals.rul"
 
  subst	   main.dic		   ;Rùzné vıjimky
+
+ progress	äö>e(!_!)
+ progress	ü>y(!_!)
 
  progress  ù>ú($everywhere)
 
@@ -116,7 +123,7 @@ regress  ${upper_case}>${lower_case}($everywhere)			colon
 
  progress  :>.($everywhere)	text	sent
  subst     wh.dic				; Doplòovací otázky
- raise     Q:_			colon	phone
+ raise     Q:_,			colon	phone
  progress  Q>_(!0_!)		sent	colon	;  jen v první klausi
  raise     Q:?			sent	colon
  progress  Q>0($everywhere)			;  úklid v¹ech úrovní

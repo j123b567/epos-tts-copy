@@ -48,9 +48,9 @@ synth *setup_synth(voice *v)
 void frob_segments(segment *d, int n, voice *v)
 {
 	for (int j=0;j<n;j++) {
-//		d[j].f=v->samp_rate * 100 / (d[j].f*cfg->inv_f0);  - fixed 8.7.98 by Petr
-		d[j].t=v->init_t * d[j].t / 100;            //corrections for t,f,i by Petr
-		d[j].f=v->samp_rate * 100 / (v->init_f * d[j].f);
+		d[j].t=v->init_t * d[j].t / 100;
+//		d[j].f=v->samp_rate * 100 / (v->init_f * d[j].f); //fixed 20.9.2002 by Petr
+		d[j].f=v->init_f * d[j].f / 100;
 		d[j].e=v->init_i * d[j].e / 100;
 	}
 }
@@ -124,8 +124,9 @@ synth::synsegs(voice *v, segment *d, int n, wavefm *w)
 //	}
 	for (int i=0; i<n; i++) {
 		x.code = d[i].code;
-		x.t = v->init_t * d[i].t / 100;            // fixed 8.7.98 by Petr
-		x.f = v->samp_rate * 100 / (v->init_f * d[i].f);
+		x.t = v->init_t * d[i].t / 100;            
+		//x.f = v->samp_rate * 100 / (v->init_f * d[i].f); // fixed 20.9.2002 by Petr
+		x.f = v->init_f * d[i].f / 100;
 		x.e = v->init_i * d[i].e / 100;
 		if (cfg->label_seg || cfg->label_phones) {
 			char tmp[4];

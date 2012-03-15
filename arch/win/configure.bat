@@ -15,6 +15,7 @@ move unit.cc unit.cpp
 if not exist hash.cpp move hash.cc hash.cpp
 move hashd.cc hashd.cpp
 move interf.cc interf.cpp
+move nonblock.cc nonblock.cpp
 move options.cc options.cpp
 move ktdsyn.cc ktdsyn.cpp
 move ptdsyn.cc ptdsyn.cpp

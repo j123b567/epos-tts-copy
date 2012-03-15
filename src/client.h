@@ -18,6 +18,13 @@
 #ifndef EPOS_CLIENT_H
 #define EPOS_CLIENT_H
 
+#if defined(HAVE_WINSOCK_H) || defined(HAVE_WINSOCK2_H)
+	#define HAVE_WINSOCK
+	#define socky unsigned
+#else
+	#define socky signed
+#endif
+
 /*
  *	The just_connect_socket() routine returns -1 if it cannot return a connected
  *	socket. The connect_socket() routine additionally checks if the remote side
@@ -194,7 +201,7 @@ int sync_finish_command(int ctrld);	// wait for the completion code
  *	the descriptor from the scheduler before closing it.
  */
  
-void close_and_invalidate(int sd);
+void close_and_invalidate(socky int sd);
 
 /*
  *	The sgets() and sputs() routines provide a slow get line and put line
@@ -204,7 +211,7 @@ void close_and_invalidate(int sd);
  *	which is what the server side does to make it non-blocking.
  */
  
-extern int (*sputs_replacement)(int sd, const char *, int);
+extern int (*sputs_replacement)(socky int sd, const char *, int);
 
 int sgets(char *buffer, int buffer_size, int sd);
 int sputs(const char *buffer, int sd);

@@ -1198,6 +1198,11 @@ for an exciting story, just skip it.
 		- 1/3 and 1/4 downsampling band-pass filters
 		- tdpsyn prosody modelling fix
 
+2.4.77 from 2.4.76	18.8.02
+        - fixed triphone files (betty.dph and violka.tdi)
+	- fixed lpc prosody
+        - added additive_cont option (needed with lpc prosody model)
+	    
 2.4.78 from 2.4.76	18.8.02
 	- gauge prototype
 	- client.cc: sputs replacement callbacks
@@ -1205,3 +1210,11 @@ for an exciting story, just skip it.
 	- split sleep_table to block_table and push_table
 	- minor scheduler and client code fixes
 
+2.4.79 from 2.4.78	20.9.02
+	- added 2.4.77 fixes
+	- some LP prosody fixes
+	- fixed d.f parameter, it's really F0 now!
+	- (Win32) fixed missing 2x socky @ client.h
+	- (Win32) fixed missing nonblock.cpp @ configure.bat & epos.dsw
+	
+	 

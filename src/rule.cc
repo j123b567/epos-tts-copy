@@ -16,11 +16,11 @@
  *
  */
 
+#include "common.h"
+
 #ifdef HAVE_WINDOWS_H
 	#include <windows.h>
 #endif
-
-#include "common.h"
 
 #define DIPH_BUFF_SIZE  1000 //unimportant
 
