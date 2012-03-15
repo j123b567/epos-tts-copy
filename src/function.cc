@@ -85,7 +85,8 @@ booltab<T>::~booltab()
 	free(t);
 }
 
-template booltab<char>;
+//chaloupka
+template class booltab<char>;
 
 
 
@@ -154,4 +155,5 @@ function<T>::~function()
 	free(t);
 }
 
-template function<char>;
+//chaloupka
+template class function<char>;

@@ -164,8 +164,8 @@ wavefm::wavefm(voice *v)
 	memcpy(hdr.string3,"data", 4);
 	hdr.datform = WAVE_FORMAT_PCM;
 	hdr.numchan = stereo ? 2 : 1;
-	hdr.sf1 = samp_rate; hdr.sf2 = stereo ? hdr.sf1 : 0;
-	hdr.avr1 = 2 * samp_rate; hdr.avr2 = stereo ? hdr.avr1 : 0;
+	hdr.sf1 = samp_rate; //OLD VERSION hdr.sf2 = stereo ? hdr.sf1 : 0;
+	hdr.avr1 = 2 * samp_rate; //OLD VERSION hdr.avr2 = stereo ? hdr.avr1 : 0;
 	hdr.alignment = sizeof(SAMPLE); hdr.samplesize = sizeof(SAMPLE) << 3;
 	hdr.fmt_length = 0x010;
 //	written_bytes = 0;
@@ -194,6 +194,9 @@ wavefm::wavefm(voice *v)
 
 	ophase = 0;
 	ooffset = 0;
+
+	//chaloupka
+	s = NULL;
 }
 
 wavefm::~wavefm()
@@ -594,8 +597,8 @@ wavefm::translate()
 	}
 	
 	if (this_voice->out_rate) samp_rate = this_voice->out_rate;
-	hdr.sf1 = samp_rate;		if (hdr.sf2) hdr.sf2 = hdr.sf1;
-	hdr.avr1 = samp_rate * target_size;	if (hdr.avr2) hdr.avr2 = hdr.avr1;
+	hdr.sf1 = samp_rate;		//if (hdr.sf2) hdr.sf2 = hdr.sf1;
+	hdr.avr1 = samp_rate * target_size;	//if (hdr.avr2) hdr.avr2 = hdr.avr1;
 	hdr.alignment = target_size;	hdr.samplesize = this_voice->samp_size;
 	if (cfg->ulaw) hdr.datform = IBM_FORMAT_MULAW;
    finis:
@@ -706,10 +709,9 @@ wavefm::flush()
 	}
 	if (!update_ophase())
 		return false;
-	if (fd == -1)
+	if (!s && fd == -1)
 		return flush_deferred();
 	translate();
-		
 	written = ywrite(fd, get_ophase_buff(&ophases[ophase]) + ooffset,
 			get_ophase_len(&ophases[ophase]) - ooffset);
 	if (1 > written) return flush_deferred();
@@ -743,6 +745,38 @@ wavefm::write_header()
 				 *	the length field filled in correctly
 				 */
 	ywrite(fd, &hdr, sizeof(wave_header));         //zapsani prazdne wav hlavicky na zacatek souboru
+}
+
+void 
+wavefm::write_pa() {
+
+	/* The Sample format to use */
+	ss.format = hdr.samplesize == 8 ? PA_SAMPLE_U8 : PA_SAMPLE_S16LE;
+	ss.rate = samp_rate;
+	ss.channels = channel == CT_MONO ? 1 : 2;
+
+    	/* Create a new playback stream */
+	if (!(s = pa_simple_new(NULL, "Epos", PA_STREAM_PLAYBACK, NULL, "TTS-Epos", &ss, NULL, NULL, &error))) {
+		const char *err = pa_strerror(error);
+        	shriek(445, err);
+    	}
+
+	translate();
+	hdr.total_length = get_total_len() - RIFF_HEADER_SIZE;
+	if (ophase == 0) {
+		ophase++, ooffset = 0;
+	}
+	
+	written = get_ophase_len(&ophases[ophase]) - ooffset;
+	if (pa_simple_write(s, get_ophase_buff(&ophases[ophase]) + ooffset, (size_t)written, &error) < 0) {
+		const char *err = pa_strerror(error);
+	        shriek(445, err);
+	}
+	if (pa_simple_drain(s, &error) < 0) {
+       		const char *err = pa_strerror(error);
+        	shriek(445, err);
+	}	
+	if (s) pa_simple_free(s);	//chaloupka
 }
 
 void

@@ -849,7 +849,7 @@ void call_abort()
 
 //#ifndef HAVE_STRDUP
 
-char *strdup(const char*src)
+char *strdup(const char *src)
 {
 	return strcpy((char *)xmalloc(strlen(src)+1), src);
 }

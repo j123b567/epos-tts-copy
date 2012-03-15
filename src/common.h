@@ -27,7 +27,7 @@
 
 #define MAINTAINER  		"Jirka Hanika"
 #define MAIL        		"geo@cuni.cz"
-#define VERSION     		"2.4.84"
+#define VERSION     		"2.4.85"
 #define TTSCP_PORT		 8778
 
 #include "config.h"
@@ -45,7 +45,7 @@
    #endif
 #endif
 
-char *strdup(const char *);
+//char *strdup(const char *);
 
 #ifndef HAVE_STRCASECMP
 #ifdef  HAVE_STRICMP

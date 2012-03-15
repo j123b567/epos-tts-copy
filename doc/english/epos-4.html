@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.20">
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.21">
  <TITLE>               The Epos Speech System: Text-To-Speech Control Protocol  (TTSCP)  (version 0) </TITLE>
  <LINK HREF="epos-5.html" REL=next>
  <LINK HREF="epos-3.html" REL=previous>
@@ -135,26 +135,31 @@ ISO 8859 characters.  There are three mandatory keywords
 in the session header).</P>
 <P>
 <DL>
-<DT><B>extensions</B><DD><P>The value is a whitespace separated list of semi-standard and non-standard
+<DT><B>extensions</B><DD>
+<P>The value is a whitespace separated list of semi-standard and non-standard
 extensions supported by this TTSCP server.  Only extensions defined by
 this document or a future version of this document should be advertised;
 custom or experimental extensions may be advertised provided their
 first two characters are lower case <CODE>x</CODE> and dash, respectively.
 At present, there are no extensions defined, so the list should be empty,
 but this keyword is nevertheless mandatory.</P>
-<DT><B>handle</B><DD><P>The value is a connection handle for this control connection. The handle
+<DT><B>handle</B><DD>
+<P>The value is a connection handle for this control connection. The handle
 stays valid when the connection is turned into a data connection.  Only 
 lower and upper case letters, digits, dashes and underlines may occur in
 the handle.  This keyword is mandatory and must appear last in the session
 header.</P>
-<DT><B>protocol</B><DD><P>The value is a decimal number identifying the major TTSCP protocol version.
+<DT><B>protocol</B><DD>
+<P>The value is a decimal number identifying the major TTSCP protocol version.
 The current protocol version number is <CODE>0</CODE> (previous versions had no
 session header).  It is likely that protocol versions unknown to the
 client will be fundamentally incompatible.  It is mandatory to begin the
 session header with this keyword.  It is recommended to check it on the
 client side.</P>
-<DT><B>release</B><DD><P>Server release.  The formatting and interpretation is implementation dependent.</P>
-<DT><B>server</B><DD><P>Server name.  Different versions of the same implementation should
+<DT><B>release</B><DD>
+<P>Server release.  The formatting and interpretation is implementation dependent.</P>
+<DT><B>server</B><DD>
+<P>Server name.  Different versions of the same implementation should
 typically use an identical value for this keyword.</P>
 </DL>
 </P>

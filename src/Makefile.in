@@ -23,7 +23,8 @@ export WPP386=-xs
 
 CFLAGS=@CFLAGS@
 FLAGS=$(DMALLOC_STATUS) $(HOMEMADE_STRDUP) $(CFLAGS)
-LINKFLAGS=
+#LINKFLAGS=
+LINKFLAGS= -lpulse-simple -lpulse
 
 # SS     = ss
 

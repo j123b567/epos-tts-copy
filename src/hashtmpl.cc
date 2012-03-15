@@ -363,8 +363,13 @@ printf("hash::hash: using file %s\n", filename);
 		if (*tmp) *tmp++ = 0;		//terminate the key and go on
 		value = tmp += strspn(tmp, WHITESPACE);
 		if (!*value) switch ((int)no_data) {
-			case (int)DATA_EQUALS_KEY: value = key; break;
-			case (int)DATA_OBLIGATORY: hash_shriek("No value specified in %s, line %d",filename,l);
+/*			
+			case DATA_EQUALS_KEY: value = key; break;
+			case DATA_OBLIGATORY: hash_shriek("No value specified in %s, line %d",filename,l); */
+			//chaloupka
+			case DATA_EQUALS_KEY: value = key; break;
+			case DATA_OBLIGATORY: hash_shriek("No value specified in %s, line %d",filename,l);
+
 			default: value = no_data;
 		}
 		else if (!multi_data && tmp[strcspn(tmp,WHITESPACE)]) 

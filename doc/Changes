@@ -1235,3 +1235,12 @@ for an exciting story, just skip it.
 
 2.4.84 from 2.4.83	2.7.05
 	- adjusted for use with the advanced voices in epos-tdp.tgz
+
+2.4.85
+	(waveform.cc, waveform.h) - fixed wave_header definition
+	(function.cc) - fixed template class definition (ISO C++ standard)
+	(hash.h, , hashtmpl.cc, rule.cc)     - fixed directive #define (ISO C++ snadard)
+	- support for PulseAudio (http://pulseaudio.org/) - enable in fixed.ini (local_sound_device "PulseAudio")
+		(agent.cc, waveform.cc, waveform.h) 	- oa_wavefm::run(),
+							- wavefm::write_pa()
+	

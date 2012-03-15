@@ -41,7 +41,9 @@
 #define _HASH_DEPTH	       64
 
 #define DATA_OBLIGATORY	     NULL   //parametr no_data to the out-of-file constructor
-#define DATA_EQUALS_KEY	(char *)1   //ditto, add(key, key) if no data specified
+//#define DATA_EQUALS_KEY	(char *)1   //ditto, add(key, key) if no data specified
+//chaloupka
+#define DATA_EQUALS_KEY	1   //ditto, add(key, key) if no data specified
 
 #define ANYWAY (char *)1
 

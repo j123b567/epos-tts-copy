@@ -17,7 +17,9 @@
 #include "common.h"
 #include "agent.h"
 #include "client.h"
+//chaloupka
 
+#include <strings.h>
 
 #ifdef HAVE_SYS_TIME_H
 	#include <sys/time.h>
@@ -491,7 +493,7 @@ class a_io : public agent
 	virtual void run() = 0;
    protected:
 	int socket;
-	a_ttscp *dc;
+	a_ttscp *dc; 
 	bool close_upon_exit;
    public:
 	a_io(const char *, DATA_TYPE, DATA_TYPE);
@@ -510,7 +512,9 @@ socky int special_io(const char *name, DATA_TYPE intype)
 	if (!cfg->localsound) shriek(453, "Not allowed to use localsound");
 
 	if (localsound != -1) return localsound;
-	int r = open(cfg->local_sound_device, O_WRONLY | O_NONBLOCK);
+
+	int r = strcmp(cfg->local_sound_device, "PulseAudio") ? open(cfg->local_sound_device, O_WRONLY | O_NONBLOCK) : -10;
+	
 	if (r == -1) shriek(462, fmt("Could not open localsound device, error %d", errno));
 	localsound = r;
 	return r;
@@ -747,10 +751,20 @@ void
 oa_wavefm::run()
 {
 	wavefm *w = (wavefm *)inb;
-	
+	if (socket == -10) {
+		socket = -1;
+		w->write_pa();
+		report(true, w->written_bytes());
+		attached = false;
+		delete w;
+		inb = NULL;
+		finis(false);
+		return;
+	}
+
 	if (!attached && !push_table[socket]) {
 		w->attach(socket);
-		report(false, w->written /* + sizeof(wave_header)*/);
+		report(false, w->written);
 		attached = true;
 	}
 	bool to_do;

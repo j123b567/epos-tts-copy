@@ -46,13 +46,22 @@ int yread(int, void *, int size);
 #define SAMPLE		unsigned short	/* working sample type */
 #define SIGNED_SAMPLE	signed short	/* FIXME: get rid of this */
 
+//chaloupka
+#include <pulse/simple.h>
+#include <pulse/error.h>
+//#include <pulse/gccmacro.h>
+
+
 struct wave_header
 {
 	char string1[4];
 	int  total_length;
 	char string2[8];
-	int  fmt_length;
-	short int  datform, numchan, sf1, sf2, avr1, avr2, alignment, samplesize;
+	//int  fmt_length;
+	//short int  datform, numchan, sf1, sf2, avr1, avr2, alignment, samplesize;
+	//chaloupka
+	int  fmt_length,sf1, avr1;
+	short int datform, numchan,alignment, samplesize;
 	char string3[4];
 	int  buffer_idx;
 };			// .wav file header
@@ -97,6 +106,17 @@ class wavefm
 	char *adtl_buff;
 	int adtl_max;
 
+	//chaloupka
+	pa_sample_spec ss;
+	//ss.format = hdr.samplesize == 8 ? PA_SAMPLE_U8 : PA_SAMPLE_S16LE;
+	//ss.rate = samp_rate;
+	//ss.channels = channel;
+	//ss.rate = 44100;
+	//ss.channels = 1;
+	pa_simple *s;
+	int error;
+
+
 	static const w_ophase ophases[];
 	int ophase;
 	int ooffset;
@@ -134,6 +154,7 @@ class wavefm
 	void brk();		// forgets pending data; does not detach()
 //	void skip_header();	// see waveform.cc for comments
 	void write_header();
+	void write_pa();	//chaloupka pulseaudio output
 	
 	inline void sample(unsigned int sample)
 	{

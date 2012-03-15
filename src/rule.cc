@@ -1076,7 +1076,9 @@ r_with::apply(unit *root)
 	if (!dict) {
 		if (*raw == DQUOT) dict = literal_hash(raw);
 		else dict = new hash(raw, cfg->hash_full,
-			0, 200, 5, DATA_EQUALS_KEY, false, "dictionary %s not found", esc);
+//			0, 200, 5, DATA_EQUALS_KEY, false, "dictionary %s not found", esc);
+			//chaloupka
+			0, 200, 5, (char *)DATA_EQUALS_KEY, false, "dictionary %s not found", esc);
 	}
 	if (!dict) shriek(811, fmt("%s Unterminated argument", debug_tag()));	// or out of memory
 

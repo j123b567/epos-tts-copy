@@ -17,10 +17,18 @@
  *
  */
  
+/* HANIKA
 #define END_OF_BLOCK  ((rule *)0)
 #define END_OF_CHOICE ((rule *)1)
 #define END_OF_SWITCH ((rule *)2)	   // unit length
 #define END_OF_RULES  ((rule *)3)
+#define MAX_WORDS_PER_LINE 64
+*/
+
+#define END_OF_BLOCK  0
+#define END_OF_CHOICE 1
+#define END_OF_SWITCH 2	   // unit length
+#define END_OF_RULES  3
 #define MAX_WORDS_PER_LINE 64
 
 #define DOLLAR             '$'             //These symbols are used to represent 
@@ -116,7 +124,7 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 	l = cfg->rules;
 	rulist = (rule **)xmalloc(sizeof(rule *) * l);
 	n_rules = 0; again = 1;
-	while((rulist[n_rules] = --again ? rulist[n_rules-1]
+	while((int)(rulist[n_rules] = --again ? rulist[n_rules-1]
 					 : next_rule(file, vars, &again)) > END_OF_RULES) {
 //		rulist[n_rules]->set_dbg_tag(file);
 		if (++n_rules == l) {
@@ -126,10 +134,10 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 	}
 	if (again > 1) diatax("Badly placed count");
 	if (rulist[n_rules] != terminator) switch ((int)rulist[n_rules]) {
-		case (int)END_OF_BLOCK:  diatax("No block to terminate");
-		case (int)END_OF_CHOICE: diatax("No choice to terminate");
-		case (int)END_OF_SWITCH: diatax("No length-based switch to terminate");
-		case (int)END_OF_RULES: 
+		case END_OF_BLOCK:  diatax("No block to terminate");
+		case END_OF_CHOICE: diatax("No choice to terminate");
+		case END_OF_SWITCH: diatax("No length-based switch to terminate");
+		case END_OF_RULES: 
 			if (!began_at) break;
 			else shriek(811, fmt("Unterminated block in file %s line %d", began_in, began_at));
 		default: shriek(861, "next_rule() gone mad");
@@ -233,7 +241,7 @@ r_block::apply(unit *root)
 
 r_choice::r_choice(text *file, hash *inherited_vars)
 {
-	load_rules(END_OF_CHOICE, file, inherited_vars);
+	load_rules((rule *)END_OF_CHOICE, file, inherited_vars);
 	if (!n_rules) diatax("No rules to choose from");
 }
 
@@ -256,7 +264,7 @@ r_choice::apply(unit *root)
 
 r_switch::r_switch(text *file, hash *inherited_vars)
 {
-	load_rules(END_OF_SWITCH, file, inherited_vars);
+	load_rules((rule *)END_OF_SWITCH, file, inherited_vars);
 	if (!n_rules) diatax("Empty length dependencies");
 }
 
@@ -422,7 +430,7 @@ parse_rule(text *file, hash *vars, int *count)
 
 	next_line:
 	
-	if(!file->getline(str)) return END_OF_RULES;
+	if(!file->getline(str)) return (rule *)END_OF_RULES;
 	
 	DEBUG(0,1,fprintf(STDDBG,"str2rule should parse: %s\n",str);)
 	if(!str[strspn(str,WHITESPACE)]) goto next_line;
@@ -499,9 +507,9 @@ parse_rule(text *file, hash *vars, int *count)
 	case OP_BEGIN:	 result = new r_block(file, vars); break;
 	case OP_END:	 return END_OF_BLOCK;
 	case OP_CHOICE:  result = new r_choice(file, vars); break;
-	case OP_CHOICEND:return END_OF_CHOICE;
+	case OP_CHOICEND:return (rule *)END_OF_CHOICE;
 	case OP_SWITCH:  result = new r_switch(file, vars); break;
-	case OP_SWEND:	 return END_OF_SWITCH;
+	case OP_SWEND:	 return (rule *)END_OF_SWITCH;
 	case OP_NOTHING: result = new r_nothing(); break;
 	default:  diatax("Unknown rule type"); goto next_line;  // to fool the compiler
 
@@ -538,8 +546,8 @@ next_real_rule(text *file, hash *vars, int *count)
 {
 	try {
 		rule *r = parse_rule(file, vars, count);
-		if (r > END_OF_RULES) return r;
-		if (r < END_OF_RULES) diatax("No rule follows a conditional rule");
+		if ((int)r > END_OF_RULES) return r;
+		if ((int)r < END_OF_RULES) diatax("No rule follows a conditional rule");
 		shriek(811, fmt("No rule follows a conditional rule at the end of %s", file->current_file));
 	} catch (any_exception *e) {
 		if (e->code / 10 != 81) throw e;
