@@ -53,11 +53,11 @@ regress  \~>.(!_!)	sent	sent
 regress  \;>.(!_!)	sent	sent
 regress  ->,(!_!)	sent	colon
 
-if use_prosody
+if prosody
 {
 	if   lpcprosody
 	{
-		if use_bang_nnet
+		if bang_nnet
 		{
 			if nnet_phone 
 			{
@@ -68,18 +68,18 @@ if use_prosody
 				nnet prosody_lpc_bang.neu sent syll
 			}
 		}
-		if !use_bang_nnet
+		if !bang_nnet
 		{
 			@include "lpcpros.rul"
 		}
 	}
 	if   !lpcprosody
 	{
-		if use_bang_nnet
+		if bang_nnet
 		{
 			nnet prosody_bang.neu sent syll
 		}
-		if !use_bang_nnet
+		if !bang_nnet
 		{
 		if   naive_prosody
 		{
