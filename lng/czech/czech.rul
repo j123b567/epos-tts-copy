@@ -93,7 +93,7 @@ if	tsr_tool
 if    phr_break
 {
 	regress   0>\#(!_0)	colon	; vlo¾ení pausy
-	5x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
+	150x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
 	inside	\#	phone
 	{
 		contour   t/-65   phone
