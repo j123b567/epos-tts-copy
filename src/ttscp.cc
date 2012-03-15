@@ -43,7 +43,8 @@ void reply(const char *text)
 {
 #ifdef HAVE_SYSLOG_H
 	if (cfg->use_syslog && (cfg->full_syslog || text[0] > '2')) {
-		if (text[3] != ' ') shriek(461, "No TTSCP error code supplied");
+		if (text[3] != ' ' || text[0] > '9')
+			shriek(461, "Ill-formed TTSCP error code supplied");
 		syslog(severity(text[0]*100 + text[1]*10 + text[2] - '0'*111),
 			cfg->log_codes ? text : text+4);
 	}

@@ -99,6 +99,10 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 		#include <signal.h>
 	#endif
 
+	#ifdef HAVE_ERRNO_H
+		#include <errno.h>
+	#endif
+
 	inline void async_close(int fd)
 	{
 		int pid = cfg->asyncing ? fork() : -1;
@@ -183,19 +187,28 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 #endif	// HAVE_UNISTD_H
 
 /*
+ *	close_and_invalidate() is NOT supplied in client.cc and
+ *	may only be used by server-side code, or the client side
+ *	code can define it to call just async_close.  The purpose
+ *	of close_and_invalidate() is to remove all references to
+ *	the descriptor from the scheduler before closing it.
+ */
+ 
+void close_and_invalidate(int sd);
+
+/*
  *	The sgets() and sputs() routines provide a slow get line and put line
  *	interface, especially on TTSCP control connections. They are suitable
- *	for the client. They block until a line is received, which is a problem for
- *	tcpsyn.
+ *	for the client. sgets blocks until a line is received, which is a problem for
+ *	tcpsyn. sputs can be replaced by a callback fn assigned to sputs_replacement,
+ *	which is what the server side does to make it non-blocking.
  */
+ 
+extern int (*sputs_replacement)(int sd, const char *, int);
 
 int sgets(char *buffer, int buffer_size, int sd);
+int sputs(const char *buffer, int sd);
 
-inline int sputs(const char *buffer, int sd)
-{
-	if (!buffer) return 0;
-	return ywrite(sd, buffer, strlen(buffer));
-}
 
 #endif		// EPOS_CLIENT_H
 

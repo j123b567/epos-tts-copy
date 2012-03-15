@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
  <TITLE>               The Epos Speech System: Security</TITLE>
  <LINK HREF="epos-7.html" REL=next>
  <LINK HREF="epos-5.html" REL=previous>
@@ -12,38 +12,38 @@
 <A HREF="epos-5.html">Previous</A>
 <A HREF="epos.html#toc6">Contents</A>
 <HR>
-<H2><A NAME="s6">6. Security</A></H2>
+<H2><A NAME="s6">6.</A> <A HREF="epos.html#toc6">Security</A></H2>
 
-<P>
+
 <P>This section just summarizes security features of Epos documented elsewhere
 to assist the administrator in setting up a multi-user installation of Epos,
-especially in a UNIX-like environment.
+especially in a UNIX-like environment.</P>
 <P>Epos can be compiled in two ways; either as a simple monolithic binary
 or as a Text-to-Speech Control Protocol server.  For technical reasons
 (especially the latency), it is strongly recommended to choose the latter
-method for most situations.
-<P>
-<H2><A NAME="ss6.1">6.1 TTSCP-related issues</A>
+method for most situations.</P>
+
+<H2><A NAME="ss6.1">6.1</A> <A HREF="epos.html#toc6.1">TTSCP-related issues</A>
 </H2>
 
 <H3>Authentication</H3>
 
-<P>
+
 <P>TTSCP as such includes support for user name and plain text password
 based authentication.  At the moment, Epos doesn't implement any name
 space for this authentication mechanism, except for a randomly-generated
 server password.  Thus, all connections are either completely anonymous,
 or authenticated at the "server" level (which can still be restricted
-from setting or reading specific options.)
+from setting or reading specific options.)</P>
 <P>The server password is stored in <CODE>/var/run/epos.pwd</CODE>.  Any process
 with rights sufficient to read this file is able to authenticate as the
 server over TTSCP.
 For debugging purposes, it is also possible to force Epos to accept
-an additional server password with the <CODE>debug_password</CODE> option.
-<P>
+an additional server password with the <CODE>debug_password</CODE> option.</P>
+
 <H3>TTSCP connection handles</H3>
 
-<P>
+
 <P>In TTSCP, a control connection can issue commands that affect any
 other connection (e.g. interrupt a command in progress).  To prevent
 malicious use, the handle necessary to refer to a connection is
@@ -53,11 +53,11 @@ network connection and on the length of the data connection handle.
 Each byte of handle length carries a perplexity of six bits; reasonable
 handle lengths (as controlled with the <CODE>handle_size</CODE> option therefore
 fall within the range <CODE>10</CODE> to <CODE>200</CODE>.  Be sure to adjust
-<CODE>max_line_len</CODE> as well if using extremely long connection handles.
-<P>
+<CODE>max_line_len</CODE> as well if using extremely long connection handles.</P>
+
 <H3><CODE>restr.ini</CODE> file</H3>
 
-<P>
+
 <P>Many TTSCP options are rarely set over TTSCP, and some of them could be
 used for malicious ends.  In these cases, the administrator may restrict
 their use in the <CODE>restr.ini</CODE> as described in 
@@ -68,18 +68,18 @@ you may want to grep out a list of <EM>all</EM> options and to leave out
 only options you're going to treat as necessary for users and harmless
 for the server.  On the other hand, almost no options affect the security
 directly, because they're only set within the context of the current
-TTSCP connection, and the few exceptions are unlikely to have been overlooked.
-<P>
+TTSCP connection, and the few exceptions are unlikely to have been overlooked.</P>
+
 <H3>Access to the local sound card</H3>
 
-<P>
+
 <P>At the moment, any TTSCP client is capable of writing arbitrary waveform data
 to the local soundcard.  If you consider this a security risk, disable
-the <CODE>#localsound</CODE> output module by turning the <CODE>localsound</CODE> option off.
-<P>
+the <CODE>#localsound</CODE> output module by turning the <CODE>localsound</CODE> option off.</P>
+
 <H3>Access to the local file system</H3>
 
-<P>
+
 <P>TTSCP in theory offers file system based input and output modules.  For example,
 that allows the client to write some intermittent product to a server-side file
 and then the client may decide to use it repeatedly as an input to multiple streams.
@@ -88,36 +88,36 @@ root of the TTSCP server.  With Epos, you can configure the location of the
 TTSCP name space using the 
 <A HREF="epos-3.html#pseudorootdir-option">--pseudo_root_dir option</A>.
 Furthermore, writing to it is disabled by default; this restriction can be overridden
-by setting the --<CODE>writefs</CODE> option.
-<P>
-<H2><A NAME="ss6.2">6.2 Privileged executables</A>
+by setting the --<CODE>writefs</CODE> option.</P>
+
+<H2><A NAME="ss6.2">6.2</A> <A HREF="epos.html#toc6.2">Privileged executables</A>
 </H2>
 
-<P>
+
 <P>It is not recommended to run Epos as a setuid or setgid binary, not because
 of a known security weakness, but because of the possibility of yet unknown
-bugs.  If necessary, Epos should run setgid to a group with minimal privileges.
+bugs.  If necessary, Epos should run setgid to a group with minimal privileges.</P>
 <P>Note also that the <CODE>base_dir</CODE> parameter can be given to Epos on the
 command-line, thus by-passing the restrictions specified in the <CODE>restr.ini</CODE>
 file.  This issue may be solved in later versions of Epos; at the moment
-you have to adjust the source manually.
+you have to adjust the source manually.</P>
 <P>Instead of a privileged executable, run Epos with the desired privileges
-at system start-up and use a TTSCP client to control it from then on.
-<P>
-<H2><A NAME="ss6.3">6.3 <CODE>local_only</CODE> option</A>
+at system start-up and use a TTSCP client to control it from then on.</P>
+
+<H2><A NAME="ss6.3">6.3</A> <A HREF="epos.html#toc6.3"><CODE>local_only</CODE> option</A>
 </H2>
 
-<P>
+
 <P>By default, the TTSCP server only binds to the loopback interface.
 That way, only local users can see and use Epos.  Turn off the
 <CODE>local_only</CODE> option to allow remote users to communicate
-with Epos on your machine.
+with Epos on your machine.</P>
 <P>Theoretically, this security measure should not be needed, but it is very simple
 and thus likely to reduce the risk caused by bugs hidden in more complex corners of the
-Epos TTSCP implementation.
-<P>
-<P>
-<P>
+Epos TTSCP implementation.</P>
+
+
+
 <HR>
 <A HREF="epos-7.html">Next</A>
 <A HREF="epos-5.html">Previous</A>

@@ -159,6 +159,15 @@ agent::timeslice()
 	}
 	if (pendcount && !inb) schedule();
 	c->leave();
+
+	agent *tmp;
+	for (agent *a = dep; a; a = tmp) {
+		DEBUG(1, 11, fprintf(STDDBG, fmt("Scheduling %s because of %s\n", a->name(), name()));)
+		tmp = a->dep;
+		a->schedule();
+		a->dep = NULL;
+	}
+	dep = NULL;
 }
 
 bool
@@ -507,7 +516,7 @@ socky int special_io(const char *name, DATA_TYPE intype)
 	return r;
 }
 
-void stretch_sleep_table(socky int);
+void stretch_sleep_tables(socky int);
 
 a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 {
@@ -538,14 +547,14 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 			/* if ever adding classes, take care of closing/nonclosing
 			 * the socket upon exit        */
 	}
-	if (socket >= 0) stretch_sleep_table(socket);
+	if (socket >= 0) stretch_sleep_tables(socket);
 	DEBUG(0,11,fprintf(STDDBG, "I/O agent is %p\n", this);)
 }
 
 a_io::~a_io()
 {
 	DEBUG(0,11,fprintf(STDDBG, "~a_io\n");)
-	if (close_upon_exit) async_close(socket);
+	if (close_upon_exit) close_and_invalidate(socket);
 }
 
 class a_input : public a_io
@@ -570,7 +579,7 @@ void a_input::run()
 {
 	int res;
 	DEBUG(0,11,fprintf(STDDBG, "Entering input agent\n");)
-	if (sleep_table[socket]) {
+	if (block_table[socket]) {
 		DEBUG(0,11,fprintf(STDDBG, "avoiding a nested input\n");)
 		block(socket);
 		return;
@@ -649,7 +658,7 @@ class a_output : public a_io
 void
 a_output::run()
 {
-	if (sleep_table[socket]) {
+	if (push_table[socket]) {
 		push(socket);
 		return;
 	}
@@ -739,7 +748,7 @@ oa_wavefm::run()
 {
 	wavefm *w = (wavefm *)inb;
 	
-	if (!attached && !sleep_table[socket]) {
+	if (!attached && !push_table[socket]) {
 		w->attach(socket);
 		report(false, w->written /* + sizeof(wave_header)*/);
 		attached = true;
@@ -907,6 +916,7 @@ stream::run()
 void
 stream::finis(bool err)		// FIXME: simplify
 {
+	if (err) reply("191 finis recovery");
 	DEBUG(2,11,fprintf(STDDBG, "submitted a subtask\n");)
 	for (agent *a = head; a != this; a = a->next) {
 		if (a->inb || a->pendin) {
@@ -1069,9 +1079,9 @@ a_ttscp::~a_ttscp()
 	delete deps;
 	c->enter();
 	if (cfg->sd_in != -1)
-		async_close(cfg->sd_in);
+		close_and_invalidate(cfg->sd_in);
 	if (cfg->sd_out != -1 && cfg->sd_out != cfg->sd_in)
-		async_close(cfg->sd_out);
+		close_and_invalidate(cfg->sd_out);
 	if (data_conns->translate(handle) || ctrl_conns->translate(handle))
 		shriek(862, "Forgot to forget a_ttscp");
 
@@ -1256,17 +1266,21 @@ agent *sched_sel()
 	return r;
 }
 
-agent **sleep_table = (agent **)xmalloc(1);
+agent **block_table = (agent **)xmalloc(1);
+agent **push_table = (agent **)xmalloc(1);
 fd_set block_set;
 fd_set push_set;
 socky int select_fd_max = 0;
 
-void stretch_sleep_table(socky int fd)
+void stretch_sleep_tables(socky int fd)
 {
 	if (select_fd_max <= fd) {
-		sleep_table = (agent **)xrealloc(sleep_table, (fd + 1) * sizeof(agent *));
-		for ( ; select_fd_max <= fd; select_fd_max++)
-			sleep_table[select_fd_max] = NULL;
+		block_table = (agent **)xrealloc(block_table, (fd + 1) * sizeof(agent *));
+		push_table = (agent **)xrealloc(push_table, (fd + 1) * sizeof(agent *));
+		for ( ; select_fd_max <= fd; select_fd_max++) {
+			block_table[select_fd_max] = NULL;
+			push_table[select_fd_max] = NULL;
+		}
 	}
 }
 
@@ -1278,18 +1292,18 @@ void
 agent::block(socky int fd)
 {
 	DEBUG(1,11,fprintf(STDDBG, "Sleeping on %d\n", fd);)
-	stretch_sleep_table(fd);
-	if (sleep_table[fd]) {
+	stretch_sleep_tables(fd);
+	if (block_table[fd]) {
 		agent *a;
 
-		if (this == sleep_table[fd])
+		if (this == block_table[fd])
 			shriek(861, fmt("Resleeping on %d", fd));
 		if (!FD_ISSET(fd, &block_set))
 			shriek(861, fmt("Countersleeping on %d", fd));
-		for (a = sleep_table[fd]; a->dep; a = a->dep) ;
+		for (a = block_table[fd]; a->dep; a = a->dep) ;
 		a->dep = this;
 	} else {
-		sleep_table[fd] = this;
+		block_table[fd] = this;
 		FD_SET(fd, &block_set);
 	}
 	return;
@@ -1299,18 +1313,18 @@ void
 agent::push(socky int fd)
 {
 	DEBUG(1,11,fprintf(STDDBG, "Pushing on %d\n", fd);)
-	stretch_sleep_table(fd);
-	if (sleep_table[fd]) {
+	stretch_sleep_tables(fd);
+	if (push_table[fd]) {
 		agent *a;
 
-		if (this == sleep_table[fd])
+		if (this == push_table[fd])
 			shriek(861, fmt("Resleeping on %d", fd));
 		if (!FD_ISSET(fd, &push_set))
 			shriek(861, fmt("Countersleeping on %d", fd));
-		for (a = sleep_table[fd]; a->dep; a = a->dep) ;
+		for (a = push_table[fd]; a->dep; a = a->dep) ;
 		a->dep = this;
 	} else {
-		sleep_table[fd] = this;
+		push_table[fd] = this;
 		FD_SET(fd, &push_set);
 	}
 	return;

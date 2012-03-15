@@ -206,80 +206,6 @@ context::leave()
 	DEBUG(1,11,fprintf(STDDBG, "leave_context(%p)\n", this);)
 }
 
-/*
- *	nonblocking sgets - returns immediately.
- *	tries to get a line into buffer; if it can't,
- *	returns zero and partbuff will contain some (undefined)
- *	data, which should be passed to the next call to
- *	sgets() with this, but not another socket.
- *	The "space" argument limits both buffers.
- *
- *	Upon the first call with this socket, *partbuff must == 0.
- *
- *	returns:      0   partial line in partbuff or nothing to do
- *		positive  full line in buffer
- *		negative  error reading socket
- *
- *	Our policy is not to read the socket when we've got
- *	a partial line acquired in an earlier invocation.
- *	This is to avoid starvation by an over-active session.
- *	Such a session would however cause a lot of shifting
- *	strings back and forth between the buffers.
- */
-
-int sgets(char *buffer, int space, int sd, char *partbuff)
-{
-	int i, l;
-	int result = 0;
-
-	if (*partbuff) {
-		DEBUG(1,11,fprintf(STDDBG, "[core] Appending.\n");)
-		l = strlen(partbuff);
-		if (l > space) shriek(862, "sgets() holdback overflow"); // was: shriek(664)
-		if (l == space) goto too_long;
-		strcpy(buffer, partbuff);
-		if (strchr(buffer, '\n')) goto already_enough_text;
-	} else l = 0;
-	result = yread(sd, buffer + l, space - l);
-	if (result >= 0) buffer[l+result] = 0; else buffer[l] = 0;
-	if (result <= 0) {
-		if (result == -1 && errno == EAGAIN) {
-			DEBUG(2,11,fprintf(STDDBG, "Nothing to do: %d\n", sd);)
-			*buffer = 0;
-			return 0;
-		}
-		*partbuff = 0;	/* forgetting partial line upon EOF/error. Bad? */
-		*buffer = 0;
-		DEBUG(2,11,fprintf(STDDBG, "Error on socket: %d\n", sd);)
-		return -1;
-	}
-	l += result;
-
-already_enough_text:
-	for (i=0; i<l; i++) {
-		if (buffer[i] == '\n' || !buffer[i]) {
-			if (i && buffer[i-1] == '\r') buffer[i-1] = 0;
-			buffer[i] = 0;
-			if (++i < l) strcpy(partbuff, buffer+i);
-			else *partbuff = 0;
-			return 1;
-		}
-	}
-	if (i >= space) goto too_long;
-	buffer[i] = 0;
-	strcpy(partbuff, buffer);
-	DEBUG(1,11,fprintf(STDDBG, "[core] partial line read: %s\n", partbuff);)
-	*buffer = 0;
-	return 0;
-
-too_long:
-	strcpy(partbuff, "remark ");
-	DEBUG(2,11,fprintf(STDDBG, "[core] Too long command ignored");)
-	sputs("413 Too long\n", sd);
-	*buffer = 0;
-	return 0;
-}
-
 
 
 void make_rnd_passwd(char *buffer, int size)
@@ -352,7 +278,8 @@ void server_shutdown()
 	delete ctrl_conns;
 	delete data_conns;
 	delete master_context;
-	free(sleep_table);
+	free(block_table);
+	free(push_table);
 	epos_done();
 	exit(0);
 }
@@ -438,6 +365,32 @@ static bool select_socket(bool sleep)
 #define SCHED_SATIATED	64
 #define SCHED_WARN	30
 
+void notify_invalidate(socky int fd)
+{
+	FD_CLR(fd, &block_set);
+	FD_CLR(fd, &rd_set);
+	block_table[fd] = NULL;
+	FD_CLR(fd, &push_set);
+	FD_CLR(fd, &wr_set);
+	push_table[fd] = NULL;
+}
+
+void close_and_invalidate(socky int sd)
+{
+	notify_invalidate(sd);
+	async_close(sd);
+}
+
+void wakeup(socky int fd, agent **table, fd_set *set)
+{
+	agent *a = table[fd];
+	DEBUG(2,11,fprintf(STDDBG, a ? "Scheduling select(%d)ed agent\n"
+			: "sche sche scheduler\n", fd);)
+	table[fd] = NULL;
+	FD_CLR(fd, set);
+	a->timeslice();
+}
+
 
 void server()
 {
@@ -450,20 +403,11 @@ void server()
 			sched_sel()->timeslice();
 		}
 		select_socket(true);
-		for (fd=0; fd < select_fd_max; fd++) if (FD_ISSET(fd, &rd_set) || FD_ISSET(fd, &wr_set)) {
-			agent *a = sleep_table[fd];
-			DEBUG(2,11,fprintf(STDDBG, a ? "Scheduling select(%d)ed agent\n"
-					: "sche sche scheduler\n", fd);)
-			sleep_table[fd] = NULL;
-			int pushing = FD_ISSET(fd, &push_set);
-			FD_CLR(fd, &block_set);
-			FD_CLR(fd, &push_set);
-			a->timeslice();
-			if (a->dep && sleep_table[fd] == NULL) {
-				sleep_table[fd] = a->dep;
-				FD_SET(fd, pushing ? &push_set : &block_set);
-				a->dep = NULL;
-			}
+		for (fd = 0; fd < select_fd_max; fd++) {
+			if (FD_ISSET(fd, &wr_set))
+				wakeup(fd, push_table, &push_set);
+			if (FD_ISSET(fd, &rd_set))
+				wakeup(fd, block_table, &block_set);
 		}
 	}
 	server_shutdown();

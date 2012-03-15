@@ -194,7 +194,8 @@ extern int runnable_agents;
 
 agent *sched_sel();
 
-extern agent **sleep_table;
+extern agent **block_table;
+extern agent **push_table;
 extern fd_set block_set;
 extern fd_set push_set;
 extern socky int select_fd_max;

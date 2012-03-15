@@ -1197,3 +1197,11 @@ for an exciting story, just skip it.
 		- TSR debugging tool support (Win only)
 		- 1/3 and 1/4 downsampling band-pass filters
 		- tdpsyn prosody modelling fix
+
+2.4.78 from 2.4.76	18.8.02
+	- gauge prototype
+	- client.cc: sputs replacement callbacks
+	- nonblock.cc - handles control connection congestion
+	- split sleep_table to block_table and push_table
+	- minor scheduler and client code fixes
+

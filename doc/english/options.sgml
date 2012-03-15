@@ -672,7 +672,7 @@ engineering dilemmata.
 	an agent.  First, the time spend before running the agent
 	(after the last agent has finished).  Second, agent type.
 	Third, time spent by the agent.  Both time intervals are given
-	is microseconds and their accuracy depends on the
+	in microseconds and their accuracy depends on the
 	<tt/gettimeofday/ system call.  Using the profiler on a loaded
 	machine is going to give almost meaningless results.
 <tag>--debug_password <sl/password/ </tag>

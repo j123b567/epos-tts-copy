@@ -211,8 +211,8 @@ tcpsyn::~tcpsyn()
 	if (err) shriek(475, fmt("Remote returned %d for delh", err));
 	err = sync_finish_command(cd);
 	if (err) shriek(475, fmt("Remote returned %d for done", err));
-	async_close(cd);
-	async_close(dd);
+	close_and_invalidate(cd);
+	close_and_invalidate(dd);
 	free(handle);
 }
 

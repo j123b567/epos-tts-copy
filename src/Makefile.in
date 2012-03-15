@@ -41,10 +41,10 @@ SHELL = /bin/sh
 
 HEADERS=common.h defaults.h unit.h parser.h rule.h text.h encoding.h interf.h function.h options.h hash.h synth.h voice.h exc.h
 MOREHEADERS=waveform.h ktdsyn.h ptdsyn.h lpcsyn.h tdpsyn.h tcpsyn.h slab.h rx.h client.h agent.h 
-SOURCES=parser.cc unit.cc marker.cc rule.cc block.cc text.cc encoding.cc interf.cc function.cc options.cc exc.cc hash.cc hashd.cc hashtmpl.cc synth.cc waveform.cc voice.cc say.cc options.lst nnet.cc monolith.cc daemon.cc agent.cc ttscp.cc client.cc qnxipc.cc ktdsyn.cc ptdsyn.cc lpcsyn.cc tdpsyn.cc tcpsyn.cc rx.c
+SOURCES=parser.cc unit.cc marker.cc rule.cc block.cc text.cc encoding.cc interf.cc function.cc options.cc exc.cc hash.cc hashd.cc hashtmpl.cc synth.cc waveform.cc voice.cc say.cc options.lst nnet.cc monolith.cc daemon.cc agent.cc ttscp.cc client.cc qnxipc.cc ktdsyn.cc ptdsyn.cc lpcsyn.cc tdpsyn.cc tcpsyn.cc rx.c gauge.cc
 DOSSOURCES=epos.cpp config.dos README.dos
 MODULES=parser.o unit.o rule.o text.o encoding.o interf.o function.o options.o synth.o ktdsyn.o ptdsyn.o lpcsyn.o tdpsyn.o tcpsyn.o voice.o waveform.o
-TARGETS=epos say vrfy
+TARGETS=epos say vrfy gauge
 DOSES=  dos1250 dos1252 dospc2 dosil1 dosil2 doskam doskoi8 dosascii dosmac dosvga
 
 # the compilation proper may also depend on this makefile.
@@ -94,6 +94,9 @@ say	: say.o Makefile ../cfg/cfg/default.ini
 vrfy	: vrfy.cc client.cc
 	$(CC) $(LDOPTS) $(FLAGS) -o $@ vrfy.cc
 
+gauge	: gauge.o $(MAKEFILE)
+	$(CC) $(LDOPTS) $(FLAGS) -o $@ gauge.cc
+
 monolith mh : eposm
 
 eposm: monolith.o hash.o client.o $(MODULES) Makefile ../cfg/cfg/default.ini
@@ -107,10 +110,10 @@ eposm: monolith.o hash.o client.o $(MODULES) Makefile ../cfg/cfg/default.ini
 # $(LIBNAME)  : $(HEADERS) $(MODULES) Makefile ../cfg/cfg/default.ini
 #	$(LNK) -shared -o $@ $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) -Wl,-soname,$(LIBNAME) $(FLAGS)
 
-epos:	Makefile $(HEADERS) $(MODULES) hashd.o daemon.o agent.o ttscp.o client.o
+epos:	Makefile $(HEADERS) $(MODULES) hashd.o daemon.o agent.o ttscp.o nonblock.o client.o
 	@echo Building the daemon...
 # replace MODULES with LIBNAME in the following line to produce a shared daemon
-	$(LNK) -o $@ daemon.o agent.o ttscp.o client.o hashd.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
+	$(LNK) -o $@ daemon.o agent.o ttscp.o nonblock.o client.o hashd.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
 #	@../arch/unix/rerunepos
 
 tgz: distclean $(SHELL) ../arch/unix/maketgz $(eposversionfile) cfgsync
@@ -174,6 +177,9 @@ config.h: config.h.in
 say.o: say.cc client.cc $(HEADERS) $(MAKEFILE) options.lst $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ say.cc
 
+gauge.o: gauge.cc client.cc $(HEADERS) $(MAKEFILE)
+	$(CC) $(FLAGS) -c -o $@ gauge.cc
+
 monolith.o: monolith.cc $(HEADERS) $(MAKEFILE) options.lst $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ monolith.cc
 
@@ -185,6 +191,9 @@ agent.o: agent.cc $(HEADERS) agent.h client.h waveform.h $(MAKEFILE) options.lst
 
 ttscp.o: ttscp.cc $(HEADERS) agent.h $(MAKEFILE) options.lst $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ ttscp.cc
+
+nonblock.o: nonblock.cc $(HEADERS) agent.h $(MAKEFILE) options.lst $(SHELL)
+	$(CC) $(FLAGS) -c -o $@ nonblock.cc
 
 client.o: client.cc client.h $(MAKEFILE) options.lst $(SHELL)
 	$(CC) $(FLAGS) -c -o $@ client.cc

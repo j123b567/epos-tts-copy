@@ -639,6 +639,7 @@ static inline void compile_rules()
  *	epos_catharsis(): to release as much as possible, but leave a way back
  */
 
+void use_async_sputs();
 
 void epos_init()	 //Some global sanity checks made here
 {
@@ -680,7 +681,8 @@ void epos_init()	 //Some global sanity checks made here
 //	if (!_gather_buff) _gather_buff = (char *)xmalloc(MAX_GATHER+2);
 	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)xmalloc(cfg->max_line+1); 
 	if (!scratch) scratch = (char *)xmalloc(cfg->scratch+1);
-	
+	use_async_sputs();
+
 	compile_rules();
 
 	DEBUG(1,10,fprintf(STDDBG,"struct configuration is %d bytes\n", (int)sizeof(configuration));)
