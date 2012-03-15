@@ -147,7 +147,7 @@ SOURCE=.\rule.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\rx.c
+SOURCE=..\libs\regex\rx.c
 # End Source File
 # Begin Source File
 
@@ -331,7 +331,7 @@ SOURCE=.\rule.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\rx.h
+SOURCE=..\libs\regex\rx.h
 # End Source File
 # Begin Source File
 

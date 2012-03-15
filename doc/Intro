@@ -13,7 +13,7 @@
 doc/*
 doc/FORMATS	read this to see in which formats you can have the main docs
 Changes		read this if you what to know what is new in this version
-/usr/share/epos/cfg/czech/czech.rul	a sound example of the rules file
+/usr/local/share/epos/cfg/czech/czech.rul	a sound example of the rules file
 
 ------------------------------------------------------------------------------ 
 

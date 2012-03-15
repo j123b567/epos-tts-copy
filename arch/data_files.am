@@ -10,6 +10,7 @@ unix/test.optdoc			\
 unix/docopts				\
 unix/test.version			\
 unix/longopts				\
+unix/difftgz				\
 unix/upload/lastchanges.append		\
 unix/upload/lastchanges.sed		\
 unix/upload/mail.append			\

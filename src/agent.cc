@@ -343,12 +343,17 @@ a_segs::run()
 	root->project(scfg->_segm_level);
 again:
 	n = root->write_segs(c, position, sbs);
+	D_PRINT(1, "Writing at most %d segs: wrote %d segs\n", sbs, n);
 	position += n;
 	items += n;
-	if (cfg->seg_buff_size && n >= sbs) {
-		d = (segment *)xrealloc(d, (sbs + 1 + position) * sizeof(segment));
-		c = d + 1 + position;
-		goto again;
+	if (n >= sbs) {
+		if (cfg->seg_buff_size) {
+			shriek(462, "Cannot combine nonzero seg_buff_size with the traditional SSIF");
+		} else {
+			d = (segment *)xrealloc(d, (sbs + 1 + position) * sizeof(segment));
+			c = d + 1 + position;
+			goto again;
+		}
 	} else {
 		delete root;
 		inb = NULL;
@@ -511,7 +516,7 @@ void
 a_synth::init_syn()
 {
 	try {
-		this_voice->syn = setup_synth(this_voice);
+		this_voice->syn = this_voice->setup_synth();
 	} catch (command_failed *e) {
 		if (fallbackable_error(e->code)
 				&& this_lang->fallback_voice

@@ -8,7 +8,7 @@
 */
 
 #include "perceptron.h"
-#include "utils.h"
+#include "vector.h"
 #include "base.h"
 
 #include <time.h>

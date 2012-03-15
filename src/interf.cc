@@ -583,6 +583,10 @@ void uncache_file(char *, file *ff, void *)	// the first argument is ignored
 
 void unclaim(file *ff)
 {
+	if (!ff) {
+		D_PRINT(3, "Ignoring a bogus unclaim request\n");
+		return;
+	}
 	if (ff->ref_count <= 0) shriek(461, "Forgot to unclaim()");
 	
 	if (!--ff->ref_count) {
@@ -627,7 +631,7 @@ static inline void compile_rules()
 
 /*
  *	epos_init(): to bring up everything (from a "main() {" state)
- *	epos_done(): to release everything just before exit() (no need to
+ *	epos_done(): to release everything just before exit() (little need to
  *		call this one except for debugging)
  *	epos_reinit(): to reread all files, adjust all structures
 		Takes nearly as much time as killing and restarting
@@ -678,6 +682,7 @@ void epos_init()	 //Some global sanity checks made here
 		scratch[scfg->scratch_size] = 0;
 	}
 	use_async_sputs();
+	select_local_soundcard();
 	
 	compile_rules();
 	update_sampa();

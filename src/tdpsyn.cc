@@ -21,6 +21,7 @@
 #include "epos.h"
 #include "tdpsyn.h"
 #include <math.h>
+#include "endian_utils.h"
 
 #define MAX_STRETCH	30	/* stretching beyond 30 samples per OLA frame must be done through repeating frames */
 #define MAX_OLA_FRAME	4096	/* sanity check only */
@@ -34,6 +35,8 @@
 #ifdef WIN32
 #define snprintf _snprintf
 #endif
+
+void tdioven(char *p, int l);
 
 /* F0 contour filter coefficients */
 const double a[9] = {1,-6.46921563821389,18.43727805607084,-30.21344177474595,31.11962012720199,
@@ -110,7 +113,7 @@ tdpsyn::tdpsyn(voice *v)
 
 	difpos = 0;
 
-	tdi = claim(v->models, v->location, scfg->inv_base_dir, "rb", "inventory", NULL);
+	tdi = claim(v->models, v->location, scfg->inv_base_dir, "rb", "inventory", tdioven);
 	hdr = (tdi_hdr *)tdi->data;
 	D_PRINT(0, "Got %d and config says %d\n", hdr->n_segs, v->n_segs);
 	if (v->n_segs != hdr->n_segs) shriek(463, "inconsistent n_segs");
@@ -158,6 +161,8 @@ tdpsyn::tdpsyn(voice *v)
 	if (v->f0_smoothing) {
 		int i;
 		for (i = 0; i < MAX_OFILT_ORDER; smoothfilt[i++] = 0);
+		// CHECKME: the following two lines may be superfluous
+		basef0 = v->init_f;
 		lppitch = v->inv_sampling_rate / basef0;
 	}
 }
@@ -416,3 +421,34 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 		}
 	}
 }
+
+
+void tdioven(char *p, int l){
+	if (!scfg->_big_endian)
+		return;
+	/* Convert the header */
+	tdi_hdr* hdr = (tdi_hdr*)p;
+	hdr->samp_rate = from_le32s(hdr->samp_rate);
+	hdr->samp_size = from_le32s(hdr->samp_size);
+	hdr->bufpos = from_le32s(hdr->bufpos);
+	hdr->n_segs = from_le32s(hdr->n_segs);
+	hdr->diph_offs = from_le32s(hdr->diph_offs);
+	hdr->diph_len = from_le32s(hdr->diph_len);
+	hdr->res1 = from_le32s(hdr->res1);
+	hdr->res2 = from_le32s(hdr->res2);
+	hdr->ppulses = from_le32s(hdr->ppulses);
+	hdr->res3 = from_le32s(hdr->res3);
+	hdr->res4 = from_le32s(hdr->res4);
+	
+	/* Convert the buffer */
+	SAMPLE *bufS = (SAMPLE *)(hdr + 1);
+	uint32_t *bufL = (uint32_t *)(bufS + hdr->bufpos);
+	char *stop = p + l;
+	
+	for ( ; bufS < (SAMPLE *)bufL; bufS++)
+		*bufS = from_le16s(*bufS);
+	
+	for ( ; bufL < (uint32_t*)stop; bufL++)
+		*bufL = from_le32u(*bufL);
+}
+

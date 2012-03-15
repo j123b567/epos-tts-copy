@@ -481,6 +481,7 @@ parse_rule(text *file, hash *vars, int *count)
 	case OP_INSIDE:	 result = new r_inside(word[param], file, vars); break;
 	case OP_NEAR:	 result = new r_near(word[param], file, vars); break;
 	case OP_WITH:	 result = new r_with(word[param], file, vars); break;
+	case OP_FAIL:	 result = new r_fail(word[param]); break;
 	case OP_BEGIN:	 result = new r_block(file, vars); break;
 	case OP_END:	 return (rule *)END_OF_BLOCK;
 	case OP_CHOICE:  result = new r_choice(file, vars); break;

@@ -55,4 +55,3 @@ class voidsyn: public synth
 
 void play_segments(unit *root, voice *v);
 void show_segments(unit *root);
-synth *setup_synth(voice *v);

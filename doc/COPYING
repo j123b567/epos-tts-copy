@@ -3,6 +3,9 @@
  Foundation, but Epos itself is copyrighted by us and others 
  who actually wrote it, according to the Terms and Conditions below.
 
+ Note also that the software in the "libs" subdirectory is independent
+ and has separate licensing conditions.
+
 		Jirka Hanika <geo@cuni.cz>
 		Charles University, Prague
 

@@ -25,11 +25,8 @@
 
 #include "common.h"
 
-#ifndef HAVE_STRCASECMP
-#ifdef  HAVE_STRICMP
-	#define strcasecmp stricmp	// if only stricmp is defined
-	#define strncasecmp strnicmp
-#endif
+#ifndef FORGET_PORTAUDIO
+	#define WANT_PORTAUDIO_PABLIO
 #endif
 
 #ifdef WANT_DMALLOC
@@ -54,6 +51,13 @@
    }
 #else
 	typedef void regex_t;
+#endif
+
+#ifndef HAVE_STRCASECMP
+#ifdef  HAVE_STRICMP
+	#define strcasecmp stricmp	// if only stricmp is defined
+	#define strncasecmp strnicmp
+#endif
 #endif
 
 #ifdef HAVE_GETCWD

@@ -2,20 +2,8 @@
 [
 	NOTE.  This directory is obsolete enough to be incomprehensible.
 	Do not use except when trying to compile a command-line version
-	of Epos for DOS.  Be creative if you do.
+	of Epos for paleocomputers.  Be creative if you do.  Good Luck.
 ]
-
-
-
-target: DOS; Borland compilers
-
-	Installation.
-
-0. get cstocs and install it or fake it. It is an encoding convertor.
-1. cd src; make dos1250     (or "make dos[encoding]")
-2. copy the dos package to your dos directory and unzip it
-3. compile epos.cpp
-4. enjoy
 
 
 
@@ -28,7 +16,8 @@ another C++ compiler, you should know that
 - most of the .cc files as listed in SRC_BASE in Makefile.am
   (possibly renamed to .cpp) can be compiled separately
   using Borland makefiles (epos.bpr and say.bpr): "make -fepos.bpr"
-  but you may want to compile them together, using epos.cpp
+  but you may want to compile them together, using any compiler
+  and epos.cpp in this directory
 - the compiler should support templates, exception handling etc.
 - int type size must be at least 32 bits
 - warnings can usually be ignored, the compilers mentioned just happen

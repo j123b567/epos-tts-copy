@@ -119,8 +119,8 @@ static inline unsigned char alloc_code(wchar_t c, unsigned char hint, int cs)
 /*
  *	non_unicode_alloc_code() is generally usable for handling any necessary extensions
  *	beyond unicode.  We however use it only to supplement any charset which leaves
- *	character codes 0 to 31 unspecified with an identical mappings at these characters,
- *	which conforms to the unicode standard as well as the way these charsets are used.
+ *	character codes 0 to 31 unspecified, with an identical mapping of these characters.
+ *	This conforms both to the unicode standard and the way these charsets are used.
  */
 
 static inline wchar_t non_unicode_alloc_code(unsigned char request)
@@ -137,26 +137,42 @@ int get_count_allocated()
 	return result;
 }
 
+/*
+ *	The following function encodes strings into the internal Epos charset.
+ *
+ *	s	input string
+ *	t	output string (same buffer as s, as long as possible)
+ *	cs	character set
+ *	alloc	whether allocating previously unknown characters is allowed
+ *	c	input character under processing
+ *	u	unicode value of c
+ *	res	internal value of c (result of successful encoding)
+ */
+
 static void encode_from_8bit(unsigned char *s, int cs, bool alloc)
 {
-
+	unsigned char *t = s;
+	unsigned char c;
 	do {
-		int t = encoders[cs][*s];
-		if (t == UNDEFINED && *s) {
+		c = *s;
+		int res = encoders[cs][c];
+		if (res == UNDEFINED && c) {
 			if (alloc) {
-				wchar_t u = charsets[cs][*s];
-				if (u == UNDEFINED) u = non_unicode_alloc_code(*s);
+				wchar_t u = charsets[cs][c];
+				if (u == UNDEFINED) u = non_unicode_alloc_code(c);
 				if (u == UNDEFINED)
-					shriek(418, cs ? "Illegal character '%c' in int '%d'" : "Unspecified charset for character %c in int %d", *s, (unsigned int) *s);  // FIXME - filename
-				alloc_code(u, *s, cs);
+					shriek(418, cs ? "Illegal character '%c' in int '%d'" : "Unspecified charset for character %c in int %d", c, (unsigned int) c);  // FIXME - filename
+				alloc_code(u, c, cs);
 				continue;
 			} else if (cfg->relax_input) {
 				if (encoders[cs][(unsigned char)cfg->default_char] == UNDEFINED)
 					shriek(431, "You specified relax_input but default_char is undefined");
-				else *s = encoders[cs][(unsigned char)cfg->default_char];
-			} else shriek(431, "Parsing an unhandled character  '%c' - code %d", (unsigned int) *s, (unsigned int) *s);
-		} else *s = t;
-	} while (*s++);
+				else res = encoders[cs][(unsigned char)cfg->default_char];
+			} else shriek(431, "Parsing an unhandled character  '%c' - code %d", (unsigned int) c, (unsigned int) c);
+		}
+		*t++ = res;
+		s++;
+	} while (c);
 }
 
 void encode_string(unsigned char *s, int cs, bool alloc)

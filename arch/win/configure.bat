@@ -23,7 +23,7 @@ move nonblock.cc nonblock.cpp
 move options.cc options.cpp
 move parser.cc parser.cpp
 move rule.cc rule.cpp
-move say.cc say.cpp
+move say-epos.cc say.cpp
 move synth.cc synth.cpp
 move tcpsyn.cc tcpsyn.cpp
 move tdpsyn.cc tdpsyn.cpp

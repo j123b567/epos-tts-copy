@@ -132,5 +132,5 @@ mbrsyn::synssif(voice *v, char *b, wavefm *w)
 void
 mbrsyn::synsegs(voice *v, segment *d, int n, wavefm *w)
 {
-	shriek(462, "mbrsyn cannot render the legacy SSIF.  Hint: 'say -s'.");
+	shriek(462, "mbrsyn cannot render the legacy SSIF.  Hint: 'say-epos -s'.");
 }

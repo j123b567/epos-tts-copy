@@ -24,11 +24,13 @@
 
 #define SEG_BUFF_SIZE  1000 //unimportant
 
-#define OPCODEstr "nnet:subst:regex:postp:prep:segments:absolutize:prosody:contour:progress:regress:insert:syll:analyze:smooth:raise:debug:if:inside:near:with:{:}:[:]:<:>:nothing:error:"
+#define OPCODEstr "nnet:subst:regex:postp:prep:segments:absolutize:prosody:contour:progress:regress:insert:syll:analyze:smooth:raise:debug:if:inside:near:with:fail:{:}:[:]:<:>:nothing:error:"
 enum OPCODE {OP_NNET, OP_SUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_SEG, OP_ABSOL, OP_PROSODY, OP_CONTOUR, OP_PROGRESS, OP_REGRESS, 
 	OP_INSERT, OP_SYLL, OP_ANALYZE, OP_SMOOTH, OP_RAISE, OP_DEBUG, OP_IF, OP_INSIDE, OP_NEAR, OP_WITH,
+	OP_FAIL,
 	OP_BEGIN, OP_END, OP_CHOICE, OP_CHOICEND, OP_SWITCH, OP_SWEND, OP_NOTHING, OP_ERROR};
 		/* OP_BEGIN, OP_END and other OP's without parameters should come last
+		   OP_FAIL  compiles, and only reports an error after having been "applied"
 		   OP_ERROR would abort the compilation (never used)			*/
 enum RULE_STATUS {RULE_OK, RULE_IGNORED, RULE_BAD=-1};
 
@@ -1402,6 +1404,30 @@ class r_nothing: public rule
 	r_nothing() : rule(NULL) {};
 	virtual void apply(unit *) {};
 };
+
+
+/************************************************
+ r_fail  The following rule is used at points
+            which shouldn't be reached to report
+            an error of rule processing
+ ************************************************/
+
+
+class r_fail: public rule
+{
+   protected:
+	virtual OPCODE code() { return OP_FAIL; };
+   public:
+	r_fail(char *param) : rule(param) {};
+	virtual void apply(unit *);
+};
+
+void
+r_fail::apply(unit *root)
+{
+	shriek(463, "Cfg error %s reported from file %s", raw, debug_tag());
+}
+
 
 
 /************************************************

@@ -16,7 +16,7 @@ long options can be found in <tt>src/options.lst</tt>.  (See approximately
 line 320 and below. Every line represents at most one option for every
 option class as explained below. The option name is quoted; its
 semantics is usually explained following the option.)  You can also
-list the option names and types using <tt>epos -H</tt>.
+list the option names and types using <tt>eposd -H</tt>.
 
 <sect1> Option Classes
 <p>
@@ -116,7 +116,7 @@ a colon and an empty string to the previous value.
 
 Whenever the program starts up, it reads a number of configuration
 files, setting up the initial (default) values of the options.
-These are located under <tt>/usr/share/epos</tt> (unless overidden
+These are located under <tt>/usr/local/share/epos</tt> (unless overidden
 at configure/compile time or
 with the <tt>--base&lowbar;dir</tt> option on the command line). By convention,
 configuration file names have the ".ini" suffix.
@@ -127,7 +127,7 @@ registry key to set the value of <tt>Path</tt> to a path leading
 to the configuration files.  This value can still be overridden
 by the command line.)
 
-Unless overridden, three files in <tt>/usr/share/epos/cfg</tt> will be processed
+Unless overridden, three files in <tt>/usr/local/share/epos/cfg</tt> will be processed
 to setup the global configuration: <tt>fixed.ini</tt>, <tt>epos.ini</tt> and
 either <tt>ansi.ini</tt> or <tt>rtf.ini</tt> (depending on the preferred
 output format if colored output is turned on -- either ANSI escape sequences
@@ -139,10 +139,10 @@ The global parameters include a list of <em>languages</em>, or language
 configurations which will be parsed when the global configuration is set up.
 Every language <tt>.ini</tt> file in turn contains a list of <em>voices</em> to be
 configured for this particular language. Language configuration files
-are located under <tt>/usr/share/epos/lng/*/*.ini</tt>, voice configuration files
-under <tt>/usr/share/epos/inv/*/*.ini</tt>, where <tt>*</tt> represents any string
+are located under <tt>/usr/local/share/epos/lng/*/*.ini</tt>, voice configuration files
+under <tt>/usr/local/share/epos/inv/*/*.ini</tt>, where <tt>*</tt> represents any string
 listed in the list of languages (or voices for a language). Go see the real
-files under <tt>/usr/share/epos/cfg/*.ini</tt> for an example.
+files under <tt>/usr/local/share/epos/cfg/*.ini</tt> for an example.
 
 <sect2> Configuration File Format Overview
 <p>
@@ -245,7 +245,7 @@ are available for diagnostic purposes.
 <p>
 
 Command line option values can be passed to Epos
-at server startup, or to the <tt/say/ utility.
+at server startup, or to the <tt/say-epos/ utility.
 The behavior of these two command lines is very similar, though not identical.
 The monolithic Epos executable should not deviate from the server executable,
 unless specified otherwise.
@@ -267,7 +267,7 @@ they never take a value.
 Technically speaking, this subsection doesn't really concern the options,
 but it is nevertheless included.
 
-The main purpose of the <tt/say/ utility is to convert a specified
+The main purpose of the <tt/say-epos/ utility is to convert a specified
 text to speech.  Therefore, any command line text which is not part of an option
 name or option value is concatenated together with spaces, and
 sent to the server for the usual processing (TTS and phonetic
@@ -290,16 +290,16 @@ the TTSCP server executable.  It is accepted and silently ignored.
 <sect2> Long Options
 <p>
 
-The long options are also available through the <tt/say/ utility;
+The long options are also available through the <tt/say-epos/ utility;
 in such case, the long option is passed to the TTSCP server
-without any effect on the <tt/say/ client.
+without any effect on the <tt/say-epos/ client.
 
 The ordering of the options on the command line is usually not significant,
 unless the current language or voice is switched during the processing.
 An example:
 
 <tscreen><verb>
-say --language german --pausing "Wie geht es?" --show_segments
+say-epos --language german --pausing "Wie geht es?" --show_segments
 </verb></tscreen>
 
 This sets the default language to German, enables pausing after each
@@ -310,7 +310,7 @@ to be transcribed and synthesized is given on the command line as well
 (it must be quoted unless it consists of a single word).
 
 The list of all available long options together with their types
-can be obtained with <tt>epos -H</tt> of the main program (not the client
+can be obtained with <tt>eposd -H</tt> of the main program (not the client
 stub, sorry).  The semantics of nearly all individual long options is described
 <ref id="indivopts" name="below">.
 
@@ -318,13 +318,13 @@ For turning long boolean options off, it is possible to give their name
 with three dashes. Therefore,
 
 <tscreen><verb>
-say ---show_transcript "Say this, do not show the transcription"
+say-epos ---show_transcript "Say this, do not show the transcription"
 </verb></tscreen>
 
 is equivalent to
 
 <tscreen><verb>
-say --show_transcript off "Say this, do not show the transcription"
+say-epos --show_transcript off "Say this, do not show the transcription"
 </verb></tscreen>
 
 Refer to the <ref id="indivopts" name="individual options"> section
@@ -336,11 +336,11 @@ for documentation on available long options.
 Two pseudo-options <tt/--language/ and <tt/--voice/ can be used to switch
 the current language or voice, or to specify options for other than the
 default language or voice.  There may be multiple options of this kind
-given to the <tt/say/ utility or the monolithic Epos executable, and
+given to the <tt/say-epos/ utility or the monolithic Epos executable, and
 their ordering is important.  For example,
 
 <tscreen><verb>
-say Something. --init_f 80 --voice vichova
+say-epos Something. --init_f 80 --voice vichova
 </verb></tscreen>
 
 doesn't do the expected thing, i.e. use the voice named "vichova"
@@ -350,7 +350,7 @@ then the voice is switched to the specified one.  To get the
 intended behavior, reorder the command line:
 
 <tscreen><verb>
-say Something. --voice vichova --init_f 80
+say-epos Something. --voice vichova --init_f 80
 </verb></tscreen>
 
 <sect2> Short Options
@@ -363,28 +363,28 @@ Usual conventions for merging short options into a single string
 are available, and the example above may thus be abbreviated as
 
 <tscreen><verb>
-say --language german -p "Wie geht es?" -d
+say-epos --language german -p "Wie geht es?" -d
 </verb></tscreen>
 
 or even 
 
 <tscreen><verb>
-say --language german -pd "Wie geht es?"
+say-epos --language german -pd "Wie geht es?"
 </verb></tscreen>
 
 (There is no short option for <tt>--language</tt>.)
 
-The short options are interpreted directly by the <tt/say/ utility;
+The short options are interpreted directly by the <tt/say-epos/ utility;
 that's why the list of short options available with this utility
 is different from the list of short options available with the server
 or the monolithic Epos executable.
 A list of (the most of) the server short options can be obtained with
-<tt>epos --help</tt>, or <tt>epos -h</tt>/.  A list of (the most of)
-short options understood by the <tt/say/ utility can be obtained with
-<tt>say -h</tt>.  Such list however includes undocumented options
+<tt>eposd --help</tt>, or <tt>eposd -h</tt>/.  A list of (the most of)
+short options understood by the <tt/say-epos/ utility can be obtained with
+<tt>say-epos -h</tt>.  Such list however includes undocumented options
 which may disappear in the next releases.
 
-Please keep in mind that the say utility is only an example of a TTSCP
+Please keep in mind that the <tt>say-epos</tt> utility is only an example of a TTSCP
 client and not a full-fledged controlling interface to Epos.
 
 <sect3> Server Short Options
@@ -614,7 +614,7 @@ options have been set.
 
 Most individual options will be described in this section.  The rest are either
 straightforward or rarely useful. A complete list of options can be obtained
-through <tt/epos -H/ or in <tt>src/options.lst</tt>.
+through <tt/eposd -H/ or in <tt>src/options.lst</tt>.
 
 The type and the semantic class of the argument is indicated for all individual
 options except for truth value (<tt/on//<tt/off/) options.  This is because
@@ -1398,7 +1398,7 @@ of those adjustments themselves.
 <sect2> File Naming <label id="file-naming">
 <p>
 In Epos, most of the files ever opened are located in a single directory tree.
-This tree usually starts at <tt>/usr/share/epos</tt>, but it can be changed at
+This tree usually starts at <tt>/usr/local/share/epos</tt>, but it can be changed at
 configure time.  For example, after issuing
 
 <tscreen>
@@ -1442,7 +1442,7 @@ unless stated otherwise.
 <tscreen>
 <verb>
 cd src
-./epos --base_dir ../cfg
+./eposd --base_dir ../cfg
 </verb>
 </tscreen>
 
@@ -1551,6 +1551,24 @@ change them in the configuration files instead and request Epos
 <ref id="reinitialization" name="reinitialization">.
 
 <descrip>
+<tag>--preload&lowbar;voices</tag>
+	When set, Epos tries to initialize the synthesizer
+	configurations for all voices during the startup.
+	This will cause unreachable remote voices and
+	local voices without a speech inventory installed
+	to disappear from the configuration.  This option
+	will cause a considerable increase in memory consumption or
+	startup time in some cases.
+<tag>--prefer&lowbar;portaudio</tag>
+	This option has no effect unless Epos has been compiled
+	with the <tt>--enable-portaudio=yes</tt> option (a configure
+	option, not an Epos option).  Epos normally supports an
+	unlimited number of OSS sound cards, one of them representing
+	the <tt>&num;localsound</tt> TTSCP output module.  With this
+	option, Epos will use the PortAudio library for
+	<tt>&num;localsound</tt> output instead.  Using this option
+	has adverse impact on some functionality, such as the <tt/intr/
+	TTSCP command.
 <label id="daemon-log-option">
 <tag>--daemon&lowbar;log <sl/filename/</tag>
 	The value is a file name. This option can be used to set the file

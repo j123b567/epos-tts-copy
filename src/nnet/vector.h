@@ -4,6 +4,10 @@
 #include "iterator.h"
 #include "base.h"
 
+template<class T> inline T Max (const T &x, const T &y) { return x > y ? x : y; }
+template<class T> inline T Min (const T &x, const T &y) { return x < y ? x : y; }
+
+
 template<class T> class TVector {
 protected:
 	int capacity;

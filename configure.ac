@@ -2,42 +2,62 @@
 dnl Process this file with autoconf to produce a configure script
 
 AC_INIT(src/unit.cc)
-AM_INIT_AUTOMAKE(epos, 2.5.27)
-AC_PREFIX_DEFAULT(/usr)
+AM_INIT_AUTOMAKE(epos, 2.5.28)
+AC_PREFIX_DEFAULT(/usr/local)
 
 CCC="g++ c++ cc++ gcc cc"
 AC_PROG_CC
 AC_PROG_CXX
 if test $GXX = yes; then 
 	if $CXX -v 2>&1 | grep -q egcs
-		then CXXFLAGS="-Wall -Wunused -pipe -gstabs+ -fdefer-pop -O"
-		else CXXFLAGS="-Wall -Wunused -gstabs+ -O"
+		then AM_CXXFLAGS="-Wall -Wunused -pipe -gstabs+ -fdefer-pop -O"
+		else AM_CXXFLAGS="-Wall -Wunused -gstabs+ -O"
 	fi
-	else CXXFLAGS=-O
+	else AM_CXXFLAGS=-O
 fi
 
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
+AC_SUBST(AM_CXXFLAGS)
 AC_PROG_MAKE_SET
 
-AC_ARG_WITH(dmalloc, --with-dmalloc        dmalloc debugging library (developers only),
+AC_ARG_WITH(dmalloc, AC_HELP_STRING([--with-dmalloc], [dmalloc debugging library (developers only)]),
 	if test $withval = yes; then
-		CXXFLAGS="$CXXFLAGS -DWANT_DMALLOC"
+		CXXFLAGS="${CXXFLAGS} -DWANT_DMALLOC"
 		LIBS="$LIBS -ldmalloc -L/usr/local/lib"
 	fi
 )
-dnl AC_ARG_WITH(regex, --with-regex            regular expression substitution, , )
-AC_ARG_ENABLE(charsets, --enable-charsets    allow automatic conversions between character sets,
-	if test $enableval = no; then
-		CXXFLAGS = "$CXXFLAGS -DFORGET_CHARSETS"
+dnl AC_ARG_WITH(regex, --with-regex       regular expression substitution, , )
+AC_ARG_ENABLE(charsets, AC_HELP_STRING([--enable-charsets], [allow automatic conversions between character sets]),
+	if test x$enableval = xno; then
+		CXXFLAGS="${CXXFLAGS} -DFORGET_CHARSETS"
 	fi,
 )
+AC_ARG_ENABLE(portaudio, AC_HELP_STRING([--enable-portaudio], [alternative sound output method]),
+	[case "x$enableval" in
+		xno)
+			EXTRA_PORTAUDIO_DEFS="-DFORGET_PORTAUDIO"
+			EXTRA_PORTAUDIO_LIBS=""
+			;;
+		xyes)
+			EXTRA_PORTAUDIO_DEFS=""
+			EXTRA_PORTAUDIO_LIBS="-lportaudio -lpablio -L../libs/portaudio/lib -lpthread"
+			;;
+		*)	AC_MSG_ERROR(bad value $enableval for --enable-portaudio) ;;
+	esac],
+	[EXTRA_PORTAUDIO_LIBS=""
+	 EXTRA_PORTAUDIO_DEFS="-DFORGET_PORTAUDIO"]
+)
+AM_CONDITIONAL(PORTAUDIO, test ${EXTRA_PORTAUDIO_DEFS} = "")
 
 AC_LANG_CPLUSPLUS
 
 AC_CHECK_PROGS(LNK, ld wlink, linker)
 AC_CHECK_LIB(stdc++, main)
-AC_SEARCH_LIBS(regcomp, c rx regex)
+AC_SEARCH_LIBS(regcomp, c rx regex System, EXTRA_REGEX_OBJ="", EXTRA_REGEX_OBJ="../libs/regex/rx.$(OBJEXT)")
+AC_SUBST([EXTRA_REGEX_OBJ])
+AC_SUBST([EXTRA_PORTAUDIO_LIBS])
+AC_SUBST([EXTRA_PORTAUDIO_DEFS])
 AC_CHECK_LIB(socket, main)
 AC_CHECK_LIB(lnsl, main)
 AC_LANG_CPLUSPLUS
@@ -200,6 +220,8 @@ fi
 
 
 AM_CONFIG_HEADER(config.h)
+#AC_CONFIG_SUBDIRS(libs/portaudio)
 AC_OUTPUT(Makefile src/Makefile src/nnet/Makefile src/tests/Makefile \
+	libs/Makefile libs/regex/Makefile libs/portaudio/Makefile \
 	cfg/Makefile arch/Makefile doc/Makefile)
 

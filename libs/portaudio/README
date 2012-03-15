@@ -1,0 +1,11 @@
+We are considering including PortAudio 18 or pre-19 at this place
+and building it conditionally.  We cannot use a system-wide
+pre-installed PortAudio instead as it never includes PABLIO.
+
+If you want to put portaudio here and reconfigure with
+--enable-portaudio=yes
+please don't forget to distclean the whole tree and then
+to disable the output of libs/portaudio/Makefile in
+Epos configure.ac.
+
+This situation is temporary.  (Or it was in April 2005.)

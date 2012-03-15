@@ -14,7 +14,7 @@
  *
  *	This file can be included with cfg pointing to two very different
  *	structures.  The usual interpretation, the one compiled into client.o,
- *	is a few hundred bytes long structure.  However, when the "say" client
+ *	is a few hundred bytes long structure.  However, when the "say-epos" client
  *	is compiled, this file is #included directly and now cfg points to
  *	a fake constant structure with only a few items needed to compile
  *	this file.  This scheme is probably too clever to keep, but anyway,
@@ -246,8 +246,6 @@ int sputs(const char *buffer, int sd)
 	} while (len);
 	return total;
 }
-
-
 
 int getaddrbyname(const char *inet_name)
 {

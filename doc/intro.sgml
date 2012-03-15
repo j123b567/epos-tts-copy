@@ -37,7 +37,7 @@ has finished. That's why Epos is implemented as a background process, i.e.
 as a daemon under UNIX-like OSes and as a service on Windows NT and similar OSes.
 Epos reserves a TCP/IP port for any communication with client applications
 using a custom, quite generic protocol for TTS data flow control, 
-called TTSCP.  A simple TTSCP client utility named <tt/say/ has been provided
+called TTSCP.  A simple TTSCP client utility named <tt/say-epos/ has been provided
 with Epos, but there are many more specialized TTSCP clients in existence.
 
 Epos currently supports several main speech generation algorithms.  

@@ -17,6 +17,7 @@
 
 #include "epos.h"
 #include "client.h"
+#include "endian_utils.h"
 
 #ifdef HAVE_FCNTL_H
 	#include <fcntl.h>
@@ -60,7 +61,8 @@
 	#include <io.h>		/* open, (ioctl,) ... */
 #endif
 
-int localsound = -1;
+#define SOUNDCARD_NOT_OPEN -1
+int localsound = SOUNDCARD_NOT_OPEN;
 
 #ifndef SNDCTL_DSP_SYNC
 	#ifndef SOUND_PCM_SYNC
@@ -79,6 +81,14 @@ int localsound = -1;
 	#define IBM_FORMAT_MULAW	0x0101
 #endif
 
+void select_local_soundcard()
+{
+	#ifdef WANT_PORTAUDIO_PABLIO
+		if (scfg->prefer_portaudio) {
+			set_option("local_sound_device", NULL_FILE);
+		}
+	#endif
+}
 
 static int downsample_factor(int working, int out)
 {
@@ -152,7 +162,7 @@ wavefm::wavefm(voice *v)
 	samp_rate = v->inv_sampling_rate;
 //	samp_size_bytes = sizeof(SAMPLE);
 	channel = v->channel;
-	int stereo = channel==CT_MONO ? 0 : 1;
+	int stereo = channel == CT_MONO ? 0 : 1;
 	if (this_voice->sample_size <= 0 || (this_voice->sample_size >> 3) > (signed)sizeof(int))
 		shriek(447, "Invalid sample size %d", this_voice->sample_size);
 	if (cfg->ulaw && !cfg->wave_header)
@@ -175,9 +185,7 @@ wavefm::wavefm(voice *v)
 	hdr.alignment = sizeof(SAMPLE); hdr.samplesize = sizeof(SAMPLE) << 3;
 	hdr.fmt_length = 0x010;
 
-//	written_bytes = 0;
 	hdr.total_length = - RIFF_HEADER_SIZE;
-//	hdr.total_length = hdr.written_bytes - RIFF_HEADER_SIZE;
 
 //	write(fd, wavh, sizeof(wave_header));         //zapsani prazdne wav hlavicky na zacatek souboru
 
@@ -205,7 +213,11 @@ wavefm::wavefm(voice *v)
 
 wavefm::~wavefm()
 {
-	if (fd != -1) detach();
+	if (fd != -1) {
+		/* This may also happen if an attach(fd) throws an exception. */
+		D_PRINT(3, "A detach() call seems to have been missed.\n");
+		detach(fd);
+	}
 	if (buffer) free(buffer);
 	if (cp_buff) free(cp_buff);
 	if (adtl_buff) free(adtl_buff);
@@ -252,7 +264,7 @@ wavefm::~wavefm()
 const static inline bool ioctlable(int fd)
 {
 	int tmp;
-	return !ioctl (fd, SNDCTL_DSP_GETBLKSIZE, &tmp);
+	return !ioctl(fd, SNDCTL_DSP_GETBLKSIZE, &tmp);
 }
 
 static inline void set_samp_size(int fd, int samp_size_bits)
@@ -318,7 +330,7 @@ static inline void reset_soundcard(int fd)
 
 static const inline bool ioctlable(int fd)
 {
-	return fd == localsound && fd != -1;
+	return fd == localsound && fd != SOUNDCARD_NOT_OPEN;
 }
 
 #else
@@ -363,6 +375,109 @@ static inline void reset_soundcard(int fd)
 
 #endif		// FORGET_SOUND_IOCTLS
 
+/*
+ *	The following function does NOT test whether the data represented
+ *	has actually been written out.  Anyway: if the data is untranslated,
+ *	something is wrong.
+ */
+
+int
+wavefm::written_bytes()
+{
+	if (!translated) {
+		shriek(462, "Early query! hdr.total_length may not be little-endian");
+	}
+	return from_le32s(hdr.total_length) + RIFF_HEADER_SIZE;
+}
+
+
+
+#ifdef WANT_PORTAUDIO_PABLIO
+
+#include "../libs/portaudio/pa_common/portaudio.h"
+#include "../libs/portaudio/pablio/pablio.h"
+
+inline const char *pa_get_error_text(PaError err)
+{
+	if (err == paHostError) {
+		sprintf(scratch, "Driver error %d, unknown to PortAudio", Pa_GetHostError());
+		return scratch;
+	} else {
+		return Pa_GetErrorText(err);
+	}
+}
+
+inline void
+wavefm::portaudio_detach()
+{
+	if (pablio_stream) {
+		PaError err = CloseAudioStream( (PABLIO_Stream*)pablio_stream );
+		if (err != paNoError) {
+			shriek(465, "Failed to close Portaudio/PABLIO stream (%s).", pa_get_error_text(err));
+		}
+	}
+	pablio_stream = NULL;
+}
+
+PaSampleFormat deduce_sample_format(int samplesize)
+{
+	switch (from_le16s(samplesize)) {
+		case 8: return paInt8;
+		case 16: return paInt16;
+		case 32: return paInt32;
+		default: shriek(862, "Unsupported samplesize (%d) for Portaudio output.", samplesize);
+	}
+}
+
+inline void
+wavefm::portaudio_attach()
+{
+	int flags = channel == CT_MONO ? PABLIO_MONO : PABLIO_STEREO;
+	flags |= PABLIO_WRITE;
+
+	D_PRINT(2, "Using PortAudio Blocking I/O for sound output\n");
+
+	PaError err;
+	err = OpenAudioStream( (PABLIO_Stream**)&pablio_stream, from_le16s(hdr.sf1), deduce_sample_format(hdr.samplesize), flags);
+	if (err != paNoError) {
+		shriek(445, "Failed to open Portaudio/PABLIO stream (%s).", pa_get_error_text(err));
+	}
+}
+
+inline void
+wavefm::portaudio_flush(const char *o_buff, int o_buff_size)
+{
+	if (fd == localsound && pablio_stream) {
+		int ss;
+		ss = (from_le16s(hdr.samplesize) >> 3) * from_le16s(hdr.numchan); /* sample size in bytes (all channels) */
+		int o_buff_num = o_buff_size / ss; /* sample size in bytes */
+		if (ophase == 1) {
+			written = ss * WriteAudioStream((PABLIO_Stream*)pablio_stream, const_cast<char *>(o_buff), o_buff_num);
+		} else {
+			written = o_buff_size;
+		}
+	} else written = 0;
+}
+
+#else		/* WANT_PORTAUDIO_PABLIO */
+
+inline void
+wavefm::portaudio_detach()
+{
+}
+
+inline void
+wavefm::portaudio_attach()
+{
+}
+
+inline void
+wavefm::portaudio_flush(const char *, int)
+{
+	written = 0;
+}
+
+#endif		/* WANT_PORTAUDIO_PABLIO */
 
 void
 wavefm::ioctl_attach()
@@ -381,6 +496,9 @@ wavefm::ioctl_attach()
 		WAVEFORMATEX   pFormat;
 		if (activebuffie)
 			while (!(wavehdr.dwFlags & WHDR_DONE)) ;  // FIXME: busy waiting
+
+		D_PRINT(2, "Using Multi-media System for sound output\n");
+
 		pFormat.wFormatTag = hdr.datform;
 		pFormat.wBitsPerSample = hdr.samplesize;
 		pFormat.nSamplesPerSec = hdr.sf1;
@@ -408,6 +526,8 @@ wavefm::ioctl_attach()
 		if (dwResult != 0)
 			shriek(445, "Cannot write to wave device ...");
 	}
+#else
+	D_PRINT(2, "Using Open Sound System for sound output\n");
 #endif
 }
 
@@ -415,12 +535,15 @@ wavefm::ioctl_attach()
 void
 wavefm::detach(int)
 {
+	if (fd == localsound && scfg->prefer_portaudio) {
+		portaudio_detach();
+	}
 	while (flush()) ;		// FIXME: think slow network write
 	D_PRINT(2, "Detaching waveform\n");
 	sync_soundcard(fd);		// FIXME: necessary, but unwanted
 	D_PRINT(0, "Ioctlability of %d is %c\n", fd, '0' + ioctlable(fd));
 	if (cfg->wave_header && !ioctlable(fd)) write_header();
-	fd = -1;
+	fd = SOUNDCARD_NOT_OPEN;
 }
 
 void
@@ -436,15 +559,20 @@ wavefm::attach(int d)
 {
 	D_PRINT(2, "Attaching waveform\n");
 	fd = d;
+	
 	translate();
-	hdr.total_length = get_total_len() - RIFF_HEADER_SIZE;
+	hdr.total_length = to_le32s(get_total_len() - RIFF_HEADER_SIZE);
+	
+	if (fd == localsound && scfg->prefer_portaudio) {
+		portaudio_attach();
+	}
 	if (ioctlable(fd)) {
 		ioctl_attach();
 	}
 	D_PRINT(0, "(attached, now flushing predata)\n");
 	if (hdr.buffer_idx) flush();
 	D_PRINT(0, "(predata flushed)\n");
-	if (buff_size) buffer = buffer ? (SAMPLE *)xrealloc(buffer, buff_size * sizeof(SAMPLE)) : (SAMPLE *)xmalloc(buff_size);
+	if (buff_size) buffer = buffer ? (SAMPLE *)xrealloc(buffer, buff_size * sizeof(SAMPLE)) : (SAMPLE *)xmalloc(buff_size * sizeof(SAMPLE));
 }
 
 void
@@ -452,6 +580,8 @@ wavefm::attach()
 {
 	char *output;
 	int d;
+
+	D_PRINT(1, "wavefm::attach() with no descriptor\n");
 
 	if (fd != -1) shriek(862, "Nested voice::attach()");
 	if (!scfg->play_segments) scfg->local_sound_device = NULL_FILE;
@@ -474,6 +604,8 @@ wavefm::attach()
 void
 wavefm::detach()
 {
+
+	D_PRINT(1, "wavefm::detach() closes the descriptor\n");
 	int from_fd = fd;
 	detach(fd);
 	async_close(from_fd);
@@ -532,6 +664,24 @@ wavefm::band_filter(int ds)
 	D_PRINT(0, "\n");
 }
 
+inline void
+wavefm::force_little_endian_header()
+{
+	if (!scfg->_big_endian)
+		return;
+	hdr.total_length =to_le32s(hdr.total_length);
+	hdr.fmt_length = to_le32s(hdr.fmt_length);
+	hdr.datform = to_le16s(hdr.datform);
+	hdr.numchan = to_le16s(hdr.numchan);
+	hdr.sf1 = to_le16s(hdr.sf1);
+	hdr.sf2 = to_le16s(hdr.sf2);
+	hdr.avr1 = to_le16s(hdr.avr1);
+	hdr.avr2 = to_le16s(hdr.avr2);
+	hdr.alignment = to_le16s(hdr.alignment);
+	hdr.samplesize = to_le16s(hdr.samplesize);
+	hdr.buffer_idx = to_le32s(hdr.buffer_idx);
+}
+
 #define put_sample(sample) *(int *)newbuff = sample, newbuff += ssbytes;
 
 inline void
@@ -543,9 +693,13 @@ wavefm::translate_data(char *newbuff)
 	int shift1 = (sizeof(int) - sizeof(SAMPLE)) << 3;
 	int shift2 = scfg->_big_endian ? 0 : (sizeof(int) - ssbytes) << 3;
 	int unsign = ssbytes == 1 ? 0x80 : 0;
+
+	bool ulaw = cfg->ulaw;
+	bool native_byte_order = (fd == localsound);
+
 	for (int i = 0; i < hdr.buffer_idx; i += downsamp) {
 		int sample = buffer[i];
-		if (cfg->ulaw) {		// Convert from 16 bit linear to ulaw. 
+		if (ulaw) {		// Convert from 16 bit linear to ulaw. 
 			int sign = (sample >> 8) & 0x80;          
 	                if (sign) sample = -sample;              
 	                int exponent = exp_lut[(sample >> 7) & 0xFF];
@@ -556,6 +710,7 @@ wavefm::translate_data(char *newbuff)
 			sample >>= shift2;
 			sample += unsign;
 		}
+		sample = native_byte_order ? sample : to_le32s(sample);
 		switch(channel)
 		{
 			case CT_MONO:	put_sample(sample); break;
@@ -571,11 +726,32 @@ wavefm::translate()
 {
 	D_PRINT(1, "Translating waveform, buffer_idx=%d\n", hdr.buffer_idx);
 	if (translated || !hdr.buffer_idx) return;
+
+#ifdef WANT_PORTAUDIO_PABLIO
+	/*
+	 *	This hack is related to the unfortunate behavior of some PortAudio
+	 *	implementations which feed a mono signal to channel 0 only.
+	 *	The hack however does NOT try to adjust the signal to stereo
+	 *	if tcpsyn is used (voices of type Internet). The received
+	 *	waveforms are never messed with.
+	 */
+	if (fd == localsound && scfg->prefer_portaudio) {
+		if (channel == CT_MONO) {
+			/* 
+			 * Some PortAudio drivers treat CT_MONO as CT_LEFT.  Working around.
+			 */
+			channel = CT_BOTH;
+			hdr.numchan = 2;
+			hdr.sf2 = hdr.sf1;
+			hdr.avr2 = hdr.avr1;
+		}
+	}
+#endif
 	
-	int working_size = sizeof (SAMPLE);
+	int working_size = sizeof(SAMPLE);
 	working_size *= downsamp;
 
-	int target_size = this_voice->sample_size >> 3;
+	int target_size = (this_voice->sample_size + 7) >> 3;
 	target_size *= (1 + (channel != CT_MONO));
 
 	D_PRINT(1, "Downsampling by %d, each %d byte frame becomes %d bytes\n", downsamp, working_size, target_size);
@@ -588,9 +764,9 @@ wavefm::translate()
 	}
 	
 	if (downsamp == 1 && working_size == target_size && channel == CT_MONO
-						&& !cfg->ulaw) goto finis;
-	if (working_size < target_size) {
-		char *newbuff = (char *)xmalloc(hdr.buffer_idx * target_size / downsamp);
+						&& !cfg->ulaw && !scfg->_big_endian) goto finis;
+	if (true || working_size < target_size) {	/* see put_sample() to appreciate the risks of doing the translation in situ */
+		char *newbuff = (char *)xmalloc(hdr.buffer_idx * target_size / downsamp + sizeof(int));
 		translate_data(newbuff);
 		free(buffer);
 		buffer = (SAMPLE *)newbuff;
@@ -604,9 +780,10 @@ wavefm::translate()
 	hdr.alignment = target_size;	hdr.samplesize = this_voice->sample_size;
 	if (cfg->ulaw) hdr.datform = IBM_FORMAT_MULAW;
    finis:
-	translated = true;
-	hdr.buffer_idx = (hdr.buffer_idx + 1) / downsamp * target_size;
 	D_PRINT(0, "Setting buffer_idx to %d\n", hdr.buffer_idx);
+	hdr.buffer_idx = (hdr.buffer_idx + 1) / downsamp * target_size;
+	force_little_endian_header();
+	translated = true;
 }
 
 /*
@@ -674,7 +851,16 @@ wavefm::get_ophase_buff(const w_ophase *p)
 inline int
 wavefm::get_ophase_len(const w_ophase *p)
 {
-	return (p->inlined ? (int)p->len : *(int *)((char *)this + (int)p->len)) + p->adjustment;
+	int tmp;
+	if (p->inlined) {
+		tmp = (int)p->len;
+	} else {
+		tmp = *(int *)((char *)this + (int)p->len);
+		if (translated) {
+			tmp = from_le32s(tmp);
+		}
+	}
+	return tmp + p->adjustment;
 }
 
 inline bool
@@ -699,13 +885,6 @@ wavefm::update_ophase()
 	}
 }
 
-int perverse(int bytes)
-{
-	if (bytes < 20000) return bytes;
-	return 20000;
-}
-
-
 bool
 wavefm::flush()
 {
@@ -725,9 +904,16 @@ wavefm::flush()
 	const char *o_buff = get_ophase_buff(&ophases[ophase]) + ooffset;
 	int o_buff_size = get_ophase_len(&ophases[ophase]) - ooffset;
 
-	written = ywrite(fd, o_buff, perverse(o_buff_size));
-	if (1 > written) return flush_deferred();
-	
+	if (scfg->prefer_portaudio) {
+		portaudio_flush(o_buff, o_buff_size);
+	}
+
+	if (!written) {
+		written = ywrite(fd, o_buff, o_buff_size);
+	}
+	if (1 > written) {
+		return flush_deferred();
+	}
 	ooffset += written;
 
 	D_PRINT(2, "Flushing the signal, wrote %d bytes out of %d, leaving %d\n", written, o_buff_size, o_buff_size - written);
@@ -739,25 +925,26 @@ wavefm::flush()
 bool
 wavefm::flush_deferred()
 {
-	D_PRINT(2, "Flushing the signal (deferred)\n");
+//	D_PRINT(2, "Flushing the signal (deferred)\n");
 	D_PRINT(1, "adtlhdr.len is %d\n", adtlhdr.len);
 	written = 0;
-	if (hdr.buffer_idx + 4 <= buff_size)
-		return true;
-	buff_size <<= 1;
-	buffer = (SAMPLE *)xrealloc(buffer, buff_size * sizeof(SAMPLE));
+
+	int used = translated ? from_le32s(hdr.buffer_idx) : hdr.buffer_idx;
+	if (used + 4 > buff_size) {
+		buff_size <<= 1;
+		buffer = (SAMPLE *)xrealloc(buffer, buff_size * sizeof(SAMPLE));
+	}
 	return true;
 }
 
 void
 wavefm::write_header()
 {
-//	hdr.total_length = hdr.written_bytes + WAVE_HEADER_SIZE;
 	if (lseek(fd, 0, SEEK_SET) == -1)
 		return;		/* devices incapable of lseek() don't need
 				 *	the length field filled in correctly
 				 */
-	D_PRINT(2, "Writing wave file header, %d bytes", sizeof(wave_header));
+	D_PRINT(2, "Writing wave file header, %d bytes\n", sizeof(wave_header));
 	ywrite(fd, &hdr, sizeof(wave_header));         //zapsani prazdne wav hlavicky na zacatek souboru
 }
 
@@ -786,7 +973,7 @@ wavefm::put_chunk(labl *chunk_template, const char *string)
 }
 
 void
-wavefm::label(int pos, char *label, const char *note)
+wavefm::label(int pos, char *label, const char *note)	// FIXME: does not work on big-endians
 {
 	if (current_cp) {
 		if (!(current_cp & (current_cp - 1)))
@@ -827,7 +1014,6 @@ wavefm::become(void *b, int size)
 	memcpy(buffer, (char *)b + sizeof(wave_header), size);
 	buff_size = size;
 	hdr.buffer_idx = size;
-//	written_bytes = 0;
 	channel = hdr.sf2 ? CT_BOTH : CT_MONO;
 	samp_rate = hdr.sf1;
 }

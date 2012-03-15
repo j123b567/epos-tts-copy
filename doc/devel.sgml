@@ -275,7 +275,7 @@ agent
 <p>
 
 The Epos package contains three TTSCP clients.  One of them is the standalone
-<tt/say/ utility, which is provided as a good and simple example of a TTSCP
+<tt/say-epos/ utility, which is provided as a good and simple example of a TTSCP
 client.  We suggest to use it as a starting point for developing specialized
 TTSCP clients, even though it is already somewhat crufty.
 
@@ -286,7 +286,7 @@ server implementation.
 A standalone test suite is compiled under the name <tt/vrfy/.  It is currently
 only trying a few standard tricks to crash the server and is far from being
 a rigorous test suite.  However, it manages to catch much more programming
-errors than <tt/say/ and we recommend to run it after making any changes to
+errors than <tt/say-epos/ and we recommend to run it after making any changes to
 the source code of Epos.  This test suite assumes Epos has been configured
 correctly and is listening at the standard TTSCP port.  Don't be surprised
 if a bug found by <tt/vrfy/ turns out to be a false alarm because of a bug
@@ -305,13 +305,15 @@ written with UNIX developer's tastes, and it is also partly true
 of this documentation.  The following should give you an approximate
 look at the degree of support for some most common operating systems.
 
+<p>
+
 <sect2> Linux
 <p>
 
 The primary development OS.  The most of the testing is done
 under Debian and Red Hat distributions.  Please report
 to us any compilation issues which may be distribution related,
-these will be the most easy ones to solve.
+these will be the easiest ones to solve.
 
 <sect2> Other UNIX Clones
 <p>
@@ -329,6 +331,11 @@ within the UNIX world.  Features like <tt>syslog</tt> are welcomed
 and used, but only if the corresponding system header file is detected
 by <tt>autoconf</tt>.
 
+<p>
+
+For sound output, OSS is preferred (if detected); otherwise,
+the Portable Audio library conveniently provided with Epos is used.
+
 <sect2> QNX
 <p>
 
@@ -345,7 +352,7 @@ this easily if you really need this and provide us with a QNX machine.
 See the <tt>arch/win</tt> directory for architectural differences from UNIX.
 Be aware of the following three differences of Epos's behavior
 on these operating systems:  the <tt/mmsystem/ (Microsoft Multimedia System)
-library is used instead of <tt>/dev/dsp</tt> for speech output;
+library is used instead of <tt>/dev/dsp</tt> (Open Sound System) for speech output;
 Epos compiles and runs as an NT service named <tt/ttscp/, instead of a UNIX-style
 daemon; you can use registry to locate the configuration files.
 
@@ -413,9 +420,9 @@ Please contact the authors for advice with any OS significantly different from
 the UNIX and Windows families.  However, the approximate requirements are:
 
 <itemize>
-	<item> Architecture: 32bit little endian
-	<item> Reliable and complete C++ compiler
-	<item> Standard C library, preferably including regular expression handling
+	<item> Architecture: 32bit (big endian is OK)
+	<item> Reliable C++ compiler (no libraries needed)
+	<item> Standard C library
 	<item> 8-bit ASCII based character set
 	<item> TCP/IP networking
 </itemize>
@@ -449,5 +456,5 @@ If you have any code or development related comment or question about Epos, send
 it to the Epos development mailing list <htmlurl url="mailto:epos&commat;braille.mff.cuni.cz"
 name="epos&commat;braille.mff.cuni.cz">.  You are also encouraged to subscribe to the
 list first by sending a mail containing only the text <tt/subscribe epos/ to
-<htmlurl url="mailto:listserv&commat;braille.mff.cuni.cz" name = "epos.braille.mff.cuni.cz"/.
+<htmlurl url="mailto:listserv&commat;braille.mff.cuni.cz"/>.
 Please spend a few seconds by trying to look up the answer in the documentation first.

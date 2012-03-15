@@ -748,7 +748,7 @@ bool set_option(epos_option *o, const char *value)
 	return false;
 }
 
-static inline bool set_option(char *name, const char *value)
+bool set_option(char *name, const char *value)
 {
 	return set_option(option_struct(name, NULL), value);
 }
@@ -908,38 +908,38 @@ void parse_cmd_line()
 	register char *par;
 	int dees = 0;
 
-	for(int i=1; i<argc_copy; i++) {
+	for(int i = 1; i < argc_copy; i++) {
 		j = ar = argv_copy[i];
 		encode_string(ar, cfg->charset, true);
 		switch(strspn(ar, CMD_LINE_OPT)) {
 		case 3:
-			ar+=3;
+			ar += 3;
 			if (strchr(ar, CMD_LINE_VAL) && scfg->_warnings) 
 				shriek(814, "Thrice dashed options have an implicit value");
 			set_option_or_die(ar, "0");
 			break;
 		case 2:
-			ar+=2;
-			par=strchr(ar, CMD_LINE_VAL);
+			ar += 2;
+			par = strchr(ar, CMD_LINE_VAL);
 			if (par) {					//opt=val
-				*par=0;
-				set_option_or_die(ar, par+1);
-				*par=CMD_LINE_VAL;
-			} else	if (i+1==argc_copy || strchr(CMD_LINE_OPT, *argv_copy[i+1])) 
+				*par = 0;
+				set_option_or_die(ar, par + 1);
+				*par = CMD_LINE_VAL;
+			} else	if (i + 1 == argc_copy || strchr(CMD_LINE_OPT, *argv_copy[i+1])) 
 					set_option_or_die(ar, "");
 				else set_option_or_die(ar, argv_copy[++i]);
 			break;
 		case 1:
-			for (j = ar+1; *j; j++) switch (*j) {
-				case 'b': scfg->structured=false; break;
-//				case 'd': scfg->show_seg=true; break;
-//				case 'e': scfg->show_phones=true; break;
-				case 'f': scfg->forking=false; break;
-				case 'H': scfg->long_help=true;	/* fall through */
-				case 'h': scfg->help=true; break;
-				case 'p': scfg->pausing=true; break;
-				case 's': scfg->play_segments=true; break;
-				case 'v': scfg->version=true; break;
+			for (j = ar + 1; *j; j++) switch (*j) {
+				case 'b': scfg->structured = false; break;
+//				case 'd': scfg->show_seg = true; break;
+//				case 'e': scfg->show_phones = true; break;
+				case 'f': scfg->forking = false; break;
+				case 'H': scfg->long_help = true;	/* fall through */
+				case 'h': scfg->help = true; break;
+				case 'p': scfg->pausing = true; break;
+				case 's': scfg->play_segments = true; break;
+				case 'v': scfg->version = true; break;
 				case 'D':
 					if (!scfg->debug) scfg->debug = true;
 					dees++;
@@ -980,7 +980,7 @@ void parse_cmd_line()
 			}
 			break;
 		case 0:
-			if (!is_monolith) shriek(814, "Only options allowed at Epos server command line\nUse a client (e.g. \"say\") to specify text");
+			if (!is_monolith) shriek(814, "Only options allowed at Epos server command line\nUse a client (e.g. \"say-epos\") to specify text");
 			if (scfg->_input_text && scfg->_input_text != ar) {
 				if (!scfg->_warnings) break;
 				if (cfg->paranoid) shriek(814, "Quotes forgotten on the command line?");
@@ -1113,7 +1113,7 @@ static inline void dump_help()
 
 	if (is_monolith) {
 		printf(" You probably don't want to use this monolithic binary.\n");
-		printf(" The usage is somewhere between 'say' and 'epos',\n");
+		printf(" Its usage resembles 'say-epos' and 'eposd',\n");
 		printf(" but the details are not documented, maintained nor supported.\n");
 		exit(0);
 	}
@@ -1123,8 +1123,8 @@ static inline void dump_help()
 	printf(" -p  pausing - show every intermediate state\n");
 	printf(" -v  show version\n");
 	printf(" -D  debugging info (more D's - more detailed)\n");
-	printf(" --some_long_option    ...see src/options.lst or 'epos -H' for these\n");
-	printf("(use one of the clients (e.g. 'say') to pass input to Epos)\n");
+	printf(" --some_long_option    ...see src/options.lst or 'eposd -H' for these\n");
+	printf("(use one of the clients (e.g. 'say-epos') to pass input to Epos)\n");
 	if (!scfg->long_help) exit(0);
 
 	printf("Long option types:\n");

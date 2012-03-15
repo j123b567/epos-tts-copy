@@ -495,7 +495,8 @@ STATIC (play_segments,	BOOL, false)  // Should we write the sound to a file?
 STATIC (show_raw_segs,	BOOL, false)  // show_segments including diphone numbers?
 // OPTION (show_crc,	BOOL, false)	// Near-unique signature of the sound
 // STATIC (wave_file,	STR, NULL)	// File to write .wav into if play_diphones
-STATIC (local_sound_device,	STR, NULL)	// Filename to write .wav into if play_segments
+STATIC (prefer_portaudio, BOOL, false)	// Prefer libportaudio to OSS for #localsound
+STATIC (local_sound_device,	STR, NULL)	// OSS #localsound device name
 STATIC (immed_segments,	BOOL, false)  // Should we output them after a SEGMENTS rule?
 
 STATIC (max_utterance,	INT, 0)
@@ -573,6 +574,7 @@ LNG_OPTION (permanent_fallbacks,BOOL, false)
 LNG_OPTION (fallback_mode,	INT, 0)
 LNG_OPTION (fallback_voice,	STR, NULL)
 				// voice to be used when the current one fails at run time
+STATIC (preload_voices, BOOL, false)	// initialize (or drop) all voices at daemon startup
 
 LNG_OPTION (charset,	CHARSET, 0)	// character encoding table index
 OPTION (relax_input,	BOOL, false)	// Survive unknown characters on input

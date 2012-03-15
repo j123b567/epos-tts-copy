@@ -42,7 +42,6 @@ unit::unit(UNIT layer, parser *parser)
 	next = prev = firstborn = lastborn = father = NULL;
 	depth = layer;
 	cont = NO_CONT;
-//	f = i = t = 0;
 	t = 1;
 	m = NULL;
 	scope = false;
@@ -50,10 +49,6 @@ unit::unit(UNIT layer, parser *parser)
 
 	while (parser->level < layer) insert_end(new unit((UNIT) (layer-1), parser),NULL);
 	if    (parser->level == layer) {
-//		shriek(899, "unit const");
-//		m =
-//		f = parser->f;
-//		i = parser->i;
 		t = parser->t;
 		cont = parser->gettoken();
 	}
@@ -1075,7 +1070,7 @@ unit::analyze(UNIT target, hash *table, int unanal_unit_penalty, int unanal_part
 	for (unit *u = LeftMost(target); u != &EMPTY; u = u->Next(target)) {
 		if (count == next_split) {
 			D_PRINT(0, "Morphoanalyzer splits at %d\n", next_split);
-			if (top->next) shriek(899, "Hu.");
+			if (top->next) shriek(461, "Already split");
 			top->split(u);
 			top = top->next;
 			next_split = vb[count].badness;
@@ -1107,7 +1102,7 @@ unit::absol(UNIT target)
 	} else if (target < depth) {
 		for (unit *u = firstborn; u; u = u->next)
 			u->absol(target);
-	} else shriek(899, "absolutize upwards");
+	} else shriek(463, "Tried to absolutize upwards");
 	
 }
 
@@ -1258,7 +1253,6 @@ unit::smooth(UNIT target, int *recipe, int n, int rec_len, FIT_IDX what)
 		if (u->Next(target) != &EMPTY) u = u->Next(target);
 	}
 #else
-//	shriek(899, "no smooth");
 	D_PRINT(3, "No smooth!\n");	// FIXME
 #endif
 }
@@ -1277,7 +1271,7 @@ unit::project_extents()
 			shriek(862, "Extent followed by a non-extent");
 
 	for (unit *u = firstborn; u; u = u->next) {
-		D_PRINT(2, "Moving prosody point to %d; q=%d, val=%d\n", u->depth, m->quant, m->par);
+		D_PRINT(1, "Moving prosody point to %d; q=%d, val=%d\n", u->depth, m->quant, m->par);
 		sanity();
 		u->sanity();
 		m->derived()->merge(u->m);
@@ -1333,7 +1327,7 @@ unit::project(UNIT target)			// FIXME optimize
 		project_one_level(sum);
 		for (u = firstborn; u; u = u->next)
 			u->project(target);
-	} else shriek(899, "project upwards");
+	} else shriek(463, "Tried to project upwards");
 }
 
 /****************************************************************************

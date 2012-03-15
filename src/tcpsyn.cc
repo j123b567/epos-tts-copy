@@ -160,10 +160,10 @@ tcpsyn::tcpsyn(voice *v)
 		*serv_id++ = 0;
 		langname = strchr(remote_server, LANGNAMESEP);
 		if (langname) *langname++ = 0;
-		else langname = (char *)this_lang->name;	// const cast
+		else langname = (char *)v->parent_lang->name;	// const cast
 	} else {
 		serv_id = remote_server;
-		langname = (char *)this_lang->name;		// const cast
+		langname = (char *)v->parent_lang->name;		// const cast
 	}
 	char *port_id = strchr(serv_id, TCPPORTSEP);
 	if (port_id) {
@@ -231,6 +231,9 @@ tcpsyn::synsegs(voice *, segment *d, int count, wavefm *w)
 
 	ywrite(dd, d - 1,sizeof(segment) * ++count);
 	b = tcpsyn_appl(sizeof(segment) * count, cd, dd, &size);
+	if (!b) {
+		shriek(471, "Remote server returned zero bytes to the local server");
+	}
 	w->become(b, size);
 	free(b);
 }

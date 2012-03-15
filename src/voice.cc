@@ -15,6 +15,12 @@
  */
  
 #include "epos.h"
+//#include "ktdsyn.h"
+//#include "ptdsyn.h"
+#include "tdpsyn.h"
+#include "lpcsyn.h"
+#include "mbrsyn.h"
+#include "tcpsyn.h"
 
 #ifdef HAVE_FCNTL_H
 	#include <fcntl.h>
@@ -156,7 +162,15 @@ lang::add_voice(const char *voice_name)
 		if (!voicetab) voicetab = (voice **)xmalloc(8*sizeof(void *));
 		else if (!(n_voices-1 & n_voices) && n_voices > 4)  // if n_voices==8,16,32...
 			voicetab = (voice **)xrealloc(voicetab, (n_voices << 1) * sizeof(void *));
-		voicetab[n_voices++] = new(this) voice(filename, dirname, this);
+		voice *v = new(this) voice(filename, dirname, this);
+		if (scfg->preload_voices) {
+			if (!v->load_synth()) {
+				D_PRINT(3, "Voice %s failed to initialize, disappearing\n", voice_name);
+				delete v;
+				return;
+			}
+		}
+		voicetab[n_voices++] = v;
 	}
 	free(filename);
 	free(dirname);
@@ -295,6 +309,7 @@ voice::voice(const char *filename, const char *dirname, lang *parent_lang) : cow
 	segment_names = NULL;
 	sl = NULL;
 	syn = NULL;
+	this->parent_lang = parent_lang;
 }
 
 void
@@ -318,6 +333,45 @@ voice::claim_all()
 			}
 		}
 	}
+}
+
+synth *
+voice::setup_synth()
+{
+	if (syn) shriek(862, "new v->syn - again");
+
+	switch (type) {
+		case S_NONE:	shriek(813, "This voice is mute");
+		case S_TCP:	// shriek(462, "Network voices not implemented");
+				return new tcpsyn(this);
+		case S_LPC_FLOAT: return new lpcfloat(this);
+		case S_LPC_INT: return new lpcint(this);
+		case S_LPC_VQ:	return new lpcvq(this);
+//		case S_KTD:	return new ktdsyn(this);
+		case S_TDP:	return new tdpsyn(this);
+//		case S_PTD:	return new ptdsyn(this);
+		case S_MBROLA:  return new mbrsyn(this);
+		default:	shriek(861, "Impossible synth type");
+	}
+	return NULL;
+}
+
+bool
+voice::load_synth()
+{
+	if (!syn) {
+		try {
+			syn = setup_synth();
+			D_PRINT(2, "Voice %s successfully initialized.\n", name);
+			return true;
+		} catch (command_failed *e) {
+			D_PRINT(2, "Failed to initialize voice %s, error code %d\n", name, e->code);
+			delete e;
+			return false;
+		}
+	}
+	D_PRINT(2, "Voice %s is already loaded.\n", name);
+	return true;
 }
 
 voice::~voice()

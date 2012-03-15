@@ -15,12 +15,6 @@
  */
 
 #include "epos.h"
-//#include "ktdsyn.h"
-//#include "ptdsyn.h"
-#include "tdpsyn.h"
-#include "lpcsyn.h"
-#include "mbrsyn.h"
-#include "tcpsyn.h"
 
 #define SOUND_LABEL_BASE	(1 << SOUND_LABEL_SHIFT)
 #define SOUND_LABEL_SHIFT	10
@@ -29,25 +23,6 @@
 #define snprintf _snprintf
 #endif
 
-synth *setup_synth(voice *v)
-{
-	if (v->syn) shriek(862, "new v->syn - again");
-
-	switch (v->type) {
-		case S_NONE:	shriek(813, "This voice is mute");
-		case S_TCP:	// shriek(462, "Network voices not implemented");
-				return new tcpsyn(v);
-		case S_LPC_FLOAT: return new lpcfloat(v);
-		case S_LPC_INT: return new lpcint(v);
-		case S_LPC_VQ:	return new lpcvq(v);
-//		case S_KTD:	return new ktdsyn(v);
-		case S_TDP:	return new tdpsyn(v);
-//		case S_PTD:	return new ptdsyn(v);
-		case S_MBROLA:  return new mbrsyn(v);
-		default:	shriek(861, "Impossible synth type");
-	}
-	return NULL;
-}
 
 #if FROBBING_IS_EXTERNAL
 
@@ -70,7 +45,7 @@ void play_segments(unit *root, voice *v)
 	static segment d[BUFF_SIZE + 1]; 
 	int i=BUFF_SIZE;
 
-	if (!v->syn) v->syn = setup_synth(v);
+	v->load_synth();
 	if (!scfg->play_segments && !scfg->show_segments) return;
 	wavefm w(v);
 	for (int k=0; i==BUFF_SIZE; k+=BUFF_SIZE) {

@@ -10,21 +10,19 @@ Bugs
 - fallbacks may reinterpret segment numbers in the old format
 
 Features
-- a way to automatically verify voices and disable absent inventories
 - pause hierarchy rules
 - parsing rules (e.g. for angle/square brackets,
   dots as opposed to periods, dollar signs)
 - grammatical marking
 - properly cased ordinal numerals
-- Sable parser
+- SSML parser
 - asynchronous, more robust tcpsyn
 - tcpsyn - explicit voice options of local server should be used by the remote
-- esd or another sound server
 - t i adjustment option
 - TCP wrappers & auth config & /etc/epos.users
 - reasonable logging
 - investigate the optimum pause lengths
-- big-endian ovens
+- utf-8
 
 Optimisations
 - sync_soundcard() should be replaced with an asyncro thing
@@ -40,6 +38,6 @@ Should Check
 - investigate segment free utterance handling
 - TTSCP error codes, esp. those related to options and values, should be revised
 - what if I change max_line?
-- whether decoding and encoding is properly done for all data types
+- whether decoding and encoding is properly done for all data types - also cmd_show
 - some characters from mathsign.dic, $, etc. might be misread in some contexts
 

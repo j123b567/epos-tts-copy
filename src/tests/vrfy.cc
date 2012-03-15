@@ -328,7 +328,7 @@ void invoke(void (*test)(), const char *name)
 #define stringify(x) strfy(x)
 
 char * const exec_argv[] = {
-	"epos",
+	"eposd",
 	"--forking=off",
 	"--listen_port=" stringify(TTSCP_PORT),
 	"--debug_password=make_check",
@@ -341,15 +341,15 @@ char * const exec_envp[] = {
 	NULL
 };
 
-int epos_pid = 0;
+int eposd_pid = 0;
 int patience = 40;
 
 void init()
 {
 	/* ignore the test result if Epos is not running:    */
 	if (just_connect_socket(0, TTSCP_PORT) == -1) {
-		if ((epos_pid = fork())) do usleep(250000); while (just_connect_socket(0, TTSCP_PORT) == -1 && --patience);
-		else execve("../epos", exec_argv, exec_envp);
+		if ((eposd_pid = fork())) do usleep(250000); while (just_connect_socket(0, TTSCP_PORT) == -1 && --patience);
+		else execve("../eposd", exec_argv, exec_envp);
 	}
 
 	ctrld[6] = connect_socket(0, TTSCP_PORT);
@@ -400,7 +400,7 @@ int main(int argc, char **argv)
 	sputs("pass make_check\r\ndown\r\n", ctrld[6]);
 	close(ctrld[6]);
 //	printf("Tests successfully passed.\n");
-//	if (epos_pid) kill(epos_pid, SIGTERM);
+//	if (eposd_pid) kill(eposd_pid, SIGTERM);
 	sleep(1);
 	return 0;
 }

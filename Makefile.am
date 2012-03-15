@@ -7,7 +7,7 @@ export VERSION
 
 AUTOMAKE_OPTIONS=1.4 foreign
 
-SUBDIRS = src cfg arch doc
+SUBDIRS = libs src cfg arch doc
 
 EXTRA_DIST=Makefile.common Changes WELCOME
 

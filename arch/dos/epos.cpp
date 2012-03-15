@@ -21,6 +21,8 @@
 
 #include <fcntl.h>
 
+/* put the following list in sync with reality: */
+
 #include "monolith.cc"
 #include "hash.cc"
 #include "interf.cc"
@@ -34,4 +36,4 @@
 #include "ptdsyn.cc"
 #include "lpcsyn.cc"	// comment out if not necessary
 #include "voice.cc"
-#include "rx.c"
+#include "..\libs\regex\rx.c"

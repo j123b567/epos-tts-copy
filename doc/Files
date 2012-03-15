@@ -7,17 +7,17 @@ This file tends to be incomplete and/or severely outdated.
 The files usually located in the "cfg" directory may be moved
 elsewhere using epos.ini.
 
-/usr/share/epos/cfg		various global configuration files read by Epos
-/usr/share/epos/lng/*		various language specific cfg files
-/usr/share/epos/voice/*		various voice specific cfg files
-/usr/share/epos/inv/*		various segment inventory stuff, to be installed
-				separately!
-/usr/share/epos/lng/*/*.dic	various word lists &c, used by the current rules
-/usr/share/epos/lng/*/*.dp[ht]	descriptions of segment inventories, used by the rules
-/usr/share/epos/cfg/fixed.ini	presumably never-changing (but changeable) parameters
-/usr/share/epos/cfg/epos.ini	presumably often changing tunable parameters
-/usr/share/epos/cfg/ansi.ini	if selected in fixed.ini, defines ANSI color output
-/usr/share/epos/cfg/rtf.ini	if chosen in fixed.ini, defines Rich Text Fmt output
+/usr/local/share/epos/cfg		various global configuration files read by Epos
+/usr/local/share/epos/lng/*		various language specific cfg files
+/usr/local/share/epos/voice/*		various voice specific cfg files
+/usr/local/share/epos/inv/*		various segment inventory stuff, to be installed
+					separately!
+/usr/local/share/epos/lng/*/*.dic	various word lists &c, used by the current rules
+/usr/local/share/epos/lng/*/*.dp[ht]	descriptions of segment inventories, used by the rules
+/usr/local/share/epos/cfg/fixed.ini	presumably never-changing (but changeable) parameters
+/usr/local/share/epos/cfg/epos.ini	presumably often changing tunable parameters
+/usr/local/share/epos/cfg/ansi.ini	if selected in fixed.ini, defines ANSI color output
+/usr/local/share/epos/cfg/rtf.ini	if chosen in fixed.ini, defines Rich Text Fmt output
 
 /var/log/epos		system wide log of TTSCP transactions of the daemon
 			(still useful mostly for debugging)

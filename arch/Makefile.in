@@ -40,6 +40,7 @@ ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
+AM_CXXFLAGS = -w -DEPOS -ggdb -DBASE_DIR=$(pkgdatadir) $(OTHER_CXXFLAGS)
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -62,6 +63,9 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_PORTAUDIO_DEFS = @EXTRA_PORTAUDIO_DEFS@
+EXTRA_PORTAUDIO_LIBS = @EXTRA_PORTAUDIO_LIBS@
+EXTRA_REGEX_OBJ = @EXTRA_REGEX_OBJ@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -86,6 +90,8 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PORTAUDIO_FALSE = @PORTAUDIO_FALSE@
+PORTAUDIO_TRUE = @PORTAUDIO_TRUE@
 RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -136,7 +142,6 @@ CLEANFILES = *~ *.wav core gmon.out matlab.in tmp.0* dmalloc hackfile \
 		epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi \
 		epos-?.html epos.html
 
-AM_CXXFLAGS = -w -DEPOS -ggdb -DBASE_DIR=$(pkgdatadir) $(OTHER_CXXFLAGS)
 AM_YFLAGS = -d -t
 AM_LDFLAGS = -L$(libdir)
 AM_CPPFLAGS = -I$(srcdir)/..
@@ -156,6 +161,7 @@ unix/test.optdoc			\
 unix/docopts				\
 unix/test.version			\
 unix/longopts				\
+unix/difftgz				\
 unix/upload/lastchanges.append		\
 unix/upload/lastchanges.sed		\
 unix/upload/mail.append			\

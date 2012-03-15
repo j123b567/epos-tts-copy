@@ -49,3 +49,7 @@ CString TEnumString::read (CRox *xml)
 	return err;
 }
 
+// this instantiation fits nowhere and perhaps shouldn't be necessary at all
+// for compliant compilers
+
+template class CBasicString<char>;

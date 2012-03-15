@@ -120,7 +120,10 @@ if generate_segs
 			@include "betty.rul"
 			segments  betty.dph	colon
 	    }
-	    # if !betty_dph, that's a misconfiguration
+	    if !betty_dph
+	    {
+			fail "No segment set specified"
+	    }
 	  }
 	}
     }

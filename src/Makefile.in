@@ -40,6 +40,8 @@ ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
+
+AM_CXXFLAGS = -w -DEPOS -ggdb -DBASE_DIR=$(pkgdatadir) $(OTHER_CXXFLAGS) @EXTRA_PORTAUDIO_DEFS@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -62,6 +64,9 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_PORTAUDIO_DEFS = @EXTRA_PORTAUDIO_DEFS@
+EXTRA_PORTAUDIO_LIBS = @EXTRA_PORTAUDIO_LIBS@
+EXTRA_REGEX_OBJ = @EXTRA_REGEX_OBJ@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -86,6 +91,8 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PORTAUDIO_FALSE = @PORTAUDIO_FALSE@
+PORTAUDIO_TRUE = @PORTAUDIO_TRUE@
 RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -136,15 +143,14 @@ CLEANFILES = *~ *.wav core gmon.out matlab.in tmp.0* dmalloc hackfile \
 		epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi \
 		epos-?.html epos.html
 
-AM_CXXFLAGS = -w -DEPOS -ggdb -DBASE_DIR=$(pkgdatadir) $(OTHER_CXXFLAGS)
 AM_YFLAGS = -d -t
 AM_LDFLAGS = -L$(libdir)
 AM_CPPFLAGS = -I$(srcdir)/..
 
 SUBDIRS = nnet . tests
 
-bin_PROGRAMS = epos say gauge
-noinst_PROGRAMS = eposm
+bin_PROGRAMS = eposd say-epos
+noinst_PROGRAMS = eposm gauge-epos
 
 SRC_BASE = parser.cc unit.cc rule.cc \
 text.cc encoding.cc interf.cc function.cc options.cc \
@@ -152,18 +158,21 @@ synth.cc waveform.cc voice.cc client.cc \
 lpcsyn.cc tdpsyn.cc mbrsyn.cc tcpsyn.cc \
 hash.cc hashi.cc \
 common.h epos.h unit.h parser.h rule.h text.h encoding.h interf.h \
-function.h options.h hash.h hashtmpl.h synth.h voice.h exc.h \
+function.h options.h hash.h hashtmpl.h synth.h voice.h exc.h endian_utils.h \
 waveform.h lpcsyn.h tdpsyn.h mbrsyn.h tcpsyn.h \
-slab.h rx.h client.h agent.h 
+slab.h client.h agent.h 
 
 
-epos_SOURCES = daemon.cc agent.cc ttscp.cc nonblock.cc hashd.cc rx.c $(SRC_BASE)
-eposm_SOURCES = monolith.cc rx.c $(SRC_BASE)
-say_SOURCES = say.cc
-gauge_SOURCES = gauge.cc
+eposd_SOURCES = daemon.cc agent.cc ttscp.cc nonblock.cc hashd.cc $(SRC_BASE)
+eposm_SOURCES = monolith.cc $(SRC_BASE)
 
-epos_LDADD = nnet/libeposnnet.la
-eposm_LDADD = nnet/libeposnnet.la
+say_epos_SOURCES = say-epos.cc
+gauge_epos_SOURCES = gauge-epos.cc
+
+LDADD_OTHER = nnet/libeposnnet.la @EXTRA_REGEX_OBJ@ @EXTRA_PORTAUDIO_LIBS@
+
+eposd_LDADD = $(LDADD_OTHER)
+eposm_LDADD = $(LDADD_OTHER)
 
 EXTRA_DIST = options.lst marker.cc block.cc exc.cc \
 qnxipc.cc
@@ -173,8 +182,8 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-bin_PROGRAMS = epos$(EXEEXT) say$(EXEEXT) gauge$(EXEEXT)
-noinst_PROGRAMS = eposm$(EXEEXT)
+bin_PROGRAMS = eposd$(EXEEXT) say-epos$(EXEEXT)
+noinst_PROGRAMS = eposm$(EXEEXT) gauge-epos$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 
 am__objects_1 = parser.$(OBJEXT) unit.$(OBJEXT) rule.$(OBJEXT) \
@@ -183,51 +192,42 @@ am__objects_1 = parser.$(OBJEXT) unit.$(OBJEXT) rule.$(OBJEXT) \
 	waveform.$(OBJEXT) voice.$(OBJEXT) client.$(OBJEXT) \
 	lpcsyn.$(OBJEXT) tdpsyn.$(OBJEXT) mbrsyn.$(OBJEXT) \
 	tcpsyn.$(OBJEXT) hash.$(OBJEXT) hashi.$(OBJEXT)
-am_epos_OBJECTS = daemon.$(OBJEXT) agent.$(OBJEXT) ttscp.$(OBJEXT) \
-	nonblock.$(OBJEXT) hashd.$(OBJEXT) rx.$(OBJEXT) \
-	$(am__objects_1)
-epos_OBJECTS = $(am_epos_OBJECTS)
-epos_DEPENDENCIES = nnet/libeposnnet.la
-epos_LDFLAGS =
-am_eposm_OBJECTS = monolith.$(OBJEXT) rx.$(OBJEXT) $(am__objects_1)
+am_eposd_OBJECTS = daemon.$(OBJEXT) agent.$(OBJEXT) ttscp.$(OBJEXT) \
+	nonblock.$(OBJEXT) hashd.$(OBJEXT) $(am__objects_1)
+eposd_OBJECTS = $(am_eposd_OBJECTS)
+eposd_DEPENDENCIES = nnet/libeposnnet.la
+eposd_LDFLAGS =
+am_eposm_OBJECTS = monolith.$(OBJEXT) $(am__objects_1)
 eposm_OBJECTS = $(am_eposm_OBJECTS)
 eposm_DEPENDENCIES = nnet/libeposnnet.la
 eposm_LDFLAGS =
-am_gauge_OBJECTS = gauge.$(OBJEXT)
-gauge_OBJECTS = $(am_gauge_OBJECTS)
-gauge_LDADD = $(LDADD)
-gauge_DEPENDENCIES =
-gauge_LDFLAGS =
-am_say_OBJECTS = say.$(OBJEXT)
-say_OBJECTS = $(am_say_OBJECTS)
-say_LDADD = $(LDADD)
-say_DEPENDENCIES =
-say_LDFLAGS =
+am_gauge_epos_OBJECTS = gauge-epos.$(OBJEXT)
+gauge_epos_OBJECTS = $(am_gauge_epos_OBJECTS)
+gauge_epos_LDADD = $(LDADD)
+gauge_epos_DEPENDENCIES =
+gauge_epos_LDFLAGS =
+am_say_epos_OBJECTS = say-epos.$(OBJEXT)
+say_epos_OBJECTS = $(am_say_epos_OBJECTS)
+say_epos_LDADD = $(LDADD)
+say_epos_DEPENDENCIES =
+say_epos_LDFLAGS =
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/agent.Po ./$(DEPDIR)/client.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/daemon.Po ./$(DEPDIR)/encoding.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/function.Po ./$(DEPDIR)/gauge.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/function.Po ./$(DEPDIR)/gauge-epos.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/hash.Po ./$(DEPDIR)/hashd.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/hashi.Po ./$(DEPDIR)/interf.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lpcsyn.Po ./$(DEPDIR)/mbrsyn.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/monolith.Po ./$(DEPDIR)/nonblock.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/options.Po ./$(DEPDIR)/parser.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/rule.Po ./$(DEPDIR)/rx.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/say.Po ./$(DEPDIR)/synth.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/tcpsyn.Po ./$(DEPDIR)/tdpsyn.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/text.Po ./$(DEPDIR)/ttscp.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/unit.Po ./$(DEPDIR)/voice.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/waveform.Po
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
-	$(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+@AMDEP_TRUE@	./$(DEPDIR)/rule.Po ./$(DEPDIR)/say-epos.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/synth.Po ./$(DEPDIR)/tcpsyn.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/tdpsyn.Po ./$(DEPDIR)/text.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/ttscp.Po ./$(DEPDIR)/unit.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/voice.Po ./$(DEPDIR)/waveform.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
@@ -236,8 +236,15 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(epos_SOURCES) $(eposm_SOURCES) $(gauge_SOURCES) \
-	$(say_SOURCES)
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
+	$(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+DIST_SOURCES = $(eposd_SOURCES) $(eposm_SOURCES) $(gauge_epos_SOURCES) \
+	$(say_epos_SOURCES)
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	ps-recursive install-info-recursive uninstall-info-recursive \
@@ -245,14 +252,14 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/Makefile.common \
-	Makefile.am configure
+	Makefile.am
 DIST_SUBDIRS = $(SUBDIRS)
-SOURCES = $(epos_SOURCES) $(eposm_SOURCES) $(gauge_SOURCES) $(say_SOURCES)
+SOURCES = $(eposd_SOURCES) $(eposm_SOURCES) $(gauge_epos_SOURCES) $(say_epos_SOURCES)
 
 all: all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .c .cc .lo .o .obj
+.SUFFIXES: .cc .lo .o .obj
 $(srcdir)/Makefile.in:  Makefile.am $(top_srcdir)/Makefile.common $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu  src/Makefile
@@ -294,18 +301,18 @@ clean-noinstPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-epos$(EXEEXT): $(epos_OBJECTS) $(epos_DEPENDENCIES) 
-	@rm -f epos$(EXEEXT)
-	$(CXXLINK) $(epos_LDFLAGS) $(epos_OBJECTS) $(epos_LDADD) $(LIBS)
+eposd$(EXEEXT): $(eposd_OBJECTS) $(eposd_DEPENDENCIES) 
+	@rm -f eposd$(EXEEXT)
+	$(CXXLINK) $(eposd_LDFLAGS) $(eposd_OBJECTS) $(eposd_LDADD) $(LIBS)
 eposm$(EXEEXT): $(eposm_OBJECTS) $(eposm_DEPENDENCIES) 
 	@rm -f eposm$(EXEEXT)
 	$(CXXLINK) $(eposm_LDFLAGS) $(eposm_OBJECTS) $(eposm_LDADD) $(LIBS)
-gauge$(EXEEXT): $(gauge_OBJECTS) $(gauge_DEPENDENCIES) 
-	@rm -f gauge$(EXEEXT)
-	$(CXXLINK) $(gauge_LDFLAGS) $(gauge_OBJECTS) $(gauge_LDADD) $(LIBS)
-say$(EXEEXT): $(say_OBJECTS) $(say_DEPENDENCIES) 
-	@rm -f say$(EXEEXT)
-	$(CXXLINK) $(say_LDFLAGS) $(say_OBJECTS) $(say_LDADD) $(LIBS)
+gauge-epos$(EXEEXT): $(gauge_epos_OBJECTS) $(gauge_epos_DEPENDENCIES) 
+	@rm -f gauge-epos$(EXEEXT)
+	$(CXXLINK) $(gauge_epos_LDFLAGS) $(gauge_epos_OBJECTS) $(gauge_epos_LDADD) $(LIBS)
+say-epos$(EXEEXT): $(say_epos_OBJECTS) $(say_epos_DEPENDENCIES) 
+	@rm -f say-epos$(EXEEXT)
+	$(CXXLINK) $(say_epos_LDFLAGS) $(say_epos_OBJECTS) $(say_epos_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -318,7 +325,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/daemon.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/encoding.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/function.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gauge.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gauge-epos.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hashd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hashi.Po@am__quote@
@@ -330,8 +337,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rule.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rx.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/say.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/say-epos.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/synth.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tcpsyn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tdpsyn.Po@am__quote@
@@ -340,39 +346,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/voice.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/waveform.Po@am__quote@
-
-.c.o:
-@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
-@am__fastdepCC_TRUE@	  -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
-@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
-@am__fastdepCC_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(COMPILE) -c `test -f '$<' || echo '$(srcdir)/'`$<
-
-.c.obj:
-@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
-@am__fastdepCC_TRUE@	  -c -o $@ `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
-@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
-@am__fastdepCC_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(COMPILE) -c `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<'; fi`
-
-.c.lo:
-@am__fastdepCC_TRUE@	if $(LTCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
-@am__fastdepCC_TRUE@	  -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; \
-@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
-@am__fastdepCC_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
 
 .cc.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \

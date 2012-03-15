@@ -1429,8 +1429,30 @@ in this way much more often than explicitly indicated here.     ]
 	- DO_PRINTs not allowed by a  make distcheck
 
 2.5.27 from 2.5.26	 9.3.05
-	- better error reporting with MBROLA voices when fed by the traditional segment string
-	- arch/unix/difftgz produces version-to-version diffs of Epos dists
+	- better error reporting for MBROLA voices when fed by the traditional segment string
 	- fixed literal zero vs. absent char handling in syll and seg rules and some D_PRINTs
+
+2.5.28 from 2.5.27	 8.4.05
+	- binaries renamed to eposd, say-epos, gauge-epos; gauge-epos made noinst
+	- default installation prefix changed to /usr/local
+	- arch/unix/difftgz produces version-to-version diffs of Epos dists
+	- fix: survive when a remote TTSCP server returns 0 bytes
+	- fix: r-machac and r-violka were not configured
+	- error reporting improvements
+	- r_fail (to report cfg errors from within rules)
+	- fix: a dph file selection was not selected for remote voices
+	- FAQ started
+	- preload_voices feature drops unusable voices at startup
+	- encode_string refactoring towards UTF-8
+	- fix: a_seg used to terminate prematurely after 2048 segments
+	- select_local_soundcard() to choose e.g. between OSS and portaudio at startup
+	- portaudio support (by Adam Nohejl)
+	- Mac OS X port (by Adam Nohejl)
+	- LPC and TDP synthesizers support LE inventories on big-endians (by Adam Nohejl)
+	- regex moved to libs (may break some ports)
+	- included portaudio to support Mac, --enable-portaudio to configure
+	- say-epos option -z to print the TTSCP exchange
+	- gcc 3.4 fix - moved Min/Max templates into nnet/vector.h (suggested by Karl Chen)
+	- all files made root-owned and world-writable
 
 

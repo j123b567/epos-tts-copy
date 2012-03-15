@@ -21,9 +21,6 @@ template<class T> inline T sqr (T x) {
 	return x * x;
 }
 
-template<class T> inline T Max (const T &x, const T &y) { return x > y ? x : y; }
-template<class T> inline T Min (const T &x, const T &y) { return x < y ? x : y; }
-
 // CString toString (const long x, int dummy=0, bool dummy1=0);
 /** You may specify the number of decimal places, -1 means all */
 CString toString (const double x, int decimalPlaces=-1, bool forceDecimalPoint=false);

@@ -124,6 +124,9 @@ At the moment, any TTSCP client is capable of writing arbitrary waveform data
 to the local soundcard.  If you consider this a security risk, disable
 the <tt/&num;localsound/ output module by turning the <tt/localsound/ option off.
 
+The interfaces supported are Open Sound System and Microsoft Multimedia
+System.
+
 <sect2> Access to the Local File System
 <p>
 

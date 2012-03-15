@@ -2,7 +2,9 @@
 
 # Checks whether all available options are documented
 
-cd $distdir/src
+if [ -d "$distdir" ]; then
+	cd $distdir/src
+fi
 
 dir=./Epos.OT.tmp
 

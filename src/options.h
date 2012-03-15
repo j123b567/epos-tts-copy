@@ -110,6 +110,7 @@ epos_option *option_struct(const char *name, hash_table<char, epos_option> *soft
    backslashes or double quotes  		*/
 bool set_option(epos_option *o, const char *value);			// the const qualifier IS A LIE
 bool set_option(epos_option *o, const char *value, void *whither);	// the const qualifier IS A LIE
+bool set_option(char *name, const char *value);				// the const qualifier IS A LIE
 
 
 const char *format_option(epos_option *name);	// may return scratch etc.

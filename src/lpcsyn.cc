@@ -18,6 +18,7 @@
 
 #include "epos.h"
 #include "lpcsyn.h"
+#include "endian_utils.h"
 
 #ifdef HAVE_FCNTL_H
 	#include <fcntl.h>
@@ -101,9 +102,9 @@ lpcsyn::lpcsyn(voice *v)
 
 lpcsyn::~lpcsyn(void)
 {
-	free(seg_offs);
-	unclaim(seg_len);
-	unclaim(models);
+	if (seg_offs) free(seg_offs);
+	if (seg_len) unclaim(seg_len);
+	if (models) unclaim(models);
 }
 
 
@@ -266,35 +267,51 @@ void lpcint::frobmod(int imodel, segment d, model *m, int &incrl, int &znely)
 
 void floatoven(char *p, int l)
 {
-	if (!scfg->_big_endian) return;
-	for (fcmodel *tmp = (fcmodel *)p; (char *)tmp < p + l; tmp++) {
-		// FIXME - a few floats
+	if (!scfg->_big_endian)
+		return;
+	char*   stop = p + l;
+	for (fcmodel* tmp = (fcmodel*)p; (char *)tmp < stop; tmp++){
+		for (int i = 0;i < 8; i++) {
+			tmp->rc[i] = (float) from_le32u(tmp->rc[i]);
+		}
+		tmp->ener = (float) from_le32u(tmp->ener);
+		tmp->incrl = from_le32s(tmp->incrl);
 	}
 }
 
-void intoven(char *, int)
+void intoven(char *p, int l)
 {
-	if (!scfg->_big_endian) return;
-	shriek(462, "no int inventories on big-endians, please");
+	if (!scfg->_big_endian)
+		return;
+	char*   stop = p + l;
+	for (cmodel* tmp = (cmodel*)p; (char*)tmp < stop; tmp++){
+		for (int i = 0; i < 8; i++) {
+			tmp->rc[i] = from_le16s(tmp->rc[i]);
+		}
+		tmp->ener = from_le16s(tmp->ener);
+		tmp->incrl = from_le16s(tmp->incrl);
+	}	
 }
 
-void vqoven(char *, int)
+void vqoven(char *p, int l)
 {
-	if (!scfg->_big_endian) return;
-	shriek(462, "no vq inventories on big-endians, please");
-}
-
-void bswap(int16_t  *p)
-{
-	*p = ((*p & 255) << 8) | (*p >> 8);
+	if (!scfg->_big_endian)
+		return;
+	char*   stop = p + l;
+	for(vqmodel* tmp = (vqmodel*)p; (char*)tmp < stop; tmp++){
+		tmp->adrrc  = from_le16s(tmp->adrrc);
+		tmp->adren  = from_le16s(tmp->adren);
+		tmp->incrl  = from_le16s(tmp->incrl);
+	}	
 }
 
 void shortoven(char *p, int l)
 {
-	if (!scfg->_big_endian) return;
-	for (int16_t *tmp = (int16_t *)p; (char *)tmp < p + l; tmp++) {
-		bswap(tmp);
-	}
+	if (!scfg->_big_endian)
+		return;
+	char *stop = p + l;
+	for(int16_t *tmp = (int16_t *)p; (char *)tmp < stop; tmp++)
+		*tmp = from_le16s(*tmp);
 }
 
 

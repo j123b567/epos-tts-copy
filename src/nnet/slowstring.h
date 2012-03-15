@@ -1,7 +1,7 @@
 #ifndef _STRING_
 #define _STRING_
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 
 
@@ -245,7 +245,5 @@ void CBasicString<T>::replace (const CBasicString<T> &source, const CBasicString
 	*this = result;
 } 
 
-
-template class CBasicString<char>;
 
 #endif

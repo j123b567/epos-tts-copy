@@ -90,11 +90,14 @@ struct voice : public cowabilium
 	sound_label *sl;
 	
 	synth *syn;
+	lang *parent_lang;
 	
 	voice(const char *filename, const char *dirname, lang *parent_lang);
 	~voice();
 
 	void claim_all();
+	synth *setup_synth();
+	bool load_synth();	// returns true iff successful
 
 	void *operator new(size_t, lang *parent_lang);
 	void  operator delete(void *p, lang *);

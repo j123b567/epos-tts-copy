@@ -430,7 +430,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="src/unit.cc"
-ac_default_prefix=/usr
+ac_default_prefix=/usr/local
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -468,7 +468,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os LN_S ECHO RANLIB ac_ct_RANLIB CPP EGREP LIBTOOL LIBTOOL_DEPS LNK YACC LEX LEXLIB LEX_OUTPUT_ROOT CXXCPP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os LN_S ECHO RANLIB ac_ct_RANLIB CPP EGREP LIBTOOL LIBTOOL_DEPS AM_CXXFLAGS PORTAUDIO_TRUE PORTAUDIO_FALSE LNK EXTRA_REGEX_OBJ EXTRA_PORTAUDIO_LIBS EXTRA_PORTAUDIO_DEFS YACC LEX LEXLIB LEX_OUTPUT_ROOT CXXCPP LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1026,14 +1026,15 @@ Optional Features:
   --enable-static=PKGS  build static libraries default=yes
   --enable-fast-install=PKGS  optimize for fast installation default=yes
   --disable-libtool-lock  avoid locking (might break parallel builds)
---enable-charsets    allow automatic conversions between character sets
+  --enable-charsets       allow automatic conversions between character sets
+  --enable-portaudio      alternative sound output method
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-gnu-ld           assume the C compiler uses GNU ld default=no
   --with-pic              try to use only PIC/non-PIC objects default=use both
---with-dmalloc        dmalloc debugging library (developers only)
+  --with-dmalloc          dmalloc debugging library (developers only)
 
 Some influential environment variables:
   CC          C compiler command
@@ -1726,7 +1727,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=epos
- VERSION=2.5.27
+ VERSION=2.5.28
 
 
 cat >>confdefs.h <<_ACEOF
@@ -3314,10 +3315,10 @@ fi
 
 if test $GXX = yes; then
 	if $CXX -v 2>&1 | grep -q egcs
-		then CXXFLAGS="-Wall -Wunused -pipe -gstabs+ -fdefer-pop -O"
-		else CXXFLAGS="-Wall -Wunused -gstabs+ -O"
+		then AM_CXXFLAGS="-Wall -Wunused -pipe -gstabs+ -fdefer-pop -O"
+		else AM_CXXFLAGS="-Wall -Wunused -gstabs+ -O"
 	fi
-	else CXXFLAGS=-O
+	else AM_CXXFLAGS=-O
 fi
 
 # Check whether --enable-shared or --disable-shared was given.
@@ -5024,7 +5025,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5027 "configure"' > conftest.$ac_ext
+  echo '#line 5028 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5553,7 +5554,7 @@ chmod -w .
 save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -o out/conftest2.$ac_objext"
 compiler_c_o=no
-if { (eval echo configure:5556: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>out/conftest.err; } && test -s out/conftest2.$ac_objext; then
+if { (eval echo configure:5557: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>out/conftest.err; } && test -s out/conftest2.$ac_objext; then
   # The compiler can only warn and ignore the option if not recognized
   # So say no if there are warnings
   if test -s out/conftest.err; then
@@ -6737,7 +6738,7 @@ linux-gnu*)
   libsuff=
   case "$host_cpu" in
   x86_64*|s390x*)
-    echo '#line 6740 "configure"' > conftest.$ac_ext
+    echo '#line 6741 "configure"' > conftest.$ac_ext
     if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7409,7 +7410,7 @@ else
     lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7412 "configure"
+#line 7413 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -7507,7 +7508,7 @@ else
     lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7510 "configure"
+#line 7511 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -8235,6 +8236,7 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 
+
 echo "$as_me:$LINENO: checking whether ${MAKE-make} sets \$(MAKE)" >&5
 echo $ECHO_N "checking whether ${MAKE-make} sets \$(MAKE)... $ECHO_C" >&6
 set dummy ${MAKE-make}; ac_make=`echo "$2" | sed 'y,./+-,__p_,'`
@@ -8270,7 +8272,7 @@ fi
 if test "${with_dmalloc+set}" = set; then
   withval="$with_dmalloc"
   if test $withval = yes; then
-		CXXFLAGS="$CXXFLAGS -DWANT_DMALLOC"
+		CXXFLAGS="${CXXFLAGS} -DWANT_DMALLOC"
 		LIBS="$LIBS -ldmalloc -L/usr/local/lib"
 	fi
 
@@ -8278,10 +8280,41 @@ fi;
 # Check whether --enable-charsets or --disable-charsets was given.
 if test "${enable_charsets+set}" = set; then
   enableval="$enable_charsets"
-  if test $enableval = no; then
-		CXXFLAGS = "$CXXFLAGS -DFORGET_CHARSETS"
+  if test x$enableval = xno; then
+		CXXFLAGS="${CXXFLAGS} -DFORGET_CHARSETS"
 	fi
 fi;
+# Check whether --enable-portaudio or --disable-portaudio was given.
+if test "${enable_portaudio+set}" = set; then
+  enableval="$enable_portaudio"
+  case "x$enableval" in
+		xno)
+			EXTRA_PORTAUDIO_DEFS="-DFORGET_PORTAUDIO"
+			EXTRA_PORTAUDIO_LIBS=""
+			;;
+		xyes)
+			EXTRA_PORTAUDIO_DEFS=""
+			EXTRA_PORTAUDIO_LIBS="-lportaudio -lpablio -L../libs/portaudio/lib -lpthread"
+			;;
+		*)	{ { echo "$as_me:$LINENO: error: bad value $enableval for --enable-portaudio" >&5
+echo "$as_me: error: bad value $enableval for --enable-portaudio" >&2;}
+   { (exit 1); exit 1; }; } ;;
+	esac
+else
+  EXTRA_PORTAUDIO_LIBS=""
+	 EXTRA_PORTAUDIO_DEFS="-DFORGET_PORTAUDIO"
+
+fi;
+
+
+if test ${EXTRA_PORTAUDIO_DEFS} = ""; then
+  PORTAUDIO_TRUE=
+  PORTAUDIO_FALSE='#'
+else
+  PORTAUDIO_TRUE='#'
+  PORTAUDIO_FALSE=
+fi
+
 
 ac_ext=cc
 ac_cpp='$CXXCPP $CPPFLAGS'
@@ -8440,7 +8473,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 if test "$ac_cv_search_regcomp" = no; then
-  for ac_lib in c rx regex; do
+  for ac_lib in c rx regex System; do
     LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
     cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -8493,8 +8526,13 @@ echo "$as_me:$LINENO: result: $ac_cv_search_regcomp" >&5
 echo "${ECHO_T}$ac_cv_search_regcomp" >&6
 if test "$ac_cv_search_regcomp" != no; then
   test "$ac_cv_search_regcomp" = "none required" || LIBS="$ac_cv_search_regcomp $LIBS"
-
+  EXTRA_REGEX_OBJ=""
+else
+  EXTRA_REGEX_OBJ="../libs/regex/rx.$(OBJEXT)"
 fi
+
+
+
 
 
 echo "$as_me:$LINENO: checking for main in -lsocket" >&5
@@ -14097,7 +14135,8 @@ fi
 
           ac_config_headers="$ac_config_headers config.h"
 
-                                                                      ac_config_files="$ac_config_files Makefile src/Makefile src/nnet/Makefile src/tests/Makefile cfg/Makefile arch/Makefile doc/Makefile"
+#AC_CONFIG_SUBDIRS(libs/portaudio)
+                                                                                                    ac_config_files="$ac_config_files Makefile src/Makefile src/nnet/Makefile src/tests/Makefile libs/Makefile libs/regex/Makefile libs/portaudio/Makefile cfg/Makefile arch/Makefile doc/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -14207,6 +14246,13 @@ if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"am__fastdepCXX\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${PORTAUDIO_TRUE}" && test -z "${PORTAUDIO_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"PORTAUDIO\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"PORTAUDIO\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -14657,6 +14703,9 @@ do
   "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
   "src/nnet/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/nnet/Makefile" ;;
   "src/tests/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/tests/Makefile" ;;
+  "libs/Makefile" ) CONFIG_FILES="$CONFIG_FILES libs/Makefile" ;;
+  "libs/regex/Makefile" ) CONFIG_FILES="$CONFIG_FILES libs/regex/Makefile" ;;
+  "libs/portaudio/Makefile" ) CONFIG_FILES="$CONFIG_FILES libs/portaudio/Makefile" ;;
   "cfg/Makefile" ) CONFIG_FILES="$CONFIG_FILES cfg/Makefile" ;;
   "arch/Makefile" ) CONFIG_FILES="$CONFIG_FILES arch/Makefile" ;;
   "doc/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
@@ -14804,7 +14853,13 @@ s,@CPP@,$CPP,;t t
 s,@EGREP@,$EGREP,;t t
 s,@LIBTOOL@,$LIBTOOL,;t t
 s,@LIBTOOL_DEPS@,$LIBTOOL_DEPS,;t t
+s,@AM_CXXFLAGS@,$AM_CXXFLAGS,;t t
+s,@PORTAUDIO_TRUE@,$PORTAUDIO_TRUE,;t t
+s,@PORTAUDIO_FALSE@,$PORTAUDIO_FALSE,;t t
 s,@LNK@,$LNK,;t t
+s,@EXTRA_REGEX_OBJ@,$EXTRA_REGEX_OBJ,;t t
+s,@EXTRA_PORTAUDIO_LIBS@,$EXTRA_PORTAUDIO_LIBS,;t t
+s,@EXTRA_PORTAUDIO_DEFS@,$EXTRA_PORTAUDIO_DEFS,;t t
 s,@YACC@,$YACC,;t t
 s,@LEX@,$LEX,;t t
 s,@LEXLIB@,$LEXLIB,;t t

@@ -12,6 +12,8 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License in doc/COPYING for more details.
  *
+ *	This file covers RIFF waveform handling and sound card access.
+ *
  *	In Epos, waveforms are externally (as required by TTSCP) and
  *	also internally represented by the RIFF waveform pseudostandard
  *	format.  As generating the waveform is likely to become
@@ -30,8 +32,28 @@
  *	in the buffer and we translate the header and/or buffer later on
  *	if necessary.  No translation should be needed if you request
  *	a 16-bit monophonic waveform at its "natural" (recorded) sampling
- *	rate.
+ *	rate, and if the hardware is little-endian.
+ *
+ *	Note that one of the responsibilities of the translate() method
+ *	is a byte order conversion of both data and headers if necessary.
+ *	Subsequent accesses to header values must treat them as little-endian
+ *	with the help of endian_utils.h.
+ *	(This is currently unimplemented for labels and related RIFF chunks.)
+ *
+ *	Byte conversion is necessary if the data is going to be sent to a client
+ *	or written to a file, since RIFF is defined to be little-endian.
+ *	It is not performed on data which is about to be written to a sound card;
+ *	however, header values are still converted to little-endian
+ *	for the sake of simplicity and consistency.
  */
+												
+
+/*
+ *	The following is an init-time method.
+ */
+
+void select_local_soundcard();
+
 
 /*
  *	The following are inlinable and so a decl would be risky
@@ -111,11 +133,16 @@ class wavefm
 
 	bool flush_deferred();
 	
+	void force_little_endian_header();
 	void translate_data(char *new_buff);	/* recode data from buffer to new_buff */
 	void translate();	/* downsample, stereophonize, eightbitize or ulawize */
 	void band_filter(int ds);	/* low band filter applied if downsampling */
 	bool translated;
 	int downsamp;
+
+#ifdef WANT_PORTAUDIO_PABLIO
+	void *pablio_stream;
+#endif
 	
 	void put_chunk(labl *chunk_template, const char *label);
 
@@ -130,6 +157,10 @@ class wavefm
 	bool flush();		// write out at least something
 				// see waveform.cc for more documentation
 	void ioctl_attach();
+	void portaudio_attach();
+	void portaudio_detach();
+	void portaudio_flush(const char *, int);	// returns bytes written using "written", 0 indicates not a portaudio socket */
+
 	void attach(int fd);
 	void attach();
 	void detach(int fd);	// does not close fd
@@ -166,6 +197,6 @@ class wavefm
 	void chunk_become(char *chunk_hdr, int chunk_size);
 	void become(void *buffer, int size);
 
-	inline int written_bytes() { return hdr.total_length + RIFF_HEADER_SIZE; }
+	int written_bytes();
 };
 
