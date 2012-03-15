@@ -8,7 +8,12 @@ EASY_INSTALL = cfg lng voice mappings ttscp root
 version: $(top_srcdir)/configure.in
 	@echo $(VERSION) > version
 
-install-data-local:
+# If you don't have find, the following will fail.
+# In this case note that all you need is a recursive copy
+# of the content of this directory to the "right" place,
+# such as cp -r * /usr/share/epos
+
+install-data-local:	
 	$(INSTALL_DATA) -d $(pkgdatadir)/root
 	cd $(srcdir) && find $(EASY_INSTALL) -type d -exec $(INSTALL_DATA) -d -m 755 $(pkgdatadir)/{} \;
 	cd $(srcdir) && find $(EASY_INSTALL) -type f -exec $(INSTALL_DATA) $(srcdir)/{} $(pkgdatadir)/{} \;
