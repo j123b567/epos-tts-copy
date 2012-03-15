@@ -1727,7 +1727,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=epos
- VERSION=2.5.36
+ VERSION=2.5.37
 
 
 cat >>confdefs.h <<_ACEOF

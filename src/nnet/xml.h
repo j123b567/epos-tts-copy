@@ -39,7 +39,7 @@ class CXml {
 		~CXml();
 
 		operator CString () const;
-		CString CXml::print (const CString &indent) const;
+		CString print (const CString &indent) const;
 
 		void		SetSubtype(Xmlsubtype n) { subt = n; }
 		Xmlsubtype	GetSubtype() { return subt; }

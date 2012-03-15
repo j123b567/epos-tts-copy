@@ -1507,3 +1507,5 @@ contributed in this way much more often than explicitly indicated here.     ]
 	- fix: DESTDIR support (Jeremy Huddleston)
 	- fix: removed the unused and non-portable hash to hostent in hashi.cc
 
+2.5.37 from 2.5.36	24.3.06
+	- gcc 4.1 fix: extra qualification (Martin MichlMayr)

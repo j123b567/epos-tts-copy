@@ -195,7 +195,7 @@ public:
 	bool moveToRow (CInt row) const;
 
 	/// getSet returns: set of current row or ST_NULL if position not valid
-	inline CInt CTrainingData::getSet () const
+	inline CInt getSet () const
 	{ if (pos == data.end()) return ST_NULL; else return (*pos).set; }
 
 	/// getInputs returns: inputs on current row 
