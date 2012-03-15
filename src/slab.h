@@ -77,9 +77,9 @@ inline void slab<size>::shutdown()
 		tmp = tmp->n;
 		free(tmp2);
 	}
-//	if (cells) shriek(862, fmt("%sHash slab lost %d cells", "", -cells));
 	tail = NULL;
 	slices = NULL;
+	if (cells) shriek(862, fmt("Slab<%d> lost %d cells", size, -cells));
 }
 
 template <int size>

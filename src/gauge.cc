@@ -50,13 +50,6 @@ bool show_segments = false;
 bool wavfile = false;
 bool wavstdout = false;
 
-#if 0
-struct segment {
-	int16_t code; char nothing; char ll;
-	int f,e,t;
-};
-#endif
-
 #define STDIN_BUFF_SIZE  550000
 
 int ctrld, datad;		/* file descriptors for the control and data connections */
@@ -68,6 +61,7 @@ char *dh;
 void shriek(char *txt)
 {
 	fprintf(stderr, "Client side error: %s\n", txt);
+//	system("killall gauge");
 	exit(1);
 }
 
@@ -112,11 +106,11 @@ int get_result(int sd)
 
 int size;
 
-char *get_data()
+char *get_line()
 {
-	char scratch[202];
 	#undef SCRATCH_SPACE
 	#define SCRATCH_SPACE	200
+	char scratch[SCRATCH_SPACE + 2];
 
 	char *b;
 	size = 0;
@@ -126,7 +120,6 @@ char *get_data()
 			if (*scratch != '2') shriek(scratch);
 			if (!size) shriek("No processed data received");
 			b[size] = 0;
-//			if (b[strlen(b) - 4] != '#') shriek("mismatch");
 			return b;
 		}
 		if (!strncmp(scratch, "123 ", 4)) {
@@ -136,11 +129,14 @@ char *get_data()
 			if (!sscanf(scratch, "%d", &count)) shriek("Matchfail!");
 			b = size ? (char *)realloc(b, size + count + 1) : (char *)malloc(count + 1);
 			if (!b) shriek("No buffer");
-			if (size && count) shriek("Ltiple");
+			if (size && count) printf("size %d, count %d, buffer %s", size, count, b);
 			int limit = size + count;
 			while (size < limit) {
 				int res = yread(datad, b + size, limit - size);
-				if (res == -1) shriek("Wow!\n");
+				if (res == -1) {
+					printf("size=%d, limit=%d, errno=%d\n", size, limit, errno);
+					shriek("Wow!\n");
+				}
 				size += res;
 			}
 		}
@@ -150,52 +146,111 @@ char *get_data()
 	return NULL;
 }
 
+char *line = (char *)calloc(1,1);
+char *demux = (char *)calloc(1,1);
+
+char *get_word()
+{
+	if (!*demux) {
+		free(line);
+		line = get_line();
+		demux = line;
+	}
+
+	char *ret = demux;
+	demux = strchr(demux, ',');
+	*demux++ = 0;
+	return ret;
+}
+
+void send_line(char *line)
+{
+	sputs("appl ", ctrld);
+	sprintf(scratch, "%d", (int)strlen(line));
+	sputs(scratch, ctrld);
+	sputs("\r\n", ctrld);
+	sputs(line, datad);
+}
+
+char multiplex[512] = { 0, };
+
+void send_word(char *word)
+{
+	strcat (multiplex, word);
+	strcat (multiplex, ",");
+	if (strlen(multiplex) < 400) return;
+
+	send_line(multiplex);
+	multiplex[0] = 0;
+}
+
 int sent_count = 0;
 int received_count = 0;
 
+char *in = "gauge.in";
+char *nw = "gauge.new";
+char *lst = "gauge.lst";
+char *lst_format = "%-24s %-24s %-24s\n";
+
 void send_requests()
 {
-	FILE *f = fopen("gauge.dic", "r");
+	FILE *f = fopen(in, "r");
 	char buffer[1024];
 	char *result;
 	while (f && !feof(f)) {
 		fgets(buffer, 1023, f);
+		if (data && !strstr(buffer, data))
+			continue;
 		result = strchr(buffer, ' ');
 		if (!result) continue;
 		*result++ = 0;
-		sputs("appl ", ctrld);
-		sprintf(scratch, "%d", (int)strlen(buffer));
-		sputs(scratch, ctrld);
-		sputs("\r\n", ctrld);
-		sputs(buffer, datad);
-		printf("\r%d %s                                    ", sent_count, buffer);
+		send_word(buffer);
+		printf("\r%d %s                                   ", sent_count, buffer);
 		sent_count++;
 	}
 	fclose(f);
+	if (*multiplex) send_line(multiplex);
+	printf("\nThe last sent line was: \"%s\"\n", multiplex);
+	printf("Sent word count: %d\n", sent_count);
+	multiplex[0] = 0;
 }
 
 void gather_results()
 {
 	FILE *f;
+	FILE *g = NULL;
+	FILE *h;
 	char buffer[1024];
-	char *result;
-	f = fopen("gauge.dic", "r");
+	char *old;
+	f = fopen(in, "r");
+	if (data) remove(nw);
+	else g = fopen(nw, "w");
+	h = fopen(lst, "w");
 	if (!f) shriek("Could not open the dictionary");
+	if (!h) shriek("Could not create the output files");
 	while (1) {
 		fgets(buffer, 1023, f);
 		if (feof(f))
 			break;
-		result = strchr(buffer, ' ');
-		if (!result) continue;
-		result += strspn(result, " ");
-		char *b = get_data();
-		if (strchr(b, '#')) *strchr(b, '#') = 0;
-//		printf("rules: %s, thesaurus: %s", b, result);
-		printf("\r                                             %d        ", received_count);
+		if (data && !strstr(buffer, data))
+			continue;
+		old = strchr(buffer, ' ');
+		if (!old) shriek("Need two space-separated items");
+		*old++ = 0;
+		old += strspn(old, " ");
+		char *received = get_word();
+		if (strchr(received, '#')) *strchr(received, '#') = 0;
+		if (strchr(old, '\n')) *strchr(old, '\n') = 0;
+//		printf("rules: %s, thesaurus: %s\n", received, old);
+		if (!data) fprintf(g, "%s %s\n", buffer, received);
+		if (strcmp(received, old))
+			fprintf(h, lst_format, buffer, old, received);
 		received_count++;
-//		while (sent_count > received_count + 100) ;
 	}
 	fclose(f);
+	if (!data) fclose(g);
+	fclose(h);
+	printf("Received word count: %d\n", received_count);
 }
 
 void gauge()
@@ -209,7 +264,9 @@ void gauge()
 
 	if (!fork()) {
 		send_requests();
-		sleep(600);
+//		sleep(5);
+		sputs("done\r\n", ctrld);
+		exit(0);
 	}
 	else gather_results();
 
@@ -222,21 +279,25 @@ void send_option(const char *name, const char *value)
 	get_result(ctrld);
 }
 
+void use_trusted()
+{
+	in = "gauge-trusted.in";
+	nw = "gauge-trusted.new";
+	lst = "gauge-trusted.lst";
+}
+
 #define CMD_LINE_OPT "-"
 #define CMD_LINE_VAL '='
 
 void dump_help()
 {
-	printf("usage: say [options] ['Text to be processed.']\n");
-	printf(" -b  bare format (no frills)\n");
-	printf(" -c  casual pronunciation\n");
-	printf(" -d  show segments\n");
-	printf(" -k  shutdown Epos\n");
-	printf(" -l  list available languages and voices\n");
-	printf(" -m  write the waveform in mu law format to ./said.vox\n");
-	printf(" -o  write the waveform to the standard output\n");
-	printf(" -u  use utterance chunking\n");
-	printf(" -w  write the waveform to ./said.wav\n");
+	printf("usage: gauge [options] ['substring']\n");
+	printf(" -t  Use gauge-trusted.* instead of gauge.*\n");
+	printf("\n");
+	printf(" * gauge.in is used as the input\n");
+	printf(" * gauge.new will be created unless you specify a substring\n");
+	printf(" * gauge.lst will be created always and shows differences\n");
+	printf("Any long options will be passed to the server.\n");
 }
 
 void send_cmd_line(int argc, char **argv)
@@ -267,42 +328,11 @@ void send_cmd_line(int argc, char **argv)
 			break;
 		case 1:
 			for (j=ar+1; *j; j++) switch (*j) {
-				case 'b': send_option("out_verbose", "false"); break;
-				case 'c': send_option("colloquial", "true"); break;
-				case 'd': show_segments = true; break;
-//				case 'd': send_option("show_segments", "true"); break;
 				case 'H': send_option("long_help", "true");	/* fall through */
 				case 'h': dump_help(); exit(0);
-				case 'k': FILE *f;
-					  f = fopen("/var/run/epos.pwd", "r");
-					  if (!f) {
-					  	stop_service();
-					  	shriek("Cannot open /var/run/epos.pwd");
-					  }
-					  sputs("pass ", ctrld);
-					  scratch[fread(scratch, 1, 1024, f)] = 0;
-					  sputs(scratch, ctrld);
-					  sputs("down\r\n", ctrld);
-					  get_result(ctrld);
-					  get_result(ctrld);
-					  exit(0);
-				case 'l': sputs("show languages\r\nshow voices\r\n", ctrld);
-					  printf("Languages available:\n");
-					  get_result(ctrld);
-					  printf("Voices available for the current language:\n");
-					  get_result(ctrld);
-					  exit(0);
-				case 'm': send_option("ulaw", "true");
-					  send_option("wave_header", "false");
-					  wavfile = true;
-					  output_file = "said.vox"; break;
-				case 'o': wavstdout = true; break;
 				case 'p': send_option("pausing", "true"); break;
-				case 'u': chunking = true; break;
+				case 't': use_trusted(); break;
 				case 'v': send_option("version", "true"); break;
-				case 'w': send_option("wave_header", "true");
-					  wavfile = true;
-					  output_file = "said.wav"; break;
 				case 'D':
 					send_option("debug", "true");
 					break;
@@ -327,6 +357,23 @@ void send_cmd_line(int argc, char **argv)
 		}
 	}
 	if (data) for(char *p=data; *p; p++) if (*p=='\n') *p=' ';
+}
+
+void send_options()
+{
+	send_option("generate_segs", "false");
+	send_option("diphtongs", "false");
+	send_option("phr_break", "false");
+	send_option("roman", "false");
+	send_option("degeminate", "true");
+	send_option("handle_vocalic_groups", "false");
+	send_option("handle_prepositions", "false");
+	send_option("form_syllables", "false");
+	send_option("prosody", "false");
+	send_option("a_joins_sents", "false");
+
+	send_option("syslog", "false");
+	send_option("trusted", "true");
 }
 
 /*
@@ -359,6 +406,7 @@ int main(int argc, char **argv)
 	sputs(charset, ctrld);
 	sputs("\r\n", ctrld);
 	get_result(ctrld);
+	send_options();
 	send_cmd_line(argc, argv);
 	dh = get_handle(datad);
 	get_result(datad);

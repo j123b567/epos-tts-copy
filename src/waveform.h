@@ -33,9 +33,13 @@
  *	rate.
  */
 
-void async_close(int fd);
-int ywrite(int, const void *, int size);
-int yread(int, void *, int size);
+/*
+ *	The following are inlinable and so a decl would be risky
+ *
+ *	void async_close(int fd);
+ *	int ywrite(int, const void *, int size);
+ *	int yread(int, void *, int size);
+ */
 
 #define	RIFF_HEADER_SIZE	8
 

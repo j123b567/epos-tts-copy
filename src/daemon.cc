@@ -254,7 +254,7 @@ static void detach()
 static inline void make_server_passwd()
 {
 	make_rnd_passwd(server_passwd, SERVER_PASSWD_LEN);
-	D_PRINT(0, "[core] server internal password is %s\n", server_passwd);
+//	D_PRINT(0, "Server internal password is %s\n", server_passwd);
 	if (scfg->listen_port != TTSCP_PORT) return;
 
 	FILE *f;
@@ -272,6 +272,8 @@ static inline void make_server_passwd()
 volatile bool server_shutting_down = false;
 volatile bool server_reinit_req = false;
 
+void shutdown_agent_queue();
+
 void server_shutdown()
 {
 	while (ctrl_conns->items) {
@@ -280,14 +282,20 @@ void server_shutdown()
 		delete ctrl_conns->remove(tmp->handle);
 	}
 	if (scfg->pwdfile) remove(scfg->pwdfile);
-	delete accept_conn;
-	delete ctrl_conns;
-	delete data_conns;
-	delete master_context;
-//	cfg->n_langs = 0;	// otherwise the langs point into no man's land
-	free(block_table);
-	free(push_table);
-	epos_done();
+	try {
+		delete accept_conn;
+		delete ctrl_conns;
+		delete data_conns;
+		delete master_context;
+//		cfg->n_langs = 0;	// otherwise the langs point into no man's land
+		free(block_table);
+		free(push_table);
+		shutdown_agent_queue();
+		epos_done();
+	} catch (any_exception *) {
+		D_PRINT(3, "Shutdown didn't complete due to a fatal error.\n");
+		abort();
+	}
 	exit(0);
 }
 
@@ -516,6 +524,7 @@ int start_unix_daemon()
 	} catch (any_exception *e) {
 		/* handle all known uncatched exceptions here */
 		init_thrown_exception(e->code);
+		delete e;
 		return 1;
 #ifndef NO_CATCHALL_CATCHES
 	} catch (...) {

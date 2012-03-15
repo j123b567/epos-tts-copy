@@ -37,6 +37,7 @@
 
 	const char *decode_to_sampa(unsigned char c, int sampa_alt);
 	void update_sampa();
+	void release_sampa();
 
 	int get_count_allocated();
 
@@ -53,5 +54,5 @@
 	inline void shutdown_enc()			{ return; };
 	const char *decode_to_sampa(unsigned char c, int sampa_alt);
 	void update_sampa()				{ return; };
-
+	void release_sampa()				{ return; };
 #endif

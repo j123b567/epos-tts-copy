@@ -102,7 +102,7 @@ int cmd_pass(char *param, a_ttscp *)
 	if (this_context->uid == UID_ANON) {
 		if (!strcmp(param, server_passwd) || scfg->dbg_pwd
 				&& !strcmp(param, scfg->dbg_pwd)) {
-			D_PRINT(2, "[core] It's me\n");
+			D_PRINT(2, "It's me!\n");
 			this_context->uid = UID_SERVER;
 			reply("200 OK");
 			return PA_NEXT;

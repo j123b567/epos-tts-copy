@@ -19,80 +19,6 @@
 #include "agent.h"
 
 /*
- *	nonblocking sgets - returns immediately.
- *	tries to get a line into buffer; if it can't,
- *	returns zero and partbuff will contain some (undefined)
- *	data, which should be passed to the next call to
- *	sgets() with this, but not another socket.
- *	The "space" argument limits both buffers.
- *
- *	Upon the first call with this socket, *partbuff must == 0.
- *
- *	returns:      0   partial line in partbuff or nothing to do
- *		positive  full line in buffer
- *		negative  error reading socket
- *
- *	Our policy is not to read the socket when we've got
- *	a partial line acquired in an earlier invocation.
- *	This is to avoid starvation by an over-active session.
- *	Such a session would however cause a lot of shifting
- *	strings back and forth between the buffers.
- */
-
-int sgets(char *buffer, int space, int sd, char *partbuff)
-{
-	int i, l;
-	int result = 0;
-
-	if (*partbuff) {
-		D_PRINT(1, "[core] Appending.\n");
-		l = strlen(partbuff);
-		if (l > space) shriek(862, "sgets() holdback overflow"); // was: shriek(664)
-		if (l == space) goto too_long;
-		strcpy(buffer, partbuff);
-		if (strchr(buffer, '\n')) goto already_enough_text;
-	} else l = 0;
-	result = yread(sd, buffer + l, space - l);
-	if (result >= 0) buffer[l+result] = 0; else buffer[l] = 0;
-	if (result <= 0) {
-		if (result == -1 && errno == EAGAIN) {
-			D_PRINT(2, "Nothing to do: %d\n", sd);
-			*buffer = 0;
-			return 0;
-		}
-		*partbuff = 0;	/* forgetting partial line upon EOF/error. Bad? */
-		*buffer = 0;
-		D_PRINT(2, "Error on socket: %d\n", sd);
-		return -1;
-	}
-	l += result;
-
-already_enough_text:
-	for (i=0; i<l; i++) {
-		if (buffer[i] == '\n' || !buffer[i]) {
-			if (i && buffer[i-1] == '\r') buffer[i-1] = 0;
-			buffer[i] = 0;
-			if (++i < l) strcpy(partbuff, buffer+i);
-			else *partbuff = 0;
-			return 1;
-		}
-	}
-	if (i >= space) goto too_long;
-	buffer[i] = 0;
-	strcpy(partbuff, buffer);
-	D_PRINT(1, "[core] partial line read: %s\n", partbuff);
-	*buffer = 0;
-	return 0;
-
-too_long:
-	strcpy(partbuff, "remark ");
-	D_PRINT(2, "[core] Too long command ignored");
-	sputs("413 Too long\n", sd);
-	*buffer = 0;
-	return 0;
-}
-
-/*
  *	class a_replier handles control connection congestion.
  *	It is constructed at the moment of the first partial
  *	or EWOULDBLOCK/EAGAIN write in async_sputs().
@@ -164,6 +90,7 @@ a_replier::write(const char *str, int l)
 
 	memcpy(buffer + len, str, l);
 	len += l;
+	D_PRINT(0, "Replier stretches the buffer to %d bytes\n", len);
 
 	if (len == l) push(sd);
 }
@@ -183,8 +110,10 @@ int async_sputs(socky int sd, const char *buffer, int len)
 		result = 0;
 	if (result != -1) {
 		if (sd >= n_repliers) {
+			replier_table = (a_replier **)xrealloc(replier_table, (sd + 1) * sizeof(a_replier *));
+			for (int i = n_repliers; i < sd; i++)
+				replier_table[sd] = NULL;
 			n_repliers = sd + 1;
-			replier_table = (a_replier **)xrealloc(replier_table, n_repliers * sizeof(a_replier));
 		}
 		replier_table[sd] = new a_replier(sd);
 		replier_table[sd]->write(buffer + result, len - result);
@@ -206,3 +135,9 @@ void use_async_sputs()
 	sputs_replacement = &async_sputs;
 }
 
+void free_replier_table()
+{
+	for (int i = 0; i < n_repliers; i++)
+		delete replier_table[i];
+	free(replier_table);
+}

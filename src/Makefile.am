@@ -29,3 +29,5 @@ nnet/libeposnnet.la:
 EXTRA_DIST = options.lst hashtmpl.cc marker.cc block.cc exc.cc \
 qnxipc.cc
 
+cfginst:
+	cd .. && make install

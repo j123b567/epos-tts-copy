@@ -96,6 +96,7 @@ unit::~unit()
 {
 //	D_PRINT(0, "Disposing %c\n",cont);
 	if (firstborn) delete_children();
+	delete m;
 }
 
 void
@@ -348,7 +349,7 @@ unit::insert(UNIT target, bool backwards, char what, charclass *left, charclass 
 		D_PRINT(1, "   env is %c %c\n",
 				left->ismember(Prev(depth)->inside())+'0',
 				right->ismember(Next(depth)->inside())+'0');
-		if (left->ismember(cont) && right->ismember(Next(depth)->cont)) {
+		if (fast_ismember(left, cont) && fast_ismember(right, Next(depth)->cont)) {
 			tmpu = new unit(depth, what);
 			tmpu->prev = this;
 			if (next) {
@@ -362,7 +363,7 @@ unit::insert(UNIT target, bool backwards, char what, charclass *left, charclass 
 			tmpu->t = t;
 //			tmpu->m = m->derived();
 		}
-		if (!prev && right->ismember(cont) && left->ismember(Prev(depth)->cont)) {
+		if (!prev && fast_ismember(right, cont) && fast_ismember(left, Prev(depth)->cont)) {
 			tmpu = new unit(depth, what);
 			tmpu->next = this;
 			father->firstborn = tmpu;
@@ -516,9 +517,9 @@ unit::subst()
 	parser *parsie;
 	unit   *tmpu;
 
-	parsie=new parser(sb, PARSER_MODE_RAW);
+	parsie = new parser(sb, PARSER_MODE_RAW);
 	D_PRINT(0, "innermost unit::subst - parser is ready\n");
-	tmpu=new unit(depth,parsie);
+	tmpu = new unit(depth, parsie);
 	if (cfg->paranoid) parsie->done();
 	sanity();
 	if (firstborn && !tmpu->firstborn) {
@@ -544,37 +545,48 @@ unit::subst()
  ****************************************************************************/
 
 inline bool
-unit::subst(hash *table, int l, char *prefix, char *prefix_end, char *body, char *suffix, char *suffix_end)
+unit::subst(hash *table, int l, char *body, char *suffix)
 {
 	char *resultant;
 	int safe_grow;
 
-	D_PRINT(0, "innermost unit::subst called with PREFIX %s %s MAIN %s SUFFIX %s %s\n",prefix,prefix_end,body,suffix,suffix_end);
-	sanity();
-	resultant = table->translate(body);
+	if (body < gb || suffix && suffix <= body || suffix && suffix - gb > strlen(gb) || l != strlen(gb))
+		shriek(862, "inner subst called with inconsistent parameters");
+
+	D_PRINT(0, "inner unit::subst called with BUFFER %s MAIN %s SUFFIX %s; total len %d\n",gb,body,suffix,l);
+	if (suffix && *suffix) {
+		char c = *suffix;    
+		*suffix = 0;
+		resultant = table->translate(body);
+		*suffix = c;
+	} else resultant = table->translate(body);
 	if (!resultant) return false;
 	if (!sb) {
 		sbsize = INIT_GB_SIZE;
 		sb = (char *)xmalloc(sbsize);
 	}
 	safe_grow = sbsize - l;
-	while ((int)strlen(resultant) - (int)strlen(body) > safe_grow) {
+	int increase = suffix ? strlen(resultant) - (suffix - body) : strlen(resultant) - strlen(body);
+	while (increase > safe_grow) {
 		safe_grow += sbsize;
 		sbsize <<= 1;
 		sb = (char *)xrealloc(sb, sbsize);
 		D_PRINT(1, "Had to realloc subst buffer to %d bytes\n", sbsize);
 	}
 //		shriek (463, "Huge or infinitely iterated substitution %30s...", resultant);
-	if (prefix && prefix_end - prefix > 0) {
-		strncpy(sb, prefix, prefix_end - prefix);
-		*(sb + (prefix_end - prefix)) = 0;
+	if (body - gb > 1) {
+		strncpy(sb, gb + 1, body - gb - 1);
+		*(sb + (body - gb - 1)) = 0;
 	} else *sb = 0;
 	strcat (sb, resultant);
-	D_PRINT(1, "innermost unit::subst result: %s\n",sb);
+	D_PRINT(1, "inner unit::subst result: %s\n",sb);
     
+	char *suffix_end = gb + l - 1;
+//	D_PRINT(0, "inner unit::subst: suffix %s suffix_end %s sb %s\n", suffix, suffix_end, sb);
 	if (suffix && suffix_end - suffix > 0) strncat(sb, suffix, suffix_end - suffix);
-	D_PRINT(1, "innermost unit::subst - subst found: %s Resultant: %s\n", sb, resultant);
+	D_PRINT(1, "inner unit::subst - subst found: %s Resultant: %s\n", sb, resultant);
 	subst();
+	sanity();
 	return true;
 }
 
@@ -587,7 +599,7 @@ unit::subst(hash *table, SUBST_METHOD method)
 {
 	char   *tail;
 	char   *strend;
-	char   *strrealend;
+	// char   *strrealend;
 
 	int l;
 
@@ -607,108 +619,32 @@ unit::subst(hash *table, SUBST_METHOD method)
 		D_PRINT(1, "inner unit::subst %s, method %d\n", gb + 1, method);
 		sanity();
 		if (exact) {
-			if (subst(table, l, NULL, NULL, gb, NULL, NULL))
+			if (subst(table, l, gb, NULL))
 				goto break_home;
 		}
 		if (b[l-1] == cont) --l;
-		if (method & M_END)
-			for(tail = gb; *tail && tail - gb < gbsize; tail++)
-				if (subst(table, l, gb + 1, tail, tail, NULL, NULL))
-					goto break_home;
-		if (method & M_BEGIN)
-			for (tail = strend;tail > gb; tail--) {
-				tail[0] = tail[-1]; tail[-1] = 0;
-				if (subst(table, l, NULL, NULL, gb, tail, gb + gbsize))
-					goto break_home;
-			}
+#if 0
 		if (method & M_SUBSTR) {
-			for (strrealend = strend; strend != gb; strend--) {
+			// strrealend = strend;
+			for (; strend != gb; strend--) {
 				strend[1] = *strend;
 				*strend = 0;
 				tail = gb < strend - table->longest ? strend-table->longest : gb;
 				for( ; tail < strend; tail++) 
-					if (subst(table, l, gb + 1, tail, tail, strend+1, strrealend)) 
+					if (subst(table, l, gb + 1, tail,  strend+1)) 
 						goto break_home;
 			}
 		}
-
-		if (method & M_SEQ) {
-			// shriek(462, "I reached rule mysubst!\n", 50);
-
-			// algorithm similar to M_BEGIN, but continue through the rest of the string, until nothing found and string processed
-			char* real_tail = strend;
-			char* real_begin = gb;
-			char* temp_tail;
-
-			int subst_amount;
-
-			char* temp_buffer = NULL;
-			
-			// stop if the whole string was processed
-			while (real_begin < real_tail) {
-				for (tail = real_tail;tail > real_begin; tail--) {
-					bool subst_result;
-					
-					if (real_begin == gb) {
-						subst_result = subst(table, l, gb, real_begin, real_begin, tail, strend);
-					}
-					else {
-						subst_result = subst(table, l, NULL, NULL, real_begin, tail, strend);
-					}
-						
-					if (subst_result) {
-						D_PRINT(1, "inner unit::subst has substituted %s\n", real_begin);
-						break;
-					}
-					else {
-						D_PRINT(1, "inner unit::%s could not be substituted\n", real_begin);
-					}
-					tail[0] = tail[-1]; tail[-1] = 0;
-				}
-
-				// undo the changes made to the string
-				for (temp_tail = tail; temp_tail <= real_tail; temp_tail++) {
-					temp_tail[-1] = temp_tail[0];
-					temp_tail[0] = 0;
-				}
-				
-				subst_amount = (int) ((tail) - (real_begin));
-
-				D_PRINT(1, "inner unit::subst has substituted %d letters\n", subst_amount);
-
-				if (temp_buffer == NULL) {
-					temp_buffer = (char *) xmalloc (1000);
-					memset (temp_buffer, 0, 1000);
-				}
-				if (subst_amount > 0) {
-					strcat (temp_buffer, sb);
-				}
-				else {
-					char tmp[2];
-					tmp[0] = real_begin[0];
-					tmp[1] = 0;
-					strcat (temp_buffer, tmp);
-				}
-
-				D_PRINT(1, "inner unit::subst temp_buffer contains %s \n", temp_buffer);
-				
-
-				if (tail == real_begin) {
-					// nothing was found
-					real_begin++;
-				}
-				else {
-					// found sth., skip the substituted string
-					real_begin = tail;
+#else
+		if (method & M_SUBSTR) {
+			for (int j = l < table->longest ? l : table->longest; j > 0; j--) {
+				for (char *p = strend - j; p >= gb; p--) {
+					if (subst(table, l, p, p + j))
+						goto break_home;
 				}
 			}
-			
-			if (sb != NULL) free (sb);
-			sb = temp_buffer;
-			subst();
-			goto break_home;
-	
 		}
+#endif
 		cont = separ;
 		if (method & (M_LEFT | M_RIGHT) && method & M_NEGATED) {
 			unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS);
@@ -742,9 +678,6 @@ unit::subst(hash *table, SUBST_METHOD method)
 
 		On the other hand, this limitation makes the implemetation
 		easier and faster.
-
-		M_END and M_BEGIN are not implemented and I may remove
-		them also from subst. No use for them.
  ****************************************************************************/
 
 bool
@@ -786,6 +719,7 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 			}
 		}
 		if (method & M_SUBSTR) {
+#if 0
 			for (i = len; i; i--) {
 				char tmp = gb[i];
 				gb[i] = 0;
@@ -802,6 +736,25 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 				}
 				gb[i] = tmp;
 			}
+#else
+			for (i = len < table->longest ? len : table->longest;
+								i > 0; i--) {
+				for (char *p = gb + len - i; p >= gb; p--) {
+					char tmp = p[i];
+					p[i] = 0;
+					r = table->translate(p);
+					p[i] = tmp;
+					if (r) {
+						i -= (p == gb);
+						p += (p == gb);
+						if (cfg->paranoid && strlen(r) - i)
+							shriek(462, "Substitute length differs: beginning of '%s' to '%s'", p, r);
+						memcpy(p, r, strlen(r));
+						goto break_home;
+					}
+				}
+			}
+#endif
 		}
 		if (n == cfg->multi_subst) return false; else goto commit;
 
@@ -899,32 +852,41 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
  unit::assim
  ****************************************************************************/
 
-void 
-unit::assim(UNIT target, bool backwards, charxlat *fn, charclass *left, charclass *right)
+inline void 
+unit::assim(charxlat *fn, charclass *left, charclass *right)
 {
 	unit *tmpu;
 
-	sanity();
-	if (depth == target) {
-		D_PRINT(1, "inner unit::assim %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());
-		D_PRINT(1,"   env is %c %c\n",
-				left->ismember(Prev(depth)->inside())+'0',
-				right->ismember(Next(depth)->inside())+'0');
-		if (right->ismember(Next(depth)->inside()) && left->ismember(Prev(depth)->inside())) {
-			if (cont == DELETE_ME) return;
-			cont = (unsigned char)fn->xlat(cont);
-			if (cont == DELETE_ME) unlink(M_DELETE);
-			D_PRINT(1, "New contents: %c\n", cont);
-		}
-		return;
+	D_PRINT(1, "inner unit::assim %c %c %c\n",Prev(depth)->inside(), cont, Next(depth)->inside());
+	D_PRINT(1,"   env is %c %c\n",
+			left->ismember(Prev(depth)->inside())+'0',
+			right->ismember(Next(depth)->inside())+'0');
+	if (fast_ismember(right, Next(depth)->inside())
+	 && fast_ismember(left, Prev(depth)->inside())) {
+		if (cont == DELETE_ME) return;
+		cont = (unsigned char)fn->xlat(cont);
+		if (cont == DELETE_ME) unlink(M_DELETE);
+		D_PRINT(1, "New contents: %c\n", cont);
 	}
-	if (depth > target) 
-		for (tmpu = (backwards?lastborn:firstborn);tmpu;) {
-			unit *tmp_next = backwards ? tmpu->prev : tmpu->next;
-			tmpu->assim(target,backwards,fn,left,right);
-			tmpu = tmp_next;
+	return;
+}
+
+void
+unit::assim(UNIT target, bool backwards, charxlat *fn, charclass *left, charclass *right)
+{
+	if (backwards) {
+		for (unit *u = RightMost(target); u != &EMPTY; ) {
+			unit *tmp_next = u->Prev(target);
+			u->assim(fn,left,right);
+			u = tmp_next;
 		}
-	else shriek (861, "Out of vodka");
+	} else {
+		for (unit *u = LeftMost(target); u != &EMPTY; ) {
+			unit *tmp_next = u->Next(target);
+			u->assim(fn,left,right);
+			u = tmp_next;
+		}
+	}
 }
 
 /****************************************************************************
@@ -1075,7 +1037,6 @@ unit::analyze(UNIT target, hash *table, int unanal_unit_penalty, int unanal_part
 		count++;
 	}
 }
-
 
 /****************************************************************************
  unit::contains    returns whether a unit of certain content is contained
@@ -1270,7 +1231,7 @@ unit::project_extents()
 			shriek(862, "Extent followed by a non-extent");
 
 	for (unit *u = firstborn; u; u = u->next) {
-		D_PRINT(3, "Moving prosody point to %d; q=%d, val=%d\n", u->depth, m->quant, m->par);
+		D_PRINT(2, "Moving prosody point to %d; q=%d, val=%d\n", u->depth, m->quant, m->par);
 		sanity();
 		u->sanity();
 		m->derived()->merge(u->m);
@@ -1343,7 +1304,7 @@ unit::raise(charclass *whattab, charclass *whentab, UNIT whither, UNIT whence)
 	D_PRINT(1, "unit::raise moving from %d to %d\n",whence,whither);
 	if  (whither<=whence) shriek(462, "Raising downwards...huh...");
 	for (tmpbig = LeftMost(whither); tmpbig != &EMPTY; tmpbig = tmpbig->Next(whither)) {
-		if (whentab->ismember(tmpbig->cont)) {
+		if (fast_ismember(whentab, tmpbig->cont)) {
 			D_PRINT(1, "unit::raise searching %c\n",tmpbig->cont);
 			bool tmpscope = scope; scope = true;
 			for (tmpu = LeftMost(whence); tmpu != &EMPTY; tmpu = tmpu->Next(whence)) {
@@ -1539,33 +1500,11 @@ unit::fprintln(FILE *outf)
 	fprintf(outf,"%c,%u,%u,%u\n",cont,f,i,t);
 }*/
 
-inline unsigned char
-unit::inside()
-{
-	sanity();
-	return((unsigned char) cont);
-}
-
 unit *
 unit::ancestor(UNIT level)
 {
 	if (level == depth) return this;
 	return father ? father->ancestor(level) : (unit *)NULL;
-}
-
-int
-unit::index(UNIT what, UNIT where)
-{
-	int i=0;
-	if (what > where) shriek(862, "Wrong order of arguments to unit::index");
-	if (what < depth) shriek(862, "Underindexing in unit::index %d",what);
-	unit *lookfor = ancestor(what);
-	unit *lookin = ancestor(where);
-	unit *tmpu;
-	lookin->scope = true;
-	for (tmpu = lookin->LeftMost(what); tmpu != lookfor; tmpu = tmpu->Next(what)) i++;
-	lookin->scope = false;
-	return i;
 }
 
 int
@@ -1581,60 +1520,13 @@ unit::count(UNIT what)
 }
 
 /****************************************************************************
- unit::Right/LeftMost
- ****************************************************************************/
-
-unit*
-unit::RightMost(UNIT target)
-{
-	sanity();
-	if(target == depth || this == &EMPTY) return this;
-	if(!lastborn) return scope ? &EMPTY : Prev(depth)->RightMost(target);
-	return(lastborn->RightMost(target));
-}
-
-unit*
-unit::LeftMost(UNIT target)
-{
-	sanity();
-	if(target == depth || this == &EMPTY) return this;
-	if(!firstborn) return scope ? &EMPTY : Next(depth)->LeftMost(target);
-	return(firstborn->LeftMost(target));
-}
-
-/****************************************************************************
- unit::Next/Prev
- ****************************************************************************/
-	
-unit *
-unit::Next(UNIT target)
-{
-	sanity();
-	if (scope)  return &EMPTY;                //never cross the scope
-	if (next)   return next->LeftMost(target);  //next exists, but is not the target
-	if (father) return(father->Next(target));
-	return &EMPTY;
-}
-
-unit *
-unit::Prev(UNIT target)
-{
-	sanity();
-	if (scope)  return &EMPTY;
-	if (prev)   return prev->RightMost(target);
-	if (father) return father->Prev(target);
-	else return &EMPTY;
-}
-
-/****************************************************************************
- unit::sanity   Sanity checks (trying to detect bad or wrong pointers) 
+ unit::do_sanity   Sanity checks (trying to detect bad or wrong pointers) 
  ****************************************************************************/
 
 
 void
-unit::sanity()
+unit::do_sanity()
 {
-	if (scfg->trusted) return;    
 	if (this == NULL)			  EMPTY.insane ("this non-NULL");
 //	if (!firstborn && depth > scfg->phone_level)	insane ("having content");
 	if (this == _unit_just_unlinked)		return;

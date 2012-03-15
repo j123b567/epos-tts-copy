@@ -49,15 +49,14 @@
 #define STATIC_OPTION(member, name, type, default)	/* ignore unless redefined */
 
 
-
 #ifdef CONFIG_DECLARE
 
 #define BOOL   bool
 #define INT    int
 #define STR    const char*
+#define LIST   const char*
 #define CHAR   unsigned char
 #define ELEM   UNIT
-// #define FILE   const char*
 #define MARKUP OUT_ML
 #define SALT   int
 #define TYPE   SYNTH_TYPE
@@ -111,9 +110,9 @@
 #define BOOL   O_BOOL
 #define INT    O_INT
 #define STR    O_STRING
+#define LIST    O_LIST
 #define CHAR   O_CHAR
 #define ELEM   O_UNIT
-// #define FILE   O_FILE
 #define MARKUP O_MARKUP
 #define SALT   O_SALT
 #define TYPE   O_SYNTH
@@ -148,6 +147,7 @@
 #define BOOL
 #define INT
 #define STR	STRING_COPY
+#define LIST	STRING_COPY
 #define CHAR
 #define ELEM
 #define MARKUP
@@ -181,10 +181,10 @@
 
 #define BOOL   bool
 #define INT    int
-#define STR    const char*
+#define STR    const char *
+#define LIST   const char *
 #define CHAR   unsigned char
 #define ELEM   UNIT
-// #define FILE   const char*
 #define MARKUP OUT_ML
 #define SALT   int
 #define TYPE   SYNTH_TYPE
@@ -215,9 +215,9 @@
 #define BOOL   O_BOOL
 #define INT    O_INT
 #define STR    O_STRING
+#define LIST   O_LIST
 #define CHAR   O_CHAR
 #define ELEM   O_UNIT
-// #define FILE   O_FILE
 #define MARKUP O_MARKUP
 #define SALT   O_SALT
 #define TYPE   O_SYNTH
@@ -262,6 +262,7 @@
 #define BOOL
 #define INT
 #define STR	STRING_COPY
+#define LIST	STRING_COPY
 #define CHAR
 #define ELEM
 #define MARKUP
@@ -287,10 +288,10 @@
 
 #define BOOL   bool
 #define INT    int
-#define STR    const char*
+#define STR    const char *
+#define LIST   const char *
 #define CHAR   unsigned char
 #define ELEM   UNIT
-// #define FILE   const char*
 #define MARKUP OUT_ML
 #define SALT   int
 #define TYPE   SYNTH_TYPE
@@ -313,9 +314,9 @@
 #define BOOL   O_BOOL
 #define INT    O_INT
 #define STR    O_STRING
+#define LIST   O_LIST
 #define CHAR   O_CHAR
 #define ELEM   O_UNIT
-// #define FILE   O_FILE
 #define MARKUP O_MARKUP
 #define SALT   O_SALT
 #define TYPE   O_SYNTH
@@ -360,10 +361,10 @@
 
 #define BOOL   bool
 #define INT    int
-#define STR    const char*
+#define STR    const char *
+#define LIST   const char *
 #define CHAR   unsigned char
 #define ELEM   UNIT
-// #define FILE   const char*
 #define MARKUP OUT_ML
 #define SALT   int
 #define TYPE   SYNTH_TYPE
@@ -392,9 +393,9 @@
 #define BOOL   O_BOOL
 #define INT    O_INT
 #define STR    O_STRING
+#define LIST   O_LIST
 #define CHAR   O_CHAR
 #define ELEM   O_UNIT
-// #define FILE   O_FILE
 #define MARKUP O_MARKUP
 #define SALT   O_SALT
 #define TYPE   O_SYNTH
@@ -465,7 +466,7 @@
 # ifndef BASE_DIR
 	# define BASE_DIR /usr/share/epos
 # endif
-	STATIC (base_dir, "base_dir", STR, strdup(stringify(BASE_DIR)))// base path to everything
+STATIC (base_dir, "base_dir", STR, strdup(stringify(BASE_DIR)))// base path to everything
 # undef strfy
 # undef stringify
 
@@ -490,11 +491,11 @@ STATIC (asyncing, "asyncing",	  BOOL, false)  // (UNIX only) Close files using a
 STATIC (init_time, "init_time",    INT, 0)	// (UNIX only) seconds to wait for daemon init
 STATIC (colored, "colored",       BOOL, false)  // Use the color escape sequences?
 STATIC (ml, "markup_language",  MARKUP, ML_NONE)// Are these ANSI escape seqs or the RTF ones?
-STATIC (languages, "languages",     STR, NULL)	// Which languages to provide?
+STATIC (languages, "languages",   LIST, NULL)	// Which languages to provide?
 STATIC (version, "version",	  BOOL, false)	// Print version info to stdshriek on startup?
 STATIC (help, "help",		  BOOL, false)	// Print help on stdshriek and exit on startup?
 STATIC (long_help, "long_help",   BOOL, false)	// Print also a simple list of long options?
-STATIC (neuronet, "neuronet",     BOOL, false)  // Allow nnet_out()?
+STATIC (neuronet, "neuronet",     BOOL, false)  // Initialize and use the nnet stuff
 STATIC (trusted, "trusted",       BOOL, false)  // Are sanity checks in unit::sanity() unnecessary?
 OPTION (paranoid, "paranoid",     BOOL, true)   // Are config files out to get us? (strict syntax)
 // OPTION (stml, "stml",	          BOOL, false)	// Input text are STML (as opposed to plain ASCII)?
@@ -529,13 +530,11 @@ STATIC (voice_base_dir, "voice_base_dir",  STR, NULL)   // to the voice descript
 STATIC (inv_base_dir, "inv_base_dir",  STR, NULL)	// to the segment inventories
 STATIC (ini_dir, "ini_dir",	   STR, strdup("cfg"))  // to fixed.ini and other global cfg files
 STATIC (unimap_dir, "unimap_dir",  STR, NULL)		// to unicode maps
-STATIC (matlab_dir, "matlab_dir",  STR, NULL)	//      where to store nnet output
 STATIC (wav_dir, "wav_dir",        STR, NULL)	//      where to store .wav files
 OPTION (mbrola_binary, "mbrola_binary", STR, NULL) //	where the MBROLA synthesizer binary is installed
 LNG_OPTION (input_file, input_file, "input_file",  STR, NULL)   // relative filename of the input text
 STATIC (input_text, "",            STR, NULL)			// the input text itself
 LNG_OPTION (rules_file, rules_file, "rules_file",  STR, NULL)   // relative filename of the rules text
-STATIC (nnet_file, "nnet_file",    STR, NULL)	// relative filename of nnet output
 STATIC (stddbg_file, "stddbg_file",     STR, NULL)   // file to write debug info to (NULL...stdout)
 // OPTION (stdwarn_file, "stdwarn_file",   STR, NULL)// file to write warnings to (NULL...stderr)
 STATIC (stdshriek_file,"stdshriek_file",STR, NULL)   // file to write fatal errors to (NULL...stderr)
@@ -554,6 +553,9 @@ STATIC (seg_raw,"show_raw_segs",BOOL, false)  // show_segments including diphone
 // STATIC (wav_file, "wave_file",     STR, NULL)	// File to write .wav into if play_diphones
 STATIC (local_sound_device, "local_sound_device", STR, NULL)	// Filename to write .wav into if play_segments
 STATIC (imm_segs,"immed_segments",BOOL, false)  // Should we output them after a SEGMENTS rule?
+
+STATIC (max_utterance, "max_utterance",      INT, 0)
+STATIC (split_utterance, "split_utterance",  INT, 0)
 
 VOICE_OPTION (name, name, "name",	     STR, NULL)
 VOICE_OPTION (inv_type, type, "type",       TYPE, S_NONE)	// Int, float, vector quantified...
@@ -626,8 +628,8 @@ STATIC (pend_max, "pend_max",	   INT, 7)	// FIXME: non-functional
 
 STATIC (_big_endian, "_big_endian", BOOL, false)  // run-time decided
 
-LNG_OPTION (voice_list, voice_list, "voices", STR, NULL) // voices supported for this language
-LNG_OPTION (soft_opt_list, soft_opt_list, "soft_options", STR, NULL)
+LNG_OPTION (voice_list, voice_list, "voices", LIST, NULL) // voices supported for this language
+LNG_OPTION (soft_opt_list, soft_opt_list, "soft_options", LIST, NULL)
 				// language-specific voice options supported for this language
 LNG_OPTION (permanent_fallbacks, permanent_fallbacks, "permanent_fallbacks", BOOL, false)
 LNG_OPTION (fallback_voice, fallback_voice, "fallback_voice", STR, NULL)
@@ -696,10 +698,10 @@ STATICARRAY (out_color, "color",   STR, NULL, UNIT_MAX)
 
 #undef BOOL
 #undef STR
+#undef LIST
 #undef INT
 #undef CHAR
 #undef ELEM
-// #undef FILE
 #undef MARKUP
 #undef SALT
 #undef TYPE

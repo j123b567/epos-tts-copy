@@ -29,6 +29,9 @@
 #ifdef THIS_IS_A_TTSCP_CLIENT
 
 #define INITIAL_SCRATCH_SPACE 16384
+void D_PRINT(int, ...) {};
+#define xmalloc malloc
+#define xrealloc realloc
 
 struct pseudo_static_configuration
 {
@@ -96,32 +99,136 @@ char *scratch = (char *)malloc(INITIAL_SCRATCH_SPACE + 2);
 	#include <signal.h>
 #endif
 
+
 /*
- *	blocking sgets() 
- *	returns 0 on error (EOF), 1 on success (line read)
+ *	nonblocking sgets() - returns immediately.
+ *	tries to get a line into buffer; if it can't,
+ *	returns zero and partbuff will contain some (undefined)
+ *	data, which should be passed to the next call to
+ *	sgets() with this, but not another socket.
+ *	The "space" argument limits both buffers.
+ *
+ *	Upon the first call with this socket, *partbuff must == 0.
+ *
+ *	returns:      0   partial line in partbuff or nothing to do
+ *		positive  full line in buffer
+ *		negative  error reading socket
+ *
+ *	Our policy is not to read the socket when we've got
+ *	a partial line acquired in an earlier invocation.
+ *	This is to avoid starvation by an over-active session.
+ *	Such a session would however cause a lot of shifting
+ *	strings back and forth between the buffers.
+ *
+ *	The nonblocking sgets() works with both nonblocking and
+ *	blocking sockets (sd's).  With blocking sockets it does
+ *	block, but still may return 0 after a partial read.
  */
 
-int sgets(char *buffer, int buffer_size, int sd)
+int sgets(char *buffer, int space, int sd, char *partbuff)
 {
-	int i, result;
-	buffer[0] = 0;
+	int i, l;
+	int result = 0;
 
-	for (i=0; i < buffer_size; i++) {
-		result = yread(sd, buffer+i, 1);
-		if (result == 0) return 0;
-		if (result == -1) {
-			i--;
-			continue;		// error
+	if (*partbuff) {
+		D_PRINT(1, "sgets: Appending.\n");
+		l = strlen(partbuff);
+		if (l > space) shriek(862, "sgets() holdback overflow"); // was: shriek(664)
+		if (l == space) goto too_long;
+		strcpy(buffer, partbuff);
+		if (strchr(buffer, '\n')) goto already_enough_text;
+	} else l = 0;
+	result = yread(sd, buffer + l, space - l);
+	if (result >= 0) buffer[l+result] = 0; else buffer[l] = 0;
+	if (result <= 0) {
+		if (result == -1 && errno == EAGAIN) {
+			D_PRINT(2, "sgets: Nothing to do on %d\n", sd);
+			*buffer = 0;
+			return 0;
 		}
+		*partbuff = 0;	/* forgetting partial line upon EOF/error. Bad? */
+		*buffer = 0;
+		D_PRINT(2, "sgets: Error on socket %d\n", sd);
+		return -1;
+	}
+	l += result;
+
+already_enough_text:
+	for (i=0; i<l; i++) {
 		if (buffer[i] == '\n' || !buffer[i]) {
 			if (i && buffer[i-1] == '\r') buffer[i-1] = 0;
 			buffer[i] = 0;
+			if (++i < l) strcpy(partbuff, buffer+i);
+			else *partbuff = 0;
 			return 1;
 		}
 	}
-	buffer[i+1] = 0;
-	return 1;	// error though - FIXME
+	if (i >= space) goto too_long;
+	buffer[i] = 0;
+	strcpy(partbuff, buffer);
+	D_PRINT(1, "sgets: Partial line read: %s\n", partbuff);
+	*buffer = 0;
+	return 0;
+
+too_long:
+	strcpy(partbuff, "too long: ...");
+	D_PRINT(3, "sgets: Too long line ignored\n");
+//	sputs("413 Too long\n", sd);
+	shriek(413, "Too long");
+	*buffer = 0;
+	return 0;
 }
+
+/*
+ *	blocking sgets() 
+ *	returns 0 on error (EOF), 1 on success (line read)
+ *
+ *	This code should never be called by the server code.
+ *	The socket (sd) should be blocking; otherwise this
+ *	function will busy loop over read().
+ */
+
+
+char **partbuffs = (char **)xmalloc(1);
+int *partbuff_sizes = (int *)xmalloc(1);
+int n_partbuffs = 0;
+
+int sgets(char *buffer, int buffer_size, int sd)
+{
+	if (sd >= n_partbuffs) {
+		partbuffs = (char **)xrealloc(partbuffs, (sd + 1) * sizeof(char *));
+		partbuff_sizes = (int *)xrealloc(partbuff_sizes, (sd + 1) * sizeof(char *));
+	}
+	while (sd >= n_partbuffs) {
+		partbuffs[n_partbuffs] = NULL;
+		partbuff_sizes[n_partbuffs] = NULL;
+		n_partbuffs++;
+	}
+	if (!partbuffs[sd]) {
+		partbuff_sizes[sd] = buffer_size;
+		partbuffs[sd] = (char *)xmalloc(buffer_size);
+		partbuffs[sd][0] = 0;
+	}
+	if (partbuff_sizes[sd] < buffer_size) {
+		partbuffs[sd] = (char *)xrealloc(partbuffs[sd], buffer_size);
+		partbuff_sizes[sd] = buffer_size;
+	}
+	int result = 0;
+	while (!result) {
+		result = sgets(buffer, buffer_size, sd, partbuffs[sd]);
+	}
+	return result > 0;
+}
+
+void shutdown_partbuffs()
+{
+	for (int i = 0; i < n_partbuffs; i++)
+		free(partbuffs[i]);
+	free(partbuffs);
+	free(partbuff_sizes);
+}
+
+
 
 int (*sputs_replacement)(int sd, const char *, int) = NULL;
 

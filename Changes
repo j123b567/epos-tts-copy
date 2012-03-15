@@ -1323,4 +1323,37 @@ for an exciting story, just skip it.
 	- (Cz) partly fixed short.dic (several problems), see also trans.rul
 	- added a documentation section on the overall architecture
 
+2.5.19 from 2.5.18	 6.11.03
+	- fixed hash table filename and line no. reporting
+	- fixed unit::subst(): largest match now goes first
+	- fixed unit::relabel(): largest match now goes first
+	- fixed a cfg reload bug in encoding.cc
+	- fixed a double free buf in ~lang
+	- fixed memory leaks: text::superfile and config_release() etc.
+	- fixed when a_input::run is scheduled, but read returns EAGAIN
+	- slabified parser and sched_aq
+	- fixed slab leak reporting
+	- speed optimizations of critical spots (inlines, booltab->always)
+	- (Cz) completely new and better main.dic, short.dic
+	- (Cz) optimizations (numerals) and fixes (infinite substs)
+	- (Cz) several "near" optimizations and soft opts to skip some rules
+	- (Cz) nonsyl.dic -> nonsyllprep.dic; introduced interj.dic
+	- (Cz) unified the stress unit establishment rules to stress.rul
+	- (Cz) joined the two stress grouping substs (relabels)
+	- (Cz) stopped to "support" the naive prosody
+	- gauge now sends items out in comma separated batches
+	- gauge made always to send out options to skip inessential rules
+	- gauge -t
+	- new synchronous sgets(), strace friendly, faster, space hungry
+	- O_LIST options (currently languages, voices and soft_options)
+	- moved scope and dbg tag logic from block_rule::apply_current
+		to rule::cook(), which fixes rules not directly in blocks
+	- removed M_BEGIN, M_END, M_SEQ from unit::subst() and elsewhere
+	- arch/unix/upload to support "make upload" to SourceForge
+	- "make cfginst" (available from the src subdir)
+	- exceptions are now properly deallocated (hopefully)
+	- the ttscp command help files work again
+	- changed some file owners, groups and modes (to non-root)
+	- utterance chunking made aggresive - max_utterance, split_utterance
+
 

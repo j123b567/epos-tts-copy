@@ -21,9 +21,6 @@
 
 #define CFG_FILE_ENVIR_VAR	"EPOSCFGFILE"
 
-enum OUT_ML { ML_NONE, ML_ANSI, ML_RTF};
-#define OUT_MLstr "none:ansi:rtf:"
-
 void epos_init(int argc, char**argv);
 void epos_init();
 void epos_reinit();
@@ -48,14 +45,6 @@ void shriek(int code, const char *msg, ...)
 char *split_string(char *string);	// 0-terminate the first word, return the rest
 
 FILE *fopen(const char *filename, const char *flags, const char *reason);
-
-#define xmallrpt(x,y) 0 /* fprintf(STDDBG, x "alloc(%d)\n", y) */
-
-extern void *xmall_ptr_holder;
-#define OOM_HANDLER	(shriek(422, "Out of memory"), (void *)NULL)
-#define xmalloc(x)	(((xmall_ptr_holder = malloc((x)))) ? (xmall_ptr_holder) : OOM_HANDLER)
-#define xrealloc(x,y)	((((xmall_ptr_holder = realloc((x),(y))))) && (x) ? (xmall_ptr_holder) : OOM_HANDLER)
-#define xcalloc(x,y)	(((xmall_ptr_holder = calloc((x),(y)))) ? xmall_ptr_holder : OOM_HANDLER)
 
 void call_abort();
 
@@ -199,6 +188,41 @@ char *fmt(const char *s, ...) PRINTF_STYLE(1,2);
 void dprint_always    (int level, const char *s, ...) PRINTF_STYLE(2,3);
 void dprint_normal(int level, const char *s, ...) PRINTF_STYLE(2,3);
 inline void dprint_never     (int level, const char *s, ...) {}
+
+void tag_vfprintf(const char *fmt, va_list ap);
+inline void dprint_normal(int level, const char *fmt, ...)
+{
+	if (scfg->debug_level <= level) {
+		va_list ap;
+		va_start(ap, fmt);
+		tag_vfprintf(fmt, ap);
+		va_end(ap);
+	}
+}
+
+
+extern void *xmall_ptr_holder;
+
+#if 0
+	inline void log_alloc(size_t x)
+	{
+		if (x > 1024) {
+			D_PRINT(1, "Alloc %d\n", x);
+		}
+	}
+	inline void log_realloc(size_t x)
+	{
+		D_PRINT(1, "Realloc %d\n", x);
+	}
+#else
+	inline void log_alloc(size_t) {};
+	inline void log_realloc(size_t) {};
+#endif
+
+#define OOM_HANDLER	(shriek(422, "Out of memory"), (void *)NULL)
+#define xmalloc(x)	((xmall_ptr_holder = malloc((x))) ? (log_alloc(x), xmall_ptr_holder) : OOM_HANDLER)
+#define xrealloc(x,y)	((((xmall_ptr_holder = realloc((x),(y))))) && (x) ? (log_realloc(y), xmall_ptr_holder) : OOM_HANDLER)
+#define xcalloc(x,y)	(((xmall_ptr_holder = calloc((x),(y)))) ? log_alloc(x*y), xmall_ptr_holder : OOM_HANDLER)
 
 
 

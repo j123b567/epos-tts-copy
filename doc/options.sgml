@@ -80,6 +80,37 @@ restrict the search to static, global, language or voice options, respectively.
 configuration file describes either a language or a voice, or it is unrelated
 to the current language and voice altogether.)
 
+<sect1> Option Types
+<p>
+
+Each option has an associated type, which is indicated with each
+option in the documentation.  Mostly these are traditional types
+like booleans, strings, and non-negative numbers.  Others are
+limited to a fixed choice of values (e.g. "mono" or "stereo"),
+yet others are limited to a choice of values which depends on
+other configuration (e.g. on the levels of descriptions, on the
+available encoding mapping files, or on the current list of
+language configurations).  With all these options it is impossible
+to set the option to a syntactically impossible value, although
+it is easy to set the option to a value which makes little sense.
+
+<sect2> Autoconcatenating Options <label id="autoconcatenating">
+<p>
+
+Several string-typed options (especially the language, voice and soft option
+lists) have special behavior if they appear multiple times
+within the configuration (not limited to the configurations files!).
+In contrast with almost all options which take the last value
+offered, these special options concatenate all the supplied values and
+separate them by colons.  This makes sense, as all these option
+values are syntactically colon separated lists of strings.
+
+If you need to set an autoconcatenating option to a different value,
+you need first to reset it first by supplying an empty string to it.
+This does set it to the empty string as opposed to concatenating
+a colon and an empty string to the previous value.
+
+
 <sect1> Configuration Files <label id="cfg-files">
 <p>
 
@@ -509,12 +540,12 @@ and default value is supplied with the language, but individual
 voices may choose to specify a value for the option).
 
 The soft options are described by the language option <tt>soft&lowbar;options</tt>.
-It is a list of colon separated descriptions of individual soft options;
+It is an autoconcatenating list of colon separated descriptions of individual soft options;
 every item is of the format <tt>name[(type)][=default]</tt>, where <tt>name</tt>
-is an arbitrary option name, <tt>type</tt> is either <tt>b</tt>
-or <tt>s</tt> (meaning boolean or string; other possibilities include
-<tt>n, c</tt> for integers and characters, but these are untested
-and don't seem to be widely useful. The <tt>default</tt> is the default
+is an arbitrary option name, <tt>type</tt> is <tt>b</tt>
+(meaning boolean; other possibilities might include
+<tt>s, n, c</tt> for strings, integers and characters, respectively,
+but these don't seem to be useful. The <tt>default</tt> is the default
 value to be used if the option is left unspecified by a voice. It should be
 chosen as a backward compatible value for a new option if applicable.
 
@@ -524,7 +555,8 @@ boolean, the default <tt>default</tt> is an empty string.
 An example:
 
 <tscreen><verb>
-	soft_options   "colloquial=false:segment_listing_file(s)=traditnl.dph"
+	soft_options   "colloquial=false"
+	soft_options   "segment_listing_file(s)=traditnl.dph"
 </verb></tscreen>
 
 This example defines two options, a boolean <tt>colloquial</tt> and
@@ -533,6 +565,15 @@ a string <tt>segment&lowbar;listing&lowbar;file</tt>.
 The sets of soft options for individual languages are independent and never
 clash with each other. However, built-in option names may not be used
 as soft option names.
+
+Please note the difference between rule file macros and soft options:
+rule file macros are useful for arbitrary string replacement and
+they serve well for concentrating every single idea to a single place
+at the startup time.
+Soft options, on the other hand, are limited to conditioning rules,
+but can change value later just as any other option without the need
+to recompile the rules.  Indeed, multiple users may use the same rules
+with different values of the same soft option simultaneously.
 
 
 <sect1> Level of Description Dependent Options
@@ -762,6 +803,7 @@ unless specified otherwise.
 	language name, while the directory name matches the language name and is
 	located under the directory as determined by the <tt/lang&lowbar;base&lowbar;dir/
 	option.	 The first language listed will become the default language.
+	This option <ref id="autoconcatenating" name="autoconcatenates">.
 <tag>--sampa&lowbar;alts <sl/list/</tag>
 	Lists the alternate encodings of SAMPA (i.e. non-SAMPA SAMPA-like
 	notations used by people e.g. for languages where SAMPA is not
@@ -836,8 +878,10 @@ All options in this subsection are <ref id="static" name="static">.
 	is created, but later to be discarded by the rules.
 	Monolithic binary only.
 <tag>--neuronet</tag>
-	Very experimental. See <tt>doc/czech/nnet.doc</tt> for more info.
-	Monolithic binary only.
+	This is normally on.  Turning this off skips the neuronet
+	initialization and makes Epos shutdown if the functionality
+	is requested later.  This may be useful with debugging tools
+	like the Electric Fence.
 <tag>--help</tag>
 	Print a brief synopsis of short options upon startup.  No data processing
 	is performed.
@@ -1029,6 +1073,15 @@ specified otherwise.
 	Sanity check limit.  Maximum amount of space allowed for growable
 	processing buffers, or for the input text (checked just before parsing).
 	This option is generally used to avoid memory exhaustion.
+<tag>--max&lowbar;utterance <sl/bytes/</tag>
+	A trigger of a hard limit.  If utterance chunking is employed,
+	Epos tries quite hard to shrink every utterance below this limit
+	based on a fixed language independent heuristic.
+<tag>--split&lowbar;utterance <sl/bytes/</tag>
+	Hard limit.  If utterance chunking is employed
+	and Epos completely fails to break an utterance below
+	the <tt/max_utterance/ value, it will simply split the
+	string after <tt/split_utterance/ bytes.
 <tag>--multi&lowbar;subst <sl/count/</tag>
 	Sanity check limit.  How may substitutions will be applied to a unit
 	during processing of a <tt/subst/ rule.  The rule is applied until
@@ -1078,9 +1131,11 @@ option is also language dependent.
 	the directory as determined by the per language (default) <tt/inv&lowbar;dir/
 	option.  The first voice listed will become the default voice for its
 	language until switched.
+	This option <ref id="autoconcatenating" name="autoconcatenates">.
 <tag>--soft&lowbar;options <sl/list/</tag>
 	Lists available soft options as described in subsection
 	<ref id="soft-options" name="soft options">.
+	This option <ref id="autoconcatenating" name="autoconcatenates">.
 <tag>--fallback&lowbar;voice <sl/voicename/</tag>
 	Not used under normal circumstances.  Epos initialises its
 	synthesis type dependent specific structures the first time
@@ -1417,9 +1472,6 @@ cd src
 	The value is a file name. This option can be used to change the file name
 	of the implicit input text used by the monolithic version of Epos.
 	The value is language dependent.
-<tag>--nnet&lowbar;file <sl/filename/</tag>
-	The value is a file name. This option can be used to change the file name
-	of the file produced by the experimental <tt/neuronet/ option.
 <tag>--stddbg&lowbar;file <sl/filename/</tag>
 	The value is a file name. This option can be used to change the file name
 	whereto various debugging output should be written. If not set at all,

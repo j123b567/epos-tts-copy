@@ -55,11 +55,6 @@
 #define PRINTABLE_KEY(x)   (key_t_is_string  ? (char *)x : "[struct]")
 #define PRINTABLE_VALUE(x) (data_t_is_string ? (char *)x : "[struct]")
 
-void hash_shriek(const char *s1, const char *s2, int i)
-{
-	shriek(812, s1, s2, i);		//FIXME?
-}
-
 template <class key_t, class data_t>
 struct hsearchtree {
 	key_t *key;
@@ -275,6 +270,7 @@ hash::hash(const char *filename, const char *dirname, const char *treename,
 	int l = 0;
 	char *tmp;
 	free(ht);
+	ht = NULL;
 
 	dupkey = dupdata = true;
 	buff=(char *)xmalloc(scfg->max_line);
@@ -288,7 +284,7 @@ hash::hash(const char *filename, const char *dirname, const char *treename,
 	capacity = 0;
 	hashfile = new text(filename, dirname, treename, description, true);
 	if (!description && !hashfile->exists()) {
-		hash_shriek("Description for %s required with hash tables", filename, 0);
+		shriek(811, "%s:   Description required with hash tables", filename);
 	}
 	while (hashfile->get_line(buff)) l++;
 
@@ -298,7 +294,7 @@ hash::hash(const char *filename, const char *dirname, const char *treename,
 //	fseek(hashfile, 0, SEEK_SET);
 	hashfile->rewind(false);
 	l = 0;
-	while (l++, hashfile->get_line(buff)) {
+	while (l++, hashfile->get_line(buff)) try {
 		tmp = buff + strlen(buff);
 		while (strchr(WHITESPACE, *--tmp) && tmp>=buff);
 		tmp[1]=0;			//Strip out trailing whitespace
@@ -310,12 +306,16 @@ hash::hash(const char *filename, const char *dirname, const char *treename,
 		value = tmp += strspn(tmp, WHITESPACE);
 		if (!*value) switch ((int)no_data) {
 			case (int)DATA_EQUALS_KEY: value = key; break;
-			case (int)DATA_OBLIGATORY: hash_shriek("No value specified in %s, line %d",filename,l);
+			case (int)DATA_OBLIGATORY: shriek(811, "%s:%d No value specified",
+				hashfile->current_file, hashfile->current_line);
 			default: value = no_data;
 		}
 		else if (!multi_data && tmp[strcspn(tmp,WHITESPACE)]) 
-			hash_shriek("Multiple values specified in %s, line %d",filename,l);
+			shriek(811, "%s:%d Multiple values specified", hashfile->current_file, hashfile->current_line);
 		add(key, value);
+	} catch (any_exception *e) {
+		if (e->code / 10 != 81) throw e;
+		delete e;
 	}
 //	fclose(hashfile);
 	delete hashfile;
@@ -323,7 +323,7 @@ hash::hash(const char *filename, const char *dirname, const char *treename,
 	free(buff);
 
 	D_PRINT(0, "hash::hash: successfully returning, file %s\n", filename);
-	if (_hash_sp) hash_shriek("Hash stack dirty! %s%d", "", _hash_sp);
+	if (_hash_sp) shriek(862, "Hash stack dirty! %d", _hash_sp);
 }
 
 
@@ -364,7 +364,7 @@ void
 hash_table<key_t, data_t>::add(const key_t *key, const data_t *value)     //if present, replace addit. data
 {
 	D_PRINT(0, "hash::add \"%s\" to \"%s\"\n", PRINTABLE_KEY(key), PRINTABLE_VALUE(value));
-	if (_hash_sp) hash_shriek("Hash stack dirty! %s%d","",_hash_sp);
+	if (_hash_sp) shriek(862, "Hash stack dirty! %d", _hash_sp);
 
 	register int result;
 	hsearchtree<key_t, data_t> *tree;
@@ -422,7 +422,7 @@ data_t *
 hash_table<key_t, data_t>::remove(const key_t *key)     //returns the data (NULL if absent)
 {
 	D_PRINT(0, "hash::remove \"%s\"\n",PRINTABLE_KEY(key));
-	if (_hash_sp) hash_shriek("Hash stack dirty! %s%d","",_hash_sp);
+	if (_hash_sp) shriek(862, "Hash stack dirty! %d", _hash_sp);
 	register int result;
 	register data_t *val;
 	hsearchtree <key_t, data_t> **tree;
@@ -588,7 +588,7 @@ hash_table<key_t, data_t>::rehash(int new_capacity)
 
 #ifdef POWER_OF_TWO
 	hash_fn_mask = new_capacity - 1;
-	if (new_capacity & hash_fn_mask) hash_shriek("Not a power of two %d","",new_capacity);   // :-(
+	if (new_capacity & hash_fn_mask) shriek(861, "Not a power of two: %d", new_capacity);
 #endif
 	capacity=new_capacity;
 	ht=(hsearchtree<key_t, data_t> **)xcalloc(capacity, sizeof(hsearchtree<key_t, data_t> *));
@@ -672,11 +672,11 @@ hash::listtree(hsearchtree <char, char> *tree, int indent)
 		        tree->height!=tree->r->height+1 ||
 			!tree->r && tree->l && tree->l->height+1!=tree->height ||
 			!tree->l && tree->r && tree->r->height+1!=tree->height )
-//			hash_shriek("Bad height %s%d","",tree->height);
+//			shriek(862, "Bad height: %d", tree->height);
 		listtree(tree->r, indent+1);
 		listtree(tree->l, indent+1);
 //		if (tree->l && tree->r && abs(tree->l->height-tree->r->height)>1)
-//			hash_shriek("Both children, but bad %s%d","",tree->height);
+//			shriek(862, "Both children, but bad: %d", tree->height);
 	}
 }
 

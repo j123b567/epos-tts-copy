@@ -86,7 +86,7 @@ CLEANFILES = *~ *.wav core gmon.out matlab.in tmp.0* dmalloc hackfile \
 		profile.log said.* 0\?tmp DEADJOE *.old *.local \
 		epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi
 
-AM_CXXFLAGS = -w -DEPOS -ggdb -DDATADIR=$(datadir) -DPREFIXDIR=$(prefix) $(OTHER_CXXFLAGS)
+AM_CXXFLAGS = -w -DEPOS -ggdb -DBASE_DIR=$(pkgdatadir) $(OTHER_CXXFLAGS)
 AM_YFLAGS = -d -t
 LDFLAGS = @LDFLAGS@ -L$(libdir)
 AM_CPPFLAGS = -I$(srcdir)/..
@@ -393,6 +393,9 @@ export VERSION
 
 dist-hook:
 	@. $(distdir)/arch/unix/test.version
+
+upload:
+	@. $(srcdir)/arch/unix/upload/upload $(VERSION)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

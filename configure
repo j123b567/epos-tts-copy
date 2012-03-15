@@ -867,7 +867,7 @@ fi
 
 PACKAGE=epos
 
-VERSION=2.5.18
+VERSION=2.5.19
 
 if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
   { echo "configure: error: source directory already configured; run "make distclean" there first" 1>&2; exit 1; }
@@ -1371,8 +1371,8 @@ fi
 
 if test $GXX = yes; then 
 	if $CXX -v 2>&1 | grep -q egcs
-		then CXXFLAGS="-Wall -Wunused -pipe -gstabs+ -fdefer-pop"
-		else CXXFLAGS="-Wall -Wunused -gstabs+"
+		then CXXFLAGS="-Wall -Wunused -pipe -gstabs+ -fdefer-pop -O"
+		else CXXFLAGS="-Wall -Wunused -gstabs+ -O"
 	fi
 	else CXXFLAGS=-O
 fi
@@ -5496,7 +5496,7 @@ fi
 if test "${with_dmalloc+set}" = set; then
   withval="$with_dmalloc"
   if test $withval = yes; then
-		CFLAGS="$CFLAGS -DWANT_DMALLOC"
+		CXXFLAGS="$CXXFLAGS -DWANT_DMALLOC"
 		LIBS="$LIBS -ldmalloc -L/usr/local/lib"
 	fi
 
@@ -5506,7 +5506,7 @@ fi
 if test "${enable_charsets+set}" = set; then
   enableval="$enable_charsets"
   if test $enableval = no; then
-		CFLAGS = "$CFLAGS -DFORGET_CHARSETS"
+		CXXFLAGS = "$CXXFLAGS -DFORGET_CHARSETS"
 	fi
 fi
 

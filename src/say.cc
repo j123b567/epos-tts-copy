@@ -173,6 +173,7 @@ void trans_data()
 	if (!data) data = strdup("No.");
 	sputs("strm $", ctrld);
 	sputs(dh, ctrld);
+	if (chunking) sputs(":chunk", ctrld);
 	if (show_segments) sputs(traditional ? ":raw:rules:diphs:$"
 					     : ":raw:rules:dump:$", ctrld);
 	else sputs(":raw:rules:print:$", ctrld);

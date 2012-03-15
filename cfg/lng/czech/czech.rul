@@ -13,14 +13,17 @@
 #
 
 # pøidat èárku pøed "a":
-with  "a"  word
+if  a_joins_sents
 {
-	regress a>\X(!_!)
+	with  "a"  word
+	{
+		regress a>\X(!_!)
+	}
+	raise	\X:!		word	phone
+	syll	\X<\ _		colon   word
+	regress \X>\ (!_!)	colon	word
+	regress \X>a(!_!)
 }
-raise	\X:!		word	phone
-syll	\X<\ _		colon   word
-regress \X>\ (!_!)	colon	word
-regress \X>a(!_!)
 
 #
 #  Následující odstavec je¹tì pøed transkripcí oznaèuje
@@ -48,48 +51,37 @@ with "mi mì se si ho mu ti tì"
 inside	\~	sent
 {
    6x	regress  0>\#(!_0)	sent	; vlo¾ení pausy po tøech teèkách
+	regress  \~>.(!_!)	sent	sent
 }
-regress  \~>.(!_!)	sent	sent
 regress  \;>.(!_!)	sent	sent
 regress  ->,(!_!)	sent	colon
 
 if prosody
 {
-	if   lpcprosody
+	if bang_nnet
 	{
-		if bang_nnet
+		if lpcprosody
 		{
 			if nnet_phone 
-			{
 				nnet prosody_lpc_bang_phone.neu sent phone
-			}
 			if !nnet_phone
-			{
 				nnet prosody_lpc_bang.neu sent syll
-			}
 		}
-		if !bang_nnet
+		if !lpcprosody
+			nnet prosody_bang.neu sent syll
+	}
+	if !bang_nnet
+	{
+		@include "stress.rul"
+
+		if lpcprosody
 		{
 			@include "lpcpros.rul"
 		}
-	}
-	if   !lpcprosody
-	{
-		if bang_nnet
-		{
-			nnet prosody_bang.neu sent syll
-		}
-		if !bang_nnet
-		{
-		if   naive_prosody
-		{
-			@include "naive.rul"
-		}
-		if   !naive_prosody
+		if !lpcprosody
 		{
 			@include "prosody.rul"
 		}
-	}
 	}
 }
 

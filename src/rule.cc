@@ -24,8 +24,8 @@
 
 #define SEG_BUFF_SIZE  1000 //unimportant
 
-#define OPCODEstr "nnet:subst:mysubst:regex:postp:prep:segments:absolutize:prosody:contour:progress:regress:insert:syll:analyze:smooth:raise:debug:if:inside:near:with:{:}:[:]:<:>:nothing:error:"
-enum OPCODE {OP_NNET, OP_SUBST, OP_MYSUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_SEG, OP_ABSOL, OP_PROSODY, OP_CONTOUR, OP_PROGRESS, OP_REGRESS, 
+#define OPCODEstr "nnet:subst:regex:postp:prep:segments:absolutize:prosody:contour:progress:regress:insert:syll:analyze:smooth:raise:debug:if:inside:near:with:{:}:[:]:<:>:nothing:error:"
+enum OPCODE {OP_NNET, OP_SUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_SEG, OP_ABSOL, OP_PROSODY, OP_CONTOUR, OP_PROGRESS, OP_REGRESS, 
 	OP_INSERT, OP_SYLL, OP_ANALYZE, OP_SMOOTH, OP_RAISE, OP_DEBUG, OP_IF, OP_INSIDE, OP_NEAR, OP_WITH,
 	OP_BEGIN, OP_END, OP_CHOICE, OP_CHOICEND, OP_SWITCH, OP_SWEND, OP_NOTHING, OP_ERROR};
 		/* OP_BEGIN, OP_END and other OP's without parameters should come last
@@ -63,6 +63,8 @@ extern char * _rules_buff;
 
 class rule
 {
+   private:
+	virtual void apply(unit *root) = 0;
    protected:
 	const char *debug_tag();
    public:
@@ -78,8 +80,9 @@ class rule
 	virtual void check_child(rule *r);
 	virtual void check_children();
 	virtual void verify() {};
-	virtual void apply(unit *root) = 0;
 	virtual void debug();
+
+	void cook(unit *root);
 #ifdef DEBUGGING
 	char *dbg_tag;
 #endif
@@ -122,6 +125,30 @@ rule::set_level(UNIT scp, UNIT trg)
 	target = trg == U_DEFAULT ? scfg->default_target : trg;
 	if (scope < target) shriek (811, "%s Scope must not be more narrow than target", debug_tag());
 			// was scope <= target -  consider returning back
+}
+
+void
+rule::cook(unit *root)
+{
+	bool tmpscope;
+	unit *u;
+#ifdef DEBUGGING
+		if (scfg->debug) current_debug_tag = dbg_tag;
+		if (scfg->showrule) fprintf(STDDBG, "[%s] %s %s\n",
+			dbg_tag,
+			enum2str(code(), OPCODEstr), raw);
+#endif
+	for (u = root->LeftMost(scope); u != &EMPTY;) {
+		unit *tmp_next = u->Next(scope);
+		tmpscope = u->scope;
+		u->scope = true;
+		apply(u);
+		u->scope = tmpscope;
+		u = tmp_next;
+	}
+#ifdef DEBUGGING
+		current_debug_tag = NULL;
+#endif
 }
 
 void
@@ -265,6 +292,7 @@ hashing_rule::load_hash()
 {
 	if (dict) shriek(862, "unwanted load_hash");
 
+	dict = NULL;
 	if (*raw != DQUOT) {
 		dict = new hash(raw, this_lang->hash_dir, scfg->lang_base_dir, "dictionary",
 			scfg->hash_full, 0, 200, 5,
@@ -348,50 +376,12 @@ r_subst::set_level(UNIT scp, UNIT trg)
 	rule::set_level(scp, trg);
 }
 
-class r_mysubst: public hashing_rule
-{
-   protected:
-	SUBST_METHOD method;
-	virtual OPCODE code() {return OP_SUBST;};
-   public:
-		r_mysubst(char *param);
-	virtual void set_level(UNIT scope, UNIT target);
-	virtual void apply(unit *root);
-};
-
-r_mysubst::r_mysubst(char *param) : hashing_rule(param)
-{
-	method = (SUBST_METHOD) (M_SEQ | M_ONCE);
-}
-
-void
-r_mysubst::set_level(UNIT scp, UNIT trg)
-{
-	rule::set_level(scp, trg);
-}
-
 /************************************************
  r_subst::apply
  ************************************************/
 
 void
 r_subst::apply(unit *root)
-{
-	if (!dict) load_hash();
-
-//	if (target == U_PHONE) root->subst(dict, method);
-
-	root->relabel(dict, method, target);
-
-	if (scfg->lowmemory) {
-		D_PRINT(2, "Hash table caching is disabled.\n"); //hashtabscache[rulist[i].param]->debug();
-		delete dict;
-		dict = NULL;
-	}
-}
-
-void
-r_mysubst::apply(unit *root)
 {
 	if (!dict) load_hash();
 
@@ -744,9 +734,9 @@ r_regress::r_regress(char *param) : rule(param)
 
 r_regress::~r_regress()
 {
-	free(fn);
-	free(ltab);
-	free(rtab);
+	delete fn;
+	delete ltab;
+	delete rtab;
 }
 
 r_progress::r_progress(char *param) : r_regress(param)
@@ -898,8 +888,8 @@ r_raise::r_raise(char *param) : rule(param)
 
 r_raise::~r_raise()
 {
-	free(whattab);
-	free(whentab);
+	delete whattab;
+	delete whentab;
 }
 
 void
@@ -1117,13 +1107,13 @@ r_inside::r_inside(char *param, text *file, hash *vars) : cond_rule(param, file,
 
 r_inside::~r_inside()
 {
-	free(affected);
+	delete affected;
 }
 
 void
 r_inside::apply(unit *root)
 {
-	if (affected->ismember((unsigned char)root->cont)) then->apply(root);
+	if (affected->ismember((unsigned char)root->cont)) then->cook(root);
 }
 
 /************************************************
@@ -1162,13 +1152,13 @@ r_near::r_near(char *param, text *file, hash *vars) : cond_rule(param, file, var
 
 r_near::~r_near()
 {
-	free(affected);
+	delete affected;
 }
 
 void
 r_near::apply(unit *root)
 {
-	if (root->contains(target, affected) ^ universal) then->apply(root);
+	if (root->contains(target, affected) ^ universal) then->cook(root);
 }
 
 /************************************************
@@ -1220,7 +1210,7 @@ r_with::apply(unit *root)
 	}
 	if (!dict) shriek(811, "%s Unterminated argument", debug_tag());	// or out of memory
 
-	if (root->subst(dict, M_ONCE) ^ negated) then->apply(root);
+	if (root->subst(dict, M_ONCE) ^ negated) then->cook(root);
 }
 
 
@@ -1255,7 +1245,7 @@ void
 r_if::apply(unit *root)		// this_lang must correspond to these rules!
 {
 	if (this_voice && (*(bool *)((char *)this_voice + flag_offs)) ^ (*raw == EXCLAM))
-		then->apply(root);
+		then->cook(root);
 }
 
 void
@@ -1305,6 +1295,8 @@ public:
 void
 r_neural::apply (unit *root)
 {
+	if (!neuralnet)
+		shriek(861, "The --neuronet option is false");
 	neuralnet->init();
 	root->neural (target, neuralnet);
 }
@@ -1312,7 +1304,9 @@ r_neural::apply (unit *root)
 r_neural::r_neural(char *param, hash *vars) : rule(param)
 {
 	raw = strdup(param);
-	neuralnet = new CNeuralNet (raw, vars);
+	neuralnet = NULL;
+	if (scfg->neuronet)
+		neuralnet = new CNeuralNet(raw, vars);
 }
 
 r_neural::~r_neural ()

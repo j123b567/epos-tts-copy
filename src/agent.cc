@@ -17,7 +17,7 @@
 #include "common.h"
 #include "agent.h"
 #include "client.h"
-
+#include "slab.h"
 
 #ifdef HAVE_SYS_TIME_H
 	#include <sys/time.h>
@@ -410,11 +410,30 @@ class a_chunk : public agent
 inline char *utt_break(char *t)		/* returns ptr past the last char */
 {
 	char *r = t;
-	do {
+	do {				/* split between . ? ... and whitespace */
 		r += strcspn(r, ".?");
 		r += strspn(r, ".?");
 	} while (!strchr(WHITESPACE, r[0]));
-	if (!r[0]) return NULL;
+
+	if (r - t > scfg->max_utterance) {
+		r = t + strcspn(t, ".,?!:;");
+		if (*r) r++;
+	} else return r;
+
+	if (r - t > scfg->max_utterance) {
+		r = t + strcspn(t, ".,?!:;-=+_~@#$%^&*\\|/ \t\n");
+		if (*r) r++;
+	} else return r;
+
+	if (r - t > scfg->max_utterance) {
+		r = t + strcspn(t, "()<>{}[]'\"");
+	} else return r;
+
+	if (r - t > scfg->max_utterance) {
+		if (scfg->split_utterance < strlen(t))
+			r = t + scfg->split_utterance;
+	}
+
 	return r;
 }
 
@@ -425,6 +444,7 @@ void a_chunk::run()
 	}
 	char *tmp = bm;
 	bm = utt_break(bm);
+	D_PRINT(2, "Utterance chunking about to split off %d bytes\n", bm - tmp);
 	if (bm && *bm) {
 		char h = bm[0];
 		bm[0] = 0;
@@ -435,6 +455,7 @@ void a_chunk::run()
 		pass(strdup(tmp));
 		free(inb);
 		inb = NULL;
+		bm = NULL;
 	}
 }
 
@@ -460,7 +481,7 @@ a_join::run()
 		free(heldout); heldout = NULL;
 	} else b = last;
 
-	if (utt_break(b)) {
+	if (*utt_break(b)) {
 		pass(b);
 	} else heldout = b;
 }
@@ -641,11 +662,16 @@ void a_input::run()
 	int res;
 	D_PRINT(0, "Entering input agent\n");
 	if (block_table[socket]) {
-		D_PRINT(0, "avoiding a nested input\n");
+		D_PRINT(2, "avoiding a nested input\n");
 		block(socket);
 		return;
 	}
 	res = yread(socket, (char *)inb + offset, toread - offset);
+	if (res == -1 && errno == EAGAIN) {
+		D_PRINT(2, "avoiding an EAGAIN on input\n");
+		block(socket);
+		return;
+	}
 	if (res <= 0) {
 		if (!dc) {
 			if (res == 0) shriek(438, "end of file");
@@ -693,6 +719,7 @@ a_input::mktask(int size)
 	D_PRINT(2, "%d bytes to be read\n", size);
 	if (inb) return false;	// busy
 	toread = size;
+	D_PRINT(0, "Alloc in a_input:\n");
 	inb = xmalloc(size + 1);
 	offset = 0;
 	block(socket);
@@ -1263,7 +1290,7 @@ a_accept::a_accept() : agent(T_NONE, T_NONE)
 	sa.sin_addr.s_addr = htonl(scfg->local_only ? INADDR_LOOPBACK : INADDR_ANY);
 	sa.sin_port = htons(scfg->listen_port);
 	setsockopt(cfg->sd_in, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
-	D_PRINT(3, "[core] Binding to the TTSCP port.\n");
+	D_PRINT(3, "* Binding to the TTSCP port %d.\n", scfg->listen_port);
 	if (bind(cfg->sd_in, (sockaddr *)&sa, sizeof (sa))) shriek(871, "Could not bind");
 	if (listen(cfg->sd_in, 64)) shriek(871, "Could not listen");
 	make_nonblocking(cfg->sd_in);
@@ -1294,12 +1321,24 @@ a_accept::run()
 		return;
 	}
 	make_nonblocking(f);
-	D_PRINT(2, "[core] Accepted %d (on %d).\n", f, cfg->sd_in);
+	D_PRINT(2, "Accepted %d (on %d).\n", f, cfg->sd_in);
 	c->leave();
 	unuse(new a_ttscp(f, f));
 	c->enter();
 	block(cfg->sd_in);
 }
+
+struct sched_aq
+{
+	agent *ag;
+	sched_aq *next;
+	sched_aq *prev;
+
+	void *operator new(size_t size);
+	void operator delete(void *ptr);
+};
+
+SLABIFY(sched_aq, sched_aq_slab, 341, shutdown_sched_aq);
 
 sched_aq *sched_head = NULL;
 sched_aq *sched_tail = NULL;
@@ -1311,6 +1350,7 @@ agent::schedule()
 {
 	if (!this) shriek(862, "scheduling garbage");
 	runnable_agents++;
+	D_PRINT(1, "%d runnable agents\n", runnable_agents);
 	sched_aq *tmp = new sched_aq;
 	tmp->ag = this;
 	tmp->prev = NULL;
@@ -1334,6 +1374,12 @@ agent *sched_sel()
 	runnable_agents--;
 	D_PRINT(1, "Agent %s\n", r->name());
 	return r;
+}
+
+void shutdown_agent_queue()
+{
+	for (sched_aq *tmp = sched_head; tmp; tmp = tmp->next)
+		delete tmp;
 }
 
 agent **block_table = (agent **)xmalloc(1);

@@ -17,10 +17,12 @@
  *	don't want to use it.
  *
  *	The reason is that monolithic TTS systems are either slow
- *	or of limited configurability.
+ *	or of limited configurability.  We are of unlimited
+ *	configurability, so the monolithic Epos is slow   :-)
  */
 
 #include "common.h"
+#include "client.h"
 
 const bool is_monolith = true;
 
@@ -38,6 +40,14 @@ void close_and_invalidate(socky int sd)
 }
 
 void use_async_sputs()
+{
+};
+
+void free_replier_table()
+{
+};
+
+void shutdown_sched_aq()
 {
 };
 
@@ -83,7 +93,7 @@ int main(int argc, char **argv)
 //		epos_done();
 		return 0;
 	} catch (any_exception *e) {
-		unuse(e->code);
+		delete(e);
 		return 4;
 	}
 }

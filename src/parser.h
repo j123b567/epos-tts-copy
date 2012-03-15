@@ -56,6 +56,9 @@ class parser
 	UNIT chrlev(unsigned char c);  // what level c is to be analysed at
 	void done();		// shriek if some input left
 	static void init_tables(lang *);    // fills in CHAR_LEVEL, TRANSL_INPUT
+
+	void *operator new(size_t size);
+	void operator delete(void *ptr);
 };
 
 #define NO_CONT            '_'    // null contents of a unit

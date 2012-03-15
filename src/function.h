@@ -20,10 +20,19 @@ template<class T> class booltab
 	int mult, size;
 	T *t;
    public:
+	bool always;	// the typical case is optimized
 	booltab(T *s);
 	~booltab();
-	bool ismember(const T x);
+	bool ismember(const T x) { return (t[(unsigned int)x * mult % size] == x) ^ neg; };
 };
+
+/*
+ *	The following speed optimization must remain a macro to prevent
+ *	y from expansion when x->always.  Never use fast_ismember() where
+ *	you don't expect frequent alwayses!
+ */
+
+#define fast_ismember(x, y) ((x)->always || (x)->ismember(y))
 
 template<class T> struct couple
 {

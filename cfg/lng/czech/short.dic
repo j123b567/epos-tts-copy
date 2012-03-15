@@ -1,6 +1,5 @@
-# ^x$ krát
-# ^g$ gramù
-# ^and$ end
+# Irregular forms with specific letter case
+
 ^cm$ centimetrù
 ^dm$ decimetrù
 ^Gb$ gigabitù
@@ -29,7 +28,8 @@
 ^ns$ nanosekund
 ^Tb$ terabitù
 ^TB$ terabajtù
-^SIEMENS$ símens
-^SONY$ sony
-^T9$ tédevjet
-^WAP$ wap
+^WWW$ VVV
+
+^fa$ firma
+^fy$ firmy
+^fì$ firmì

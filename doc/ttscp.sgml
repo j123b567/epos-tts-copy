@@ -897,7 +897,7 @@ of errors (internal errors).
 <hline>
 800	| server shutting down as requested by client@
 801	| error explicitly reported in config files@
-811	| rules file syntax@
+811	| rules or dictionary file syntax@
 812	| generic configuration file syntax@
 813	| impossibilia referenced in config files@
 814	| bad command line@

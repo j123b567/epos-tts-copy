@@ -20,7 +20,7 @@
 
 enum OPT_STRUCT { OS_STATIC, OS_CFG, OS_LANG, OS_VOICE };
 enum ACCESS { A_PUBLIC, A_AUTH, A_ROOT, A_NOACCESS };
-enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SALT, O_SYNTH, O_CHANNEL, O_INT, O_CHAR, O_STRING, O_LANG, O_VOICE, O_CHARSET };
+enum OPT_TYPE { O_BOOL, O_UNIT, O_MARKUP, O_SALT, O_SYNTH, O_CHANNEL, O_INT, O_CHAR, O_STRING, O_LIST, O_LANG, O_VOICE, O_CHARSET };
 								//various types of options
 								
 #define OPT_STRUCT_PREFIX	"SCLV"								
@@ -102,7 +102,7 @@ void config_release();
 epos_option *option_struct(const char *name, hash_table<char, epos_option> *softopts);
 
 /* For the following two functions, the value MAY get changed by set_option()
-   (in-place), if o->opttype is O_STRING or O_CHAR and value contains
+   (in-place), if o->opttype is O_STRING, O_LIST or O_CHAR and value contains
    backslashes or double quotes  		*/
 bool set_option(epos_option *o, const char *value);			// the const qualifier IS A LIE
 bool set_option(epos_option *o, const char *value, void *whither);	// the const qualifier IS A LIE
@@ -128,7 +128,7 @@ void list_voices();
 void shutdown_cfgs();
 void shutdown_langs();
 
-void free_all_options();
+void free_extra_options();
 
 extern int argc_copy;
 extern char **argv_copy;

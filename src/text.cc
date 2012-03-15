@@ -116,12 +116,13 @@ text::subfile(const char *filename, const char *action)
 void
 text::superfile()
 {
+	free(current_file);
 	if (current->filename) {
-		free(current_file);
 		current_file = current->filename;
 		current_line = current->line;
 		D_PRINT(2, "Text preprocessor returns to %s\n", current_file);
 	} else {
+		current_file = NULL;
 		D_PRINT(1, "Text preprocessor reached the end of %s\n" , current_file);
 	}
 	fclose(current->f);

@@ -15,6 +15,9 @@
  */
 
 #include "common.h"
+#include "slab.h"
+
+SLABIFY(parser, parser_slab, 64, shutdown_parser);
 
 unsigned char parser::transl_input[PARSER_MODES][CHARSET_SIZE];
 
@@ -160,7 +163,7 @@ parser::chrlev(unsigned char c)
 	{
 		if (cfg->relax_input && char_level[cfg->dflt_char] != U_ILL)
 			return char_level[cfg->dflt_char];
-		DBG(2, fprintf(cfg->stdshriek, "Fatal: parser dumps core.\n%s\n", (char *)current - 2);)
+		DBG(3, fprintf(cfg->stdshriek, "Parser unhappily dumps core.\n%s\n", (char *)current - 2);)
 		shriek(431, "Parsing an unhandled character  '%c' - ASCII code %d", (unsigned int) c, (unsigned int) c);
 	}
 	return char_level[c];

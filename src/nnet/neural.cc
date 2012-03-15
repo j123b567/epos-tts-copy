@@ -626,7 +626,7 @@ void TTypedValue::clear ()
 		case 'b':
 		case 'u':
 			break;
-		case 's': delete[] string_val; break;
+		case 's': free(string_val); break;
 		default: shriek (861, fmt ("TTypedValue:Type %c (%i) not handled in destructor.",value_type, value_type));
 	}
 	value_type = 0;

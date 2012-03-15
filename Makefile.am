@@ -16,3 +16,6 @@ EXTRA_DIST=arch Makefile.common Changes
 
 dist-hook:
 	@. $(distdir)/arch/unix/test.version
+
+upload:
+	@. $(srcdir)/arch/unix/upload/upload $(VERSION)

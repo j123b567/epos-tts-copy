@@ -233,6 +233,6 @@ CBasicString<T> CBasicString<T>::substr(int pos, int n) const
  
 
 
-template CBasicString<char>;
+template class CBasicString<char>;
 
 #endif

@@ -86,7 +86,7 @@ CLEANFILES = *~ *.wav core gmon.out matlab.in tmp.0* dmalloc hackfile \
 		profile.log said.* 0\?tmp DEADJOE *.old *.local \
 		epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi
 
-AM_CXXFLAGS = -w -DEPOS -ggdb -DDATADIR=$(datadir) -DPREFIXDIR=$(prefix) $(OTHER_CXXFLAGS)
+AM_CXXFLAGS = -w -DEPOS -ggdb -DBASE_DIR=$(pkgdatadir) $(OTHER_CXXFLAGS)
 AM_YFLAGS = -d -t
 LDFLAGS = @LDFLAGS@ -L$(libdir)
 AM_CPPFLAGS = -I$(srcdir)/..
@@ -268,14 +268,14 @@ map.lo map.o : map.cc map.h pair.h set.h vector.h iterator.h base.h
 matrix.lo matrix.o : matrix.cc matrix.h stream.h
 neural.lo neural.o : neural.cc ../common.h ../../config.h ../exc.h \
 	../hash.h ../text.h ../voice.h ../options.lst ../function.h \
-	../interf.h ../options.h ../parser.h ../unit.h ../rule.h \
+	../options.h ../interf.h ../parser.h ../unit.h ../rule.h \
 	../waveform.h ../synth.h ../encoding.h neural.h nnettypes.h \
 	stream.h slowstring.h vector.h iterator.h base.h map.h pair.h \
 	set.h matrix.h enumstring.h utils.h perceptron.h traindata.h \
 	xmlstream.h xml.h percstruct.h xmlutils.h
 neural_parse.lo neural_parse.o : neural_parse.cc ../common.h \
 	../../config.h ../exc.h ../hash.h ../text.h ../voice.h \
-	../options.lst ../function.h ../interf.h ../options.h \
+	../options.lst ../function.h ../options.h ../interf.h \
 	../parser.h ../unit.h ../rule.h ../waveform.h ../synth.h \
 	../encoding.h neural.h nnettypes.h stream.h slowstring.h \
 	vector.h iterator.h base.h map.h pair.h set.h matrix.h \
@@ -296,7 +296,6 @@ percstruct.lo percstruct.o : percstruct.cc perceptron.h traindata.h \
 set.lo set.o : set.cc
 slowstring.lo slowstring.o : slowstring.cc slowstring.h
 stream.lo stream.o : stream.cc stream.h
-string.lo string.o : string.cc string.h
 traindata.lo traindata.o : traindata.cc traindata.h utils.h nnettypes.h \
 	stream.h slowstring.h vector.h iterator.h base.h map.h pair.h \
 	set.h matrix.h enumstring.h xmlstream.h xml.h xmlutils.h
@@ -308,7 +307,7 @@ xml.lo xml.o : xml.cc xml.h nnettypes.h stream.h slowstring.h vector.h \
 	utils.h xml_parse.h
 xml_parse.lo xml_parse.o : xml_parse.cc ../common.h ../../config.h \
 	../exc.h ../hash.h ../text.h ../voice.h ../options.lst \
-	../function.h ../interf.h ../options.h ../parser.h ../unit.h \
+	../function.h ../options.h ../interf.h ../parser.h ../unit.h \
 	../rule.h ../waveform.h ../synth.h ../encoding.h neural.h \
 	nnettypes.h stream.h slowstring.h vector.h iterator.h base.h \
 	map.h pair.h set.h matrix.h enumstring.h utils.h perceptron.h \

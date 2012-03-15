@@ -38,15 +38,21 @@ template<class T> void unexcl(T *s)
 	}
 }
 
+#if 0
+
 template<class T> bool
 booltab<T>::ismember(const T x)
 {
 	return (t[(unsigned int)x * mult % size] == x) ^ neg;
 }
 
+#endif
+
 template<class T>
 booltab<T>::booltab(T *s)
 {
+	always = !strcmp(s, "!");
+
 	neg = false;
 	while (s[0] == EXCL) neg = !neg, s++;
 	unexcl<T>(s);

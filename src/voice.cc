@@ -138,7 +138,6 @@ lang::~lang()
 	D_PRINT(3, "Disposed language %s\n", name);
 	cow_unstring(this, langoptlist);
 	if (soft_defaults) free(soft_defaults);
-	free(char_level);
 }
 
 /*

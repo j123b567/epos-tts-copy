@@ -55,14 +55,16 @@ class unit
 	float nnet_type();
     
 	inline bool subst(hash *table, int total_length,
-		char*s1b,char*s1e,char*s2b,char*s3b,char*s3e); //inner, see implem.
+		char*s2b,char*s3b); //inner, see implem.
 	void syll_break(char *sonority, unit *before);
 	void syllabify(char *sonority);  //May split "father" just before "this", if sonority minimum
 	void analyze(UNIT target, hash *table, int unanal_unit_penalty, int unanal_part_penalty);
+	void assim(charxlat *fn, charclass *left, charclass *right);
 //	void sseg(hash *templates, char symbol, int *quantity);
 	void seg(hash *segm_inventory);  //Will create up to one segment. Go see it if curious.
     
-	void sanity();                    //check that this unit is sanely linked to the others
+	void sanity() { if (!scfg->trusted) do_sanity(); };
+	void do_sanity();                 //check that this unit is sanely linked to the others
 	void insane(const char *token);   //called exclusively by sanity() in case of a problem
     
 //	int f,i,t;
@@ -125,7 +127,7 @@ class unit
 				      //^how many times applied
 				      // userfn ^ whether applied
 	int effective(FIT_IDX which_quantity);  //evaluate total F, I or T
-	inline unsigned char inside();
+	inline unsigned char inside() { return (unsigned char)cont; };
 	unit *ancestor(UNIT level);   // the unit (depth level) wherein this lies
 	int  index(UNIT what, UNIT where);
 	int  count(UNIT what);
@@ -153,6 +155,71 @@ class unit
 //	int getF () const	{ return f; }
 //	void setF (int ff)	{ f = ff; }
 };
+
+
+/****************************************************************************
+ unit::Right/LeftMost
+ ****************************************************************************/
+ 
+extern unit EMPTY;
+
+inline unit*
+unit::RightMost(UNIT target)
+{
+	sanity();
+	if(target == depth || this == &EMPTY) return this;
+	if(!lastborn) return scope ? &EMPTY : Prev(depth)->RightMost(target);
+	return(lastborn->RightMost(target));
+}
+
+inline unit*
+unit::LeftMost(UNIT target)
+{
+	sanity();
+	if(target == depth || this == &EMPTY) return this;
+	if(!firstborn) return scope ? &EMPTY : Next(depth)->LeftMost(target);
+	return(firstborn->LeftMost(target));
+}
+
+/****************************************************************************
+ unit::Next/Prev
+ ****************************************************************************/
+	
+inline unit *
+unit::Next(UNIT target)
+{
+	sanity();
+	if (scope)  return &EMPTY;                //never cross the scope
+	if (next)   return next->LeftMost(target);  //next exists, but is not the target
+	if (father) return(father->Next(target));
+	return &EMPTY;
+}
+
+inline unit *
+unit::Prev(UNIT target)
+{
+	sanity();
+	if (scope)  return &EMPTY;
+	if (prev)   return prev->RightMost(target);
+	if (father) return father->Prev(target);
+	else return &EMPTY;
+}
+
+inline int
+unit::index(UNIT what, UNIT where)
+{
+	int i=0;
+	if (what > where) shriek(862, "Wrong order of arguments to unit::index");
+	if (what < depth) shriek(862, "Underindexing in unit::index %d",what);
+	unit *lookfor = ancestor(what);
+	unit *lookin = ancestor(where);
+	unit *tmpu;
+	lookin->scope = true;
+	for (tmpu = lookin->LeftMost(what); tmpu != lookfor; tmpu = tmpu->Next(what)) i++;
+	lookin->scope = false;
+	return i;
+}
+
 
 // extern char * _subst_buff;
 // extern char * _gather_buff;

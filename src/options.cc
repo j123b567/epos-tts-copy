@@ -118,7 +118,8 @@ void cow_claim()
 void cow_unstring(cowabilium *p, epos_option *opts)
 {
 	for (epos_option *o = opts; o->optname; o++) {
-		if (o->opttype != O_STRING || o->per_level) continue;
+		if (o->opttype != O_STRING && o->opttype != O_LIST || o->per_level)
+			continue;
 		char **to_free = (char **)((char *)p + o->offset);
 		if (*to_free && (*(char **)((char *)p->parent + o->offset) != *to_free
 				|| p->parent == p)) {
@@ -319,14 +320,14 @@ void restrict_options()
 	delete t;
 }
 
-static void free_all_options(epos_option *optlist, cowabilium *whence)
+static void free_extra_options(epos_option *optlist, cowabilium *whence)
 {
 	epos_option *o;
 	for (o = optlist; o->offset != -2; o++) ;
 	for ( ; o->offset != -3; o--) ;
 	for ( o++; o->offset != -2; o++) {
 		if (o->offset == -1) continue;
-		if (o->opttype == O_STRING && whence) {
+		if ((o->opttype == O_STRING || o->opttype == O_LIST) && whence) {
 			if (*(char **)((char *)whence + o->offset)) {
 				free(*(char **)((char *)whence + o->offset));
 				*(char **)((char *)whence + o->offset) = NULL;
@@ -343,13 +344,30 @@ static void free_all_options(epos_option *optlist, cowabilium *whence)
 	}
 }
 
-void free_all_options()
+void free_extra_options()
 {
-	free_all_options(voiceoptlist, NULL);
-	free_all_options(langoptlist, NULL);
-	free_all_options(optlist, cfg);
-	free_all_options(staticoptlist, (cowabilium *)scfg);
+	free_extra_options(voiceoptlist, NULL);
+	free_extra_options(langoptlist, NULL);
+	free_extra_options(optlist, cfg);
+	free_extra_options(staticoptlist, (cowabilium *)scfg);
 }
+
+
+static void free_all_options(epos_option *optlist, cowabilium *whence)
+{
+	epos_option *o;
+	for (o = optlist; o->offset != -3; o++) {
+		if (o->offset == -1) continue;
+		if ((o->opttype == O_STRING || o->opttype == O_LIST) && whence) {
+			if (*(char **)((char *)whence + o->offset)) {
+				free(*(char **)((char *)whence + o->offset));
+				*(char **)((char *)whence + o->offset) = NULL;
+			}
+		}
+		o->offset = -1;
+	}
+}
+
 
 epos_option *alloc_option(epos_option *optlist, OPT_STRUCT os)
 {
@@ -616,9 +634,30 @@ bool set_option(epos_option *o, const char *val, void *base)
 			break;
 		case O_STRING: 
 			if (val[0]) parse_cfg_str(const_cast<char *>(val));
+   process_as_string:
 			D_PRINT(1, "Configuration option \"%s\" set to \"%s\"%s\n", o->optname, val, strchr(val, '\033') && scfg->normal_col ? scfg->normal_col : "");
 			if (*(char **)locus) free(*(char**)locus);
 			*(char**)locus = strdup(val);	// FIXME: should be forever if monolith etc. (maybe)
+			break;
+		case O_LIST:
+			if (val[0]) parse_cfg_str(const_cast<char *>(val));
+			else goto process_as_string;
+			char *old;
+			old = *(char **)locus;
+			D_PRINT(1, "Configuration option \"%s\" adds \"%s\"%s to \"%s\"%s\n", o->optname,
+					val, strchr(val, '\033') && scfg->normal_col ? scfg->normal_col : "",
+					old ? old : "empty string", strchr(val, '\033') && scfg->normal_col ? scfg->normal_col : "");
+			if (!old) {
+				*(char **)locus = strdup(val);
+				break;
+			}
+			char *cat;
+			cat = (char *)xmalloc(strlen(val) + strlen(old) + 2);
+			strcpy(cat, old);
+			strcat(cat, ":");
+			strcat(cat, val);
+			*(char **)locus = cat;
+			free(old);
 			break;
 		case O_CHAR:
 			if (!val[0]) shriek(447, "Empty string given for a CHAR option %s", o->optname);
@@ -748,6 +787,7 @@ const char *format_option(epos_option *o, void *base)
 			sprintf(scratch, "%d", *(int *)locus);
 			return scratch;
 		case O_STRING: 
+		case O_LIST:
 			return *(char **)locus;
 		case O_CHAR:
 			scratch[0] = *(char *)locus;
@@ -825,10 +865,6 @@ void parse_cmd_line()
 				case 'f': scfg->forking=false; break;
 				case 'H': scfg->long_help=true;	/* fall through */
 				case 'h': scfg->help=true; break;
-				case 'n': cfg->rules_file="nnet.rul";
-					  if (cfg->langs && this_lang)
-						this_lang->rules_file = cfg->rules_file;
-					  scfg->neuronet=true; break;
 				case 'p': scfg->pausing=true; break;
 				case 's': scfg->play_segs=true; break;
 				case 'v': scfg->version=true; break;
@@ -964,6 +1000,7 @@ static char opttype_letter(OPT_TYPE ot)
 {
 	switch (ot) {
 		case O_STRING: return 's';
+		case O_LIST: return 'r';
 		case O_INT: return 'n';
 		case O_CHAR: return 'c';
 		case O_BOOL: return 'b';
@@ -1019,6 +1056,7 @@ static inline void dump_help()
 
 	printf("Long option types:\n");
 	printf("        (b) boolean,  (c) character,  (n) integer,  (s) string,\n");
+	printf("        (r) autoconcatenating string,\n");
 	printf("        (f) fixed choice: source-level fixed,\n");
         printf("        (l) list of choices: configurable\n");
 	dump_long_opts("Static options", staticoptlist);
@@ -1080,4 +1118,8 @@ void config_release()
 {
 	delete option_set;
 	option_set = NULL;
+
+	free_all_options(optlist, cfg);
+	free_all_options(staticoptlist, (cowabilium *)scfg);
 }
+

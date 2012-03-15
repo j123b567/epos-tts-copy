@@ -161,34 +161,13 @@ block_rule::check_children()
 void
 block_rule::apply_current(unit *root)
 {
-	UNIT scope;		/* shadows this->scope */
-	bool tmpscope;
 	rule *r;
-	unit *u;
 
 	DBG(0, root->fout(NULL);)
+	D_PRINT(0, "block_rule::apply current_rule %d\n", current_rule);
 	r = rulist[current_rule];
-	
-	scope = r->scope;
 
-	for (u = root->LeftMost(scope); u!=&EMPTY;) {
-		unit *tmp_next = u->Next(scope);
-		tmpscope = u->scope;
-		u->scope = true;
-		D_PRINT(0, "block_rule::apply current_rule %d\n", current_rule);
-#ifdef DEBUGGING
-		if (scfg->debug) current_debug_tag = r->dbg_tag;
-		if (scfg->showrule) fprintf(STDDBG, "[%s] %s %s\n",
-			r->dbg_tag,
-			enum2str(r->code(), OPCODEstr), r->raw);
-#endif
-		r->apply(u);
-#ifdef DEBUGGING
-		current_debug_tag = NULL;
-#endif
-		u->scope = tmpscope;
-		u = tmp_next;
-	}
+	r->cook(root);
 	
 	if (scfg->pausing) {
 		debug();
@@ -476,7 +455,6 @@ parse_rule(text *file, hash *vars, int *count)
 	case OP_SEG:     result = new r_seg(word[param]); break;
 	case OP_ABSOL:	 result = new r_absol(word[param]); break;
 	case OP_SUBST:   result = new r_subst(word[param]); break;
-	case OP_MYSUBST: result = new r_mysubst(word[param]); break;
 #ifdef WANT_REGEX
 	case OP_REGEX:   result = new r_regex(word[param]); break;
 #else
@@ -531,6 +509,7 @@ next_rule(text *file, hash *vars, int *count)
 		return parse_rule(file, vars, count);
 	} catch (any_exception *e) {
 		if (e->code / 10 != 81) throw e;
+		delete e;
 	}
 	shriek(811, "Too many errors");
 }
@@ -545,6 +524,7 @@ next_real_rule(text *file, hash *vars, int *count)
 		shriek(811, "No rule follows a conditional rule at the end of %s", file->current_file);
 	} catch (any_exception *e) {
 		if (e->code / 10 != 81) throw e;
+		delete e;
 		shriek(881, "Parse error, cannot continue");
 	}
 	return NULL;

@@ -130,7 +130,6 @@ void shriek(int code, const char *fs, ...)
 
 	switch (code / 100) {
 		case 4 :
-//			printf("Just a command will fail.\n");
 			xcf = new command_failed (code, message);
 			throw xcf;
 
@@ -139,7 +138,6 @@ void shriek(int code, const char *fs, ...)
 
 		case 8 :
 			errors++;
-//			printf("Abnormal condition: %s (code %d)\n", message, code);
 			if (l_errno && EAGAIN) printf("Current errno value: %d (%s)\n", l_errno, strerror(l_errno));
 			throw new fatal_error (code, message);
 
@@ -164,14 +162,6 @@ void tag_vfprintf(const char *fmt, va_list ap)
 	if (!fmt || !*fmt) return;
 //	if (cfg->debug_tag) fprintf(STDDBG, "%-9s ", module_debug_tag);
 	vfprintf(STDDBG, fmt, ap);
-}
-
-void dprint_normal(int level, const char *fmt, ...)
-{
-	va_list ap;
-	va_start(ap, fmt);
-	if (scfg->debug_level <= level) tag_vfprintf(fmt, ap);
-	va_end(ap);
 }
 
 void dprint_always(int level, const char *fmt, ...)
@@ -508,7 +498,8 @@ inline bool reclaim(file *ff, const char *flags, const char *description, void o
 	ff->timestamp = ts;
 	f = fopen(ff->filename, flags, description);
 	fseek(f, 0, SEEK_END);
-	ff->data = (char *)xrealloc(ff->data, tmp = ftell(f) + 1);
+	tmp = ftell(f) + 1;
+	ff->data = (char *)xrealloc(ff->data, tmp);
 	fseek(f, 0, SEEK_SET);
 	len = fread(ff->data, 1, tmp, f);
 	if (len < 0) {
@@ -612,6 +603,7 @@ static inline void compile_rules()
 			cfg->langs[i]->compile_rules();
 		} catch (any_exception *e) {
 			errors++;
+			delete e;
 		}
 		if (errors > 0) shriek(811, "Rules for %s cannot be compiled", cfg->langs[i]->name);
 	}
@@ -687,6 +679,7 @@ void epos_init()	 //Some global sanity checks made here
 }
 
 void end_of_eternity();
+void shutdown_sched_aq();
 
 void epos_catharsis()
 {
@@ -703,12 +696,14 @@ void epos_catharsis()
 
 //	cow_catharsis(cfg);
 
+	release_sampa();
+
 	cfg->shutdown();	//...FIXME: might need proto_cfg->shutdown; othrws shutdown never called
 	delete esctab; esctab = NULL;
 
 	shutdown_file_cache();
 	
-	free_all_options();
+	free_extra_options();
 
 	shutdown_enc();
 #ifdef HAVE_SYSLOG_H
@@ -716,16 +711,24 @@ void epos_catharsis()
 #endif
 }
 
+void free_replier_table();
+void shutdown_parser();
+void shutdown_partbuffs();
+
 void epos_done()
 {
 	epos_catharsis();
+	free_replier_table();
 	config_release();
 	unit::done();
 	shutdown_hashing();
 	shutdown_cfgs();
+	shutdown_sched_aq();
+	shutdown_parser();
 
 	release(&_resolve_vars_buff);
 	release(&scratch);
+	shutdown_partbuffs();
 	
 	END_OF_ETERNITY;
 	cow_catharsis();

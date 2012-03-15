@@ -181,15 +181,6 @@ class a_accept : public agent
 	virtual ~a_accept();
 };
 
-struct sched_aq
-{
-	agent *ag;
-	sched_aq *next;
-	sched_aq *prev;
-};
-
-extern sched_aq *sched_head;
-extern sched_aq *sched_tail;
 extern int runnable_agents;
 
 agent *sched_sel();

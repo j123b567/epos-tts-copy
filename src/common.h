@@ -90,9 +90,11 @@
 #endif
 
 
-enum SUBST_METHOD {M_EXACT=0, M_END=1, M_BEGIN=2, M_BEGIN_OR_END=3, M_SUBSTR=4, M_PROPER=7, M_LEFT=8, M_RIGHT=16, M_ONCE=32, M_NEGATED=64, M_SEQ=128};
+enum SUBST_METHOD {M_EXACT=0, M_SUBSTR=4, M_PROPER=7, M_LEFT=8, M_RIGHT=16, M_ONCE=32, M_NEGATED=64};
 enum REPARENT {M_DELETE, M_RIGHTWARDS, M_LEFTWARDS};
 enum FIT_IDX {Q_FREQ, Q_INTENS, Q_TIME};
+enum OUT_ML { ML_NONE, ML_ANSI, ML_RTF};
+#define OUT_MLstr "none:ansi:rtf:"
 #define FITstr	"f:i:t:"
 #define BOOLstr "false:true:off:on:no:yes:disabled:enabled:-:+:n:y:0:1:non::"
 #define LIST_DELIM	 ':'
@@ -122,8 +124,8 @@ typedef char wchar;
 #include "text.h"
 #include "voice.h"
 #include "function.h"
-#include "interf.h"
 #include "options.h"
+#include "interf.h"
 #include "parser.h"
 #include "unit.h"
 #include "rule.h"              //See rules.h for additional #defines and enums

@@ -238,6 +238,7 @@ int load_charset(const char *name)
 		d[e] = b;
 	}
 	delete t;
+	free(line);
 
 //	if (cfg->paranoid) for (int i = 1; i < 256; i++) if (w[i] == UNDEFINED)	FIXME
 //		shriek(462, "Character code %d left undefined for charset %s", i, name);
@@ -257,14 +258,13 @@ void load_default_charset()
 
 static void load_sampa(int alt, const char *filename)
 {
+	D_PRINT(3, "Loading %sSAMPA mappings\n", alt ? "alternate " : "");
 
 	if (alt >= max_sampa_alts) {
 		max_sampa_alts = alt + 1;
-		if (!sampa) sampa = (char (*)[256][MAX_SAMPA_ENC])xmalloc(256 * MAX_SAMPA_ENC * alt);
-		sampa = (char (*)[256][MAX_SAMPA_ENC])xrealloc(sampa, max_sampa_alts * 256 * MAX_SAMPA_ENC);
+		if (!sampa) sampa = (char (*)[256][MAX_SAMPA_ENC])xmalloc(256 * MAX_SAMPA_ENC * max_sampa_alts);
+		else sampa = (char (*)[256][MAX_SAMPA_ENC])xrealloc(sampa,256 * MAX_SAMPA_ENC * max_sampa_alts);
 	}
-
-	D_PRINT(3, "Loading %sSAMPA mappings\n", alt ? "alternate " : "");
 	text *t = new text(filename, scfg->unimap_dir, "", NULL, true);
 	if (!t->exists()) {
 		delete t;
@@ -285,6 +285,7 @@ static void load_sampa(int alt, const char *filename)
 		}
 	}
 	delete t;
+	free(line);
 }
 
 static void add_alt_sampa(int alt, const char *name)
@@ -301,6 +302,13 @@ void update_sampa()
 	load_sampa(0, "sampa-std.txt");
 	if (scfg->sampa_alts) list_of_calls(scfg->sampa_alts, add_alt_sampa);
 	sampa_updated = true;
+}
+
+void release_sampa()
+{
+	free(sampa);
+	sampa = NULL;
+	max_sampa_alts = 0;
 }
 
 const char *decode_to_sampa(unsigned char c, int sampa_alt)
