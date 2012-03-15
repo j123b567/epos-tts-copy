@@ -785,7 +785,7 @@ code      | error type      | suggested action@
 <hline>
 0         | none            | relax; assume user-initiated interruption@
 1         | syntax          | notify user@
-2         | busy or timimg  | wait and retry@
+2         | busy or timing  | wait and retry@
 3         | bad data        | notify user@
 4         | not found       | notify user@
 5         | access denied   | notify user@

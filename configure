@@ -1727,7 +1727,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=epos
- VERSION=2.5.32
+ VERSION=2.5.33
 
 
 cat >>confdefs.h <<_ACEOF
@@ -14142,38 +14142,28 @@ else
 #include <stdio.h>
 int main(int argc, char **argv)
 {
-argc=argc; argv=argv; return 0;
+	if (argc < 0 || ((int)argv) == 0) printf("");
+	return 0;
 }
 EOF
-epos_cv_cxx_opt_mafwks=""
+epos_cv_cxx_opt_mafwks="unknown"
 for opt in "-framework CoreAudio -framework AudioToolbox"; do
-    if test -z "${epos_cv_cxx_opt_mafwks}"; then
-        if ${CXX} ${opt} -o conftest conftest.cc 2>conftest2 1>&5; then
-            if test -f conftest2; then
-                msg=`cat conftest2`
-                if test -z "${msg}"; then
-                  epos_cv_cxx_opt_mafwks=${opt}
-                fi
-            else
-                epos_cv_cxx_opt_mafwks=${opt}
-            fi
-        fi
-    fi
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} ${opt} -o conftest conftest.cc 2>conftest2 1>&5 || continue
+		msg=`cat conftest2`
+		if test -z "$msg"; then
+			epos_cv_cxx_opt_mafwks=$opt
+			break
+		fi
 done
-if test -z "${epos_cv_cxx_opt_mafwks}"; then
-        epos_cv_cxx_opt_mafwks="unknown"
-fi
-rm -f conftest conftest2
+rm -f conftest conftest2 conftest.cc
 fi
 
-if test "${epos_cv_cxx_opt_mafwks}" = "unknown"; then
-        echo "$as_me:$LINENO: result: \"unknown\"" >&5
-echo "${ECHO_T}\"unknown\"" >&6
-        mafwks=""
-else
-        echo "$as_me:$LINENO: result: ${epos_cv_cxx_opt_mafwks}" >&5
+echo "$as_me:$LINENO: result: ${epos_cv_cxx_opt_mafwks}" >&5
 echo "${ECHO_T}${epos_cv_cxx_opt_mafwks}" >&6
-        mafwks=${epos_cv_cxx_opt_mafwks}
+if test "x${epos_cv_cxx_opt_mafwks}" = "xunknown"; then
+	mafwks=
+else
+	mafwks=${epos_cv_cxx_opt_mafwks}
 fi
 CONFIGURED_CXXFLAGS="$CONFIGURED_CXXFLAGS $mafwks"
 

@@ -61,6 +61,8 @@ char *get_text_buffer(const char *string);	// realloc to current length plus ext
 char *get_text_line_buffer();
 char *get_text_cmd_buffer();
 
+inline const char *never_null(const char *string) { return string ? string : ""; };
+
 FIT_IDX fit(char c);		 // converts 'f', 'i' or 't' to 0, 1 or 2, respectively
 UNIT str2enum(const char *item, const char *list, int dflt);
 const char *enum2str(int item, const char *list);

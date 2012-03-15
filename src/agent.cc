@@ -699,7 +699,7 @@ void a_input::run()
 		c->leave();
 		delete data_conns->remove(dc->handle);
 		c->enter();
-		shriek(436, "data conn %d lost", socket);
+		shriek(436, "data conn %d lost reading", socket);
 	}
 	offset += res;
 	if (offset == toread) {
@@ -776,11 +776,25 @@ a_output::run()
 	
 	if (written) {
 		int now_written = ywrite(socket, (char *)inb + written, size - written);
+		if (now_written == -1) {
+			if (errno == EAGAIN) {
+				push(socket);
+				return;
+			}
+			shriek(436, "data connection %d lost during writing", socket);
+		}
 		report(false, now_written);
 		written += now_written;
 	} else {
 		written = ywrite(socket, (char *)inb, size);
 		if (written) {
+			if (written == -1) {
+				if (errno == EAGAIN) {
+					push(socket);
+					return;
+				}
+				shriek(436, "data connection %d lost before writing", socket);
+			}
 			report(true, size);
 			report(false, written);
 		}
@@ -860,13 +874,16 @@ oa_wavefm::run()
 		attached = true;
 	}
 	bool to_do;
-	while ((to_do = w->flush()) && w->written) {
+	while ((to_do = w->flush()) && w->written > 0) {
 		report(false, w->written);
 	}
 
-	if (to_do) push(socket);
+	if (to_do && w->written >= 0) push(socket);
 	else {
-		if (w->written) report(false, w->written);
+		if (w->written == -1) {
+			shriek(436, "data conn %d lost writing", socket);
+		}
+		if (w->written > 0) report(false, w->written);
 		report(true, w->written_bytes());
 		w->detach(socket);
 		D_PRINT(1, "oa_wavefm wrote %d bytes\n", w->written_bytes());

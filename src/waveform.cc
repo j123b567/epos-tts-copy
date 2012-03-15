@@ -165,8 +165,10 @@ wavefm::wavefm(voice *v)
 	int stereo = channel == CT_MONO ? 0 : 1;
 	if (this_voice->sample_size <= 0 || (this_voice->sample_size >> 3) > (signed)sizeof(int))
 		shriek(447, "Invalid sample size %d", this_voice->sample_size);
-	if (cfg->ulaw && !cfg->wave_header)
-		this_voice->sample_size = 8, this_voice->out_sampling_rate = 8000;
+	if (cfg->ulaw && !cfg->wave_header) {
+		set_option("sample_size", "8");
+		set_option("out_sampling_rate", "8000");
+	}
 //	cfg->sample_size = cfg->sample_size + 7 & ~7;	// Petr had this
 	downsamp = downsample_factor(samp_rate, v->out_sampling_rate);
 	translated = false;
@@ -929,7 +931,9 @@ wavefm::flush_deferred()
 {
 //	D_PRINT(2, "Flushing the signal (deferred)\n");
 	D_PRINT(1, "adtlhdr.len is %d\n", adtlhdr.len);
-	written = 0;
+	if (errno == EAGAIN) {
+		written = 0;
+	}
 
 	int used = translated ? from_le32s(hdr.buffer_idx) : hdr.buffer_idx;
 	if (used + 4 > buff_size) {

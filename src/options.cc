@@ -488,7 +488,7 @@ static inline char *get_startup_cwd(char *buff, size_t size)
 
 static inline const char *pre_base_dir(const char *value)
 {
-	if (value && value[0] != SLASH) {
+	if (value && value[0] && value[0] != SLASH) {
 		size_t size = scfg->scratch_size ? scfg->scratch_size : 64;
 		char *abs = (char *)xmalloc(size);
 		while (!get_startup_cwd(abs, size - 1))
@@ -673,7 +673,7 @@ bool set_option(epos_option *o, const char *val, void *base)
 			D_PRINT(1, "Configuration option \"%s\" adds \"%s\"%s to \"%s\"%s\n", o->optname,
 					val, strchr(val, '\033') && scfg->normal_color ? scfg->normal_color : "",
 					old ? old : "empty string", strchr(val, '\033') && scfg->normal_color ? scfg->normal_color : "");
-			if (!old) {
+			if (!old || !*old) {
 				*(char **)locus = strdup(val);
 				break;
 			}
@@ -825,7 +825,7 @@ bool voice_switch(const char *value)
 	return false;
 }
 
-const char *format_option(epos_option *o, void *base)
+static const char *format_option(epos_option *o, void *base)
 {
 	char *locus = (char *)base + o->offset;
 	switch(o->opttype) {
