@@ -59,11 +59,11 @@ if use_prosody
 	{
 		if use_bang_nnet
 		{
-			if use_nnet_phone 
+			if nnet_phone 
 			{
 				nnet prosody_lpc_bang_phone.neu sent phone
 			}
-			if !use_nnet_phone
+			if !nnet_phone
 			{
 				nnet prosody_lpc_bang.neu sent syll
 			}
@@ -115,10 +115,6 @@ if generate_segs
 			segments  traditnl.dph	colon
     if !traditional_dph
     {
-      if   kadlec_dph
-			segments  kadlec.dph    colon
-      if   !kadlec_dph
-      {
 	if ptacek97_dph
 			segments  ptacek97.dph  colon
 	if !ptacek97_dph
@@ -135,7 +131,6 @@ if generate_segs
 	    # if !betty_dph, that's a misconfiguration
 	  }
 	}
-      }
     }
 }
 

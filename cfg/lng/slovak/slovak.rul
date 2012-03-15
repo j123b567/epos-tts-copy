@@ -38,8 +38,5 @@ if    slovak_dph
 	segments  slovak.dph	colon
 if    !slovak_dph
 {
-	if   kadlec_dph
-		segments  ../czech/kadlec.dph   colon
-	if  !kadlec_dph
-		segments  traditnl.dph 		colon
+	segments  traditnl.dph 		colon
 }

@@ -31,7 +31,7 @@ enum SYNTH_TYPE {
 	S_MBROLA = 12
 };
 
-#define STstr "none:internet:::lpc-float:lpc-int:lpc-vq:fd:ktd:tdp:ptd::mbrola:"
+#define STstr "none:internet:::lpc-float:lpc-int:lpc-vq:fd::tdp:::mbrola:"
 #define ST_MAX (S_MBROLA+1)
 
 enum CHANNEL_TYPE {CT_MONO, CT_LEFT, CT_RIGHT, CT_BOTH};
@@ -54,6 +54,7 @@ struct lang : public cowabilium
 	rules *ruleset;
 	hash_table<char, epos_option> *soft_options;
 	void *soft_defaults;
+	unsigned char *char_level;
 	int   n_voices;
 	voice **voices;
 	int   default_voice;

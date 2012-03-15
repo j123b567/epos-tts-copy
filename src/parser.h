@@ -20,7 +20,12 @@
  *
  */
 
-enum SYMTABLE {ST_ROOT, ST_RAW, /* ST_EMPTY */};		// FIXME: necessary?
+#define CHARSET_SIZE		256
+#define PARSER_MODES		2	/* do NOT count PARSER_MODE_FILE */
+
+#define PARSER_MODE_RAW		0
+#define PARSER_MODE_INPUT	1
+#define PARSER_MODE_FILE	2
 
 class parser
 {
@@ -28,17 +33,18 @@ class parser
 	unsigned char *current;	// the byte to be parsed next
 	unsigned char token;	// the current token
 	unsigned int txtlen;	// length of text (not counting \0)
-	UNIT CHRLEV[256];	// to be initialized in the constructor
-	unsigned char TRANSL_INPUT[256];
-			  //to be initialized in the constructor
-	void initables(SYMTABLE to_load);    // fills in CHRLEV
-	void alias(const char *canon, const char *alias);
-					     // fills in TRANSL_INPUT
-	void regist(UNIT assigned_function, const char* list);
+
+	// to be initialized in the constructor:
+	static unsigned char transl_input[PARSER_MODES][CHARSET_SIZE];
+	unsigned char *char_level;	// just a cached value
+	
+	int mode;	// the first index to CHAR_LEVEL and TRANSL_INPUT
+
+	static void alias(int mode, const char *canon, const char *alias);
+	static void regist(int mode, unsigned char *table, UNIT assigned_function, const char* list);
   public:
-	parser(const char *s);         // s is a raw string, use ST_RAW
-	parser(const char *s, int mode);
-	void init(SYMTABLE symtab);          // the common constructor
+	parser(const char *s, int parser_mode);
+	void init();
 	~parser();
 	UNIT level;		// contains the UNIT level of the next symbol
 //	int f, i, t;		// f, i, t of the next symbol (usually zero)
@@ -46,6 +52,7 @@ class parser
 	unsigned char gettoken(); // gets the next symbol
 	UNIT chrlev(unsigned char c);  // what level c is to be analysed at
 	void done();		// shriek if some input left
+	static void init_tables(lang *);    // fills in CHAR_LEVEL, TRANSL_INPUT
 };
 
 #define NO_CONT            '_'    // null contents of a unit

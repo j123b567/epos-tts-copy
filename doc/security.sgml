@@ -57,7 +57,7 @@ or as a Text-to-Speech Control Protocol server.  For technical reasons
 (especially the latency), it is strongly recommended to choose the latter
 method for most situations.
 
-<sect1> TTSCP-related issues
+<sect1> TTSCP-related Issues
 
 <sect2> Authentication
 <p>
@@ -75,7 +75,7 @@ server over TTSCP.
 For debugging purposes, it is also possible to force Epos to accept
 an additional server password with the <tt/debug_password/ option.
 
-<sect2> TTSCP connection handles
+<sect2> TTSCP Connection Handles
 <p>
 
 In TTSCP, a control connection can issue commands that affect any
@@ -89,7 +89,7 @@ handle lengths (as controlled with the <tt/handle_size/ option therefore
 fall within the range <tt/10/ to <tt/200/.  Be sure to adjust
 <tt/max_line_len/ as well if using extremely long connection handles.
 
-<sect2> <tt>restr.ini</tt> file
+<sect2> <tt>restr.ini</tt> File
 <p>
 
 Many TTSCP options are rarely set over TTSCP, and some of them could be
@@ -104,14 +104,14 @@ for the server.  On the other hand, almost no options affect the security
 directly, because they're only set within the context of the current
 TTSCP connection, and the few exceptions are unlikely to have been overlooked.
 
-<sect2> Access to the local sound card
+<sect2> Access to the Local Sound Card
 <p>
 
 At the moment, any TTSCP client is capable of writing arbitrary waveform data
 to the local soundcard.  If you consider this a security risk, disable
 the <tt/&num;localsound/ output module by turning the <tt/localsound/ option off.
 
-<sect2> Access to the local file system
+<sect2> Access to the Local File System
 <p>
 
 TTSCP in theory offers file system based input and output modules.  For example,
@@ -123,7 +123,7 @@ TTSCP name space using the <ref id="pseudorootdir-option" name="--pseudo_root_di
 Furthermore, writing to it is disabled by default; this restriction can be overridden
 by setting the --<tt/writefs/ option.
 
-<sect1> Privileged executables
+<sect1> Privileged Executables
 <p>
 
 It is not recommended to run Epos as a setuid or setgid binary, not because
@@ -138,7 +138,7 @@ you have to adjust the source manually.
 Instead of a privileged executable, run Epos with the desired privileges
 at system start-up and use a TTSCP client to control it from then on.
 
-<sect1> <tt>local_only</tt> option
+<sect1> <tt>local_only</tt> Option
 <p>
 
 By default, the TTSCP server only binds to the loopback interface.

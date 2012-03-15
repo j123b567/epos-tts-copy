@@ -14,5 +14,5 @@ EXTRA_DIST=arch Makefile.common Changes
 #distcleancheck:
 #	@@:
 
-#dist-hook:
-#	@. $(distdir)/test/testversion
+dist-hook:
+	@. $(distdir)/arch/unix/test.version

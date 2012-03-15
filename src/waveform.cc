@@ -545,7 +545,7 @@ wavefm::translate_data(char *newbuff)
 //	if (cfg->ulaw && this_voice->samp_size != 8) shriek(462, "Mu law implies 8 bit");
 	int ssbytes  = (this_voice->samp_size + 7) >> 3;  // sample size in bytes
 	int shift1 = (sizeof(int) - sizeof(SAMPLE)) << 3;
-	int shift2 = scfg->big_endian ? 0 : (sizeof(int) - ssbytes) << 3;
+	int shift2 = scfg->_big_endian ? 0 : (sizeof(int) - ssbytes) << 3;
 	int unsign = ssbytes == 1 ? 0x80 : 0;
 	for (int i = 0; i < hdr.buffer_idx; i += downsamp) {
 		int sample = buffer[i];

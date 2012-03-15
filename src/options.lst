@@ -492,7 +492,7 @@ STATIC (showrule, "show_rule",    BOOL, false)  // Print each rule before its ap
 STATIC (pausing, "pausing",       BOOL, false)  // Pause after each rule application?
 STATIC (r_dbg_sh_all, "verbose",  BOOL, false)  // When dumping rules, print them all?
 // OPTION (warnpause, "warn_pause",  BOOL, false)  // Pause after every warning?
-STATIC (warnings, "warnings",     BOOL, false)	// Show warnings at all?
+STATIC (_warnings, "_warnings",     BOOL, false)   // Report command line errors?
 STATIC (allpointers,"ptr_trusted",BOOL, true)   // When sanity checking, allow any pointers?
 
 STATIC (vars, "variables",         INT, 43)     // About how many variables in the rules?
@@ -518,7 +518,7 @@ STATIC (lang_base_dir, "lang_base_dir",    STR, NULL)   // to the language descr
 STATIC (voice_base_dir, "voice_base_dir",  STR, NULL)   // to the voice descriptions
 STATIC (inv_base_dir, "inv_base_dir",  STR, NULL)	// to the segment inventories
 STATIC (ini_dir, "ini_dir",	   STR, strdup("cfg"))  // to fixed.ini and other global cfg files
-STATIC (unimap_dir, "unimap_dir",  STR, NULL) // to unicode maps
+STATIC (unimap_dir, "unimap_dir",  STR, NULL)		// to unicode maps
 STATIC (matlab_dir, "matlab_dir",  STR, NULL)	//      where to store nnet output
 STATIC (wav_dir, "wav_dir",        STR, NULL)	//      where to store .wav files
 OPTION (mbrola_binary, "mbrola_binary", STR, NULL) //	where the MBROLA synthesizer binary is installed
@@ -541,8 +541,8 @@ STATIC (show_segs,"show_segments",BOOL, false)  // Should we display the segment
 STATIC (play_segs,"play_segments",BOOL, false)  // Should we write the sound to a file?
 STATIC (seg_raw,"show_raw_segs",BOOL, false)  // show_segments including diphone numbers?
 // OPTION (show_crc, "show_crc",     BOOL, false)	// Near-unique signature of the sound
-STATIC (wav_file, "wave_file",     STR, NULL)	// File to write .wav into if play_diphones
-STATIC (local_sound_device, "local_sound_device", STR, NULL)	// File to write .wav into if play_segments
+// STATIC (wav_file, "wave_file",     STR, NULL)	// File to write .wav into if play_diphones
+STATIC (local_sound_device, "local_sound_device", STR, NULL)	// Filename to write .wav into if play_segments
 STATIC (imm_segs,"immed_segments",BOOL, false)  // Should we output them after a SEGMENTS rule?
 
 VOICE_OPTION (name, name, "name",	     STR, NULL)
@@ -552,13 +552,13 @@ VOICE_OPTION (inv_size, n_segs, "n_segs",    INT, 0)	// Total number of segments
 VOICE_OPTION (inv_counts, counts, "counts",  STR, NULL)	// File with the model counts for every segment?
 VOICE_OPTION (inv_models, models, "models",  STR, NULL)	// File with the models themselves?
 VOICE_OPTION (inv_book, book, "codebook",    STR, NULL)	// File with vectors for vq voices?
-//VOICE_OPTION (inv_dph, dphfile, "dph_file",  STR, NULL)	// File describing the segments?
+// VOICE_OPTION (inv_dph, dphfile, "dph_file",  STR, NULL)	// File describing the segments?
 VOICE_OPTION (inv_dpt, dptfile, "dpt_file",  STR, NULL)	// File naming the segments?
 VOICE_OPTION (inv_snl, snlfile, "snl_file",  STR, NULL)	// Sound labels file?
 VOICE_OPTION (inv_f0, init_f, "init_f",      INT, 100)	// Neutral frequency for the inventory
 VOICE_OPTION (inv_i0, init_i, "init_i",      INT, 100)	// Neutral intensity
 VOICE_OPTION (inv_t0, init_t, "init_t",      INT, 100)	// Neutral time factor
-VOICE_OPTION (inv_st, st, "st_length",       INT, 400)	// Length of ST signals (ptdsyn)
+// VOICE_OPTION (inv_st, st, "st_length",       INT, 400)	// Length of ST signals (ptdsyn)
 
 VOICE_OPTION (samp_rate, samp_rate, "inv_sampling_rate", INT, 8000)	// The real sampling rate of the inventory
 VOICE_OPTION (samp_size, samp_size, "sample_size",INT, 16)	// (not supported)
@@ -567,12 +567,12 @@ VOICE_OPTION (sampa_alt, sampa_alt, "sampa_alternate", INT, 0)
 
 VOICE_OPTION (inv_out_rate, out_rate, "out_sampling_rate", INT, 0)	// 0 means equal to samp_rate
 	// positive value specifies the required output rate (samp_rate divided by an integer)
-//VOICE_OPTION (f0_model, f0_model, "f0_modelling", STR, "classic")	// F0 contour modelling (classic, lpc, fujisaki)
+// VOICE_OPTION (f0_model, f0_model, "f0_modelling", STR, "classic")	// F0 contour modelling (classic, lpc, fujisaki)
 VOICE_OPTION (lpcprosody, lpcprosody, "lpcprosody", BOOL, false)	// F0 contour modelling using a linear prediction
 VOICE_OPTION (use_bang_nnet, use_bang_nnet, "use_bang_nnet", BOOL, false)	// F0 contour modelling using a linear prediction
-VOICE_OPTION (use_nnet_phone, use_nnet_phone, "use_nnet_phone", BOOL, false)	// F0 contour with lpc but on the phone level
+// VOICE_OPTION (use_nnet_phone, use_nnet_phone, "use_nnet_phone", BOOL, false)	// F0 contour with lpc but on the phone level
 VOICE_OPTION (use_f0_smoothing, use_f0_smoothing, "use_f0_smoothing", BOOL, false) // generated F0 shall be smoothed via filter after each pitchpuls
-VOICE_OPTION (additive_cont, additive_cont, "additive_cont", BOOL, false)  // rule "contour" additive mode
+// VOICE_OPTION (additive_cont, additive_cont, "additive_cont", BOOL, false)  // rule "contour" additive mode
 
 OPTION (pros_factor, "pros_factor", INT, 1000)				// this controls how strong prosody is applied
 OPTION (label_f0, "label_f0", BOOL, false)
@@ -613,7 +613,7 @@ OPTION (sd_out, "",		   INT, -1)	// current output network socket
 STATIC (pend_min, "pend_min",	   INT, 3)	// FIXME: non-functional
 STATIC (pend_max, "pend_max",	   INT, 7)	// FIXME: non-functional
 
-STATIC (big_endian, "big_endian", BOOL, false)  // run-time decided
+STATIC (_big_endian, "_big_endian", BOOL, false)  // run-time decided
 
 LNG_OPTION (voice_list, voice_list, "voices", STR, NULL) // voices supported for this language
 LNG_OPTION (soft_opt_list, soft_opt_list, "soft_options", STR, NULL)
@@ -647,8 +647,9 @@ STATIC (text_level, "",              ELEM, 0)
 STATIC (default_scope, "default_scope",           ELEM, 0)
 STATIC (default_target, "default_target",         ELEM, 0)
 
-
-LNG_OPTIONARRAY (perm, "perm", STR, NULL, UNIT_MAX)
+LNG_OPTIONARRAY (perm, "perm",			STR, NULL, UNIT_MAX)
+LNG_OPTIONARRAY (perm_input, "perm_input",	STR, NULL, UNIT_MAX)
+LNG_OPTIONARRAY (perm_working, "perm_working",	STR, NULL, UNIT_MAX)
 
 OPTIONARRAY (pros_weight, "pros_weight", INT, 1, UNIT_MAX)	// FIXME: make all these STATIC
 

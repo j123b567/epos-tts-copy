@@ -60,6 +60,7 @@ class unit
 		char*s1b,char*s1e,char*s2b,char*s3b,char*s3e); //inner, see implem.
 	void syll_break(char *sonority, unit *before);
 	void syllabify(char *sonority);  //May split "father" just before "this", if sonority minimum
+	void analyze(UNIT target, hash *table, int unanal_unit_penalty, int unanal_part_penalty);
 //	void sseg(hash *templates, char symbol, int *quantity);
 	void seg(hash *segm_inventory);  //Will create up to one segment. Go see it if curious.
     

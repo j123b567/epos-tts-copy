@@ -516,7 +516,7 @@ unit::subst()
 	parser *parsie;
 	unit   *tmpu;
 
-	parsie=new parser(sb);
+	parsie=new parser(sb, PARSER_MODE_RAW);
 	D_PRINT(0, "innermost unit::subst - parser is ready\n");
 	tmpu=new unit(depth,parsie);
 	if (cfg->paranoid) parsie->done();
@@ -562,7 +562,7 @@ unit::subst(hash *table, int l, char *prefix, char *prefix_end, char *body, char
 		safe_grow += sbsize;
 		sbsize <<= 1;
 		sb = (char *)xrealloc(sb, sbsize);
-		DO_PRINT(1, "Had to realloc subst buffer to %d bytes\n", sbsize);
+		D_PRINT(1, "Had to realloc subst buffer to %d bytes\n", sbsize);
 	}
 //		shriek (463, "Huge or infinitely iterated substitution %30s...", resultant);
 	if (prefix && prefix_end - prefix > 0) {
@@ -934,6 +934,12 @@ unit::assim(UNIT target, bool backwards, charxlat *fn, charclass *left, charclas
 void 
 unit::split(unit *before)
 {
+	if (before->father != this) {
+		before->father->split(before);
+		split(before->father);
+		return;
+	}
+
 	unit *clone=new unit(*this);
 
 	D_PRINT(1, "Splitting in %c before %c, clone is %c\n", cont, before->inside(), clone->cont);
@@ -962,9 +968,6 @@ unit::split(unit *before)
                    Other examples: V|CRV, VC|CV, VR|CV, V|CR|CV
                    Bugs: Sanskrit-like R|CVC 
                    
-		   Mhm. We've been using some quadratic or worse algorithm
-		   by accident, so I decided to rewrite it completely.
-		   
 		   syll_break() is called to break the syllable before 
 		   the place given. 
  ****************************************************************************/
@@ -1003,8 +1006,79 @@ unit::syllabify(UNIT target, char *sonor)
 		tmpu = tmpu_prev;
 	}
 }
+
+const int INFINITY = 300000000;
+
+void
+unit::analyze(UNIT target, hash *table, int unanal_unit_penalty, int unanal_part_penalty)
+{
+	static struct vb_struct
+	{
+		int last_len;
+		int badness;
+	} *vb = 0;
+
+	static int vb_size = 0;
+
+	if (target != scfg->phone_level)
+		shriek(462, "Analyze with target other than phone unimplemented");	// FIXME
+
+	int l;
+	char *b = gather(&l, false, false);
+	if (++l > vb_size) {
+		vb_size = l;
+		D_PRINT(1, "Growing Viterbi buffer to %d items\n", vb_size);
+		if (vb) free(vb);
+		vb = (vb_struct *)xmalloc(vb_size * sizeof(vb_struct));
+	}
+
+	vb[0].last_len = vb[0].badness = 0;
+	for (int i = 1; i < l; i++) {
+		char tmp = b[i];
+		b[i] = 0;
+		vb[i].badness = INFINITY;
+		for (int j = 0; j < i; j++) {
+			char *r = j >= i - table->longest ? table->translate(b + j) : 0;
+			int badness = r ? atoi(r)
+				: (i - j) * unanal_unit_penalty + unanal_part_penalty;
+			badness += vb[j].badness;
+			if (badness < vb[i].badness) {
+				vb[i].badness = badness;
+				vb[i].last_len = i - j;
+			}
+		}
+		b[i] = tmp;
+	}
+
+	int n = 0;	
+	int last_k = l - 1;
+	for (int k = l - 1; k; k -= vb[k].last_len) {
+		n++;
+		vb[k].badness = last_k;
+		last_k = k;
+	}
+
+	D_PRINT(1, "Morphoanalyzed %s into %d components\n", b, n);
+
+	int next_split = last_k;
+	int count = 0;
+
+	unit *top = firstborn;
+	for (unit *u = LeftMost(target); u != &EMPTY; u = u->Next(target)) {
+		if (count == next_split) {
+			D_PRINT(0, "Morphoanalyzer splits at %d\n", next_split);
+			if (top->next) shriek(899, "Hu.");
+			top->split(u);
+			top = top->next;
+			next_split = vb[count].badness;
+		}
+		count++;
+	}
+}
+
+
 /****************************************************************************
- unit::contains    returns whether a unit of certain content is contaigned
+ unit::contains    returns whether a unit of certain content is contained
  ****************************************************************************/
  
 bool

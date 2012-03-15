@@ -10,7 +10,7 @@ something here or elsewhere, tell me and I may add it; that will become almost t
 source of progress in this section of documentation. The section may also slowly
 become outdated due to lack of interest.
 
-<sect1> Design goals
+<sect1> Design Goals
 <p>
 
 Overall coding priorities, approximately in order of decreasing precedence:
@@ -30,7 +30,7 @@ Overall coding priorities, approximately in order of decreasing precedence:
 	<item> possible parallelizability
 </itemize>
 
-<sect1> Isolated classes
+<sect1> Isolated Classes
 <p>
 
 <tt/class parser, unit, rules, text/ and maybe a few others are isolated classes
@@ -147,7 +147,7 @@ is no inheritance relation between them.
 
 
 
-<sect1> Class hierarchies
+<sect1> Class Hierarchies
 
 <sect2> Class <tt>rule</tt>
 <p>
@@ -313,7 +313,7 @@ under Debian and Red Hat distributions.  Please report
 to us any compilation issues which may be distribution related,
 these will be the most easy ones to solve.
 
-<sect2> Other UNIX clones
+<sect2> Other UNIX Clones
 <p>
 
 Epos is ported to other unices
@@ -365,7 +365,7 @@ used to work a long time ago, too.  Ask us for help with these compilers
 if necessary.  Please refer to the <tt>WELCOME</tt> file on
 how to proceed step by step with Visual C++.
 
-<sect3> Advanced notes for Windows NT
+<sect3> Advanced Notes for Windows NT
 <p>
 
 File input and output modules are not going to work
@@ -437,7 +437,7 @@ as we have done with the Windows ports.  A plain old <tt>make</tt> utility
 helps the compilation process if your OS can emulate a UNIX development
 environment a little bit.
 
-<sect1> More information
+<sect1> More Information
 <p>
 
 The header files mostly define basic interfaces for individual Epos components.

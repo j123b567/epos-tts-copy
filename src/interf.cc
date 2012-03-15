@@ -338,8 +338,8 @@ unit *str2units(const char *text)
 
 	if (text && (signed)strlen(text) > scfg->maxtext) shriek(456, "input too long");
 
-	if (text && *text) parsie = new parser(text, 1);
-	else parsie = new parser(this_lang->input_file, 0);
+	if (text && *text) parsie = new parser(text, PARSER_MODE_INPUT);
+	else parsie = new parser(this_lang->input_file, PARSER_MODE_FILE);
 	root=new unit(scfg->text_level, parsie);
 	delete parsie;
 	return root;
@@ -653,8 +653,8 @@ void epos_init()	 //Some global sanity checks made here
 				"Turn hash_table::forall() fns in hash.h the other way round.");
 	if ((unsigned char)-1 != 255) shriek(862, "Your chars are not 8-bit? Funny.");
 	if (sizeof(unsigned short int) != 2) shriek(862, "Short ints not short enough");
-	if (*(short int *)"wxyz" == 256 * 'w' + 'x') scfg->big_endian = true;
-	if (*(short int *)"wxyz" != 256 * 'x' + 'w' && !scfg->big_endian) shriek(862,
+	if (*(short int *)"wxyz" == 256 * 'w' + 'x') scfg->_big_endian = true;
+	if (*(short int *)"wxyz" != 256 * 'x' + 'w' && !scfg->_big_endian) shriek(862,
 				"Not little-endian nor big-endian. Whew!");
 
 #ifdef HAVE_TIME_H

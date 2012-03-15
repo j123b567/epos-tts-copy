@@ -2,6 +2,8 @@
 
 # Checks whether all available options are documented
 
+cd $distdir/src
+
 dir=./Epos.OT.tmp
 
 if [ -d $dir ]; then
@@ -9,26 +11,29 @@ if [ -d $dir ]; then
 fi
 mkdir -p $dir
 
-srcopts=`cat ../src/options.lst | grep '^.OPTION\|^OPTION\|^LNG_OPTION\|^VOICE_OPTION' | awk -F\" '{ printf("%s ", $2); }' `
+srcopts=`cat ../src/options.lst | grep '^STATIC\|^.STATIC\|^OPTION\|^LNG_OPTION\|^VOICE_OPTION' | awk -F\" '{ printf("%s ", $2); }' `
 for i in $srcopts; do
 	echo -n > $dir/$i
 #	ls $dir/$i
 done
 
-docopts=`awk ' /<tag>--/{print }'<../doc/english/options.sgml |cut -c8-60|sed 's/&lowbar;/_/g' \
+docopts=`awk ' /<tag>--/{print }'<../doc/options.sgml |cut -c8-60|sed 's/&lowbar;/_/g' \
 	| sed 's/\([^ <]*\)[ <].*/\1/g'`
 for i in $docopts; do
 	if rm $dir/$i 2>/dev/null; then 
 		echo -n >/dev/null
 	else
-		if [ $i != "name" ]; then
-			echo Phantom documented: $i
+		if [ $i != "name" -a $i != "perm_working*" -a $i != "perm_input*" ]; then
+			echo Phantom documented option: $i
 		fi
 	fi
 done
 
-echo Undocumented:
+rm $dir/_*
+
 for i in `(cd $dir; ls)`; do
-	echo Undocumented: $i
+	echo Undocumented option: $i
 	rm -r $dir/$i
 done
+
+rmdir $dir

@@ -10,7 +10,7 @@ by default in <tt>lng/german/german.rul</tt>. The rules may also slightly
 vary for the individual voices using the <ref id="soft-options"
 name="soft options">.
 
-<sect1> Text Structure Representation overview <label id="tsr">
+<sect1> Text Structure Representation Overview <label id="tsr">
 <p>
 
 The text being processed by Epos is internally stored in a multi-level data
@@ -62,7 +62,7 @@ arbitrary character, such as a digit or anything else, then applying
 some rules only within units having this contents using a
 <ref id="inside-rule" name="rule of type inside">.)
 
-<sect1> Rule file syntax overview
+<sect1> Rule File Syntax Overview
 <p>
 
 The rules are applied sequentially, unless stated otherwise.
@@ -107,7 +107,7 @@ The code, scope and target identifier is not case sensitive, but the parameter
 usually is.
 
 
-<sect1> Using comments and the <tt>&commat;include</tt> directive
+<sect1> Using Comments and the <tt>&commat;include</tt> Directive
 <p>
 
 Any text starting with a semicolon or <tt/&num;/ not in the middle of a word up to the
@@ -164,7 +164,7 @@ macros are assumed to precede the rule.
 For an abundance of examples see existing rule files.
 
 
-<sect1> Dictionary-oriented rules <label id="dictionary">
+<sect1> Dictionary-oriented Rules <label id="dictionary">
 <p>
 
 The rule types described in this subsection operate in some way
@@ -374,6 +374,89 @@ prep   !""        syll
   the description and examples, but the resultant unit
   is merged to its left-hand neighbor instead of the right-hand neighbor.
 
+<sect2> Type <tt>analyze</tt>
+<p>
+
+  This rule type analyzes a unit of level immediately below
+  the scope level into a sequence of units based on a dictionary
+  of known contents of the new units at the target level
+  and priorities assigned to them.  We will explain the
+  operation of this rule in terms of the morphematic analysis, i.e.
+  the most common use with the scope level being the word,
+  the result of the analysis will be the morpheme level
+  (just below the word level) and the target will be phones.
+
+  Each item of the dictionary corresponds to a single
+  morpheme (some linguists would prefer to say "morph" here).
+  The replacee is the form of the morpheme expected
+  withing the word, the replacer is a numeric value
+  which expresses the "badness" of this particular string.
+
+  In addition to these values, the dictionary must also
+  include two additional items, <tt/!META_unanal_unit_penalty/
+  and <tt/!META_unanal_part_penalty/.  These serve as
+  global parameters of the analysis process.
+
+  The rule will split every affected word into morphemes
+  so as to minimize the sum of badnesses of each of the new
+  morphemes.  Each such possible analysis may contain
+  parts (morphemes) which have been found in the dictionary
+  and which incur the badness specified there, and also
+  parts which failed to be found in the dictinary.  For
+  each part not found, both a per letter penalty
+  (as specified with <tt/!META_unanal_unit_penalty/)
+  and a per part penalty (as specified with
+  <tt/!META_unanal_part_penalty/) is added to the total
+  badness.
+
+  If two alternative analyses are available with the
+  same total badness, the first (leftmost) part
+  which is not of identical length in both is considered
+  and the analysis with the longer one is chosen.
+
+  Usually the global parameters are set so
+  high that the algorithm will resort to an analysis
+  to morphemes found in the dictionary whenever at least
+  one is possible, and also to one which consists of
+  a smaller number of morphemes and also one which avoids
+  morphemes, which are known to the dictionary, but
+  repelled by larger badness values.
+
+  An example fragment of the dictionary file may look like
+  this:
+
+<tscreen><verb>
+!META_unanal_unit_penalty	100
+!META_unanal_part_penalty	150
+cow	5
+cows	5
+s	5
+slip	5
+lip	5
+</verb></tscreen>
+
+  In this case, the word <tt/cowslip/ will not be analysed
+  as <tt/cow-s-lip/, because that would yield badness 15,
+  while there are two analyses with badness 10, namely
+  <tt/cows-lip/ and <tt/cow-slip/.  Here the first (and wrong) one
+  will be taken due to the tie breaking rule, which will
+  probably bring about voiced pronunciation of the fricative.
+  Several alternative changes to the dictionary can be proposed
+  to avoid the misguided morpheme boundary inside <tt/slip/.
+  No <tt/cows/ in the dictionary, an explicit <tt/cowslip/ item
+  with badness less than 10, or decreasing the badness of
+  <tt/slip/ can serve as examples.
+
+  In the unchanged case, the word <tt/gas/ will be analysed
+  as <tt/ga-s/ with total badness 355, as the only alternative
+  analysis <tt/gas/ has total badness 450: that is, one unanalysed
+  part consisting of three unanalysed units (letters).
+  One solution might be to increase the badness of the
+  miniature morpheme <tt/s/ to a value somewhere between 101 and 249;
+  with this adjustment it will still be cheaper than an isolated
+  unanalysed letter <tt/s/ in an otherwise known context,
+  but it will not be recognized at the border of an unanalysed context.
+
 <sect2> Type <tt>prosody</tt>
 <p>
  
@@ -384,6 +467,11 @@ prep   !""        syll
 
 <sect2> Type <tt>segments</tt>
 <p>
+
+  You don't want to read about this rule type, unless you are
+  preparing a new voice for a synthesizer with the traditional
+  segment-level interface based on a newly structured
+  speech segment inventory.
 
   Setup the segment layer below the phone layer.
   The parameter names a file, which contains
@@ -404,57 +492,55 @@ prep   !""        syll
   a given triplet of phones, they will be placed from left to right
   in this order: <tt/lt?, ?t?, ?tr, ltr/.
 
-A sentence may contain these segment with the Czech diphone inventory
-by Tomas Dubeda:
+  A sentence may contain these segment with the Czech diphone inventory
+  by Tomas Dubeda:
 
 <tscreen><verb>
     p       l       o       u       t       e       f
   0p?   pl? ?lo   ?o? ou?  ?u?    ut? ?te  ?e?    ef? ?f0
 </verb></tscreen>
   
-or, with the traditional Czech segment inventory:
+  or, with the traditional Czech segment inventory:
 
 <tscreen><verb>
     p       l       o       u       t       e       f
  0p? ?pl  pl? ?lo   ?o? ou?  ?u?    ut? ?te  ?e?    ef? ?f0
 </verb></tscreen>
  
-(In this second example, for instance the diphones <tt/?pl/
-and <tt/?pt/ would actually share the segment number and
-would correspond to the <tt/p-any consonant/ diphone.)   
+  (In this second example, for instance the diphones <tt/?pl/
+  and <tt/?pt/ would actually share the segment number and
+  would correspond to the <tt/p-any consonant/ diphone.)   
   
-There are more possibilities for representing a segment
-inventory; it is necessary to decide for the major diphone
-types, whether they should live in their initial or
-final sound.  That is unfortunate, but it is the way it is.
-Punctuation never plays a role of segments in Epos, and
-the same is true here.
+  There are more possibilities for representing a segment
+  inventory; it is necessary to decide for the major diphone
+  types, whether they should live in their initial or
+  final sound.  That is unfortunate, but it is the way it is.
 
-It is possible to repeat a segment a few times.  This effect
-can be controlled by adding 10000 times the number of extra
-repetitions to the segment number.  Therefore, 
+  It is possible to repeat a segment a few times.  This effect
+  can be controlled by adding 10000 times the number of extra
+  repetitions to the segment number.  Therefore, 
 <tscreen><verb>
 ?e?	20241
 </verb></tscreen>
-generates three identical segments number 241 for the stationary
-part of the specified vowel.
+  generates three identical segments number 241 for the stationary
+  part of the specified vowel.
 
 <sect2> Type <tt>with</tt>
 <p>
 
-This is actually a conditional rule, though it also uses
-a dictionary.  It applies an arbitrary rule upon the units
-(words) listed in the dictionary.  <ref id="with-rule"
-name="More details below">.
+  This is actually a conditional rule, though it also uses
+  a dictionary.  It applies an arbitrary rule upon the units
+  (words) listed in the dictionary.  <ref id="with-rule"
+  name="More details below">.
 
-<sect1> Contentual rules
+<sect1> Contentual Rules
 <p>
 
-The contentual rules manipulate unit contents.  That is, they're suitable
-for implementation of more regular letter-to-sound rules, character replacement
-and other transformations.  They are a magnitude faster than e.g. the more
-general (and more heavy weight) <tt/subst/ rule, so they should be used
-whenever possible.
+  The contentual rules manipulate unit contents.  That is, they're suitable
+  for implementation of more regular letter-to-sound rules, character replacement
+  and other transformations.  They are a magnitude faster than e.g. the more
+  general (and more heavy weight) <tt/subst/ rule, so they should be used
+  whenever possible.
 
 <sect2> Type <tt>regress</tt>
 <p>
@@ -497,7 +583,7 @@ whenever possible.
   example for the <tt>regress</tt> rule, the result would be <tt>pbb</tt>
   if <tt>progress</tt> was employed.
 
-<sect1>Structural rules
+<sect1>Structural Rules
 <p>
 
 The structural rules can be used to restructuralize the text.  They usually interact
@@ -583,7 +669,7 @@ Example:
   range of languages.
 
 
-<sect1> Prosody modeling rules <label id="prosody">
+<sect1> Prosody Modeling Rules <label id="prosody">
 <p>
 
 The utterance prosody is modeled in Epos by assigning
@@ -744,7 +830,7 @@ units as necessary to stretch the contour over the scope unit.
   Prosodic adjustments existing at lower levels than is the one being smoothened
   are ignored by the <tt/smooth/ rule.
 
-<sect1> Composite rules <label id="composites">
+<sect1> Composite Rules <label id="composites">
 <p>
 
 Multiple rules are occasionally necessary where there are syntactical
@@ -754,7 +840,7 @@ nondeterministically out of a set of rules.  To satisfy these needs, Epos
 rules include three types of composite rules with different semantics.
 A composite rule is syntactically treated a single rule.
 
-<sect2> Blocks of rules
+<sect2> Blocks of Rules
 <p>
 
 A block is a sequence of rules enclosed within braces ("<tt>{</tt>" and "<tt>}</tt>").
@@ -786,7 +872,7 @@ Any macros defined in the block are local to the block.  The semantic
 details are C-like and are by no means important.
 
 
-<sect2> Choices of rules
+<sect2> Choices of Rules
 <p>
 
 A choice is a sequence of rules enclosed within brackets ("<tt>[</tt>" and "<tt>]</tt>").
@@ -807,7 +893,7 @@ Empty choices (with no rules within) are not tolerated, contrary
 to empty blocks.
 
 
-<sect2> Length-based selection of rules <label id="counters">
+<sect2> Length-based Selection of Rules <label id="counters">
 <p>
 
 A (length-based) switch is a sequence of rules enclosed within angle
@@ -826,7 +912,7 @@ An example is supplied inside the example for the <ref id="subst-rule"
 name="subst rule">.
 
 
-<sect2> Repeated rules and choice probabilities
+<sect2> Repeated Rules and Choice Probabilities
 <p>
 
 Write "<tt>3x</tt>" before a rule to repeat it three times (in a block)
@@ -866,7 +952,7 @@ per every repetition.
 
 
 
-<sect1> Conditional rules
+<sect1> Conditional Rules
 <p>
 
 The conditional rules execute the following rule if and only if
@@ -937,7 +1023,7 @@ near	*!$vowel
 }
 </verb></tscreen>
 
-  An example of this kind can be used to spell out all
+  A fragment of this kind can be used to spell out all
   words which contain no vowels (and are thus supposedly
   unpronounceable).  The referenced dictionary <tt/spellout.dic/
   should contain the spelled out equivalents for each upper case
@@ -959,23 +1045,6 @@ near	$vowel
 near	!$vowel
 </verb></tscreen>
   operates on words which contain at least one non-vowel.
-
-<sect2> Type <tt>near</tt>
-<p>
-
-  Apply a rule or a block of rules within units which contain
-  at least one of the specified units.  The parameter is a list
-  of values at the target level, which are looked up in a unit
-  of the scope level; the <ref id="except" name="except">
-  operator may be used.  If an occurence is found, the following
-  rule gets applied to the scope level unit.
-
-  If the parameter begins with an asterisk, the asterisk is treated
-  as an except operator and the test is negated.  In other words,
-  the following rule gets applied, if every target level unit contained
-  meets the set description with the leading asterisk ignored.
-  You can combine asterisk and an extra except operator to get tests of
-  the "contains no characters of this class" type.
 
 <sect2> Type <tt>with</tt> <label id="with-rule">
 <p>
@@ -1038,7 +1107,7 @@ if   !colloquial
   the <tt>if</tt> rule itself.
 
 
-<sect1> Special rules
+<sect1> Special Rules
 
 <sect2> Type <tt>regex</tt>
 <p>
@@ -1085,7 +1154,7 @@ if   !colloquial
 
 
 
-<sect1> The "except" (<tt>!</tt>) operator <label id="except">
+<sect1> The "Except" (<tt>!</tt>) Operator <label id="except">
 <p>
 
 Whenever an unordered list of tokens should be specified within the parameter
@@ -1106,7 +1175,7 @@ a similar usage associated with rule types <tt/if/, <tt/with/,
 <tt/prep/ and <tt/postp/, where the exclamation mark can be
 used to negate the condition; see the respective rule types.
 
-<sect1> Escaping special characters
+<sect1> Escaping Special Characters
 <p>
 
 You can use the backslash to escape any special character including the

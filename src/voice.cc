@@ -112,8 +112,8 @@ lang::lang(const char *filename, const char *dirname) : cowabilium()
 	n_voices = 0;
 	voices = NULL;
 	default_voice = 0;
+	char_level = 0;
 	load_config(filename, dirname, "language", OS_LANG, this, NULL);
-//	if (!this_lang) this_lang = this;
 	if (soft_opt_list) add_soft_opts(soft_opt_list);
 	if (voice_list) add_voices(voice_list);
 }
@@ -123,6 +123,7 @@ lang::~lang()
 	for (int i=0; i<n_voices; i++) delete voices[i];
 	if (voices) free(voices);
 	if (ruleset) delete ruleset;
+	if (char_level) free(char_level);
 	if (soft_options) {
 		while (soft_options->items) {
 			char *tmp = soft_options->get_random();
@@ -137,6 +138,7 @@ lang::~lang()
 	D_PRINT(3, "Disposed language %s\n", name);
 	cow_unstring(this, langoptlist);
 	if (soft_defaults) free(soft_defaults);
+	free(char_level);
 }
 
 /*
@@ -255,12 +257,13 @@ void
 lang::compile_rules()
 {
 	int tmp = cfg->default_lang;
-//	lang *tmp = this_lang;
-//	this_lang = this;
-	if (!lang_switch(name)) shriek(862, "cannot lang_switch to myself");
+	if (!lang_switch(name))
+		shriek(862, "cannot lang_switch to myself");
+
 	D_PRINT(3, "Compiling %s language rules, hash dir %s\n", name, hash_dir);
 	ruleset = new rules(rules_file, rules_dir);
-//	this_lang = tmp;
+	parser::init_tables(this);
+
 	cfg->default_lang = tmp;
 }
 

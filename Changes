@@ -1256,9 +1256,26 @@ for an exciting story, just skip it.
 	- fixed yylex() in neural_parse.yy not to use yytoknum
 	- fixed the multiply defined CLEANFILES bug
 
-2.5.13 from 2.5.12
+2.5.13 from 2.5.12	1.7.03
 	- fixed scratch overrun in say
 	- fixed say command line behavior wrt mixed text, dashes and options 
 	- fixed marker::operator < to take the explicit parameter by reference
 	- rewrote marker::merge()
 	- rewrote unit::~unit() to conserve space; don't delete next anymore
+
+2.5.14 from 2.5.13	20.7.03
+	- removed some misleading comments from some charset mappings
+	- added morpheme between syll and word in unit_levels
+	- rewrote parser initialization - simpler, flexer, faster
+	- perm_input@*, perm_working@* options
+	- random data test doesn't generate premature hard zeroes
+	- resets to normal color after an \e'd cfg opt value is printed
+	- r_analyze rule type - a simple morphematic analyzer
+	- hash_table::longest ignores items with replacees beginning in !META_
+	- removed the older time domain synthesizers
+	- capitalized documentation section titles and similar fixes
+	- updated the doc for some options
+	- updated option documentation tests
+	- use_nnet_phone changed to a soft option and renamed to nnet_phone
+	- added arch/unix/test.version to assist make distcheck
+

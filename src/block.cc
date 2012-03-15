@@ -491,6 +491,7 @@ parse_rule(text *file, hash *vars, int *count)
 	case OP_REGRESS: result = new r_regress(word[param]); break;
 	case OP_PROGRESS:result = new r_progress(word[param]); break;
 	case OP_SYLL:    result = new r_syll(word[param]); break;
+	case OP_ANALYZE: result = new r_analyze(word[param]); break;
 	case OP_DEBUG:   result = new r_debug(word[param]); break;
 	case OP_IF:	 result = new r_if(word[param], file, vars); break;
 	case OP_INSIDE:	 result = new r_inside(word[param], file, vars); break;

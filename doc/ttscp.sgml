@@ -112,7 +112,7 @@ a <tt/CR LF/ character sequence.  It is allowed for both parties to
 accept a <tt/LF/ character without a preceding <tt/CR/ character as a valid
 line separator, but it is never legal to rely on this practice.
 
-<sect1>Session header keywords
+<sect1>Session Header Keywords
 <p>
 
 The set of session header keywords and their sequence may vary between
@@ -157,7 +157,7 @@ in the session header).
 </descrip>
 
 
-<sect1>Data formats<label id="formats">
+<sect1>Data Formats<label id="formats">
 <p>
 
 The data is passed between modules in one of the following formats:
@@ -170,7 +170,7 @@ The data is passed between modules in one of the following formats:
 	<item> waveform file
 </itemize>
 
-<sect2> Plain ASCII text
+<sect2> Plain ASCII Text
 <p>
 Traditional.
 
@@ -178,7 +178,7 @@ Traditional.
 <p>
 As described in ???. Currently unimplemented.
 
-<sect2> Text structure representation
+<sect2> Text Structure Representation
 <p>
 Internal text representation, suitable for arbitrary processing, but
 unsuitable for input or output. Before output, it must be converted
@@ -189,7 +189,7 @@ Conversion to plain ASCII text dismisses prosody.
 
 Conversion to plain ASCII text or STML dismisses segment layer if any.
 
-<sect2> Sequence of segments
+<sect2> Sequence of Segments
 <p>
 
 Every segment is a quadruple of segment number, assigned frequency (pitch),
@@ -493,9 +493,9 @@ If no <tt/user/ command is issued, "user anonymous" is assumed.
 If the user doesn't exist, anonymous access is granted.
 
 
-<sect1> TTSCP modules
+<sect1> TTSCP Modules
 
-<sect2> Input and output modules
+<sect2> Input and Output Modules
 <p>
 
 The input and output modules follow the same syntax conventions.
@@ -528,7 +528,7 @@ implementation and architecture dependent.
 
 
 
-<sect2> Processing modules
+<sect2> Processing Modules
 <p>
 
 At the moment there are only few modules implemented that do a real 
@@ -615,7 +615,7 @@ The input segment stream is synthesised in a voice dependent way.
 
 
 
-<sect2> Explicit data type specifiers
+<sect2> Explicit Data Type Specifiers
 <p>
 
 Sometimes an ambiguity concerning the type of data passed at a certain point
@@ -664,7 +664,7 @@ name="the data formats subsection">.
 
 
 
-<sect1>Response codes
+<sect1>Response Codes
 <p>
 
 Any server <em/reply/ contains a numeric code, a single space, and some
@@ -685,7 +685,7 @@ may ignore this digit altogether. The third digit is merely used
 for distinguishing between messages of the same class and subclass
 and most clients are likely to ignore it in most situations.
 
-<sect2>Response classes
+<sect2>Response Classes
 <p>
 Within TTSCP, nine response classes have been defined.
 Out of these, one is used for in-progress communication,
@@ -735,7 +735,7 @@ messages if on.
 At the moment, some error codes contain letters. Later, all of
 them will consist of digits only and will be space-terminated.
 
-<sect2> Response subclasses
+<sect2> Response Subclasses
 <p>
 
 The subclass depends on the response class. The most interesting
@@ -768,7 +768,7 @@ code      | error type      | suggested action@
 </caption>
 </table>
 
-<sect2> Currently defined messages
+<sect2> Currently Defined Messages
 <p>
 
 <table loc="htp">

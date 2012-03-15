@@ -603,7 +603,7 @@ bool set_option(epos_option *o, const char *val, void *base)
 			break;
 		case O_STRING: 
 			if (val[0]) parse_cfg_str(const_cast<char *>(val));
-			D_PRINT(1, "Configuration option \"%s\" set to \"%s\"\n",o->optname,val);
+			D_PRINT(1, "Configuration option \"%s\" set to \"%s\"%s\n", o->optname, val, strchr(val, '\033') && scfg->normal_col ? scfg->normal_col : "");
 			if (*(char **)locus) free(*(char**)locus);
 			*(char**)locus = strdup(val);	// FIXME: should be forever if monolith etc. (maybe)
 			break;
@@ -792,7 +792,7 @@ void parse_cmd_line()
 		switch(strspn(ar, CMD_LINE_OPT)) {
 		case 3:
 			ar+=3;
-			if (strchr(ar, CMD_LINE_VAL) && scfg->warnings) 
+			if (strchr(ar, CMD_LINE_VAL) && scfg->_warnings) 
 				shriek(814, "Thrice dashed options have an implicit value");
 			set_option_or_die(ar, "0");
 			break;
@@ -825,7 +825,7 @@ void parse_cmd_line()
 				case 'D':
 					if (!scfg->use_dbg) scfg->use_dbg=true;
 					dees++;
-//					else if (scfg->warnings)
+//					else if (scfg->_warnings)
 //						scfg->always_dbg--;
 					break;
 				default : shriek(442, "Unknown option -%c, no action taken", *j);
@@ -844,7 +844,7 @@ void parse_cmd_line()
 					if (scfg->debug_level > 4 - dees) scfg->debug_level = 4 - dees;
 					break;
 				default:
-					if (scfg->warnings) shriek(814, "Too many dees");
+					if (scfg->_warnings) shriek(814, "Too many dees");
 					else break;
 			}
 			switch (dees) {
@@ -857,14 +857,14 @@ void parse_cmd_line()
 					if (scfg->debug_level > 4 - dees) scfg->debug_level = 4 - dees;
 					break;
 				default:
-					if (scfg->warnings) shriek(814, "Too many dees");
+					if (scfg->_warnings) shriek(814, "Too many dees");
 					else break;
 			}
 			break;
 		case 0:
 			if (!is_monolith) shriek(814, "Only options allowed at Epos server command line\nUse a client (e.g. \"say\") to specify text");
 			if (scfg->input_text && scfg->input_text!=ar) {
-				if (!scfg->warnings) break;
+				if (!scfg->_warnings) break;
 				if (cfg->paranoid) shriek(814, "Quotes forgotten on the command line?");
 				scratch = (char *) xmalloc(strlen(ar)+strlen(scfg->input_text)+2);
 				sprintf(scratch, "%s %s", scfg->input_text, ar);
@@ -874,7 +874,7 @@ void parse_cmd_line()
 			scfg->input_text = ar;
 			break;
 		default:
-			if (scfg->warnings) shriek(814, "Too many dashes");
+			if (scfg->_warnings) shriek(814, "Too many dashes");
 		}
 	}
 }
@@ -1033,7 +1033,7 @@ void config_init()
 
 	if (!this_lang->voices || !this_voice) shriek(842, "No voices configured");
 
-	scfg->warnings = true;
+	scfg->_warnings = true;
 	parse_cmd_line();
 	scfg->loaded=true;
 	

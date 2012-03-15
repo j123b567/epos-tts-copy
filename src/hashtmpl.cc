@@ -562,7 +562,7 @@ printf("hash::add %s already there, old value \"%s\"\n",key, tree->data);
 		}
 		tree=(hsearchtree<key_t, data_t> *)*push(result>0?&tree->l:&tree->r);
 	}
-	if(key_t_is_string && longest<(result=strlen((char *)key))) longest=result;
+	if(key_t_is_string && longest < (result=strlen((char *)key)) && strncmp((char *)key, "!META_", 6)) longest=result;
 
 	/* "tree=new hsearchtree;" would confuse DMALLOC */
 	tree=(hsearchtree <key_t, data_t> *)tree_alloc();

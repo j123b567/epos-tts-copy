@@ -265,7 +265,7 @@ void lpcint::frobmod(int imodel, segment d, model *m, int &incrl, int &znely)
 
 void floatoven(char *p, int l)
 {
-	if (!scfg->big_endian) return;
+	if (!scfg->_big_endian) return;
 	for (fcmodel *tmp = (fcmodel *)p; (char *)tmp < p + l; tmp++) {
 		// FIXME - a few floats
 	}
@@ -273,13 +273,13 @@ void floatoven(char *p, int l)
 
 void intoven(char *, int)
 {
-	if (!scfg->big_endian) return;
+	if (!scfg->_big_endian) return;
 	shriek(462, "no int inventories on big-endians, please");
 }
 
 void vqoven(char *, int)
 {
-	if (!scfg->big_endian) return;
+	if (!scfg->_big_endian) return;
 	shriek(462, "no vq inventories on big-endians, please");
 }
 
@@ -290,7 +290,7 @@ void bswap(short *p)
 
 void shortoven(char *p, int l)
 {
-	if (!scfg->big_endian) return;
+	if (!scfg->_big_endian) return;
 	for (short *tmp = (short *)p; (char *)tmp < p + l; tmp++) {
 		bswap(tmp);
 	}

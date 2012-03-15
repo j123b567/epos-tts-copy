@@ -99,10 +99,10 @@ bin_PROGRAMS = epos say eposm gauge
 SRC_BASE = parser.cc unit.cc rule.cc \
 text.cc encoding.cc interf.cc function.cc options.cc \
 synth.cc waveform.cc voice.cc client.cc \
-ktdsyn.cc ptdsyn.cc lpcsyn.cc tdpsyn.cc mbrsyn.cc tcpsyn.cc \
+lpcsyn.cc tdpsyn.cc mbrsyn.cc tcpsyn.cc \
 common.h defaults.h unit.h parser.h rule.h text.h encoding.h interf.h \
 function.h options.h hash.h synth.h voice.h exc.h \
-waveform.h ktdsyn.h ptdsyn.h lpcsyn.h tdpsyn.h mbrsyn.h tcpsyn.h \
+waveform.h lpcsyn.h tdpsyn.h mbrsyn.h tcpsyn.h \
 slab.h rx.h client.h agent.h 
 
 
@@ -131,9 +131,8 @@ epos_OBJECTS =  daemon.$(OBJEXT) agent.$(OBJEXT) ttscp.$(OBJEXT) \
 nonblock.$(OBJEXT) hashd.$(OBJEXT) rx.$(OBJEXT) parser.$(OBJEXT) \
 unit.$(OBJEXT) rule.$(OBJEXT) text.$(OBJEXT) encoding.$(OBJEXT) \
 interf.$(OBJEXT) function.$(OBJEXT) options.$(OBJEXT) synth.$(OBJEXT) \
-waveform.$(OBJEXT) voice.$(OBJEXT) client.$(OBJEXT) ktdsyn.$(OBJEXT) \
-ptdsyn.$(OBJEXT) lpcsyn.$(OBJEXT) tdpsyn.$(OBJEXT) mbrsyn.$(OBJEXT) \
-tcpsyn.$(OBJEXT)
+waveform.$(OBJEXT) voice.$(OBJEXT) client.$(OBJEXT) lpcsyn.$(OBJEXT) \
+tdpsyn.$(OBJEXT) mbrsyn.$(OBJEXT) tcpsyn.$(OBJEXT)
 epos_DEPENDENCIES =  nnet/libeposnnet.la
 epos_LDFLAGS = 
 say_OBJECTS =  say.$(OBJEXT)
@@ -144,8 +143,8 @@ eposm_OBJECTS =  monolith.$(OBJEXT) hash.$(OBJEXT) rx.$(OBJEXT) \
 parser.$(OBJEXT) unit.$(OBJEXT) rule.$(OBJEXT) text.$(OBJEXT) \
 encoding.$(OBJEXT) interf.$(OBJEXT) function.$(OBJEXT) \
 options.$(OBJEXT) synth.$(OBJEXT) waveform.$(OBJEXT) voice.$(OBJEXT) \
-client.$(OBJEXT) ktdsyn.$(OBJEXT) ptdsyn.$(OBJEXT) lpcsyn.$(OBJEXT) \
-tdpsyn.$(OBJEXT) mbrsyn.$(OBJEXT) tcpsyn.$(OBJEXT)
+client.$(OBJEXT) lpcsyn.$(OBJEXT) tdpsyn.$(OBJEXT) mbrsyn.$(OBJEXT) \
+tcpsyn.$(OBJEXT)
 eposm_DEPENDENCIES =  nnet/libeposnnet.la
 eposm_LDFLAGS = 
 gauge_OBJECTS =  gauge.$(OBJEXT)
@@ -451,8 +450,8 @@ rx.o: rx.c ../config.h rx.h
 say.o: say.cc ../config.h exc.h client.cc client.h
 synth.o: synth.cc common.h ../config.h defaults.h exc.h hash.h text.h \
 	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h ktdsyn.h ptdsyn.h \
-	tdpsyn.h lpcsyn.h mbrsyn.h tcpsyn.h
+	unit.h rule.h waveform.h synth.h encoding.h tdpsyn.h lpcsyn.h \
+	mbrsyn.h tcpsyn.h
 tcpsyn.o: tcpsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
 	voice.h options.lst function.h interf.h options.h parser.h \
 	unit.h rule.h waveform.h synth.h encoding.h tcpsyn.h client.h

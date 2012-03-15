@@ -9,10 +9,10 @@ bin_PROGRAMS = epos say eposm gauge
 SRC_BASE = parser.cc unit.cc rule.cc \
 text.cc encoding.cc interf.cc function.cc options.cc \
 synth.cc waveform.cc voice.cc client.cc \
-ktdsyn.cc ptdsyn.cc lpcsyn.cc tdpsyn.cc mbrsyn.cc tcpsyn.cc \
+lpcsyn.cc tdpsyn.cc mbrsyn.cc tcpsyn.cc \
 common.h defaults.h unit.h parser.h rule.h text.h encoding.h interf.h \
 function.h options.h hash.h synth.h voice.h exc.h \
-waveform.h ktdsyn.h ptdsyn.h lpcsyn.h tdpsyn.h mbrsyn.h tcpsyn.h \
+waveform.h lpcsyn.h tdpsyn.h mbrsyn.h tcpsyn.h \
 slab.h rx.h client.h agent.h 
 
 epos_SOURCES = daemon.cc agent.cc ttscp.cc nonblock.cc hashd.cc rx.c $(SRC_BASE)

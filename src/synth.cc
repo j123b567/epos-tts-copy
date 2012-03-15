@@ -15,8 +15,8 @@
  */
 
 #include "common.h"
-#include "ktdsyn.h"
-#include "ptdsyn.h"
+//#include "ktdsyn.h"
+//#include "ptdsyn.h"
 #include "tdpsyn.h"
 #include "lpcsyn.h"
 #include "mbrsyn.h"
@@ -40,9 +40,9 @@ synth *setup_synth(voice *v)
 		case S_LPC_FLOAT: return new lpcfloat(v);
 		case S_LPC_INT: return new lpcint(v);
 		case S_LPC_VQ:	return new lpcvq(v);
-		case S_KTD:	return new ktdsyn(v);
+//		case S_KTD:	return new ktdsyn(v);
 		case S_TDP:	return new tdpsyn(v);
-		case S_PTD:	return new ptdsyn(v);
+//		case S_PTD:	return new ptdsyn(v);
 		case S_MBROLA:  return new mbrsyn(v);
 		default:	shriek(861, "Impossible synth type");
 	}

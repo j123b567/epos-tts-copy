@@ -24,9 +24,9 @@
 
 #define SEG_BUFF_SIZE  1000 //unimportant
 
-#define OPCODEstr "nnet:subst:mysubst:regex:postp:prep:segments:absolutize:prosody:contour:progress:regress:insert:syll:smooth:raise:debug:if:inside:near:with:{:}:[:]:<:>:nothing:error:"
+#define OPCODEstr "nnet:subst:mysubst:regex:postp:prep:segments:absolutize:prosody:contour:progress:regress:insert:syll:analyze:smooth:raise:debug:if:inside:near:with:{:}:[:]:<:>:nothing:error:"
 enum OPCODE {OP_NNET, OP_SUBST, OP_MYSUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_SEG, OP_ABSOL, OP_PROSODY, OP_CONTOUR, OP_PROGRESS, OP_REGRESS, 
-	OP_INSERT, OP_SYLL, OP_SMOOTH, OP_RAISE, OP_DEBUG, OP_IF, OP_INSIDE, OP_NEAR, OP_WITH,
+	OP_INSERT, OP_SYLL, OP_ANALYZE, OP_SMOOTH, OP_RAISE, OP_DEBUG, OP_IF, OP_INSIDE, OP_NEAR, OP_WITH,
 	OP_BEGIN, OP_END, OP_CHOICE, OP_CHOICEND, OP_SWITCH, OP_SWEND, OP_NOTHING, OP_ERROR};
 		/* OP_BEGIN, OP_END and other OP's without parameters should come last
 		   OP_ERROR would abort the compilation (never used)			*/
@@ -805,14 +805,6 @@ r_syll::~r_syll()
 	free(son);
 }
 
-//void
-//r_syll::set_level(UNIT scp, UNIT trg)
-//{
-//	if (scp == U__DEFAULT) scp = U__SYLL;
-//	rule::set_level(scp, trg);
-//}	
-
-
 /********************************************************
  r_syll::apply
  ********************************************************/
@@ -822,6 +814,57 @@ r_syll::apply(unit *root)
 {
 	root->syllabify(target, son);
 }
+
+/************************************************
+ r_analyze   The following rule class splits words
+ 	     into morphemes using a dictionary
+ **	     of available morphemes
+ ************************************************/
+
+
+class r_analyze: public hashing_rule
+{
+	virtual OPCODE code() { return OP_ANALYZE; };
+	int unanal_unit_penalty, unanal_part_penalty;
+   public:
+		r_analyze(char *param);
+	virtual ~r_analyze();
+	virtual void apply(unit *root);
+	virtual void verify();
+};
+
+r_analyze::r_analyze(char *param) : hashing_rule(param)
+{
+}
+
+r_analyze::~r_analyze()
+{
+}
+
+void
+r_analyze::verify()
+{
+	hashing_rule::verify();
+
+	char *uup = dict->translate("!META_unanal_unit_penalty");
+	char *upp = dict->translate("!META_unanal_part_penalty");
+	if (!uup || !upp)
+		shriek(811, "%s Must specify penalties in the dictionary", debug_tag());
+	unanal_unit_penalty = atoi(uup);
+	unanal_part_penalty = atoi(upp);
+}
+
+/********************************************************
+ r_analyze::apply
+ ********************************************************/
+
+void
+r_analyze::apply(unit *root)
+{
+	root->analyze(target, dict, unanal_unit_penalty, unanal_part_penalty);
+}
+
+
 
 /************************************************
  r_raise  The following rule class moves

@@ -53,6 +53,7 @@ char *dhandle[10];
 const char *testname = "";
 
 
+#define LITTLE_SPACE	   640
 #define MUCH_SPACE	 16000
 #define EVEN_MORE_SPACE 128000
 
@@ -267,10 +268,10 @@ void random_data_test()
 {
 	char *buffer = much_data();
 
-	for (int i = 0; i < MUCH_SPACE; i++)
-		buffer[i] = rand() % 256;
+	for (int i = 0; i < LITTLE_SPACE; i++)
+		buffer[i] = rand() % 255 + 1;
 	buffer[MUCH_SPACE] = 0;
-	spk_appl(1,1,buffer, MUCH_SPACE);
+	spk_appl(1,1,buffer, LITTLE_SPACE);
 
 	if (get_result(1) > 2) shriek("Could not set up the stream");
 	if (get_result(1) > 2) shriek("Could not apply stream to random data");
@@ -289,14 +290,27 @@ void hard_zero_data_test()
 	if (get_result(1) > 2) shriek("Could not apply stream to hard zero data");
 }
 
-void soft_zero_data_test()
+void legal_data_test()
 {
 	char *buffer = much_data();
 
 	for (int i = 0; i < MUCH_SPACE; i++)
-		buffer[i] = '0';
+		buffer[i] = 'a';
 	buffer[MUCH_SPACE] = 0;
 	spk_appl(1,1,buffer, MUCH_SPACE);
+
+	if (get_result(1) > 2) shriek("Could not set up the stream");
+	if (get_result(1) > 2) shriek("Could not apply stream to hard zero data");
+}
+
+void soft_zero_data_test()
+{
+	char *buffer = much_data();
+
+	for (int i = 0; i < LITTLE_SPACE; i++)
+		buffer[i] = '0';
+	buffer[LITTLE_SPACE] = 0;
+	spk_appl(1,1,buffer, LITTLE_SPACE);
 
 	if (get_result(1) > 2) shriek("Could not set up the stream");
 	if (get_result(1) > 2) shriek("Could not apply stream to soft zero data");
@@ -365,7 +379,8 @@ int main(int argc, char **argv)
 	invoke(long_strm_test, "command length overflow test");
 //	invoke(long_data_test, "data length overflow test");
 	invoke(hard_zero_data_test, "hard zero data test");
-//	invoke(soft_zero_data_test, "soft zero data test");
+	invoke(soft_zero_data_test, "soft zero data test");
+//	invoke(legal_data_test, "legal data test");
 	invoke(random_data_test, "random data test");
 	testname = "closing everything";
 
