@@ -16,8 +16,8 @@ $sonant    = jlוrא$nasal
 $SONANT    = JLֵRְMNׂG	; do not use after nk-> Nk
 $nonsonant = $voiced$voiceless
 $consonant = $nonsonant$sonant
-$diphtong  = גלשפ
-$vowel     = aeiouyביםףת‎ה$diphtong
+$diphthong  = גלשפ
+$vowel     = aeiouyביםףת‎ה$diphthong
 $VOWEL     = AEIOUYֱֹֽ׃ÚÝִ
 $sonority  = 0<'$nonsonant<$nasal<l<rאוj<$vowel
 
@@ -186,12 +186,12 @@ if  reduce_groups		; (c) Martin Petriska
 
 progress  n>N(!_kg)
 
-if  diphtongs
+if  diphthongs
 {
 	regress  aeu>גלש(i_!)
 	regress  i>0(!_גלש)
 }
-if !diphtongs
+if !diphthongs
 {
 	regress  0>u(!_פ)
 	regress  פ>o(!_!)
