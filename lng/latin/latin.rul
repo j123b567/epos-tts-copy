@@ -78,7 +78,7 @@ if generate_segs
 
 if  absolute_time
 {
-	absolutize	t
+	absolutize	../czech/machac_seg.tim
 	progress	\#>_(!_!)	# pause renaming hack
 }
 

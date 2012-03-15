@@ -40,7 +40,7 @@ ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
-AM_CXXFLAGS = -w -DEPOS -ggdb -DBASE_DIR=$(pkgdatadir) $(OTHER_CXXFLAGS)
+AM_CXXFLAGS = -w -DEPOS -ggdb -DBASE_DIR=$(pkgdatadir) $(OTHER_CXXFLAGS) $(CONFIGURED_CXXFLAGS)
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -48,6 +48,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CONFIGURED_CXXFLAGS = @CONFIGURED_CXXFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
@@ -221,6 +222,8 @@ lng/czech/nonsyllprep.dic			\
 lng/czech/interj.dic				\
 lng/czech/neurallog.txt				\
 lng/czech/stress.rul				\
+lng/czech/machac_seg.tim			\
+lng/czech/machac_pros.tim			\
 lng/french/french.ini				\
 lng/french/french.rul				\
 lng/french/text.txt				\
@@ -562,7 +565,7 @@ version: $(top_srcdir)/configure.ac
 # In case of problems with the installation please note
 # that all you need is a recursive copy
 # of the content of this directory to the "right" place,
-# such as cp -r * /usr/share/epos
+# such as cp -r * /usr/local/share/epos
 
 install-data-local: installdirs
 	@cd $(srcdir) && for i in $(DATA_DIRS); do \

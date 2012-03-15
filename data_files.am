@@ -63,6 +63,8 @@ lng/czech/nonsyllprep.dic			\
 lng/czech/interj.dic				\
 lng/czech/neurallog.txt				\
 lng/czech/stress.rul				\
+lng/czech/machac_seg.tim			\
+lng/czech/machac_pros.tim			\
 lng/french/french.ini				\
 lng/french/french.rul				\
 lng/french/text.txt				\
