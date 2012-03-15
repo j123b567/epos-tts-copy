@@ -87,7 +87,7 @@ struct pend_ll
 
 class agent
 {
-	friend stream;
+	friend class stream;
 	friend void server();
 
 	virtual void run() = 0;	/* run until out of input			*/

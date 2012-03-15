@@ -143,6 +143,7 @@ class wavefm
 
 	void label(int position, char *label, const char *note);
 
+	void chunk_become(char *chunk_hdr, int chunk_size);
 	void become(void *buffer, int size);
 
 	inline int written_bytes() { return hdr.total_length + RIFF_HEADER_SIZE; }

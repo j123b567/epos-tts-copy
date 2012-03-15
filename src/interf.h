@@ -66,10 +66,12 @@ char *split_string(char *string);	// 0-terminate the first word, return the rest
 
 FILE *fopen(const char *filename, const char *flags, const char *reason);
 
+#define xmallrpt(x,y) 0 /* fprintf(STDDBG, x "alloc(%d)\n", y) */
+
 extern void *xmall_ptr_holder;
 #define OOM_HANDLER	(shriek(422, "Out of memory"), (void *)NULL)
-#define xmalloc(x)	(((xmall_ptr_holder = malloc((x)))) ? xmall_ptr_holder : OOM_HANDLER)
-#define xrealloc(x,y)	((((xmall_ptr_holder = realloc((x),(y))))) && (x) ? xmall_ptr_holder : OOM_HANDLER)
+#define xmalloc(x)	(((xmall_ptr_holder = malloc((x)))) ? (xmall_ptr_holder) : OOM_HANDLER)
+#define xrealloc(x,y)	((((xmall_ptr_holder = realloc((x),(y))))) && (x) ? (xmall_ptr_holder) : OOM_HANDLER)
 #define xcalloc(x,y)	(((xmall_ptr_holder = calloc((x),(y)))) ? xmall_ptr_holder : OOM_HANDLER)
 
 void call_abort();

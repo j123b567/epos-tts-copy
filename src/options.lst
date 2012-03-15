@@ -418,8 +418,7 @@
 
 #define STATICARRAY(member, name, type, default, number) {"S:" name + 2, type, OS_STATIC, \
 		A_PUBLIC, A_PUBLIC, true, true, (int)&((static_configuration *)NULL)->member},
-//#define LNG_OPTIONARRAY(member, name, type, default, number)  \ 
-//		OPTIONARRAY(member, name, type, default, number)
+//#define LNG_OPTIONARRAY(member, name, type, default, number)  OPTIONARRAY(member, name, type, default, number)
 
 
 #undef CONFIG_STATIC_DESCRIBE
@@ -547,6 +546,7 @@ STATIC (ini_dir, "ini_dir",	   STR, strdup("cfg"))  // to fixed.ini and other gl
 STATIC (unimap_dir, "unimap_dir",  STR, NULL) // to unicode maps
 STATIC (matlab_dir, "matlab_dir",  STR, NULL)	//      where to store nnet output
 STATIC (wav_dir, "wav_dir",        STR, NULL)	//      where to store .wav files
+OPTION (mbrola_binary, "mbrola_binary", STR, NULL) //	where the MBROLA synthesizer binary is installed
 LNG_OPTION (input_file, input_file, "input_file",  STR, NULL)   // relative filename of the input text
 STATIC (input_text, "",            STR, NULL)			// the input text itself
 LNG_OPTION (rules_file, rules_file, "rules_file",  STR, NULL)   // relative filename of the rules text

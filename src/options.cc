@@ -1024,7 +1024,7 @@ void config_init()
 	parse_cmd_line();
 	load_languages(scfg->languages);
 
-	if (!this_voice) shriek(842, "No voices configured");
+	if (!this_lang->voices || !this_voice) shriek(842, "No voices configured");
 
 	scfg->warnings = true;
 	parse_cmd_line();

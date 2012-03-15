@@ -1124,3 +1124,20 @@ for an exciting story, just skip it.
 	- fixed an incomplete conditional rule parsing bug
 	- max_errors, max_nest options
 
+2.5.2 from 2.5.1	8.10.01
+	- minor speedup of esctab related code, non-compressed functions added
+	- lng/czech/numerals.rul fixed (1[234] mili.*)
+	- minor documentation fix
+	- minor g++ 3.0 fix  (friend class syntax)
+	- fixed a segfault bug if no voices are configured
+
+2.5.3 from 2.5.2	18.10.02
+	- (Sk) voicing assimilation fix
+
+2.5.4 from 2.5.3	 7.4.03
+	- fixed a segfault bug if no soft options or voices for a language
+	- TTSCP modules: syn, dump
+	- say options: -s, -t
+	- mbrsyn and projection code heavily debugged
+	- new rule type: absolutize (temporary implementation)
+	- (Cz) generate_segs, traditional_dph options

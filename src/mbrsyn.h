@@ -27,7 +27,7 @@ class mbrsyn : public synth
 	mbrsyn(voice *v);
 	~mbrsyn();
 	virtual void synssif(voice *v, char *, wavefm *w);
-	
+	void restart_mbrola(voice *);
 };
 
 #endif		// EPOS_MBR_H

@@ -473,7 +473,8 @@ parse_rule(text *file, hash *vars, int *count)
 
 	switch(code) {
 
-	case OP_SEG:    result = new r_seg(word[param]); break;
+	case OP_SEG:     result = new r_seg(word[param]); break;
+	case OP_ABSOL:	 result = new r_absol(word[param]); break;
 	case OP_SUBST:   result = new r_subst(word[param]); break;
 #ifdef WANT_REGEX
 	case OP_REGEX:   result = new r_regex(word[param]); break;

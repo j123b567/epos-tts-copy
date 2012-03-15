@@ -788,14 +788,14 @@ void
 wavefm::become(void *b, int size)
 {
 	hdr = *(wave_header *)b;
+	hdr.total_length = size - HEADER_HEADER_SIZE;
 	size -= sizeof(wave_header);
-	if (size < 0) shriek(471, "tcpsyn got garbage");
+	if (size < 0) shriek(471, "tcpsyn or mbrsyn got garbage");
 	buffer = (char *)xmalloc(size);
 	memcpy(buffer, (char *)b + sizeof(wave_header), size);
 	buff_size = size;
 	hdr.buffer_idx = size;
 //	written_bytes = 0;
-	hdr.total_length = 0 - HEADER_HEADER_SIZE;
 	channel = hdr.sf2 ? CT_BOTH : CT_MONO;
 	samp_rate = hdr.sf1;
 }
@@ -806,27 +806,45 @@ wavefm::become(void *b, int size)
 
 #define CHUNK_HEADER_SIZE 8
 
-void pchu(char *p, int size)
+void
+wavefm::chunk_become(char *p, int size)
 {
 	int l = *((int *)p+1);
-//	printf("pchu %p+%d, %.4s len %d\n", p, size, p, *((int *)p+1));
+	DBG(2,9,fprintf(STDDBG, "Considering chunk %p+%d, %.4s len %d\n", p, size, p, *((int *)p+1));)
 	if (FOURCC_ID(p) == FOURCC_ID("RIFF")) {
 //		printf("RIFF here\n");
 		if (FOURCC_ID(p + RIFF_HEADER_SIZE) != FOURCC_ID("WAVE")) shriek(471, "Other RIFF than WAVE received");
+		l -= 4;
 		for (char *q = p+12; l>0; ) {
 			int chunksize = ((int *)q)[1];
-			pchu(q, chunksize);
+			chunk_become(q, chunksize);
 			l -= chunksize + CHUNK_HEADER_SIZE;
 			q += chunksize + CHUNK_HEADER_SIZE;
 		}
+		return;
 	}
+	if (FOURCC_ID(p) == FOURCC_ID("fmt ")) {
+		hdr = *(wave_header *)(p - 12);
+		channel = hdr.sf2 ? CT_BOTH : CT_MONO;
+		samp_rate = hdr.sf1;
+		return;
+	}
+	if (FOURCC_ID(p) == FOURCC_ID("data")) {
+		buffer = (SAMPLE *)xmalloc(size);
+		memcpy(buffer, p + 8, size);
+		buff_size = size;
+		hdr.buffer_idx = size;
+		translated = true;
+		return;
+	}
+	shriek(471, fmt("Unknown chunk %.4s", p));
 }
 
 void wavefm::become(void *b, int size)
 {
 	((wave_header *)b)->total_length = size - RIFF_HEADER_SIZE;
 	((wave_header *)b)->buffer_idx = size - sizeof(wave_header);
-	pchu((char *)b, size);
+	chunk_become((char *)b, size);
 }
 
 #endif

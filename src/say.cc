@@ -49,6 +49,7 @@ bool chunking = false;
 bool show_segments = false;
 bool wavfile = false;
 bool wavstdout = false;
+bool traditional = true;  
 
 struct segment {
 	short code; char nothing; char ll;
@@ -112,7 +113,7 @@ int size;
 
 char *get_data()
 {
-	char *b;
+	char *b = NULL;
 	size = 0;
 	while (sgets(scratch, SCRATCH_SPACE, ctrld)) {
 		scratch[SCRATCH_SPACE] = 0;
@@ -144,7 +145,8 @@ void say_data()
 	sputs("strm $", ctrld);
 	sputs(dh, ctrld);
 	if (chunking) sputs(":chunk", ctrld);
-	sputs(":raw:rules:diphs:synth:", ctrld);
+	if (traditional) sputs(":raw:rules:diphs:synth:", ctrld);
+	else sputs(":raw:rules:dump:syn:", ctrld);
 	if (wavfile || wavstdout) sputs("$", ctrld), sputs(dh, ctrld);
 	else sputs("#localsound", ctrld);
 	sputs("\r\n", ctrld);
@@ -171,7 +173,8 @@ void trans_data()
 	if (!data) data = strdup("No.");
 	sputs("strm $", ctrld);
 	sputs(dh, ctrld);
-	if (show_segments) sputs(":raw:rules:diphs:$", ctrld);
+	if (show_segments) sputs(traditional ? ":raw:rules:diphs:$"
+					     : ":raw:rules:dump:$", ctrld);
 	else sputs(":raw:rules:print:$", ctrld);
 	sputs(dh, ctrld);
 	sputs("\r\n", ctrld);
@@ -184,8 +187,10 @@ void trans_data()
 	
 	if (show_segments) {
 		segment *b = (segment *)get_data();
-		for (int i=1; i<b[0].code; i++)
-			printf("%4d - %3d %3d %3d\n", b[i].code, b[i].f, b[i].e, b[i].t);
+		if (traditional)
+			for (int i=1; i<b[0].code; i++)
+				printf("%4d - %3d %3d %3d\n", b[i].code, b[i].f, b[i].e, b[i].t);
+		else printf("%s\n", (char *)b);
 	} else {
 		char *b = get_data();
 		printf("%s\n", b);
@@ -211,6 +216,11 @@ void dump_help()
 	printf(" -l  list available languages and voices\n");
 	printf(" -m  write the waveform in mu law format to ./said.vox\n");
 	printf(" -o  write the waveform to the standard output\n");
+#ifdef HAVE_UNISTD_H
+	printf(" -r  reread Epos configuration\n");
+#endif
+	printf(" -s  use the SAMPA-based (MBROLA compatible) synthesizer interface\n");
+	printf(" -t  use the traditional lower level synthesizer interface\n");
 	printf(" -u  use utterance chunking\n");
 	printf(" -w  write the waveform to ./said.wav\n");
 }
@@ -274,6 +284,13 @@ void send_cmd_line(int argc, char **argv)
 					  output_file = "said.vox"; break;
 				case 'o': wavstdout = true; break;
 				case 'p': send_option("pausing", "true"); break;
+#ifdef HAVE_UNISTD_H
+				case 'r': system("killall -HUP epos");
+					  do sleep(1); while(just_connect_socket(0, 8778) == -1);
+					  exit(0);
+#endif
+				case 's': traditional = false; break;
+				case 't': traditional = true; break;
 				case 'u': chunking = true; break;
 				case 'v': send_option("version", "true"); break;
 				case 'w': send_option("wave_header", "true");

@@ -114,8 +114,8 @@ lang::lang(const char *filename, const char *dirname) : cowabilium()
 	default_voice = 0;
 	load_config(filename, dirname, "language", OS_LANG, this, NULL);
 //	if (!this_lang) this_lang = this;
-	add_soft_opts(soft_opt_list);
-	add_voices(voice_list);
+	if (soft_opt_list) add_soft_opts(soft_opt_list);
+	if (voice_list) add_voices(voice_list);
 }
 
 lang::~lang()

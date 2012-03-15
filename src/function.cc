@@ -11,7 +11,9 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License in doc/COPYING for more details.
- *	
+ *
+ *	This source file implements small sets and unary functions
+ *	(operators) using perfect hashing techniques.
  */
 
 #include "common.h"
@@ -87,7 +89,15 @@ template booltab<wchar>;
 
 
 
-
+/*
+ *	Functions can either be compressed or uncompressed
+ *	at creation time.  Compressed functions do not store
+ *	any identity mappings even if requested to, whereas
+ *	uncompressed do.  Both types behave identically with
+ *	respect to the xlat method.  In addition, uncompressed
+ *	functions also support the ismember() method correctly
+ *	at the expense of a small amount of extra memory.
+ */
 
 template<class T> T
 function<T>::xlat(const T x)
@@ -96,29 +106,35 @@ function<T>::xlat(const T x)
 			t[(unsigned int)x * mult % size].y : x;
 }
 
+template<class T> bool
+function<T>::ismember(const T x)
+{
+	return t[(unsigned int)x * mult % size].x == x;
+}
+
 template<class T>
-function<T>::function(const T *s, const T *r)
+function<T>::function(const T *s, const T *r, bool compress)
 {
 	int k = strlen(r) == 1 ? 0 : 1; 
 	if (k && (strlen(s) != strlen(r))) shriek(861, "Oh!");
 
 	size = strlen(s);
-	int all = size << 1;
-	if (!size) size = 1, all = 1;
-	t = (couple<T> *)xmalloc(all * sizeof(couple<T>));
+	int allocated = size << 1;
+	if (!size) size = 1, allocated = 1;
+	t = (couple<T> *)xmalloc(allocated * sizeof(couple<T>));
 	
 	for (; size < MAX_SIZE; size++) {
-		if (size > all) {
+		if (size > allocated) {
 			free(t);
-			all <<= 1;
-			t = (couple<T> *)xmalloc(all * sizeof(couple<T>));
+			allocated <<= 1;
+			t = (couple<T> *)xmalloc(allocated * sizeof(couple<T>));
 		}
 		mult = 0;
 next:		if (++mult > scfg->hash_search)
 			continue;
 		for (int i = 0; i < size; i++) t[i].x = NOTHING;
 		for (int j = 0; s[j]; j++) {
-			if (s[j] == r[j * k]) continue;
+			if (s[j] == r[j * k] && compress) continue;
 			couple<T> *p = t + (unsigned int)s[j] * mult % size;
 			if (p->x != NOTHING && p->x != s[j]) goto next;
 			p->x = s[j]; 

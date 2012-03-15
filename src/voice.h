@@ -25,11 +25,12 @@ enum SYNTH_TYPE {
 	S_LPC_INT = 5,
 	S_LPC_VQ = 6,
 	S_KTD = 8,
+	S_TDP = 9,
 	S_PTD = 10,
 	S_MBROLA = 12
 };
 
-#define STstr "none:internet:::lpc-float:lpc-int:lpc-vq::ktd::ptd::mbrola:"
+#define STstr "none:internet:::lpc-float:lpc-int:lpc-vq::ktd:tdp:ptd::mbrola:"
 #define ST_MAX (S_MBROLA+1)
 
 enum CHANNEL_TYPE {CT_MONO, CT_LEFT, CT_RIGHT, CT_BOTH};

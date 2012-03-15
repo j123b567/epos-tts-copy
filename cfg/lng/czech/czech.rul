@@ -68,30 +68,58 @@ if    phr_break
 	inside	\#	phone
 	{
 		contour   t/-65   phone
+		contour   i/-99   phone
 	}
 	5x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
 }
 
-if   kadlec_dph
-	segments  kadlec.dph    colon
-if   !kadlec_dph
+if generate_segs
 {
-   if ptacek97_dph
-	segments  ptacek97.dph  colon
-   if !ptacek97_dph
-	segments  traditnl.dph  colon
+    if traditional_dph
+			segments  traditnl.dph	colon
+    if !traditional_dph
+    {
+      if   kadlec_dph
+			segments  kadlec.dph    colon
+      if   !kadlec_dph
+      {
+	if ptacek97_dph
+			segments  ptacek97.dph  colon
+	if !ptacek97_dph
+	{
+	  if dubeda_dph
+			segments  dubeda.dph	colon
+	  if !dubeda_dph
+	  {
+	    if betty_dph
+	    {
+			@include "betty.rul"
+			segments  betty.dph	colon
+	    }
+	    # if !betty_dph, that's a misconfiguration
+	  }
+	}
+      }
+    }
 }
+
+if  absolute_time
+{
+	absolutize	t
+	progress	\#>_(!_!)	# pause renaming hack
+}
+
 
 #
 #  mírné vyhlazování se zejména sna¾í, aby hranièní difony
 #  mezi slabikami získávaly prosodické hodnoty èásteènì
 #  od obou slabik.  Pøedpokládá se, ¾e difon pøechodu mezi
 #  hláskami je pøipojen k hlásce prvé, proto se pøihlí¾í
-#  pouze k pravému sousedu (váha 20%, vlastní hodnota
-#  má tedy váhu 80%). Ideologicky èistá øe¹ení jsou buïto
+#  pouze k pravému sousedu (váha 30%, vlastní hodnota
+#  má tedy váhu 70%). Ideologicky èistá øe¹ení jsou buïto
 #  nevyhlazovat vùbec (pøiøadit difon doleva), nebo
 #  vyhlazovat f/50\50, tj. kvalifikovat difon jako spojovací.
 #
 
-; smooth   f/80\20     word phone
+# smooth   f/70\30     word segment
 

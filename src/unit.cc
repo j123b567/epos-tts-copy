@@ -349,7 +349,7 @@ unit::insert(UNIT target, bool backwards, char what, charclass *left, charclass 
 //			tmpu->f = f;
 //			tmpu->i = i;
 			tmpu->t = t;
-			tmpu->m = m->derived();
+//			tmpu->m = m->derived();
 		}
 		if (!prev && right->ismember(cont) && left->ismember(Prev(depth)->cont)) {
 			tmpu = new unit(depth, what);
@@ -360,7 +360,7 @@ unit::insert(UNIT target, bool backwards, char what, charclass *left, charclass 
 //			tmpu->f = f;
 //			tmpu->i = i;
 			tmpu->t = t;
-			tmpu->m = m->derived();
+//			tmpu->m = m->derived();
 		}
 		DBG(1,4,fprintf(STDDBG,"New contents: %c\n",cont);)
 		return;
@@ -920,6 +920,20 @@ unit::contains(UNIT target, charclass *set)
 	return false;
 }
 
+void
+unit::absol(UNIT target)
+{
+	if (target == depth) {
+		if (strchr("aeiou", cont)) t *= 1.3;
+		if (strchr("·ÈÌÛ˙AEO", cont)) t *= 1.7;
+		if (strchr("ptkbdg", cont)) t *= 0.9;
+	} else if (target < depth) {
+		for (unit *u = firstborn; u; u = u->next)
+			u->absol(target);
+	} else shriek(899, "absolutize upwards");
+	
+}
+
 /****************************************************************************
  unit::sseg    suprasegmentalia are found here
  ****************************************************************************/
@@ -1071,66 +1085,65 @@ unit::smooth(UNIT target, int *recipe, int n, int rec_len, FIT_IDX what)
 
 #undef FIT
 
-#ifdef HAVE_PROJECT
+
+
 void
-unit::project(UNIT target, int adjf, int adji, int adjt)
+unit::project_extents()
 {
-	unit *u;
-	if (depth > target) {
-		for (u = firstborn; u; u = u->next)
-			u->project(target, adjf + f, adji + i, adjt + t);
-		f = i = t = 0;
-	} else {
-		f += adjf; i += adji; t += adjt;
+	DBG(1,2,fprintf(STDDBG, "Projecting an extent from %d\n", depth);)	// FIXME
+	for (marker *n = m; n; n = n->next)
+		if (!n->extent)
+			shriek(862, "Extent followed by a non-extent");
+
+	for (unit *u = firstborn; u; u = u->next) {
+		DBG(3,2,fprintf(STDDBG, "Moving prosody point to %d; q=%d, val=%d\n", u->depth, m->quant, m->par);)
+		u->m->merge(m->derived(), &u->m);
 	}
+	delete m;
+	m = NULL;
 }
-#else
+
+inline void
+unit::project_one_level(float sum)
+{
+	marker *tmp;
+	float c = 0;	// relative current time position within the unit
+	unit *u = firstborn;
+	while (m && !m->extent) {
+		shriek(861, "non-extents not implemented");
+
+		tmp = m;
+		if (tmp->pos < c) shriek(862, "unsorted markers");
+		while (tmp->pos > c + u->t / sum) {
+			c += u->t / sum;
+			u = u->next;
+		}
+		m = tmp->next;
+		tmp->next = NULL;
+		tmp->pos = (tmp->pos - c) / u->t * sum;
+		marker **ml;
+		for (ml = &u->m; *ml; ml = &(*ml)->next) ;
+		*ml = tmp;
+	}
+	if (m) project_extents();
+}
+
+
 void
 unit::project(UNIT target)			// FIXME optimize
 {
 	if (target == depth) return;
 	if (target < depth) {
 		float sum = 0;
-		float c = 0;
-		unit *u;
-		for (u = firstborn; u; u = u->next) {
+		for (unit *u = firstborn; u; u = u->next) {
 			sum += u->t;
 		}
-		u = firstborn;
-		marker *tmp;
-		if (!m) {
-			for (unit *u = firstborn; u; u = u->next)
-				u->project(target);
-		} else while (m) {
-			if (m->extent) {
-				if (m->next && !m->next->extent)
-					shriek(862, "Extent followed by a non-extent");
-				for (unit *u = firstborn; u; u = u->next) {
-					DBG(1,2,fprintf(STDDBG, "Moving prosody point to %d; q=%d, val=%d\n", u->depth, m->quant, m->par);)
-					u->m->merge(m->derived(), &u->m);
-					u->project(target);
-				}
-				delete m;
-				m = NULL;
-			} else {
-				tmp = m;
-				if (tmp->pos < c) shriek(862, "unsorted markers");
-				while (tmp->pos > c + u->t / sum) {
-					u->project(target);
-					c += u->t / sum;
-					u = u->next;
-				}
-				m = tmp->next;
-				tmp->next = NULL;
-				tmp->pos = (tmp->pos - c) / u->t * sum;
-				marker **ml;
-				for (ml = &u->m; *ml; ml = &(*ml)->next) ;
-				*ml = tmp;
-			}
-		}
+
+		project_one_level(sum);
+		for (unit *u = firstborn; u; u = u->next)
+			u->project(target);
 	} else shriek(899, "project upwards");
 }
-#endif
 
 /****************************************************************************
  unit::raise    moves the characters given to the level given
@@ -1301,14 +1314,16 @@ unit::effective(FIT_IDX which)
 	unit *u = this;
 	if (which == Q_TIME) {
 		if (cfg->pros_mul[which]) {
-			int product = 1 << 10;
+			float product = 1;
 			for (unit *u = this; u; u = u->father) {
 				int w = cfg->pros_weight[u->depth];
 				if (w > 10) shriek(462, "Weight absurd in unit::effective");
-				int x = (int)u->t;
-				for ( ; w; w--) product += product * x / cfg->pros_neutral[which];
+//				float x = u->t;
+//				for ( ; w; w--) product += product * x / cfg->pros_neutral[which];
+//				printf("Multiplying %d times by %f at level %d\n", w, u->t, u->depth);
+				for ( ; u->t > 0 && w; w--) product *= u->t;
 			}
-			return product * cfg->pros_neutral[which] >> 10;
+			return product * cfg->pros_neutral[which];
 		} else {
 			int sum = 0;
 			for (unit *u = this; u; u = u->father) {

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
  <TITLE>               The Epos Speech System: Introduction</TITLE>
  <LINK HREF="epos-2.html" REL=next>
 
@@ -12,9 +12,9 @@
 Previous
 <A HREF="epos.html#toc1">Contents</A>
 <HR>
-<H2><A NAME="s1">1. Introduction</A></H2>
+<H2><A NAME="s1">1.</A> <A HREF="epos.html#toc1">Introduction</A></H2>
 
-<P>
+
 <P>In the early nineties, the Institute of Phonetics,
 Faculty of Arts, Charles University, Prague, and the Institute of
 Radio-Engineering and Electronics, Academy of Sciences, Prague,
@@ -30,7 +30,7 @@ some new prosody modelling hypotheses had arisen, these limitations
 were slowly becoming a major burden. A new implementation of part of
 the system was eventually written from scratch (starting in 1996) and it is
 still expanding, integrating the original results with numerous
-recent improvements. It has been baptized Epos in 1998.
+recent improvements. It has been baptized Epos in 1998.</P>
 <P>Our primary design goal is to allow the user the ultimate control
 over the TTS processing. We avoid hard-wired constants; we use
 configuration options instead, with sensible default values.
@@ -43,14 +43,14 @@ Some aspects of user-definable
 behavior don't fit into the concept of a rules file, and are therefore settable
 with various options in conventional configuration files.  Finally, many other
 external files can be referenced either by the rules file, or a configuration
-file, such as segment inventories or dictionaries.
+file, such as segment inventories or dictionaries.</P>
 <P>Most of these files have to be processed before any actual TTS processing
 has finished. That's why Epos is implemented as a background process, i.e.
 as a daemon under UNIX-like OSes and as a service on Windows NT and similar OSes.
 Epos reserves a TCP/IP port for any communication with client applications
 using a custom, quite generic protocol for TTS data flow control, 
 called TTSCP.  A simple TTSCP client utility named <CODE>say</CODE> has been provided
-with Epos, but there are many more specialized TTSCP clients in existence.
+with Epos, but there are many more specialized TTSCP clients in existence.</P>
 <P>Epos currently supports three main speech generation algorithms.  Two ones
 employ segment concatenation in the time domain; these have been contributed by
 Zdenek Kadlec, Masaryk University, Brno, and Martin Petriska, Slovak Technical
@@ -64,18 +64,18 @@ synthesis to synthesize your own texts using the commercial inventories, if you 
 connected to the Internet. (Your text is partly processed and sent to our server.
 Then the generated speech signal is sent back to you.)  The last option is to use
 the semi-free MBROLA speech synthesizer, though the support for MBROLA is still
-not completely finished in Epos.
-<P>The name Epos is not an acronym.  It is Greek for...um, go have a look yourself.
+not completely finished in Epos.</P>
+<P>The name Epos is not an acronym.  It is Greek for...um, go have a look yourself.</P>
 <P>This section still has to be (re)written by somebody. At present, try to look at
 <CODE> 
 <A HREF="http://epos.ure.cas.cz">http://epos.ure.cas.cz</A> </CODE>
 for additional introductory information or ask the authors by
-<A HREF="mailto:geo@cuni.cz">email</A>.
+<A HREF="mailto:geo@cuni.cz">email</A>.</P>
 <P>Meanwhile, tell us what kind of introductory information you would like
-to see here.  The documentation is provided for you and we need your feedback.
-<P>
-<P>
-<P>
+to see here.  The documentation is provided for you and we need your feedback.</P>
+
+
+
 <HR>
 <A HREF="epos-2.html">Next</A>
 Previous

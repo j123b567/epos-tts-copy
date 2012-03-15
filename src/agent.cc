@@ -506,7 +506,6 @@ class a_syn : public a_synth
 	virtual void run();
    public:
 	a_syn() : a_synth(T_SSIF, T_WAVEFM) {};
-//	a_syn() : agent(T_SSIF, T_WAVEFM) {};
 };
 
 void
@@ -848,9 +847,10 @@ oa_wavefm::brk()
  *	stream agent itself. stream->head is an input agent.
  */
 
-enum agent_type {AT_UNKNOWN, AT_CHUNK, AT_JOIN, AT_ASCII, AT_SSIF, AT_SEGS, AT_PRINT, AT_RULES, AT_STML, AT_SYNTH,
-		 AT_T_TEXT, AT_T_STML, AT_T_UNITS, AT_T_SSIF, AT_T_SEGS, AT_T_WAVEFM};
-const char *agent_type_str = ":chunk:join:raw:dump:diphs:print:rules:stml:synth:[t]:[s]:[i]:[p]:[d]:[w]:";
+enum agent_type {AT_UNKNOWN, AT_CHUNK, AT_JOIN, AT_ASCII, AT_SSIF, AT_SEGS,
+			AT_PRINT, AT_RULES, AT_STML, AT_SYN, AT_TRAD_SYNTH,
+			AT_T_TEXT, AT_T_STML, AT_T_UNITS, AT_T_SSIF, AT_T_SEGS, AT_T_WAVEFM};
+const char *agent_type_str = ":chunk:join:raw:dump:diphs:print:rules:stml:syn:synth:[t]:[s]:[i]:[p]:[d]:[w]:";
 
 agent *make_agent(char *s, agent *preceding)
 {
@@ -877,7 +877,8 @@ agent *make_agent(char *s, agent *preceding)
 		case AT_PRINT: return new a_print;
 		case AT_RULES: return new a_rules;
 		case AT_STML:  return new a_stml;
-		case AT_SYNTH: return new a_synth;
+		case AT_SYN:   return new a_syn;
+		case AT_TRAD_SYNTH: return new a_synth;
 
 		case AT_T_TEXT:  return new a_type<T_TEXT>;
 		case AT_T_STML:  return new a_type<T_STML>;

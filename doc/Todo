@@ -1,7 +1,6 @@
 Bugs
 - decoding and encoding not done for non-text data types (ssif etc.)
 - better prosody modelling for monosyllaba
-- 213788788
 - smooth not implemented
 - document [p] and dump
 - the --show_labels option is undoc and too idiosyncratic

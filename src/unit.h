@@ -105,10 +105,13 @@ class unit
         bool contains(UNIT target, charclass *set);
 //        void sseg(UNIT target, hash *templates);
         			      // Take freq, time or intensity from the hash*
+        void absol(UNIT target);
 	void prospoint(FIT_IDX what, int value, float position);
 	void contour(UNIT target, int *recipe, int rec_len,
 			int padd_start, FIT_IDX what, bool additive);
         void smooth(UNIT target, int *ratio, int base, int len, FIT_IDX what);
+	void project_extents();
+        void project_one_level(float sum);
         void project(UNIT target);
         void raise(charclass *what, charclass *when, UNIT whither, UNIT whence);
         			      // Move characters between levels

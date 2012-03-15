@@ -36,8 +36,9 @@ template<class T> class function
 	int mult, size;
 	couple<T> *t;
    public:
-	function(const T *s, const T *r);
+	function(const T *s, const T *r, bool compress);
 	~function();
+	bool ismember(const T x);
 	T xlat(const T x);
 };
 

@@ -42,11 +42,11 @@ bool strip(char *s)
 				return false;
 			case ESCAPE:
 				if (!*++t || *t=='\n') {
-					// shriek(462, "text.cc still cannot split lines");
 					*r = 0;
 					return true;
 				}
-				if (strchr(scfg->token_esc, *t)) *r = esctab->xlat(*t);
+				if (esctab->ismember(*t)) *r = esctab->xlat(*t);
+//				if (strchr(scfg->token_esc, *t)) *r = esctab->xlat(*t);
 				else t--;
 				break;
 			default:;

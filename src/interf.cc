@@ -675,7 +675,7 @@ void epos_init()	 //Some global sanity checks made here
 	srand(time(NULL));	// randomize
 #endif
 	load_default_charset();
-	if (!esctab) esctab = (charxlat *)FOREVER(new charxlat(scfg->token_esc, scfg->value_esc));
+	if (!esctab) esctab = new charxlat(scfg->token_esc, scfg->value_esc, false);
 
 	config_init();
 
@@ -696,11 +696,13 @@ void epos_init()	 //Some global sanity checks made here
 	
 	compile_rules();
 
+	DBG(1,10,fprintf(STDDBG,"struct unit is %d bytes\n", (int)sizeof(unit));)
 	DBG(1,10,fprintf(STDDBG,"struct static_configuration is %d bytes\n", (int)sizeof(static_configuration));)
 	DBG(1,10,fprintf(STDDBG,"struct configuration is %d bytes\n", (int)sizeof(configuration));)
 	DBG(1,10,fprintf(STDDBG,"struct lang is %d bytes\n", (int)sizeof(lang));)
 	DBG(1,10,fprintf(STDDBG,"struct voice is %d bytes\n", (int)sizeof(voice));)
 	DBG(2,10,fprintf(STDDBG,"allocated %d chars, %d chars free\n", get_count_allocated(), 256 - get_count_allocated());)
+	DBG(1,10,fprintf(STDDBG,"charsets already in use are %s\n", charset_list);)
 }
 
 void end_of_eternity();
@@ -721,6 +723,7 @@ void epos_catharsis()
 //	cow_catharsis(cfg);
 
 	cfg->shutdown();	//...FIXME: might need proto_cfg->shutdown; othrws shutdown never called
+	delete esctab; esctab = NULL;
 
 	shutdown_file_cache();
 	

@@ -27,7 +27,7 @@
 
 #define MAINTAINER  "Jirka Hanika"
 #define MAIL        "geo@cuni.cz"
-#define VERSION     "2.5.1"
+#define VERSION     "2.5.4"
 
 #include "config.h"
 

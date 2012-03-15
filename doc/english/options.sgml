@@ -33,11 +33,11 @@ to the voice defined as default or the last active one for this particular langu
 a similarly sounding voice for every language if desired.)
 It is also important to distinguish between a voice and an inventory.
 An <em/inventory/ is a set of speaker-dependent files used
-to base a <em/voice/, that is, a mode of speech, on.  Multiple
+as a base for <em/voice/, that is, a mode of speech.  Multiple
 different voices may use the same inventory, and may even sound
 quite different depending on various configuration options.
-The average expert user may expect to be able to modify the voice dependent
-configuration files, but not inventory files.  Also, the inventories
+A user of moderate expertise will be able to modify the voice dependent
+configuration files, but not the inventory files.  Also, the inventories
 may often be distributed externally to Epos, while sample voices
 based on them may either be included with Epos, or with the
 segment inventory, or their creation may be completely left
@@ -227,8 +227,8 @@ they never take a value.
 <sect2> Input text
 <p>
 
-Technically speaking, this section doesn't cover options, but it is nevertheless
-included.
+Technically speaking, this subsection doesn't really concern the options,
+but it is nevertheless included.
 
 The main purpose of the <tt/say/ utility is to convert a specified
 text to speech.  Therefore, any command line text which is not part of an option
@@ -868,7 +868,7 @@ The <tt/segment/ and <tt/text/ may not be applicable for some of
 these options. This model of displaying the TSR is not used for
 transmitting the text over TTSCP.
 
-All the options in this subsection are <ref id="static" name="static>.
+All the options in this subsection are <ref id="static" name="static">.
 
 <descrip>
 <tag>--colored</tag>
@@ -1312,7 +1312,7 @@ cd src
 </verb>
 </tscreen>
 
-<label id="pseudorootdir-option">n
+<label id="pseudorootdir-option">
 <tag>--pseudo_root_dir <sl/dirname/</tag>
 	The value is a directory name.  Sets the path prepended
 	to any file name referenced in the TTSCP <ref id="strm-cmd"

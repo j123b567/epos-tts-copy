@@ -20,8 +20,8 @@
 
 #define SEG_BUFF_SIZE  1000 //unimportant
 
-#define OPCODEstr "subst:regex:postp:prep:segments:prosody:contour:progress:regress:insert:syll:smooth:raise:debug:if:inside:near:with:{:}:[:]:<:>:nothing:error:"
-enum OPCODE {OP_SUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_SEG, OP_PROSODY, OP_CONTOUR, OP_PROGRESS, OP_REGRESS, 
+#define OPCODEstr "subst:regex:postp:prep:segments:absolutize:prosody:contour:progress:regress:insert:syll:smooth:raise:debug:if:inside:near:with:{:}:[:]:<:>:nothing:error:"
+enum OPCODE {OP_SUBST, OP_REGEX, OP_POSTP, OP_PREP, OP_SEG, OP_ABSOL, OP_PROSODY, OP_CONTOUR, OP_PROGRESS, OP_REGRESS, 
 	OP_INSERT, OP_SYLL, OP_SMOOTH, OP_RAISE, OP_DEBUG, OP_IF, OP_INSIDE, OP_NEAR, OP_WITH,
 	OP_BEGIN, OP_END, OP_CHOICE, OP_CHOICEND, OP_SWITCH, OP_SWEND, OP_NOTHING, OP_ERROR};
 		/* OP_BEGIN, OP_END and other OP's without parameters should come last
@@ -399,6 +399,56 @@ r_seg::apply(unit *root)
 	}
 }
 
+
+
+
+
+
+
+
+
+
+/************************************************
+ r_absol  The following rule class computes
+ 	  the absolute timings for target units
+ **	  using voice dependent data
+ ************************************************/
+
+
+class r_absol: public rule
+{
+	virtual OPCODE code() {return OP_ABSOL;};
+   public:
+		r_absol(char *param);
+	virtual void apply(unit *root);
+};
+
+r_absol::r_absol(char *param) : rule(param)
+{
+	if (strcmp(param, "t")) shriek(811, fmt("%s: Impossible absolutize request", debug_tag()));
+}
+
+/************************************************
+ r_absol::apply()
+ ************************************************/
+
+void
+r_absol::apply(unit *root)
+{
+	root->absol(target);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 /************************************************
  r_prosody The following rule class manipulates
 	   suprasegmentalia according to subrules
@@ -626,7 +676,7 @@ r_regress::r_regress(char *param) : rule(param)
 
 	if (strlen(aff) != strlen(eff) && strlen(eff) != 1)
 		shriek(811, fmt("%s Bad param", debug_tag()));
-	fn = new charxlat(aff,eff); ltab = new charclass(left); rtab = new charclass(right);
+	fn = new charxlat(aff,eff,true); ltab = new charclass(left); rtab = new charclass(right);
 	free(aff);
 	
 	backwards=true;

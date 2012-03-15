@@ -28,13 +28,12 @@
 	#include <signal.h>
 #endif
 
-#define MBROLA_PATH "/home/geo/mbrola/mbrola"
-#define INV_PATH "/home/geo/mbrola/cz/cz1"
-
 #define there there_pipe[1]
 #define back  back_pipe[0]
 
-mbrsyn::mbrsyn(voice *v)
+
+void
+mbrsyn::restart_mbrola(voice *v)
 {
 	int p[2];
 	int q[2];
@@ -47,15 +46,26 @@ mbrsyn::mbrsyn(voice *v)
 	case 0:	
 		if (p[0]) dup2(p[0], 0);
 		dup2(q[1], 1);
-		if (execl(MBROLA_PATH, MBROLA_PATH, INV_PATH, "-", "-.wav", NULL))
+		close(p[1]);
+		close(q[0]);
+		char *inv_pathname;
+		inv_pathname = compose_pathname(v->models, v->loc, scfg->inv_base_dir);
+		if (execl(cfg->mbrola_binary, cfg->mbrola_binary, "-e", inv_pathname, "-", "-.wav", NULL))
 			shriek(463, "Failed to exec mbrola");
 		break;
 	default:
 		there = p[1];
 		back = q[0];
+		close(p[0]);
+		close(q[1]);
 		pid = tmp;
 		return;
 	}
+}
+
+mbrsyn::mbrsyn(voice *v)
+{
+	restart_mbrola(v);
 }
 
 mbrsyn::~mbrsyn()
@@ -68,11 +78,29 @@ mbrsyn::~mbrsyn()
 }
 
 void
-mbrsyn::synssif(voice *, char *b, wavefm *w)
+mbrsyn::synssif(voice *v, char *b, wavefm *w)
 {
-	char wb[1024];
-	int l;
-	write(there, b, strlen(b));
-	l = read(back, wb, 1024);
-	w->become(wb, l);
+	char wb[1024 * 256];
+	int l = 0;
+	int offset = 0;
+
+	do {
+		offset += l;
+		l = write(there, b + offset, strlen(b + offset));
+	} while (l < (int)strlen(b + offset));
+
+	close(there);
+
+	offset = l = 0;
+	do {
+		if (l == -1) l = 0;
+		offset += l;
+		l = read(back, wb + offset, 1024 * 256 - offset);
+	} while (l > 0);
+
+	close(back);
+
+	restart_mbrola(v);
+
+	w->become(wb, offset);
 }
