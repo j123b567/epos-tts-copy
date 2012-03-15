@@ -1,14 +1,9 @@
-
-# pøíklad øe¹ení jednoduchých znaèek
-
 +	~plus~
 \-	~a¾~
 \m	~mínus~
 =	~rovná~sa~
 /	~lomeno~
 @	~zavináè~
-;	~bodkoèiarka~
-$$	~dolár~
 (	~zátvorka~
 )	~zátvorku~uzavrie»~
 [	~hranatá~zátvorka~
@@ -17,11 +12,14 @@ $$	~dolár~
 }	~zlo¾enú~uzavrie»~
 &	~et~
 *	~hviezdièka~
-^^	~strie¹ka~
 %	~percent~
 _	~dolná~èiarka~
 '	~apostrof~
 "	~úvodzovky~
 `	~zpätný~apostrof~
 \\	~obrátené~lomítko~
-
+<	~men¹í~
+>	~väè¹í~
+\#	~kód~
+$$	dolár
+^^	strie¹ka

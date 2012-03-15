@@ -1,22 +1,15 @@
 #
 #	(c) Jirka Hanika <geo@ff.cuni.cz>
-#       (c) Martin Petriska <petriska@pobox.sk>
+#       (c) Martin Petriska <petriska@kre.elf.stuba.sk>
 # Pravidla pro zpracování slovenèiny
 
 $invent_dir	external
-#$prosody_dir	external
-#$base_dir	external
-#$dph_file	external
+$prosody_dir	external
+$base_dir	external
 
+$prosody   = ${base_dir}/${prosody_dir}
 
-#$inv_dph =	$dph_file
-
-#$prosody   = ${base_dir}/${prosody_dir}
-#$dph_file  = ${base_dir}/${invent_dir}/${inv_dph}
-
-$prosody = ../czech/prosody
-
-#include "trans.rul"
+@include "trans.rul"
 
  inside  .?:!	sent		; Pochybné - nemá zasáhnout vìty bez interpunkce
  {
@@ -92,15 +85,34 @@ $prosody = ../czech/prosody
 	prosody   $prosody/exclafad.dic	sent	syll
  }
 
-regress   0>\#(!_0)	colon	; vlo¾ení pausy
+#regress   0>\#(!_0)	colon	; vlo¾ení pausy
+
+# diphones  ${dph_file}	colon	    ; mìlo by být zhruba posledním pravidlem
+
+
+# Format vystupu transkripcie
+
+# A. SAMPA
+
+;subst sampa1.dic
+;subst sampa2.dic
+
+# B. prevod (SAV)
+
+;#include "SAV.rul"
+# subst SAV.dic
 
 if   kadlec_dph
-	segments  ../czech/kadlec.dph   colon
+	diphones  kadlec.dph   colon
 if  !kadlec_dph
-	segments  traditnl.dph colon
+	diphones  traditnl.dph colon
 
-# smooth    f/10/80\10	text segment
 
+
+
+# diphones  traditnl.dph
+ 
+# smooth    f/10/80\10	text diphone
 
 ;--------------------  debug     elem,pause text
 

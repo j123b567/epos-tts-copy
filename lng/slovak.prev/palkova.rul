@@ -11,9 +11,9 @@
 #
 
 
-#$base_dir	external
-#$prosody_dir	= external
-#$prosody = ${base_dir}/${prosody_dir}
+$base_dir	external
+$prosody_dir	= external
+$prosody = ${base_dir}/${prosody_dir}
 
 
 # pøidat èárku pøed "a":
@@ -33,17 +33,17 @@ regress \X>a(!_!)
 #  "mì" vs. "mnì".
 #
 
-with "mi mì se si ho mu ti tì"
-{
-	regress  _\ >~(!_!)   word  word
-}
+#with "ma »a sa ho mi ti si mu"
+#{
+#	regress  _\ >~(!_!)   word  word
+#}
 
 #
 #  Zde se provádìjí transkripèní pravidla ze souboru
 #  trans.rul; "#include" není jen komentáø!
 #
 
-#include "trans.rul"
+@include "trans.rul"
 
 #
 #  Následující pravidla o¹etøují tøi teèky a pomlèku.
@@ -418,9 +418,9 @@ inside	\#	phone
 5x  regress   0>\#(!_0)	sent	; vlo¾ení pausy
 
 if   kadlec_dph
-	segments  kadlec.dph    colon
+	diphones  kadlec.dph    colon
 if   !kadlec_dph
-	segments  traditnl.dph  colon
+	diphones  traditnl.dph  colon
 
 #
 #  mírné vyhlazování se zejména sna¾í, aby hranièní difony
@@ -433,5 +433,5 @@ if   !kadlec_dph
 #  vyhlazovat f/50\50, tj. kvalifikovat difon jako spojovací.
 #
 
-smooth   f/70\30     word segment
+# smooth   f/70\30     word diphone
 

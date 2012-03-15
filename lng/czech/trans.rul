@@ -1,3 +1,4 @@
+
 #
 #	(c) Jirka Hanika <geo@ff.cuni.cz>
 #
@@ -38,6 +39,24 @@ inside .  sent
 regex  /(\Z)\\.([${lower_case}])/\1\2/	text
 regex  /\Z(\\.)([${upper_case}])/\1\2/	text
 
+#  \d u¾ vydìlil parser, provizornì jako znak slovní úrovnì.  Úseky mezi
+#  výskyty tohoto znaku (napø. teèka v URL) se hláskují, pokud neobsahují
+#  samohlásku nebo slabikotvornou souhlásku.  Tato pravidla se mohou chovat
+#  nerozumnì v kombinaci s velkými písmeny.
+
+inside \d  word
+{
+	regress 0>\d(!_0)
+}
+regress \d>\ (!_!)		word	word
+
+regress  lr>\X\Y(0_!)
+near  *!lr$vowel		word	phone
+{
+	regress ${lower_case}>${upper_case}(!_!) word
+	subst abbrurl.dic			 word
+}
+regress  \X\Y>lr(0_!)
 
 # Pravidla pro ètení zkratek apod.: velké písmeno na jiném,
 #   ne¾ prvním místì ve slovì indikuje zkratku a hláskuje se.
@@ -134,12 +153,11 @@ regress  ${upper_case}>${lower_case}($everywhere)			colon
 
  progress  ø>Ø($voiceless_!0) syll ; je u¾ zde kvùli "k øízení [gøízeòí]" "køeè [kØeè]"
 
- regress   $sonant>$SONANT(0_!)  syll
- syll      $sonority	syll	; Rozklad_na_slabiky
+ regress   $sonant>$SONANT(0_!) syll
+ syll      $sonority		syll	; Rozklad_na_slabiky
  regress   $SONANT>$sonant(!_!)
 
- prep	nonsyl.dic		syll
-
+ prep      nonsyl.dic		syll
 
 #   postp     postps.dic              ; jednou by se mìlo vrátit
 
@@ -182,10 +200,6 @@ regress  ${upper_case}>${lower_case}($everywhere)			colon
  regress   Z®>DÏ(!_$vowel)	; toto by mìlo pøijít do inventáøe (traditnl.dph);
  regress   0>d(!_DÏ)		; rozkládá se zde dz, d¾ (representované Z,®)
  regress   DÏ>z¾(!_!)		; na d-z, d-¾, pokud následuje vokál.
-
-# progress  0>~($vowel_0) syll	; Oznaèení otevøených vokalických slabik tildou
-# raise     ~:!		 syll	; FIXME!!!! slabikotvorné
-# progress  ~>0($vowel_0) syll
 
 # Následující odstavec má za cíl oznaèit v¹echny otevøené slabiky tildou.
 #   Ve zavøených slabikách se objeví pøíznak "C" (coda), ten se pak posune
