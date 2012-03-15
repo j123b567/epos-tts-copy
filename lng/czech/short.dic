@@ -1,19 +1,13 @@
-^x$ krát
-^and$ end
-^apod$ a~podobnì
-^atd$ a~tak~dále
+# ^x$ krát
+# ^g$ gramù
+# ^and$ end
 ^cm$ centimetrù
 ^dm$ decimetrù
-^e~$ í
-^E~$ í
-^g$ gramù
 ^Gb$ gigabitù
 ^GB$ gigabajtù
 ^GHz$ gigahercù
-^GO$ gou
 ^Hz$ hercù
 ^hod$ hodin
-^IKEM$ ikem
 ^kb$ kilobitù
 ^kB$ kilobajtù
 ^Kè$ káèé
@@ -26,19 +20,15 @@
 ^Mb$ megabitù
 ^MB$ megabajtù
 ^MHz$ megahercù
-#^min$ minut
 ^mm$ milimetrù
 ^nm$ nanometrù
 ^MPa$ megapaskalù
 ^ms$ milisekund
 ^MW$ megavat
 ^MWh$ megavathodin
-^napø$ napøíklad
 ^ns$ nanosekund
-^PARTY$ párty
 ^Tb$ terabitù
 ^TB$ terabajtù
-^SAGEM$ sa¾em
 ^SIEMENS$ símens
 ^SONY$ sony
 ^T9$ tédevjet
