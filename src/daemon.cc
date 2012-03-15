@@ -526,7 +526,7 @@ int start_unix_daemon()
 
 int main(int argc, char **argv)
 {
-	argc_copy = argc, argv_copy = argv;
+	set_cmd_line(argc, argv);
 #ifdef HAVE_WINSVC_H
 	int k = start_nt_service();
 	if (!k) return 0;

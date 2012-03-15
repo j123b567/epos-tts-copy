@@ -314,7 +314,7 @@ a_print::run()
 
 	delete (unit *) inb;
 	inb = NULL;
-	pass(strdup(b));
+	pass(get_text_buffer(b));
 }
 
 
@@ -452,11 +452,11 @@ void a_chunk::run()
 	if (bm && *bm) {
 		char h = bm[0];
 		bm[0] = 0;
-		pass(strdup(tmp));
+		pass(get_text_buffer(tmp));
 		bm[0] = h;
 		schedule();
 	} else {
-		pass(strdup(tmp));
+		pass(get_text_buffer(tmp));
 		free(inb);
 		inb = NULL;
 		bm = NULL;
@@ -486,7 +486,9 @@ a_join::run()
 	} else b = last;
 
 	if (*utt_break(b)) {
-		pass(b);
+		char *decodable = get_text_buffer(b);
+		free(b);
+		pass(decodable);
 	} else heldout = b;
 }
 
@@ -736,7 +738,7 @@ a_input::mktask(int size)
 	if (inb) return false;	// busy
 	toread = size;
 	D_PRINT(0, "Alloc in a_input:\n");
-	inb = xmalloc(size + 1);
+	inb = get_text_buffer(size);
 	offset = 0;
 	block(socket);
 	D_PRINT(1, "Apply task has been scheduled\n");
@@ -1094,9 +1096,9 @@ a_disconnector disconnector;
 
 a_protocol::a_protocol() : agent(T_NONE, T_NONE)
 {
-	sgets_buff = (char *)xmalloc(cfg->max_net_cmd + 2);
+	sgets_buff = get_text_cmd_buffer();
 	*sgets_buff = 0;
-	buffer = (char *)xmalloc(cfg->max_net_cmd + 2);
+	buffer = get_text_cmd_buffer();
 }
 
 a_protocol::~a_protocol()
@@ -1114,12 +1116,10 @@ void a_protocol::run()
 		return;
 	}
 
-//	encode_string(buffer, this_lang->charset, false);	// FIXME (alloc->true)
-
 	encode_string(buffer, this_lang->charset, false);	// FIXME (alloc->true)
 
 	if ((int)strlen(buffer) >= cfg->max_net_cmd)
-		shriek(413, "Received command is too looong");
+		shriek(413, "Received command is too long");
 	if (res > 0 && *buffer) switch (run_command(buffer)) {
 		case PA_NEXT:
 			D_PRINT(0, "PA_NEXT\n");

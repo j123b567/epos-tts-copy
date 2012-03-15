@@ -1477,3 +1477,11 @@ in this way much more often than explicitly indicated here.     ]
 
 2.5.31 from 2.5.30	25.5.05
 	- Mac OS X (big endian) fixes
+
+2.5.32 from 2.5.31	30.5.05
+	- SAMPA (including alternates) supported as a regular encoding
+	- all natural text buffers are now allocated with extra space for decoding
+	- more refactoring towards UTF-8 support, needs just the routines now
+	- fix: previously did not properly decode option values in TTSCP show
+	- fix: uninitialized SAMPA decoder tables
+	- doc fixes

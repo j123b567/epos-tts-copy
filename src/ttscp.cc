@@ -272,8 +272,11 @@ int do_show(char *param)
 	if (o) {
 		if (access_level(this_context->uid) >= o->readable) {
 			sputs(SHOW_SPACE, cfg->get__sd_out());
-			sendstring(format_option(o));
+			char *value = get_text_buffer(format_option(o));
+			decode_string(value, this_lang->charset);
+			sendstring(value);
 			reply("200 OK");
+			free(value);
 		} else reply("451 Access denied");
 	} else {
 //		if (!strcmp("language", param)) {

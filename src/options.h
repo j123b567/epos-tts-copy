@@ -137,7 +137,7 @@ void free_extra_options();
 
 void reinitialize_configuration();
 
-extern int argc_copy;
-extern char **argv_copy;
+void set_cmd_line(int argc, char **argv);
+void free_cmd_line();
 
 #define DQUOT          '"'            //used when parsing the .ini file

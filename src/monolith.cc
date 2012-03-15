@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 	fprintf(stdout,"***************************************************\n");
 
 	try {
-		argc_copy = argc, argv_copy = argv;
+		set_cmd_line(argc, argv);
 		scfg->play_segments = true;
 		epos_init();
 		submain();

@@ -975,8 +975,11 @@ wavefm::put_chunk(labl *chunk_template, const char *string)
 }
 
 void
-wavefm::label(int pos, char *label, const char *note)	// FIXME: does not work on big-endians
+wavefm::label(int pos, char *label_arg, const char *note_arg)	// FIXME: does not work on big-endians
 {
+	char *label = get_text_buffer(label_arg);
+	char *note = get_text_buffer(note_arg);
+
 	if (current_cp) {
 		if (!(current_cp & (current_cp - 1)))
 			cp_buff = (cue_point *)xrealloc(cp_buff, sizeof(cue_point) * current_cp * 2);
@@ -1001,6 +1004,9 @@ wavefm::label(int pos, char *label, const char *note)	// FIXME: does not work on
 	
 	put_chunk(&labl_template, label);
 	put_chunk(&note_template, note);
+
+	free(label);
+	free(note);
 }
 
 #ifdef SIMPLE_WFM

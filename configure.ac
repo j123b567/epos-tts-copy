@@ -2,7 +2,7 @@
 dnl Process this file with autoconf to produce a configure script
 
 AC_INIT(src/unit.cc)
-AM_INIT_AUTOMAKE(epos, 2.5.31)
+AM_INIT_AUTOMAKE(epos, 2.5.32)
 AC_PREFIX_DEFAULT(/usr/local)
 
 CCC="g++ c++ cc++ gcc cc"

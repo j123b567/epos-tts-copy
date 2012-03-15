@@ -323,7 +323,7 @@ voice::claim_all()
 		text *t;
 		if (!snl_file || !*snl_file) return;
 		t = new text(snl_file, location, scfg->inv_base_dir, "sound labels", true);
-		char * l = (char *)xmalloc(scfg->max_line_len);
+		char * l = get_text_line_buffer();
 		while (t->get_line(l)) {
 			int a, b, d; char c;
 			if (sscanf(l, "%d %d %c %d\n", &a, &b, &c, &d) == 3) {

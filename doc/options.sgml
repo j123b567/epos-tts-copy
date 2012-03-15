@@ -173,6 +173,11 @@ files as well as any files it has been included from using the
 all, but it affects all subsequent files (e.g. for the given language),
 such as the rules file.
 
+You have the following choice of charsets: arbitrary 8-bit encodings
+(provided a Unicode mapping file is present in <tt>cfg/mappings</tt>),
+utf-8, sampa-std (standard SAMPA) and sampa-alt-NAME where NAME is
+a pre-configured SAMPA alternate.
+
 <sect2> Escaping Special Characters <label id="escaping">
 <p>
 
@@ -1199,7 +1204,7 @@ option is also language dependent.
 <tag>--charset <sl/charset/</tag>
 	The character set to be used with the current language
 	(especially in rules, voice configuration; also in text
-	input and output through TTSCP).  If the encoding is not
+	input and output through TTSCP).  If an 8-bit encoding is not
 	already known to Epos, it's loaded from a corresponding
 	mapping file within the directory specified by the
 	<ref id="unimapdir-option" name="unimap&lowbar;dir"> option.

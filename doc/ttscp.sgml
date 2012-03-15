@@ -101,7 +101,7 @@ command: "user anonymous". It is also legal to switch users
 with additional user commands. This may cause context switches.
 
 It is advised to check the greeting string received to begin in 
-"preTTSCP" or "TTSCP ". If it doesn't, the client or possibly the
+"TTSCP ". If it doesn't, the client or possibly the
 server may be obsolete or an unrelated protocol may be used at the
 port.
 
@@ -161,21 +161,16 @@ in the session header).
 The data is passed between modules in one of the following formats:
 
 <itemize>
-	<item> plain ASCII text
-	<item> Spoken Text Markup Language (STML)
+	<item> plain text
 	<item> phonetic structure of the text (TSR)
 	<item> Speech Synthesizer Input Format (SSIF)
 	<item> sequence of segments
 	<item> waveform file
 </itemize>
 
-<sect2> Plain ASCII Text
+<sect2> Plain Text
 <p>
-Traditional.
-
-<sect2> STML
-<p>
-As described in ???. Currently unimplemented.
+This is what the "text" in "text-to-speech" stands for.
 
 <sect2> Text Structure Representation
 <p>
@@ -184,9 +179,9 @@ unsuitable for input or output. Before output, it must be converted
 to another format first. For a description, see the <ref id="tsr"
 name="text structure representation overview">.
 
-Conversion to plain ASCII text dismisses prosody.
+Conversion to plain text dismisses prosody.
 
-Conversion to plain ASCII text or STML dismisses segment layer if any.
+Conversion to plain text dismisses segment layer if any.
 
 <sect2> Speech Synthesizer Input Format
 <p>
@@ -644,7 +639,7 @@ t
 <sect3> <tt> synth </tt> 
 <p>
 
-The input segment stream is synthesised in a voice dependent way.
+The input segment stream is synthesized in a voice dependent way.
 
 
 

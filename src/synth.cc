@@ -125,7 +125,7 @@ synth::synsegs(voice *v, segment *d, int n, wavefm *w)
 		}
 		x.e = v->init_i * d[i].e / 100;
 		if (cfg->label_seg || cfg->label_phones) {
-			char tmp[7];
+			char tmp[8];
 			if (cfg->label_seg) {
 				// strncpy(tmp, ((char(*)[4])v->segment_names->data)[d[i].code], 3);
 				snprintf (tmp, 7, "%d", d[i].code);

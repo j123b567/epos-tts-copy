@@ -312,7 +312,7 @@ void list_of_calls(const char *list, void call(int, const char *))
 
 
 	for (i=0; (tmp[j] = list[i]); i++) {
-		if (tmp[j] == ':' ) {
+		if (tmp[j] == LIST_DELIM ) {
 			tmp[j] = 0;
 			call(k, tmp);
 			j = 0;
@@ -613,7 +613,7 @@ static inline void release(char **buffer)
 static inline void compile_rules()
 {
 	int tmp = cfg->default_lang;
-	_next_rule_line = (char *)xmalloc(scfg->max_line_len+1);
+	_next_rule_line = get_text_line_buffer();
 	for (int i=0; i<cfg->n_langs; i++) {
 		cfg->default_lang = i;
 		if (cfg->langs[i]->n_voices) try {
@@ -676,7 +676,7 @@ void epos_init()	 //Some global sanity checks made here
 		
 //	if (!_subst_buff) _subst_buff = (char *)xmalloc(MAX_GATHER+2);
 //	if (!_gather_buff) _gather_buff = (char *)xmalloc(MAX_GATHER+2);
-	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)xmalloc(scfg->max_line_len+1); 
+	if (!_resolve_vars_buff) _resolve_vars_buff = get_text_line_buffer(); 
 	if (!scratch) {
 		scratch = (char *)xmalloc(scfg->scratch_size+1);
 		scratch[scfg->scratch_size] = 0;
@@ -734,6 +734,7 @@ void epos_done()
 {
 	epos_catharsis();
 	free_replier_table();
+	free_cmd_line();
 	config_release();
 	unit::done();
 	shutdown_hashing();
@@ -822,6 +823,8 @@ operator delete(void * cp)
 }
 
 #endif   // ifdef WANT_DMALLOC
+
+
 
 
 void call_abort()
