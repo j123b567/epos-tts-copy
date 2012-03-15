@@ -1498,3 +1498,7 @@ contributed in this way much more often than explicitly indicated here.     ]
 	- fix: response to some pseudoempty inputs
 	- fix: appl 0 is now forbidden
 
+2.5.35 from 2.5.34	 2.7.05
+	- adjusted n_segs and betty.dph for tdi-based voices to cover recent segment additions
+		(in machac.tdi and violka.tdi - upgrade those to the GPL'd versions)
+	- fix: response to some pseudoempty inputs on big-endians

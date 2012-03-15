@@ -427,7 +427,7 @@ PaSampleFormat deduce_sample_format(int samplesize)
 		case 8: return paInt8;
 		case 16: return paInt16;
 		case 32: return paInt32;
-		default: shriek(862, "Unsupported samplesize (%d) for Portaudio output.", samplesize);
+		default: shriek(862, "Unsupported samplesize (%d) for Portaudio output.", from_le16s(samplesize));
 	}
 }
 
@@ -730,6 +730,7 @@ wavefm::translate()
 {
 	D_PRINT(1, "Translating waveform, buffer_idx=%d\n", hdr.buffer_idx);
 	if (!hdr.buffer_idx) {
+		force_little_endian_header();
 		translated = true;
 	}
 	if (translated) {
