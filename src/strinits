@@ -1,6 +1,0 @@
-OPTION (base_dir, "base_dir", STR, stringify(BASE_DIR))// base path to everything
-OPTION (fixedfile,"fixed_ini_file",STR, "fixed.ini")
-OPTION (token_esc, "",             STR, "nt[eE\\ #;@~.-mXYZWVU")  // Escape sequences usable in the .ini files
-OPTION (value_esc, "",             STR, "\n\t\033\033\033\\\377#;@\1\2\3\4\037\036\035\034\032\031")
-OPTION (ini_dir, "ini_dir",	   STR, "cfg")  //      to fixed.ini
-OPTION (restr_file, "restr_file",  STR, "restr.ini") // restricted options
