@@ -1503,7 +1503,7 @@ unit::effective(FIT_IDX which)
 				if (w > 10) shriek(462, "Weight absurd in unit::effective");
 //				float x = u->t;
 //				for ( ; w; w--) product += product * x / cfg->pros_neutral[which];
-//				printf("Multiplying %d times by %f at level %d\n", w, u->t, u->depth);
+//				D_PRINT(0, "Multiplying %d times by %f at level %d\n", w, u->t, u->depth);
 				for ( ; u->t > 0 && w; w--) product *= u->t;
 			}
 			return product * cfg->pros_neutral[which];
@@ -1521,12 +1521,11 @@ unit::effective(FIT_IDX which)
 		for (ma = u->m; ma; ma = ma->next)
 		{
 			if (ma->quant == which && ma->extent) {
-//				printf(" += %d\n", ma->par);
+//				D_PRINT(0, " += %d\n", ma->par);
 				r += ma->par;
 			}
 		}
 	}
-//	printf("sto\n");
 	return r;
 }
 

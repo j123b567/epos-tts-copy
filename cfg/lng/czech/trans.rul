@@ -44,8 +44,15 @@ progress	Ü>Y(!_!)
 #regex  /(\Z)\\.([${lower_case}])/\1\2/	text
 #regex  /\Z(\\.)([${upper_case}])/\1\2/	text
 
-regex    /\\((.\{1,12\})\\)/v~závorce~\1/				colon
-regex    /"(.\{1,12\})"/v~uvozovkách~\1/					colon
+regex    /\\((.\{1,12\})\\)/v~závorce~\1/		colon
+regex    /"(.\{1,12\})"/v~uvozovkách~\1/		colon
+
+inside . sent
+{
+	regex	 /\ atd\$/~a~tak~dále/		colon
+	regex	 /\ napø\$/~napøíklad/		colon
+	regex    /\ apod\$/~a~podobnì/		colon
+}
 
 # rùzné zkratky
 

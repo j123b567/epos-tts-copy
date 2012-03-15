@@ -220,17 +220,20 @@ hash *literal_hash(char *s)
 	}
 }
 
+#if 0
 static char esc(char x)
 {
 	return esctab->xlat(x);
 }
+#endif
 
 hashing_rule::hashing_rule(char *param) : rule(NULL)
 {
 	negated = 0;
 	if (*param == '!') param++, negated = 1;
-	if (*param == DQUOT) raw = strdup(param);
-	else raw = compose_pathname(param, this_lang->hash_dir, scfg->lang_base_dir);
+	raw = strdup(param);
+//	if (*param == DQUOT) raw = strdup(param);
+//	else raw = compose_pathname(param, this_lang->hash_dir, scfg->lang_base_dir);
 	dict = NULL;
 	allow_id = false;
 }
@@ -263,8 +266,9 @@ hashing_rule::load_hash()
 	if (dict) shriek(862, "unwanted load_hash");
 
 	if (*raw != DQUOT) {
-		dict = new hash(raw, scfg->hash_full, 0, 200, 5,
-			(char *) allow_id, false, "dictionary %s not found", esc);
+		dict = new hash(raw, this_lang->hash_dir, scfg->lang_base_dir, "dictionary",
+			scfg->hash_full, 0, 200, 5,
+			(char *) allow_id, false);
 	} else dict = literal_hash(raw);
 	if (!dict) shriek(463, "%s Unterminated argument", debug_tag());	// or out of memory
 }
@@ -1193,8 +1197,9 @@ r_with::r_with(char *param, text *file, hash *vars) : cond_rule(param, file, var
 	negated = false;
 	if (*raw == '!') raw++, negated = true;
 
-	if (*raw == DQUOT) raw = strdup(raw);
-	else raw = compose_pathname(raw, this_lang->hash_dir, scfg->lang_base_dir);
+	raw = strdup(raw);
+//	if (*raw == DQUOT) raw = strdup(raw);
+//	else raw = compose_pathname(raw, this_lang->hash_dir, scfg->lang_base_dir);
 
 	free(old);
 	dict = NULL;
@@ -1210,8 +1215,8 @@ r_with::apply(unit *root)
 {
 	if (!dict) {
 		if (*raw == DQUOT) dict = literal_hash(raw);
-		else dict = new hash(raw, scfg->hash_full,
-			0, 200, 3, DATA_EQUALS_KEY, false, "dictionary %s not found", esc);
+		else dict = new hash(raw, this_lang->hash_dir, scfg->lang_base_dir, "dictionary",
+			scfg->hash_full, 0, 200, 3, DATA_EQUALS_KEY, false);
 	}
 	if (!dict) shriek(811, "%s Unterminated argument", debug_tag());	// or out of memory
 

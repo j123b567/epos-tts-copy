@@ -33,8 +33,10 @@ class text
 	bool warn;		// whether to heed or ignore #warn
 	int embed;		// subfiling depth 
 	
-	void subfile(const char *filename);
+	void basefile(const char *filename, const char *action);
+	void subfile(const char *filename, const char *action);
 	void superfile();
+	void handle_directive(char *line);
 	void done();		// shriek if some input left
   public:
   	text(const char *filename, const char *dirname, const char *treename,
@@ -42,7 +44,7 @@ class text
 				// if description == NULL, please test exists() afterwards
 	~text();
 	bool exists();		// always true except when no description given to constructor
-	bool getline(char *line);    // return true on success, false on EOF
+	bool get_line(char *line);    // return true on success, false on EOF
 	void rewind();		// let's start again
 	void rewind(bool warnings);
 	

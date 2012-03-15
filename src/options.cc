@@ -294,7 +294,7 @@ void restrict_options()
 		return;		/* if no restrictions file, ignore it */
 	}
 	char *line = (char *)xmalloc(scfg->max_line);
-	while (t->getline(line)) {
+	while (t->get_line(line)) {
 		char *status = split_string(line);
 		o = option_set->translate(line);
 		if (!o) {
@@ -543,13 +543,18 @@ void parse_cfg_str(char *val)
 	bool tmp;
 	
 	tmp=0;
-	if (*val == DQUOT && *(brutto = val + strlen(val)-1) == DQUOT && brutto[-1] != ESCAPE) 
-		tmp = 1, *brutto = 0;       //If enclosed in double quotes, kill'em.
+	if (*val == DQUOT && *(brutto = val + strlen(val)-1) == DQUOT) {
+		*brutto = 0;       //If enclosed in double quotes, kill'em.
+		for (netto = val; netto < brutto; netto++)
+			netto[0] = netto[1];
+	}
+#if 0
 	for (netto=val, brutto = val + tmp; *brutto; brutto++, netto++) {
 		*netto = *brutto;
 		if (*brutto == ESCAPE) *netto = esctab->xlat(*++brutto);
 	}				//resolve escape sequences
 	*netto = 0;
+#endif
 }
 
 template<class T> inline void set_enum_option(epos_option *o, const char *val, const char *list, char *locus)
@@ -895,7 +900,7 @@ void load_config(const char *filename, const char *dirname, const char *what,
 	line[-2] = OPT_STRUCT_PREFIX[type];
 	line[-1] = ':';
 	text *t = new text(filename, dirname, "", what, true);
-	while (t->getline(line)) {
+	while (t->get_line(line)) {
 		char *value = split_string(line);
 		if (value && *value) {
 			for (i = strlen(value)-1; strchr(WHITESPACE, value[i]) && i; i--) ;
@@ -923,18 +928,19 @@ void load_config(const char *filename)
 
 static inline void add_language(int, const char *lng_name)
 {
+	if (!*lng_name)
+		return;
+
 	char *filename = (char *)xmalloc(strlen(lng_name) + 6);
 	char *dirname = (char *)xmalloc(strlen(lng_name) + 6);
-
-	D_PRINT(3, "Adding language %s\n", lng_name);
 	sprintf(filename, "%s.ini", lng_name);
 	sprintf(dirname, "%s%c%s", scfg->lang_base_dir, SLASH, lng_name);
-	if (*lng_name) {
-		if (!cfg->langs) cfg->langs = (lang **)xmalloc(8 * sizeof (void *));
-		else if (!(cfg->n_langs-1 & cfg->n_langs) && cfg->n_langs > 4)	    // n_langs == 8, 16, 32...
-			cfg->langs = (lang **)xrealloc(cfg->langs, (cfg->n_langs << 1) * sizeof(void *));
-		cfg->langs[cfg->n_langs++] = new lang(filename, dirname);
-	}
+
+	D_PRINT(3, "Adding language %s\n", lng_name);
+	if (!cfg->langs) cfg->langs = (lang **)xmalloc(8 * sizeof (void *));
+	else if (!(cfg->n_langs-1 & cfg->n_langs) && cfg->n_langs > 4)	    // n_langs == 8, 16, 32...
+		cfg->langs = (lang **)xrealloc(cfg->langs, (cfg->n_langs << 1) * sizeof(void *));
+	cfg->langs[cfg->n_langs++] = new lang(filename, dirname);
 	free(filename);
 	free(dirname);
 }
@@ -1064,7 +1070,7 @@ void config_init()
 	parse_cmd_line();
 	scfg->loaded=true;
 	
-	hash_max_line = scfg->max_line;
+// 	hash_max_line = scfg->max_line;
 
 	if (scfg->version) version();
 	if (scfg->help || scfg->long_help) dump_help();

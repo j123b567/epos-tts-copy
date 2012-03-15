@@ -2,7 +2,7 @@
 dnl Process this file with autoconf to produce a configure script
 
 AC_INIT(src/unit.cc)
-AM_INIT_AUTOMAKE(epos, 2.5.17)
+AM_INIT_AUTOMAKE(epos, 2.5.18)
 AC_PREFIX_DEFAULT(/usr)
 
 dnl AC_DEFINE_UNQUOTED(BASE_DIR, $libdir) didn't unquote enough
@@ -34,19 +34,11 @@ AC_ARG_ENABLE(charsets, --enable-charsets    allow automatic conversions between
 		CFLAGS = "$CFLAGS -DFORGET_CHARSETS"
 	fi,
 )
-dnl AC_ARG_ENABLE(nnet, --enable-nnet    neural networks for prosody modelling,
-dnl 	if test $enableval = no; then
-dnl 		CFLAGS = "$CFLAGS - DFORGET_NNET"
-dnl 	fi,
-dnl )
 
 AC_LANG_CPLUSPLUS
 
 AC_CHECK_PROGS(LNK, ld wlink, linker)
 AC_CHECK_LIB(stdc++, main)
-dnl AC_CHECK_LIB(c, regcomp)
-dnl AC_CHECK_LIB(rx, regcomp)
-dnl AC_CHECK_LIB(regex, regcomp)
 AC_SEARCH_LIBS(regcomp, c rx regex)
 AC_CHECK_LIB(socket, main)
 AC_CHECK_LIB(lnsl, main)

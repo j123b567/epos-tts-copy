@@ -266,21 +266,21 @@ enumstring.lo enumstring.o : enumstring.cc enumstring.h nnettypes.h \
 	set.h matrix.h utils.h xml.h
 map.lo map.o : map.cc map.h pair.h set.h vector.h iterator.h base.h
 matrix.lo matrix.o : matrix.cc matrix.h stream.h
-neural.lo neural.o : neural.cc ../common.h ../../config.h ../defaults.h \
-	../exc.h ../hash.h ../text.h ../voice.h ../options.lst \
-	../function.h ../interf.h ../options.h ../parser.h ../unit.h \
-	../rule.h ../waveform.h ../synth.h ../encoding.h neural.h \
-	nnettypes.h stream.h slowstring.h vector.h iterator.h base.h \
-	map.h pair.h set.h matrix.h enumstring.h utils.h perceptron.h \
-	traindata.h xmlstream.h xml.h percstruct.h xmlutils.h
+neural.lo neural.o : neural.cc ../common.h ../../config.h ../exc.h \
+	../hash.h ../text.h ../voice.h ../options.lst ../function.h \
+	../interf.h ../options.h ../parser.h ../unit.h ../rule.h \
+	../waveform.h ../synth.h ../encoding.h neural.h nnettypes.h \
+	stream.h slowstring.h vector.h iterator.h base.h map.h pair.h \
+	set.h matrix.h enumstring.h utils.h perceptron.h traindata.h \
+	xmlstream.h xml.h percstruct.h xmlutils.h
 neural_parse.lo neural_parse.o : neural_parse.cc ../common.h \
-	../../config.h ../defaults.h ../exc.h ../hash.h ../text.h \
-	../voice.h ../options.lst ../function.h ../interf.h \
-	../options.h ../parser.h ../unit.h ../rule.h ../waveform.h \
-	../synth.h ../encoding.h neural.h nnettypes.h stream.h \
-	slowstring.h vector.h iterator.h base.h map.h pair.h set.h \
-	matrix.h enumstring.h utils.h perceptron.h traindata.h \
-	xmlstream.h xml.h percstruct.h
+	../../config.h ../exc.h ../hash.h ../text.h ../voice.h \
+	../options.lst ../function.h ../interf.h ../options.h \
+	../parser.h ../unit.h ../rule.h ../waveform.h ../synth.h \
+	../encoding.h neural.h nnettypes.h stream.h slowstring.h \
+	vector.h iterator.h base.h map.h pair.h set.h matrix.h \
+	enumstring.h utils.h perceptron.h traindata.h xmlstream.h xml.h \
+	percstruct.h
 perceptron.lo perceptron.o : perceptron.cc perceptron.h traindata.h \
 	utils.h nnettypes.h stream.h slowstring.h vector.h iterator.h \
 	base.h map.h pair.h set.h matrix.h enumstring.h xmlstream.h \
@@ -307,13 +307,12 @@ xml.lo xml.o : xml.cc xml.h nnettypes.h stream.h slowstring.h vector.h \
 	iterator.h base.h map.h pair.h set.h matrix.h enumstring.h \
 	utils.h xml_parse.h
 xml_parse.lo xml_parse.o : xml_parse.cc ../common.h ../../config.h \
-	../defaults.h ../exc.h ../hash.h ../text.h ../voice.h \
-	../options.lst ../function.h ../interf.h ../options.h \
-	../parser.h ../unit.h ../rule.h ../waveform.h ../synth.h \
-	../encoding.h neural.h nnettypes.h stream.h slowstring.h \
-	vector.h iterator.h base.h map.h pair.h set.h matrix.h \
-	enumstring.h utils.h perceptron.h traindata.h xmlstream.h xml.h \
-	percstruct.h
+	../exc.h ../hash.h ../text.h ../voice.h ../options.lst \
+	../function.h ../interf.h ../options.h ../parser.h ../unit.h \
+	../rule.h ../waveform.h ../synth.h ../encoding.h neural.h \
+	nnettypes.h stream.h slowstring.h vector.h iterator.h base.h \
+	map.h pair.h set.h matrix.h enumstring.h utils.h perceptron.h \
+	traindata.h xmlstream.h xml.h percstruct.h
 xmltempl.lo xmltempl.o : xmltempl.cc xmlutils.h utils.h nnettypes.h \
 	stream.h slowstring.h vector.h iterator.h base.h map.h pair.h \
 	set.h matrix.h enumstring.h xmltempl.h traindata.h xmlstream.h \

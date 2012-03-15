@@ -1074,7 +1074,7 @@ void a_protocol::run()
 		return;
 	}
 
-	encode_string(buffer, this_lang->charset, false);	// FIXME (alloc->true)
+//	encode_string(buffer, this_lang->charset, false);	// FIXME (alloc->true)
 
 	encode_string(buffer, this_lang->charset, false);	// FIXME (alloc->true)
 

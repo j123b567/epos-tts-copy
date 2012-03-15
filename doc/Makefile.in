@@ -92,7 +92,7 @@ LDFLAGS = @LDFLAGS@ -L$(libdir)
 AM_CPPFLAGS = -I$(srcdir)/..
 MAINTAINERCLEANFILES = epos.html epos-?.html
 
-CONTENTS = intro.sgml rules.sgml options.sgml ttscp.sgml security.sgml devel.sgml 
+CONTENTS = intro.sgml arch.sgml rules.sgml options.sgml ttscp.sgml security.sgml devel.sgml 
 
 EXTRA_DIST = $(CONTENTS) header.sgml footer.sgml
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

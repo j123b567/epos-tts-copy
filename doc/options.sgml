@@ -124,6 +124,24 @@ file is associated with a certain option set, that is, it contains either just
 global options, or options related to some language or voice. (In the latter
 two cases, the <tt>name</tt> option identifies the language or voice properly.)
 
+<sect2> Character Encoding <label id="encoding">
+<p>
+
+Sometimes it is not convenient or possible to encode all configuration files
+in the same character encoding.  For example, a character encoding may be
+language dependent.  But it is even possible for different lines of the
+same file to use different encodings.  You can switch character encodings
+for the same file using the <tt>&commat;charset</tt> directive.
+Charset name must be specified as a parameter and it must be enclosed in
+parentheses.  Epos attempts to load the corresponding unicode character
+mapping file and immediately switches the charset number for the current
+file.  Please note two differences from the <tt/charset/ option:
+the directive only affects the current "logical" file (including included
+files as well as any files it has been included from using the
+<tt>&commat;include</tt> directive), whereas the option doesn't affect it at
+all, but it affects all subsequent files (e.g. for the given language),
+such as the rules file.
+
 <sect2> Escaping Special Characters <label id="escaping">
 <p>
 
@@ -164,7 +182,7 @@ The available escape sequences are listed in <ref id="escapes" name="the table o
 </table>
 
 (If you suspect this table to be out-of-date, you can consult the <tt>token&lowbar;esc</tt>
-and <tt>value&lowbar;esc</tt> constants in <tt>option.cc</tt>, or the table in 
+and <tt>value&lowbar;esc</tt> constants in <tt>option.lst</tt>, or the table in 
 <tt>parser.h</tt>.) ASCII codes in parentheses are ASCII codes used for different
 purposes by Epos.
 
@@ -185,24 +203,6 @@ main <tt>.ini</tt> file. These includes can be nested to any depth up to
 the value of the <tt/max&lowbar;nest/ option; if no or
 relative path is specified, the directory which holds the topmost file is used for
 the lookup.
-
-<sect2> Character Encoding <label id="encoding">
-<p>
-
-Sometimes it is not convenient or possible to encode all configuration files
-in the same character encoding.  For example, a character encoding may be
-language dependent.  But it is even possible for different lines of the
-same file to use different encodings.  You can switch character encodings
-for the same file using the <tt>&commat;charset</tt> directive.
-Charset name must be specified as a parameter and it must be enclosed in
-parentheses.  Epos attempts to load the corresponding unicode character
-mapping file and immediately switches the charset number for the current
-file.  Please note two differences from the <tt/charset/ option:
-the directive only affects the current "logical" file (including included
-files as well as any files it has been included from using the
-<tt>&commat;include</tt> directive), whereas the option doesn't affect it at
-all, but it affects all subsequent files (e.g. for the given language),
-such as the rules file.
 
 <sect2> Other Directives
 <p>
@@ -697,6 +697,7 @@ unless specified otherwise.
 	debugging situations (when a text is parsed in an unexpected way
 	and the user is trying to find out which rule has escaped his
 	attention). This option may not work with all setups.
+<label id="profile-option">
 <tag>--profile <sl/filename/ </tag>
 	Setting this option to a file name causes profiling information
 	to be recorded to the file named.  The file is created in the
@@ -1494,13 +1495,13 @@ change them in the configuration files instead and request Epos
 	where various information about the Epos process is recorded.
 	At the moment that is of little practical use except for debugging.
 <tag>--syslog</tag>
-	Log all TTSCP error messages with syslogd, if the syslog facility
+	Log all TTSCP error messages with <tt>syslogd</tt>, if the syslog facility
 	is available.  Due to the internal design of Epos, some of these
 	messages are never actually sent over TTSCP to anyone - for example,
 	a fatal misconfiguration condition detected before the first client
-	connects.
+	connects; but they're logged anyway.
 <tag>--full&lowbar;syslog</tag>
-	Log all TTSCP completion messages with syslogd, if the syslog facility is
+	Log all TTSCP completion messages with <tt>syslogd</tt>, if the syslog facility is
 	available, including 1xx and 2xx class messages.
 <label id="authpriv-option">
 <tag>--authpriv</tag>
@@ -1512,7 +1513,7 @@ change them in the configuration files instead and request Epos
 	are not affected by this option.
 <tag>--log&lowbar;codes </tag>
 	When set, all TTSCP messages are preceded with their numeric codes
-	as in TTSCP.
+	as in TTSCP when logging using <tt/syslogd/.
 <tag>--server&lowbar;pwd&lowbar;file <sl/filename/</tag>
 	The value is a file name. This option can be used to force the server
 	to store its internal password to a file.  This password can then
@@ -1569,12 +1570,12 @@ The severity level may have one of these values:
 <table loc="ht">
 <tabular ca="|l|l|l|l|">
 <hline>
-level | debugging messages | easy invocation | comment @
+level | debugging messages | easy invocation | typical examples @
 <hline>
-3 | rare     | -D    | major events, warnings, and such @
+3 | rare     | -D    | major events, warnings @
 2 | normal   | -DD   | informative messages @
-1 | verbose  | -DDD  | too verbose @
-0 | detailed | -DDDD | non-systematic chaos @
+1 | verbose  | -DDD  | detailed debugging printouts @
+0 | detailed | -DDDD | miscellaneous chaos @
 <hline>
 </tabular>
 <caption>

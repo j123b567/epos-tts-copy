@@ -12,6 +12,12 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License in doc/COPYING for more details.
  *
+ *	Please note that the monolithic binary is not supported
+ *	nor documented.  If you don't know what it is, then you
+ *	don't want to use it.
+ *
+ *	The reason is that monolithic TTS systems are either slow
+ *	or of limited configurability.
  */
 
 #include "common.h"
@@ -71,9 +77,10 @@ int main(int argc, char **argv)
 {
 	try {
 		argc_copy = argc, argv_copy = argv;
+		scfg->play_segs = true;
 		epos_init();
 		submain();
-		epos_done();
+//		epos_done();
 		return 0;
 	} catch (any_exception *e) {
 		unuse(e->code);

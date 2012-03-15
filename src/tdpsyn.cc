@@ -66,7 +66,7 @@ int hamkoe(int winlen, uint16_t *data, int e, int e_base)
 
 int hamkoe(int winlen, double *data)
 {
-//	printf("%d\n", winlen);
+	D_PRINT(0, "%d\n", winlen);
 	int i;
 	double fn;
 	fn = 2 * pii / (winlen - 1);
@@ -112,7 +112,7 @@ tdpsyn::tdpsyn(voice *v)
 
 	tdi = claim(v->models, v->loc, scfg->inv_base_dir, "rb", "inventory", NULL);
 	hdr = (tdi_hdr *)tdi->data;
-	printf ("Got %d and config says %d\n", hdr->n_segs, v->n_segs);
+	D_PRINT(0, "Got %d and config says %d\n", hdr->n_segs, v->n_segs);
 	if (v->n_segs != hdr->n_segs) shriek(463, "inconsistent n_segs");
 	if (sizeof(SAMPLE) != hdr->samp_size) shriek(463, "inconsistent samp_size");
 	tdp_buff = (SAMPLE *)(hdr + 1);
@@ -121,9 +121,7 @@ tdpsyn::tdpsyn(voice *v)
 	ppulses = diph_len + v->n_segs;
 
 	// this is debugging only!
-#if 1
-	printf ("Samples are %d long.\n", sizeof(SAMPLE) * hdr->bufpos);
-#endif
+	D_PRINT(0, "Samples are %d bytes long.\n", sizeof(SAMPLE) * hdr->bufpos);
 
 	/* allocate the maximum necessary space for Hamming windows: */	
 //	max_frame = 0;
@@ -231,11 +229,11 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 	    else {
 	      old_exc = exc;
 	    }
-	    printf ("Version lpc with nnet, exc. is %f\n", exc);
+	    D_PRINT(0, "Version lpc with nnet, exc. is %f\n", exc);
 	  }
 	  else {
 		exc = LP_EXC_MUL * (d.f - v->init_f);
-	    // printf ("Version lpc, exc is %f\n", exc);
+	    D_PRINT(0, "Version lpc, exc is %f\n", exc);
 	  }
 
 		pitch = lppitch;
@@ -243,7 +241,7 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 	}
 	else {				// in d.f is f0 contour value
 	pitch = v->samp_rate / d.f;
-	  // printf ("Version without lpc, pitch is %d\n", pitch);
+	  D_PRINT(0, "Version without lpc, pitch is %d\n", pitch);
 	}
 
 	if (v->f0_smoothing) {
@@ -262,21 +260,21 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 	if (d.t > 0) origlen = avpitch * slen * d.t / 100; else origlen = avpitch * slen;
 	newlen = pitch * slen;
 	//diflen = (newlen - origlen) / slen;
-	//printf("\navp=%d L=%d oril=%d newl=%d | %d (%d)\n",avpitch,pitch,origlen,newlen,diph_len[d.code],d.code);
-	//printf("unit:%4d f=%3d i=%3d t=%3d - pitch=%d\n",d.code,d.f,d.e,d.t,pitch);
+	D_PRINT(0, "\navp=%d L=%d oril=%d newl=%d | %d (%d)\n",avpitch,pitch,origlen,newlen,diph_len[d.code],d.code);
+	D_PRINT(0, "unit:%4d f=%3d i=%3d t=%3d - pitch=%d\n",d.code,d.f,d.e,d.t,pitch);
 
 	hamkoe(2 * maxwin + 1, wwin, d.e, 100);
 	skip = 1; reply = 1;
 	if (newlen > origlen) skip = newlen / origlen;
 	if (origlen > newlen) reply = origlen / newlen;
-	//printf("dlen=%d p:%d avp=%d oril=%d newl=%d difl=%d",diph_len[d.code],pitch,avpitch,origlen,newlen,diflen);
+	D_PRINT(0, "dlen=%d p:%d avp=%d oril=%d newl=%d difl=%d",diph_len[d.code],pitch,avpitch,origlen,newlen,diflen);
 	nlen = slen - (skip - 1) * slen / skip + (reply - 1) * slen;
 	if (nlen == 0) {
-	  printf ("Error: Pitch modelling exceeds range!\n");
+	  D_PRINT(0, "Error: Pitch modelling exceeds range!\n");
 	  nlen = 1;
 	}
 	diflen = (newlen - origlen - (skip - 1) * slen * pitch / skip + (reply - 1) * slen * pitch) / nlen;
-	//printf(" -> diflen:%d sk:%d rp:%d\n",diflen,skip,reply);
+	D_PRINT(0, " -> diflen:%d sk:%d rp:%d\n",diflen,skip,reply);
 	for (j = 1; j <= diph_len[d.code]; j += skip) for (k = 0; k < reply; k++) {
 		memcpy(out_buff + max_frame - pitch, out_buff + max_frame, pitch * sizeof(*out_buff));
 		memset(out_buff + max_frame, 0, max_frame * sizeof(*out_buff));
@@ -298,11 +296,11 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 			for (l = 0; l < 2 * pitch; l++) {
 				sigpos++;
 				if (!(sigpos % lppstep)) {	// new pitch value into f0 output filter
-					//printf("LPP position point %d, exc=%.2f synf0=%d otf0=%.2f L=%d\n",sigpos,exc,synf0,outf0,lppitch);
+					D_PRINT(0, "LPP position point %d, exc=%.2f synf0=%d otf0=%.2f L=%d\n",sigpos,exc,synf0,outf0,lppitch);
 					synf0 = 0;
 					if (!(sigpos % lpestep)) {	// new excitation value into recontruction filter
-						//printf("   >> LPE position point %d (exc=%.4f) <<   \n",sigpos,exc);
-						//printf("lp=[%.3f %.3f %.3f %.3f] lpfilt=[%.3f %.3f %.3f %.3f]\n",lp[0],lp[1],lp[2],lp[3],lpfilt[0],lpfilt[1],lpfilt[2],lpfilt[3]);
+						D_PRINT(0, "   >> LPE position point %d (exc=%.4f) <<   \n",sigpos,exc);
+						D_PRINT(0, "lp=[%.3f %.3f %.3f %.3f] lpfilt=[%.3f %.3f %.3f %.3f]\n",lp[0],lp[1],lp[2],lp[3],lpfilt[0],lpfilt[1],lpfilt[2],lpfilt[3]);
 						synf0 = exc - lpfilt[0]*lp[0];
 						exc = 0;
 						for (m = LP_F0_ORD - 1; m > 0; m--) {
@@ -311,7 +309,7 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 						}
 						lpfilt[0] = synf0;
 						pitch_saved = 1;
-						// printf ("Unsmoothed synf0 is: %f\n", synf0);
+						D_PRINT(0, "Unsmoothed synf0 is: %f\n", synf0);
 					}
 
 					// skip f0 filter here
@@ -322,8 +320,8 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 					for (m = 1; m < F0_FILT_ORD; m++) ofilt[0] -= a[m] * ofilt[m];
 					outf0 = 0;
 					for (m = 0; m < F0_FILT_ORD; m++) outf0 += b[m] * ofilt[m];
-					//printf("of=[%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f]\n",ofilt[0],ofilt[1],
-					//	ofilt[2],ofilt[3],ofilt[4],ofilt[5],ofilt[6],ofilt[7],ofilt[8]);
+					D_PRINT(0, "of=[%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f]\n",ofilt[0],ofilt[1],
+						ofilt[2],ofilt[3],ofilt[4],ofilt[5],ofilt[6],ofilt[7],ofilt[8]);
 					  
 					  // amplify the signal
 					  // outf0 = outf0 * 13.4;
@@ -343,17 +341,17 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 					  pitch_saved = 2;
 					lppitch = (int)(v->samp_rate / (basef0 + outf0));
 					}
-					// printf ("New values: outf0 : %f, lppitch : %d\n", outf0, lppitch);
+					D_PRINT(0, "New values: outf0 : %f, lppitch : %d\n", outf0, lppitch);
 					outf0 = 0;
 					for (m = F0_FILT_ORD - 1; m > 0; m--) ofilt[m] = ofilt[m - 1];
 				}
 			}
 		}
 
-		// printf ("Pitch: %d\n", pitch);
+		D_PRINT(0, "Pitch: %d\n", pitch);
 
 		w->sample((SAMPLE *)out_buff + max_frame - pitch, pitch);
-		//printf("  j:%d difpos:%d diflen:%d",j,difpos,diflen);
+		D_PRINT(0, "  j:%d difpos:%d diflen:%d",j,difpos,diflen);
 		difpos += diflen;
 		if (difpos < -pitch) {
 			if (reply == 1) j--; else k--;
@@ -365,12 +363,12 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 			else k++;
 			difpos -= pitch;
 		}
-		//printf(" -> j:%d difpos:%d\n",j,difpos);
+		D_PRINT(0, " -> j:%d difpos:%d\n",j,difpos);
 
 		// inserted to label f0 in wav file
 		if (cfg->label_f0) {
 			
-			// printf ("Labelling file!\n");
+			D_PRINT(0, "Labelling file!\n");
 			
 			char tmp[4];
 			snprintf (tmp, 4, "%d", pitch);
@@ -411,7 +409,7 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 			
 			nlen = slen - (skip - 1) * slen / skip + (reply - 1) * slen;
 			if (nlen == 0) {
-				printf ("Error: Pitch modelling exceeds range!\n");
+				D_PRINT(0, "Error: Pitch modelling exceeds range!\n");
 				nlen = 1;
 			}
 			diflen = (newlen - origlen - (skip - 1) * slen * pitch / skip + (reply - 1) * slen * pitch) / nlen;

@@ -139,10 +139,22 @@ int cmd_intr(char *param, a_ttscp *a)
 	return PA_NEXT;
 }
 
+static void strip(char *val)
+{
+	char *brutto;
+	char *netto;
+	for (netto=val, brutto = val; *brutto; brutto++, netto++) {
+		*netto = *brutto;
+		if (*brutto == ESCAPE) *netto = esctab->xlat(*++brutto);
+	}				//resolve escape sequences
+	*netto = 0;
+}
+
 static inline int do_set(char *param, context *real)
 {
 	char *value = split_string(param);
 	epos_option *o = option_struct(param, this_lang->soft_options);
+	strip(value);
 
 	if (o) {
 		if (access_level(this_context->uid) >= o->writable) {

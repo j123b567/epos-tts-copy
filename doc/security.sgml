@@ -3,6 +3,9 @@
 
 A very short section which just doesn't seem to belong anywhere else.
 
+<sect1> Syslog
+<p>
+
 Epos supports error logging via syslog (on systems where syslogd
 is running).  At the moment, only (the most of) TTSCP completion codes
 together with the associated messages can be logged; this includes
@@ -10,9 +13,9 @@ all abnormal server termination states (except for a plain old fatal
 signal).  If syslog should be available (the <tt>syslog.h</tt> header
 file is present), but isn't, the error messages are logged directly
 to the system console.  If the syslog facility is being missed at
-compilation time, Epos opens a file called <tt>hackfile</tt> in the
-current directory whatever it may be and writes some debugging information
-there instead.
+compilation time, Epos opens a file called <tt>epos.err</tt> in the
+current directory whatever it may be and writes some debugging
+information there instead.
 
 The syslog message levels are set according to the <ref id="syslogs"
 name="syslog message levels"> table.  In all cases, Epos messages
@@ -42,8 +45,17 @@ See also the <ref id="authpriv-option" name="<tt>authpriv</tt> option">
 which may change this behavior for possibly security-related errors,
 but not network errors.
 
+<sect1> Home-Made Logging
+<p>
+
 Any debugging output together with error messages etc. is also often logged
-to <tt>/var/log/epos</tt> as specified with the <tt/daemon_log/ option.
+to <tt>/var/log/epos</tt> as specified with the
+<ref id="daemon-log-option" name="<tt>daemon_log</tt> option">.
+
+The agent profile which shows how much time does Epos spend with
+individual agents (which gives an insight into which processing
+phases are time consuming) can be turned on with the
+<ref id="profile-option" name="<tt>profile</tt> option">.
 
 <sect> Security
 <p>
@@ -69,7 +81,8 @@ server password.  Thus, all connections are either completely anonymous,
 or authenticated at the "server" level (which can still be restricted
 from setting or reading specific options.)
 
-The server password is stored in <tt>/var/run/epos.pwd</tt>.  Any process
+In the default configuration, the server password is stored
+in <tt>/var/run/epos.pwd</tt>.  Any process
 with rights sufficient to read this file is able to authenticate as the
 server over TTSCP.
 For debugging purposes, it is also possible to force Epos to accept

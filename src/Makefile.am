@@ -10,7 +10,7 @@ SRC_BASE = parser.cc unit.cc rule.cc \
 text.cc encoding.cc interf.cc function.cc options.cc \
 synth.cc waveform.cc voice.cc client.cc \
 lpcsyn.cc tdpsyn.cc mbrsyn.cc tcpsyn.cc \
-common.h defaults.h unit.h parser.h rule.h text.h encoding.h interf.h \
+common.h unit.h parser.h rule.h text.h encoding.h interf.h \
 function.h options.h hash.h synth.h voice.h exc.h \
 waveform.h lpcsyn.h tdpsyn.h mbrsyn.h tcpsyn.h \
 slab.h rx.h client.h agent.h 
@@ -22,6 +22,9 @@ gauge_SOURCES = gauge.cc
 
 epos_LDADD = nnet/libeposnnet.la
 eposm_LDADD = nnet/libeposnnet.la
+
+nnet/libeposnnet.la:
+	@cd nnet && $(MAKE) $(AM_MAKEFLAGS) libeposnnet.la
 
 EXTRA_DIST = options.lst hashtmpl.cc marker.cc block.cc exc.cc \
 qnxipc.cc

@@ -114,6 +114,7 @@ struct segment {
 
 
 extern charxlat *esctab;
+extern const char* WHITESPACE;       // i.e. space and tab
 
 // extern FILE *stdshriek;
 // extern FILE *stdwarn;
@@ -164,7 +165,8 @@ extern char *current_debug_tag;
  *	D_PRINT except that other code than a call to fprintf
  *	can be executed.  The code should however stay very simple
  *	and be limited to debugging output of some kind, e.g.
- *	dumping of arrays.
+ *	dumping of arrays with reliable range checking, so as
+ *	not to disturb the behavior of the program accidentally.
  *
  *	If DEBUGGING is not defined, all of these macros are
  *	completely ignored.  This may speed up the code and conserve

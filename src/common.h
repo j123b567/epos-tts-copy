@@ -117,7 +117,6 @@ class stream;
 
 typedef char wchar;
 
-#include "defaults.h"
 #include "exc.h"
 #include "hash.h"
 #include "text.h"

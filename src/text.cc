@@ -35,7 +35,7 @@ bool strip(char *s)
 		switch (*r = *t) {
 			case ';':
 			case '#':
-				if (s != r && !strchr(WHITESPACE, r[-1])) break;	// ??? nothing happens
+				if (s != r && !strchr(WHITESPACE, r[-1])) break;	// else fall through
 			case '\n':
 //				while (r>s && strchr(WHITESPACE, *--r));
 				*r = 0;
@@ -73,20 +73,26 @@ text::text(const char *filename, const char *dirname, const char *treename,
 	tag = description;
 	base = strdup(filename);
 	warn = warnings;
+	raw = false;
+	basefile(base, "opening");
+}
+
+void
+text::basefile(const char *base, const char *action)
+{
 	embed = 0;
 	current = NULL;
 	current_file = NULL;
 	current_line = 0;
 	charset = cfg->charset;
-	raw = false;
-	subfile(base);
+
+	subfile(base, action);
 }
 
 void
-text::subfile(const char *filename)
+text::subfile(const char *filename, const char *action)
 {
 	textlink *parent;
-
 
 	parent = current;
 	current = new textlink;
@@ -95,7 +101,7 @@ text::subfile(const char *filename)
 		current->f = stdin;
 	} else { 
 		char *pathname = compose_pathname(filename, dir, tree);
-		D_PRINT(2, "Text preprocessor opening %s\n", pathname);
+		D_PRINT(2, "Text preprocessor %s %s\n", action, pathname);
 		current->f = fopen(pathname, "r", tag);
 		free(pathname);
 	}
@@ -110,17 +116,16 @@ text::subfile(const char *filename)
 void
 text::superfile()
 {
-	textlink *tmp;
 	if (current->filename) {
 		free(current_file);
 		current_file = current->filename;
 		current_line = current->line;
-		D_PRINT(2, "Text preprocessor returning to %s\n", current_file);
+		D_PRINT(2, "Text preprocessor returns to %s\n", current_file);
 	} else {
-		D_PRINT(2, "Text preprocessor reached the end of %s\n" , current_file);
+		D_PRINT(1, "Text preprocessor reached the end of %s\n" , current_file);
 	}
 	fclose(current->f);
-	tmp = current;
+	textlink *tmp = current;
 	current = tmp->prev;
 	embed--;
 	delete tmp;
@@ -149,9 +154,27 @@ inline char *get_quoted(char *buffer)
 	*tmp2=0;
 	return tmp1;
 }
+
+void
+text::handle_directive(char *buffer)
+{
+	if (begins(buffer, D_INCLUDE)) {
+		subfile(get_quoted(buffer), "includes");
+	} else if (begins(buffer, D_CHARSET)) {
+		charset = load_charset(get_quoted(buffer));
+		cfg->charset = charset;
+		if (charset == CHARSET_NOT_AVAILABLE)
+			shriek(812, "%s:%d Charset not available", current_file, current_line);
+	} else if (begins(buffer, D_WARN)) {
+		if (warn) fprintf(cfg->stdshriek,
+			"%s\n",buffer+1+strcspn(buffer+1, WHITESPACE));
+	} else if (begins(buffer, D_ERROR)) {
+		shriek(801, get_quoted(buffer));
+	} else shriek(812, "%s:%d Bad directive", current_file, current_line);
+}
 	
 bool
-text::getline(char *buffer)
+text::get_line(char *buffer)
 {
 	int l = 0;
 
@@ -166,42 +189,21 @@ text::getline(char *buffer)
 		current_line++;
 		global_current_line = current_line;
 		global_current_file = current_file;
-		D_PRINT(0, "text::getline processing %s",buffer);
+		D_PRINT(0, "text::get_line processing %s",buffer);
 		if ((int)strlen(buffer) + 1 >= scfg->max_line)
 			shriek(462, "Line too long in %s:%d", current_file, current_line);
+		if (buffer[strspn(buffer, WHITESPACE)] == PP_ESCAPE) {
+			handle_directive(buffer);
+			continue;
+		}		
 		if (!raw && strip(buffer + l)) {
 			l = strlen(buffer);
 			continue;	/* continuation line */
 		}
+		if (!buffer[strspn(buffer,WHITESPACE)]) continue;
 		
 		encode_string(buffer, charset, true);
-		
-		l = 0;
-
-		if (buffer[strspn(buffer, WHITESPACE)] != PP_ESCAPE) {
-			D_PRINT(0, "text::getline default is %s\n",buffer);
-			if (!buffer[strspn(buffer,WHITESPACE)]) continue;
-			return true;	/* the common case */
-		}
-		
-		/* From now on, we know we found a directive.  Just handle it. */
-
-		if (begins(buffer, D_INCLUDE)) {
-			subfile(get_quoted(buffer));
-			continue;
-		} else if (begins(buffer, D_CHARSET)) {
-			charset = load_charset(get_quoted(buffer));
-			cfg->charset = charset;
-			if (charset == CHARSET_NOT_AVAILABLE)
-				shriek(812, "%s:%d Charset not available", current_file, current_line);
-			continue;
-		} else if (begins(buffer, D_WARN)) {
-			if (warn) fprintf(cfg->stdshriek,
-				"%s\n",buffer+1+strcspn(buffer+1, WHITESPACE));
-			continue;
-		} else if (begins(buffer, D_ERROR)) {
-			shriek(801, get_quoted(buffer));
-		} else shriek(812, "%s:%d Bad directive", current_file, current_line);
+		return true;
 	}
 }
 
@@ -209,7 +211,7 @@ void
 text::rewind()
 {
 	if (cfg->paranoid) done();
-	subfile(base);
+	basefile(base, "rewinds");
 }
 
 void

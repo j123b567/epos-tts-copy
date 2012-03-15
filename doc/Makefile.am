@@ -4,7 +4,7 @@ include $(top_srcdir)/Makefile.common
 
 all: epos.html
 
-CONTENTS = intro.sgml rules.sgml options.sgml ttscp.sgml security.sgml devel.sgml 
+CONTENTS = intro.sgml arch.sgml rules.sgml options.sgml ttscp.sgml security.sgml devel.sgml 
 
 epos.sgml: header.sgml $(CONTENTS) footer.sgml
 	@echo Updating epos.sgml

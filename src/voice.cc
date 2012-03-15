@@ -260,7 +260,7 @@ lang::compile_rules()
 	if (!lang_switch(name))
 		shriek(862, "cannot lang_switch to myself");
 
-	D_PRINT(3, "Compiling %s language rules, hash dir %s\n", name, hash_dir);
+	D_PRINT(3, "Compiling %s language rules\n", name);
 	ruleset = new rules(rules_file, rules_dir);
 	parser::init_tables(this);
 
@@ -310,7 +310,7 @@ voice::claim_all()
 		if (!snlfile || !*snlfile) return;
 		t = new text(snlfile, loc, scfg->inv_base_dir, "sound labels", true);
 		char * l = (char *)xmalloc(scfg->max_line);
-		while (t->getline(l)) {
+		while (t->get_line(l)) {
 			int a, b, d; char c;
 			if (sscanf(l, "%d %d %c %d\n", &a, &b, &c, &d) == 3) {
 				if (sl[a].pos != NO_SOUND_LABEL) shriek(861, "Multilabelled units unimplmd");

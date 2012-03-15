@@ -294,7 +294,7 @@ rules::rules(const char *filename, const char *dirname)
 	file = new text(filename, dirname, scfg->lang_base_dir, "rules", false);
 	file->charset = this_lang->charset;
 	vars = new hash(scfg->vars|1);
-	D_PRINT(3, "Rules shall be taken from %s\n", filename);
+	D_PRINT(2, "Rules shall be taken from %s\n", filename);
 	
 	body = new r_block(file, vars);
 	body->scope = scfg->text_level;
@@ -308,7 +308,7 @@ rules::rules(const char *filename, const char *dirname)
 	D_PRINT(0, "rules will now release allocated memory\n");
 	delete vars;
 	delete file;
-	D_PRINT(3, "Rules parsed OK\n");
+	D_PRINT(2, "Rules from %s parsed OK\n", filename);
 }
 
 rules::~rules()
@@ -420,7 +420,7 @@ parse_rule(text *file, hash *vars, int *count)
 
 	next_line:
 	
-	if(!file->getline(str)) return END_OF_RULES;
+	if(!file->get_line(str)) return END_OF_RULES;
 	
 	D_PRINT(0, "str2rule should parse: %s\n",str);
 	if(!str[strspn(str,WHITESPACE)]) goto next_line;

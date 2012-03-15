@@ -476,7 +476,7 @@ STATIC (debug_level,"debug_level", INT, 4)	// minimum level of debug messages
 STATIC (loaded, "",               BOOL, false)  // Do we have already compiled the .ini files?
 STATIC (fixedfile,"fixed_ini_file",STR, strdup("fixed.ini"))
 STATIC (inifile, "cfg_file",       STR, NULL)
-STATIC (token_esc, "",             STR, strdup("nrt[eE\\ #;@~.d-mXYZWVU"))  // Escape sequences usable in the .ini files
+STATIC (token_esc, "",             STR, strdup("nrt[eE\\ #;@~.d-mXYZWVU"))  // Escape sequences usable in text files
 STATIC (value_esc, "",             STR, strdup("\n\r\t\033\033\033\\\377#;@\1\2\3\4\5\037\036\035\034\032\031"))	// FIXME: this should become a constant, not an option; or to become changeable
 STATIC (slash_esc, "",            CHAR, '/')	// Path separator ('/' or '\') .ini escape seq
 

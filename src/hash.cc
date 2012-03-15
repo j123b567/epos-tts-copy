@@ -17,7 +17,7 @@
 
 #include "common.h"
 
-#include "hashtmpl.cc"	/* will probably include hash.h, defaults.h" */
+#include "hashtmpl.cc"
 
 /*
  *	This is a good place for hash table instantiation needed by both

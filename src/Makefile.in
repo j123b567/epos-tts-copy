@@ -100,7 +100,7 @@ SRC_BASE = parser.cc unit.cc rule.cc \
 text.cc encoding.cc interf.cc function.cc options.cc \
 synth.cc waveform.cc voice.cc client.cc \
 lpcsyn.cc tdpsyn.cc mbrsyn.cc tcpsyn.cc \
-common.h defaults.h unit.h parser.h rule.h text.h encoding.h interf.h \
+common.h unit.h parser.h rule.h text.h encoding.h interf.h \
 function.h options.h hash.h synth.h voice.h exc.h \
 waveform.h lpcsyn.h tdpsyn.h mbrsyn.h tcpsyn.h \
 slab.h rx.h client.h agent.h 
@@ -387,60 +387,59 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
-agent.o: agent.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h agent.h client.h
-client.o: client.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h client.h
-daemon.o: daemon.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h client.h agent.h
-encoding.o: encoding.cc common.h ../config.h defaults.h exc.h hash.h \
-	text.h voice.h options.lst function.h interf.h options.h \
-	parser.h unit.h rule.h waveform.h synth.h encoding.h
-function.o: function.cc common.h ../config.h defaults.h exc.h hash.h \
-	text.h voice.h options.lst function.h interf.h options.h \
-	parser.h unit.h rule.h waveform.h synth.h encoding.h
+agent.o: agent.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h agent.h client.h
+client.o: client.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h client.h
+daemon.o: daemon.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h client.h agent.h
+encoding.o: encoding.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h
+function.o: function.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h
 gauge.o: gauge.cc ../config.h exc.h client.cc client.h
-hash.o: hash.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h hashtmpl.cc slab.h
-hashd.o: hashd.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h hash.cc hashtmpl.cc \
-	slab.h agent.h
-interf.o: interf.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h exc.cc
+hash.o: hash.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h hashtmpl.cc slab.h
+hashd.o: hashd.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h hash.cc hashtmpl.cc slab.h \
+	agent.h
+interf.o: interf.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h exc.cc
 ktdsyn.o: ktdsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
 	voice.h options.lst function.h interf.h options.h parser.h \
 	unit.h rule.h waveform.h synth.h encoding.h ktdsyn.h
-lpcsyn.o: lpcsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h lpcsyn.h
-mbrsyn.o: mbrsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h mbrsyn.h
-monolith.o: monolith.cc common.h ../config.h defaults.h exc.h hash.h \
-	text.h voice.h options.lst function.h interf.h options.h \
-	parser.h unit.h rule.h waveform.h synth.h encoding.h
-nonblock.o: nonblock.cc common.h ../config.h defaults.h exc.h hash.h \
-	text.h voice.h options.lst function.h interf.h options.h \
-	parser.h unit.h rule.h waveform.h synth.h encoding.h client.h \
-	agent.h
-options.o: options.cc common.h ../config.h defaults.h exc.h hash.h \
-	text.h voice.h options.lst function.h interf.h options.h \
-	parser.h unit.h rule.h waveform.h synth.h encoding.h slab.h
-parser.o: parser.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h
+lpcsyn.o: lpcsyn.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h lpcsyn.h
+mbrsyn.o: mbrsyn.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h mbrsyn.h
+monolith.o: monolith.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h
+nonblock.o: nonblock.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h client.h agent.h
+options.o: options.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h slab.h
+parser.o: parser.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h
 ptdsyn.o: ptdsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
 	voice.h options.lst function.h interf.h options.h parser.h \
 	unit.h rule.h waveform.h synth.h encoding.h ptdsyn.h
-rule.o: rule.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h nnet/neural.h \
+rule.o: rule.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h nnet/neural.h \
 	nnet/nnettypes.h nnet/stream.h nnet/slowstring.h nnet/vector.h \
 	nnet/iterator.h nnet/base.h nnet/map.h nnet/pair.h nnet/set.h \
 	nnet/matrix.h nnet/enumstring.h nnet/utils.h nnet/perceptron.h \
@@ -448,37 +447,37 @@ rule.o: rule.cc common.h ../config.h defaults.h exc.h hash.h text.h \
 	block.cc
 rx.o: rx.c ../config.h rx.h
 say.o: say.cc ../config.h exc.h client.cc client.h
-synth.o: synth.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h tdpsyn.h lpcsyn.h \
-	mbrsyn.h tcpsyn.h
-tcpsyn.o: tcpsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h tcpsyn.h client.h
-tdpsyn.o: tdpsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h tdpsyn.h
-text.o: text.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h
-ttscp.o: ttscp.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h agent.h client.h
-unit.o: unit.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h nnet/neural.h \
+synth.o: synth.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h tdpsyn.h lpcsyn.h mbrsyn.h \
+	tcpsyn.h
+tcpsyn.o: tcpsyn.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h tcpsyn.h client.h
+tdpsyn.o: tdpsyn.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h tdpsyn.h
+text.o: text.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h
+ttscp.o: ttscp.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h agent.h client.h
+unit.o: unit.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h nnet/neural.h \
 	nnet/nnettypes.h nnet/stream.h nnet/slowstring.h nnet/vector.h \
 	nnet/iterator.h nnet/base.h nnet/map.h nnet/pair.h nnet/set.h \
 	nnet/matrix.h nnet/enumstring.h nnet/utils.h nnet/perceptron.h \
 	nnet/traindata.h nnet/xmlstream.h nnet/xml.h nnet/percstruct.h \
 	slab.h marker.cc
-voice.o: voice.cc common.h ../config.h defaults.h exc.h hash.h text.h \
-	voice.h options.lst function.h interf.h options.h parser.h \
-	unit.h rule.h waveform.h synth.h encoding.h
+voice.o: voice.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h
 vrfy.o: vrfy.cc ../config.h client.cc client.h
-waveform.o: waveform.cc common.h ../config.h defaults.h exc.h hash.h \
-	text.h voice.h options.lst function.h interf.h options.h \
-	parser.h unit.h rule.h waveform.h synth.h encoding.h client.h
+waveform.o: waveform.cc common.h ../config.h exc.h hash.h text.h voice.h \
+	options.lst function.h interf.h options.h parser.h unit.h \
+	rule.h waveform.h synth.h encoding.h client.h
 
 info-am:
 info: info-recursive
@@ -566,6 +565,9 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 export WPP386=-xs
 
 .DELETE_ON_ERROR:
+
+nnet/libeposnnet.la:
+	@cd nnet && $(MAKE) $(AM_MAKEFLAGS) libeposnnet.la
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -242,10 +242,10 @@ static void detach()
 		return;
 	for (i=0; i<3; i++) close(i);
 	if (!open(scfg->daemon_log, O_RDWR|O_CREAT|O_APPEND  UNIX( |O_NOCTTY), MODE_MASK)
-			|| !open (NULL_FILE, O_RDWR|O_APPEND, MODE_MASK)) {
+			|| !open(NULL_FILE, O_RDWR|O_APPEND, MODE_MASK)) {
 		for (i=1; i<3; i++) dup(0);
 		scfg->colored = false;
-		D_PRINT(3, "\n\n\n\nEpos restarted at ");
+		D_PRINT(3, "\n\nEpos restarted at ");
 		fflush(stdout);
 		system("/bin/date");
 	} else /* deep OS level trouble, contact authors */ call_abort();

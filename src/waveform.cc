@@ -524,10 +524,11 @@ wavefm::band_filter(int ds)
 		for (j=1;j<9;filt[0]=filt[0]-a[ds-2][j]*filt[j++]);
 		double outsamp = 0;
 		for (j=0;j<9;outsamp=outsamp+b[ds-2][j]*filt[j++]);
-//		printf("%d %f        ", buffer[i], (float)outsamp);
+		D_PRINT(0, "%d %f        ", buffer[i], (float)outsamp);
 		buffer[i] = (SAMPLE)outsamp;
 		for (j=8;j>0;j--) filt[j]=filt[j-1];		//FIXME: speed up
 	}
+	D_PRINT(0, "\n");
 }
 
 #define put_sample(sample) *(int *)newbuff = sample, newbuff += ssbytes;
@@ -829,7 +830,7 @@ wavefm::chunk_become(char *p, int size)
 	int l = *((int *)p+1);
 	D_PRINT(2, "Considering chunk %p+%d, %.4s len %d\n", p, size, p, *((int *)p+1));
 	if (FOURCC_ID(p) == FOURCC_ID("RIFF")) {
-//		printf("RIFF here\n");
+		D_PRINT(0, "RIFF here\n");
 		if (FOURCC_ID(p + RIFF_HEADER_SIZE) != FOURCC_ID("WAVE")) shriek(471, "Other RIFF than WAVE received");
 		l -= 4;
 		for (char *q = p+12; l>0; ) {

@@ -8,7 +8,7 @@ to the development of Epos or going to modify its source code. It is also not
 trying to become a beginner's guide to Epos. Anyway, if you are personally missing
 something here or elsewhere, tell me and I may add it; that will become almost the only
 source of progress in this section of documentation. The section may also slowly
-become outdated due to lack of interest.
+become outdated due to lack of interest, except for the subsection on portability.
 
 <sect1> Design Goals
 <p>
@@ -92,9 +92,9 @@ of description above the current unit.
 This class represents a logical line-oriented text file. It handles things
 like the <ref id="include-directive" name="&commat;include directive">,
 <ref id="escaping" name ="backslash-escaped special characters">,
-initial whitespace and comment stripping. It is used for the <ref id="rules"
-name="rule files"> and <ref id="cfg-files" name="configuration files">,
-but <em/not/ for the <ref id="dictionary" name="dictionaries">.
+initial whitespace and comment stripping. It is used for <ref id="rules"
+name="rule files">,  <ref id="cfg-files" name="configuration files">,
+and also for the <ref id="dictionary" name="dictionaries">.
 
 <sect2> Class <tt>file</tt>
 <p>

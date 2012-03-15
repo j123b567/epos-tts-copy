@@ -227,7 +227,7 @@ int load_charset(const char *name)
 	unsigned char *c = encoders[charset_list_len - 1];
 	unsigned char *d = decoders[charset_list_len - 1];
 	wchar_t *w = charsets[charset_list_len - 1];
-	while(t->getline(line)) {
+	while(t->get_line(line)) {
 		int b, x, dummy;
 		if (sscanf(line, "%i %i %i", &b, &x, & dummy) != 2) continue;
 		if (b < 0 || b >= 256) shriek(463, "unicode map file %s maps out of range characters", name);
@@ -272,7 +272,7 @@ static void load_sampa(int alt, const char *filename)
 	}
 //	t->raw = true;
 	char *line = (char *)xmalloc(scfg->max_line);
-	while(t->getline(line)) {
+	while(t->get_line(line)) {
 		int u;
 		char x[4], dummy;
 		memset(x, 0, sizeof(x));

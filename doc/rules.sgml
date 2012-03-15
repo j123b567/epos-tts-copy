@@ -106,6 +106,32 @@ of the target level.
 The code, scope and target identifier is not case sensitive, but the parameter
 usually is.
 
+<sect1> Character Encoding
+<p>
+
+As you sometimes need different character encodings for different
+languages, there is <ref id="encoding" name="this mechanism">
+for switching character encodings in text files including rule
+files and dictionaries.
+
+<sect1> Escaping Special Characters
+<p>
+
+You can use the backslash to escape any special character including the
+backslash itself anywhere in the rules just as in the configuration files.
+See the <ref id="escaping" name="corresponding section"> for details.
+
+Notice especially the possibility of referring to several internal
+pseudocharacters with the nice property that they can never be found
+in the input text and therefore are suitable for temporary markers
+of all kinds in the rules.  See the <ref id="raise-rule" name="raise rule">
+example.
+
+<p>
+
+In addition, special characters listed in
+<ref id="escapes" name="the table of escape sequences"> can be inserted
+using the same mechanism.
 
 <sect1> Using Comments and the <tt>&commat;include</tt> Directive
 <p>
@@ -117,6 +143,8 @@ ignored.  The <tt>&commat;include</tt> directive can be used to nest the rule
 files.  The same rules apply within <tt>.ini</tt> files; for more
 details, see <ref id="include-directive" name="the &commat;include directive in
 configuration files">.
+
+
 
 <sect1> Macros
 <p>
@@ -163,6 +191,27 @@ macros are assumed to precede the rule.
 
 For an abundance of examples see existing rule files.
 
+<sect1> The "Except" (<tt>!</tt>) Operator <label id="except">
+<p>
+
+Whenever an unordered list of tokens should be specified within the parameter
+to some rule (use common sense and/or individual rule descriptions above),
+you can also make negative specifications, such as "all consonants except
+l and r".  To do this, use the exclamation mark serving as an "except" operator:
+<tt>&dollar;consonants!lr</tt> (The right operand is subtracted from the left one.)
+If there is no left operand, say in <tt>!x</tt>, the semantics is "all but x".
+A consequence is that <tt>!</tt> alone means "everything".
+
+The operator is right-associative; <tt>!&dollar;vowels!ou</tt> means "all excluding vowels,
+but <tt>o</tt> and <tt>u</tt> don't count as vowels just now".  Therefore,
+<tt/o/ and <tt/u/ are included in this unordered list.
+
+This operator never works for ordered lists, not even
+for the <tt>syll</tt> rule sonority groups.  But there is
+a similar usage associated with rule types <tt/if/, <tt/with/,
+<tt/prep/ and <tt/postp/, where the exclamation mark can be
+used to negate the condition; see the respective rule types.
+
 
 <sect1> Dictionary-oriented Rules <label id="dictionary">
 <p>
@@ -174,7 +223,7 @@ in a separate file, while the parameter of such a rule is the file name.
 Alternatively, the strings can be quoted inside the rule file, especially
 if only a few ones are listed.  Such a collection of strings
 is called a <em/dictionary/ and obeys the same format for any rule type
-which needs external data.
+which needs external data (except for the neural networks).
 
 The dictionary consists of multiple lines, each of which contains a single
 dictionary item.  An item consists of two whitespace separated words,
@@ -193,12 +242,9 @@ the first one is the replacee and the rest of the line, except for any
 post-replacee and/or trailing whitespace, becomes the replacer.  However, some
 rule types may not allow multiple word replacers.
 
-In addition to or instead of a dictionary item, a dictionary line may
-contain whitespace and comments.  The comment begins with a semicolon 
-or hash mark, which is preceded with whitespace or located at the
-beginning of line, and lasts up to the end of line.
-A preceding backslash can be used to escape special characters (to interpret
-them literally).
+The dictionaries follow the <ref id="cfg-files" name="same conventions">
+for character encoding, escaping special characters,
+inclusion directives and comments as the rule files and other text files.
 
 Instead of a file name reference, it is possible to quote the contents
 of the dictionary directly; this is done by encapsulating the contents
@@ -1153,44 +1199,5 @@ if   !colloquial
   Parameter "<tt>pause</tt>": wait until keypress
 
 
-
-<sect1> The "Except" (<tt>!</tt>) Operator <label id="except">
-<p>
-
-Whenever an unordered list of tokens should be specified within the parameter
-to some rule (use common sense and/or individual rule descriptions above),
-you can also make negative specifications, such as "all consonants except
-l and r".  To do this, use the exclamation mark serving as an "except" operator:
-<tt>&dollar;consonants!lr</tt> (The right operand is subtracted from the left one.)
-If there is no left operand, say in <tt>!x</tt>, the semantics is "all but x".
-A consequence is that <tt>!</tt> alone means "everything".
-
-The operator is right-associative; <tt>!&dollar;vowels!ou</tt> means "all excluding vowels,
-but <tt>o</tt> and <tt>u</tt> don't count as vowels just now".  Therefore,
-<tt/o/ and <tt/u/ are included in this unordered list.
-
-This operator never works for ordered lists, not even
-for the <tt>syll</tt> rule sonority groups.  But there is
-a similar usage associated with rule types <tt/if/, <tt/with/,
-<tt/prep/ and <tt/postp/, where the exclamation mark can be
-used to negate the condition; see the respective rule types.
-
-<sect1> Escaping Special Characters
-<p>
-
-You can use the backslash to escape any special character including the
-backslash itself anywhere in the rules just as in the configuration files.
-See the <ref id="escaping" name="corresponding section"> for details.
-
-Notice especially the possibility of referring to several internal
-pseudocharacters with the nice property that they can never be found
-in the input text and therefore are suitable for temporary markers
-of all kinds.  See the <ref id="raise-rule" name="raise rule"> example.
-
-<p>
-
-In addition, special characters listed in
-<ref id="escapes" name="the table of escape sequences"> can be inserted
-using the same mechanism.
 
 

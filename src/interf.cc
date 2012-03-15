@@ -62,6 +62,7 @@
 char *scratch = NULL;
 
 charxlat *esctab = NULL;
+const char* WHITESPACE    = " \t\r";     //i.e. space and tab
 
 int unused_variable;
 
@@ -179,11 +180,6 @@ void dprint_always(int level, const char *fmt, ...)
 	va_start(ap, fmt);
 	tag_vfprintf(fmt, ap);
 	va_end(ap);
-}
-
-void hash_shriek(const char *s1, const char *s2, int i)
-{
-	shriek(812, s1, s2, i);		//FIXME?
 }
 
 void user_pause()

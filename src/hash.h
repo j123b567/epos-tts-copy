@@ -12,18 +12,8 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License in doc/COPYING for more details.
  *
- *	Hash tables are quite independent of any other file. 
- *	You'll need just defaults.h - or not even that
- *
- *      This is hash.* v2.4
- *
- *	In case you want to debug or profile the hash table code,
- *	go to the beginning of hash.cc and enable the appropriate
- *	#define there. The reason why we're not putting it here
- *	is not to unleash make dependencies.
- *
- *	See hash.doc for a general howto.
- *
+ *      The hash tables are no longer independent from Epos, esp.
+ *	because they now use the standard text file preprocessor.
  */
 
 #ifndef __hash_tables
@@ -38,12 +28,10 @@
 #define KEY_NOT_FOUND NULL
 #define INT_NOT_FOUND      -32768   //guaranted to be negative, but that's all
 
-#define _HASH_DEPTH	       64
+#define _HASH_DEPTH	       64   //allows up to cca ten trillion elements
 
 #define DATA_OBLIGATORY	     NULL   //parametr no_data to the out-of-file constructor
 #define DATA_EQUALS_KEY	(char *)1   //ditto, add(key, key) if no data specified
-
-#define ANYWAY (char *)1
 
 #define key_t hash_key_t
 #define data_t hash_data_t
@@ -105,17 +93,13 @@ class hash_table
 //void _hdump(key_t *s1, data_t *s2);        //See hash::debug
 //void _hfree(key_t *s1, data_t *s2);      //See the destructor
 
-#if (defined(MAX_WORD_SIZE) && MAX_WORD_SIZE!=256)
-#error MAX_WORD_SIZE must remain 256 (or adjust the outer hash::constructor format string as well)
-#endif
-
 class hash: public hash_table<char, char>
 {
    public:
 	hash (int i): hash_table<char, char> (i) {};
 	hash (hash *h): hash_table<char, char> (h) {};
-#ifdef HASH_CAN_READ_FILES              // we've #included defaults.h
-	     hash(const char *filename,
+	     hash(const char *filename, const char *dirname, const char *treename,
+	     	const char *description,
 		int perc_full,		// initial and optimal ratio items/capacity
 		int perc_downsize,	// if under that percentage full, call rehash()
 		int perc_upsize,	// if over that percentage full, rehash()
@@ -124,18 +108,7 @@ class hash: public hash_table<char, char>
 					// 	as both key and data
 					// DATA_OBLIGATORY, if we reject single word input
 					// anything else - default data for this case
-		bool multi_data,	// true, if the data may consist of multiple words
-		const char *not_found_message,
-					// message to be printed if file not found
-					// (%s may represent the filename)
-					// use ANYWAY to continue anyway (with items == -1)
-		char esc(char));	// function to translate backslash-escaped chars
-					// NULL if backslash not to be treated special
-
-	int	write(char *filename, bool keep_backup);	// non-destructive save
-	int	update(char *filename, bool keep_backup, bool remove_removed);
-								// destructive save
-#endif         
+		bool multi_data);	// true, if the data may consist of multiple words
 	void 	add_int(const char *key, 
 			int value);     //The integer is stored human-readable (decimal) :-)
 	int 	translate_int(const char *key);//returns -1 if not found, garbage if not int

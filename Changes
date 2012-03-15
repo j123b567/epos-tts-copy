@@ -1307,4 +1307,20 @@ for an exciting story, just skip it.
 	- removed nnet.cc
 	- encode_to_sampa() renamed to decode_to_sampa() for consistency
 
+2.5.18 from 2.5.17	19.10.03
+	- removed defaults.h
+	- hash tables lost independence on Epos
+	- hash tables lost DEBUG_HASH, PROFILE_HASH, ANYWAY, write and update
+	- hash tables use text.h to read a table from a text file
+	- removed char escaping from literal & .dic hashes and string values
+	- removed commenting out from .dic hashes
+	- added char escaping to TTSCP setl and setg cmd values
+	- switched the order of text file processing to:
+		encoding, directives, escaping
+	- renamed getline to get_line (and rewrote it as above)
+	- fixed text::rewind() and some related D_PRINTS
+	- changed some printf's to D_PRINT's
+	- (Cz) partly fixed short.dic (several problems), see also trans.rul
+	- added a documentation section on the overall architecture
+
 

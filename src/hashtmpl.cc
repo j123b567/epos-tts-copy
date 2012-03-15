@@ -12,30 +12,11 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License in doc/COPYING for more details.
  *
- *	This version of hash::hash can handle tricky comments acceptably,
- *	i.e. a comment must begin with a COMMENT_LINES character, which
- *	must either be preceded by a WHITESPACE one or come as the first
- *	char in the line. I don't know of a better way how to interpret 
- *	or rewrite e.g.
- *
-some_key  this;is;the;replacement   ;this is a comment; why not.
- *
- *	where ';' is a comment-out character. If you need an initial ";" or
- *	a " ;" substring in the replacement, you might consider changing
- *	the exported variable COMMENT_LINES to "\n" only and refrain from
- *	using comments at all.  Or, use COMMENT_LINES to choose another
- *	comment-out character.
- *
  */
 
 #ifndef HASH_IS_SLABBING
 	#define HASH_IS_SLABBING
 	#define HASH_SLAB_FRAGMENT_SIZE  8192
-#endif
-
-#ifndef HASH_CANNOT_READ_FILES
-	#define HASH_CAN_READ_FILES
-	#include "defaults.h"         // Comment out if doesn't exist
 #endif
 
 #include "hash.h"
@@ -55,9 +36,6 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
 #define key_t  hash_key_t
 #define data_t hash_data_t
 
-// #define DEBUG_HASH          // Quite detailed debugging printouts
-// #define PROF_HASH           // Useless profiling (maximum tree depth printed on delete)
-
 #define DOWNSIZE_HESITATE 8 // Downsizing should be less frequent for very small tables
 
 #define unconst(x) ((key_t *)(x))
@@ -74,7 +52,13 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
 #define keydel(x)	(dupkey  ? delete(x)	: (void)(x))
 #define datadel(x)	(dupdata ? delete(x)	: (void)(x))
 
-// #pragma warn -rch	Enable for Borland to avoid some warnings
+#define PRINTABLE_KEY(x)   (key_t_is_string  ? (char *)x : "[struct]")
+#define PRINTABLE_VALUE(x) (data_t_is_string ? (char *)x : "[struct]")
+
+void hash_shriek(const char *s1, const char *s2, int i)
+{
+	shriek(812, s1, s2, i);		//FIXME?
+}
 
 template <class key_t, class data_t>
 struct hsearchtree {
@@ -130,17 +114,10 @@ void shutdown_hashing()
 
 #endif
 
-#if (0) //try #ifdef DEBUG_HASH if you wanna hash_shriek()
-#define push(x) (_hash_sp >= _HASH_DEPTH ? hash_shriek("push %s%d","",_hash_sp) : NULL, _hash_stk[_hash_sp++] = (x))
-#define pop (_hash_sp < 1 ? hash_shriek("pop %s%d","",_hash_sp) : NULL, *_hash_stk[--_hash_sp])
-#else
-
 #define UNTYPED(x) ((hsearchtree<void, void> **)(x))
 #define UNTYPED_LVALUE(x) (*(hsearchtree<void, void> **)(&x))
 #define push(x) (_hash_stk[_hash_sp++]=(UNTYPED(x)))
 #define pop (*_hash_stk[--_hash_sp])
-
-#endif // unconditional conditional
 
 #define heightof(x) ((x)?((x)->height):(-1))
 
@@ -169,10 +146,7 @@ balance()		/* Looking for params? To be found on the _hash_stk */
 		tree=*ptree;
 		if (tree->l && tree->l->height>=tree->height) {   //adj height
 			tree->height++;
-#ifdef DEBUG_HASH
-printf("hash::balance Gonna balance at %s:\n", tree->key);
-//listtree(tree, tree->height);
-#endif
+			D_PRINT(0, "hash::balance Gonna balance at %d\n", tree->height);
 			if (heightof(tree->r)+1<tree->l->height) {     //rebalance
 				if (!tree->l->r || tree->l->l  //.....&&.....
 					 && tree->l->l->height>=tree->l->r->height) {
@@ -196,10 +170,7 @@ printf("hash::balance Gonna balance at %s:\n", tree->key);
 		}
 		else if (tree->r && tree->r->height>=tree->height) {
 			tree->height++;
-#ifdef DEBUG_HASH
-printf("hash:: balance Gonna balance at %s:\n", tree->key);
-//listtree(tree, tree->height);
-#endif
+			D_PRINT(0, "hash:: balance Gonna balance at %d\n", tree->height);
 			if (heightof(tree->l)+1<tree->r->height) {     //rebalance
 				if (!tree->r->l || tree->r->r  //.....&&.....
 					 && tree->r->r->height>=tree->r->l->height) {
@@ -239,9 +210,7 @@ hsearchtree <void, void> **_hash_stk[_HASH_DEPTH+1];
 template <class key_t, class data_t>
 hash_table<key_t, data_t>::hash_table(int size)
 {
-#ifdef DEBUG_HASH
-printf("hash::hash: sized %d\n", size);
-#endif
+	D_PRINT(0, "hash::hash: sized %d\n", size);
 	dupkey = dupdata = true;
 	if (!size) size++;
 	capacity=size;
@@ -251,9 +220,7 @@ printf("hash::hash: sized %d\n", size);
 				// i.e. never downsize, upsize rarely
 	ht=(hsearchtree<key_t, data_t> **)xcalloc(capacity,
 				sizeof(hsearchtree<key_t, data_t>*));
-#ifdef DEBUG_HASH
-printf("eoc\n");
-#endif	
+	D_PRINT(0, "hash::hash successfully ends\n");
 }
 
 /****************************************************************************
@@ -286,17 +253,8 @@ hash_table<key_t, data_t>::~hash_table()
 	int i;
 	for(i=0;i<capacity;i++) dissolvetree(ht[i]);
 	free(ht);
-#ifdef PROF_HASH    
-	printf("Releasing a hash table, maximum depth %i\n",maxdep);
-#endif    
+	D_PRINT(0, "Releasing a hash table, maximum depth %i\n",maxdep);
 }
-
-#ifdef HASH_CAN_READ_FILES    //to be defined in default.h
-
-const char* COMMENT_LINES = "#;\n";    //these characters can start a comment
-const char* WHITESPACE    = " \t\r";     //i.e. space and tab
-
-int hash_max_line = 1024;
 
 /****************************************************************************
  This constructor will construct a hash table out of a text file "filename". 
@@ -304,59 +262,47 @@ int hash_max_line = 1024;
  The parameters are explained in hash.h
  ****************************************************************************/
 
-hash::hash(const char *filename,
+hash::hash(const char *filename, const char *dirname, const char *treename,
+		const char *description,
 		int perc_full, int perc_downsize, int perc_upsize,
-		int max_tree_depth, const char * no_data, bool multi_data,
-		const char *not_found, char esc(char)): hash_table<char, char>(0)
+		int max_tree_depth, const char * no_data, bool multi_data)
+			: hash_table<char, char>(0)
 {
-	FILE *hashfile;
+	text *hashfile;
 	char *buff;
 	char *key;
 	const char *value;
 	int l = 0;
 	char *tmp;
-	char *dst;
 	free(ht);
 
 	dupkey = dupdata = true;
-	buff=(char *)xmalloc(hash_max_line);
+	buff=(char *)xmalloc(scfg->max_line);
 
-#ifdef DEBUG_HASH
-printf("hash::hash: using file %s\n", filename);
-#endif
+	D_PRINT(0, "hash::hash: using file %s\n", filename);
 
 	maxdep = longest = items = 0;
 	if (max_tree_depth == -1) max_tree_depth=_HASH_DEPTH;
 	perc_optimal = perc_full;
 	
-	if((hashfile=fopen(filename, "rt"))==NULL) {
-		ht = (hsearchtree<char, char> **)xcalloc(sizeof(int *), 1);
-		capacity = 0;
-		if (not_found == ANYWAY) {
-			items = -1;
-			goto fail;
-		}
-		hash_shriek(not_found ? not_found : "Can't hash in file %s", filename, 0);
+	capacity = 0;
+	hashfile = new text(filename, dirname, treename, description, true);
+	if (!description && !hashfile->exists()) {
+		hash_shriek("Description for %s required with hash tables", filename, 0);
 	}
-	while (fgets(buff, hash_max_line, hashfile)) if (!strspn(buff+strspn(buff,WHITESPACE),COMMENT_LINES)) l++;
+	while (hashfile->get_line(buff)) l++;
+
 	capacity = l*100/perc_full | 1;
 	cfg_rehash(perc_downsize, perc_upsize, max_tree_depth);
 	ht = (hsearchtree<char, char> **)xcalloc(capacity,sizeof(hsearchtree<char, char>*));
-	fseek(hashfile, 0, SEEK_SET);
+//	fseek(hashfile, 0, SEEK_SET);
+	hashfile->rewind(false);
 	l = 0;
-	while (l++, fgets(buff, hash_max_line, hashfile)) {
-		if (strchr(COMMENT_LINES, *buff)) continue;
-		for (tmp = dst = buff; !strchr(COMMENT_LINES, tmp[1]) ||
-				!strchr(WHITESPACE, tmp[0]) && tmp[1] && tmp[1] != '\n';
-				tmp++, dst++) {
-			if (esc && tmp[0] == ESCAPE) *dst = esc(*++tmp);
-			else *dst = *tmp;
-		}
-		*dst = *tmp;
-		*++dst = 0;
-					
-		while (strchr(WHITESPACE, *--dst) && dst>=buff);
-		dst[1]=0;			//Strip out comments and/or trailing whitespace
+	while (l++, hashfile->get_line(buff)) {
+		tmp = buff + strlen(buff);
+		while (strchr(WHITESPACE, *--tmp) && tmp>=buff);
+		tmp[1]=0;			//Strip out trailing whitespace
+
 		tmp = key = buff + strspn(buff, WHITESPACE);
 	        if (!*key) continue;   		//Nothing but a comment
 	        tmp += strcspn(key, WHITESPACE);
@@ -371,140 +317,14 @@ printf("hash::hash: using file %s\n", filename);
 			hash_shriek("Multiple values specified in %s, line %d",filename,l);
 		add(key, value);
 	}
-	fclose(hashfile);
-   fail:
+//	fclose(hashfile);
+	delete hashfile;
+//   fail:
 	free(buff);
 
-#ifdef DEBUG_HASH
-printf("hash::hash: successfully returning, file %s\n", filename);
-if (_hash_sp) hash_shriek("Hash stack dirty! %s%d", "", _hash_sp);
-#endif
-
+	D_PRINT(0, "hash::hash: successfully returning, file %s\n", filename);
+	if (_hash_sp) hash_shriek("Hash stack dirty! %s%d", "", _hash_sp);
 }
-
-void
-_writetree(char *key, char *data, void *outfile)
-{
-	fprintf((FILE *)outfile, strcmp(key, data) ? "%s \t%s\n" : "%s\n", key, data);
-}
-
-/****************************************************************************
- hash::write - save to file
- 	The file may or may not exist. If it exists, only its leading
- 	comment lines will be kept. If the second argument is true,
- 	or if the process fails, a backup of the original file is kept
- 	with a leading tilde in the filename.
- ****************************************************************************/
-
-
-int
-hash::write(char *filename, bool keep_backup)
-{
-	FILE *old = fopen(filename, "rt");
-	if (!old && errno != ENOENT) return 1;
-	FILE *outfile;
-	char *buff = (char *)xmalloc(hash_max_line);
-	char *backup;
-	int result;
-	
-	if (old) {
-		FILE *outfile;
-
-		strcpy(buff, "~");
-		strcat(buff, filename);
-		backup = strdup(buff);
-		rename (filename, backup);
-		outfile = fopen(filename, "w");
-		if (!outfile && errno == ENOMEM) {
-			rename(backup, filename);
-			return 1;
-		}
-		fgets(buff, hash_max_line, old);
-		while (!feof(old) && strchr(COMMENT_LINES, buff[strspn(buff, WHITESPACE)])) {
-			fputs(buff, outfile);
-			fgets(buff, hash_max_line, old);
-		}
-		fclose(old);
-		forall(_writetree, outfile);
-		result = !fprintf(outfile,"\n");
-		fclose (outfile);
-	
-		if (!keep_backup && !result) remove(backup);
-		free(backup);
-	} else {
-		outfile = fopen(filename, "w");
-		if (!outfile && errno == ENOMEM) return 1;
-		forall(_writetree, outfile);
-		result = !fprintf(outfile,"\n");
-		fclose (outfile);
-	}
-	free(buff);
-	return result;
-}
-
-/****************************************************************************
- hash::update - update and delete
- 	The file should already exist. Update those options that were
- 	found in the file and remove them from memory. Append the rest.
- ****************************************************************************/
-
-int
-hash::update(char *filename, bool keep_backup, bool remove_removed)
-{
-	FILE *old = fopen(filename, "rt");
-	FILE *outfile;
-	char *buff = (char *)xmalloc(hash_max_line);
-	char *backup;
-
-	char *tmp;
-	char *zero;
-	char *key;
-	char *val;
-	char *appendix;
-	char holdchar;
-	int result = 0;
-	
-	if (!old) hash_shriek("Cannot update %s (errno=%d)", filename, errno);
-
-	strcpy(buff, "~");
-	strcat(buff, filename);
-	backup = strdup(buff);
-	rename (filename, backup);
-
-	outfile = fopen(filename, "w");
-	if (!outfile && errno == ENOMEM) hash_shriek("Out of memory for update of %s", filename, 0);
-	while (fgets(buff, hash_max_line, old)) {
-		tmp = buff + strspn(buff, WHITESPACE); key = tmp;
-		tmp += strcspn(tmp, WHITESPACE); zero = tmp;
-		tmp += strspn(tmp, WHITESPACE);
-		
-		holdchar = *zero;
-		*zero = 0;
-		if ((val=translate(key))) {
-			appendix = strdup(tmp + strcspn(tmp, WHITESPACE));
-			strncpy(tmp, val, hash_max_line + buff - tmp);
-			tmp += strlen(tmp);
-			strncpy(tmp, *appendix ? appendix : "\n", hash_max_line + buff - tmp);
-			free(appendix);
-			keydel(remove(key));
-		} else if (remove_removed) continue;
-		*zero = holdchar;
-		if (fputs(buff, outfile)==EOF) result = 1;
-	}
-	fclose(old);
-
-	forall(_writetree, outfile);
-
-	fclose (outfile);
-	
-	if (!keep_backup && !result) remove(backup);
-	free(backup);
-	free(buff);
-	return result;
-}
-
-
-#endif              //ifdef HASH_CAN_READ_FILES
 
 
 /****************************************************************************
@@ -543,18 +363,15 @@ template <class key_t, class data_t>
 void
 hash_table<key_t, data_t>::add(const key_t *key, const data_t *value)     //if present, replace addit. data
 {
-#ifdef DEBUG_HASH
-printf("hash::add \"%s\" to \"%s\"\n",key,value);
-if (_hash_sp) hash_shriek("Hash stack dirty! %s%d","",_hash_sp);
-#endif
+	D_PRINT(0, "hash::add \"%s\" to \"%s\"\n", PRINTABLE_KEY(key), PRINTABLE_VALUE(value));
+	if (_hash_sp) hash_shriek("Hash stack dirty! %s%d","",_hash_sp);
+
 	register int result;
 	hsearchtree<key_t, data_t> *tree;
 	*_hash_stk=UNTYPED(ht+fn(key));_hash_sp=1;
 	for(UNTYPED_LVALUE(tree)=(**_hash_stk);tree;) {
 		if(!(result=keycmp(key, tree->key))) {          //key already there
-#ifdef DEBUG_HASH
-printf("hash::add %s already there, old value \"%s\"\n",key, tree->data);
-#endif		
+			D_PRINT(0, "hash::add %s already there, old value \"%s\"\n", PRINTABLE_KEY(key), PRINTABLE_VALUE(tree->data));
 			datadel(tree->data);
 			tree->data=datadup(value);
 			_hash_sp=0;
@@ -573,9 +390,7 @@ printf("hash::add %s already there, old value \"%s\"\n",key, tree->data);
 	tree->data=value==NULL?(data_t *)NULL:datadup(value);
 	if (_hash_sp>maxdep) maxdep=_hash_sp;
 	balance();    //rebalances the nodes found on the _hash_stk stack
-#ifdef DEBUG_HASH
-printf("hash::add is OK\n");
-#endif
+	D_PRINT(0, "hash::add is OK\n");
 	if (items++>max_items || maxdep>=tree_too_deep) rehash();
 }
 
@@ -593,9 +408,7 @@ void hash::add_int(const char *key, int value)
 		i--;
 	} while (value);
 	if (negative) *i='-'; else i++;
-#ifdef DEBUG_HASH
-printf("hash::add_int %s to '%s'\n",key,i);
-#endif
+	D_PRINT(0, "hash::add_int %s to '%s'\n",key,i);
 	add(key, (char *)i); 
 }
 
@@ -608,10 +421,8 @@ template <class key_t, class data_t>
 data_t *
 hash_table<key_t, data_t>::remove(const key_t *key)     //returns the data (NULL if absent)
 {
-#ifdef DEBUG_HASH
-printf("hash::remove \"%s\"\n",key);
-//if (_hash_sp) hash_shriek("Hash stack dirty! %s%d","",_hash_sp);
-#endif
+	D_PRINT(0, "hash::remove \"%s\"\n",PRINTABLE_KEY(key));
+	if (_hash_sp) hash_shriek("Hash stack dirty! %s%d","",_hash_sp);
 	register int result;
 	register data_t *val;
 	hsearchtree <key_t, data_t> **tree;
@@ -625,9 +436,7 @@ printf("hash::remove \"%s\"\n",key);
 		_hash_sp=0;
 		return KEY_NOT_FOUND;
 	}
-#ifdef DEBUG_HASH
-printf("hash::remove %s is there, value \"%s\"\n",key, (*tree)->data);
-#endif		
+	D_PRINT(0, "hash::remove %s is there, value \"%s\"\n", PRINTABLE_KEY(key), PRINTABLE_VALUE((*tree)->data));
 	keydel(here->key);
 	val=here->data;
 	while (here->l && here->r) {	// "if" should be enough
@@ -646,9 +455,7 @@ printf("hash::remove %s is there, value \"%s\"\n",key, (*tree)->data);
 		else _hash_sp=0;	// if no changes there, break out.
 	}
 	tree_delete (here);
-#ifdef DEBUG_HASH
-printf("Rehash? (%d of %d)\n",items, min_items);
-#endif
+	D_PRINT(0, "Rehash? (%d of %d)\n",items, min_items);
 	if (items--<min_items) rehash();
 	return val;
 }	
@@ -733,13 +540,9 @@ hash_table<key_t, data_t>::translate(const key_t *key)
 {
 	register int result;
 	hsearchtree<key_t, data_t> **tree;
-#ifdef DEBUG_HASH
-printf("hash::translate %s\n",key);
-#endif
+	D_PRINT(0, "hash::translate %s\n", PRINTABLE_KEY(key));
 	for(tree=(ht+fn(key));(*tree);) {
-#ifdef DEBUG_HASH
-printf("hash::translate compares tree holding %s to %s\n",(*tree)->key, (*tree)->data);
-#endif
+		D_PRINT(0, "hash::translate compares tree holding %s to %s\n", PRINTABLE_KEY((*tree)->key), PRINTABLE_VALUE((*tree)->data));
 		if(!(result=keycmp(key,(*tree)->key))) return((*tree)->data);
 		if(result>0) tree=&((*tree)->l); else tree=&((*tree)->r);
 	}
@@ -781,10 +584,7 @@ hash_table<key_t, data_t>::rehash(int new_capacity)
 	int ttdold=tree_too_deep;
 	int i;
 	
-#ifdef DEBUG_HASH
-printf("hash::rehash Gonna rehash from %d to %d for %d items\n", capold, new_capacity, items);
-//debug();
-#endif
+	D_PRINT(0, "hash::rehash Gonna rehash from %d to %d for %d items\n", capold, new_capacity, items);
 
 #ifdef POWER_OF_TWO
 	hash_fn_mask = new_capacity - 1;
@@ -849,9 +649,9 @@ void
 hash::debug()
 {
 	int i;
-	printf("hash::debug dump follows\n");
+	D_PRINT(1, "hash::debug dump follows\n");
 	for(i=0;i<capacity;i++) listtree(ht[i], 0);
-	printf("hash::debug done.\n");
+	D_PRINT(1, "hash::debug done.\n");
 }
 
 
@@ -866,8 +666,8 @@ void
 hash::listtree(hsearchtree <char, char> *tree, int indent)
 {
 	if (tree!=NULL) {
-		for(int i=0; i<indent; i++) printf("   ");
-		printf("%s %s %d\n",(char *)tree->key,(char *)tree->data, tree->height);
+		for(int i=0; i<indent; i++) D_PRINT(1, "   ");
+		D_PRINT(1, "%s %s %d\n",(char *)tree->key,(char *)tree->data, tree->height);
 		if (tree->l && tree->r && tree->height!=tree->l->height+1 &&
 		        tree->height!=tree->r->height+1 ||
 			!tree->r && tree->l && tree->l->height+1!=tree->height ||

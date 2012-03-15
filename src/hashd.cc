@@ -17,7 +17,7 @@
 
 #include "common.h"
 
-#include "hash.cc"	/* will include hash.h, defaults.h, hashtmpl.cc" */
+#include "hash.cc"	/* will include hash.h, hashtmpl.cc" */
 
 #include "agent.h"	/* class a_ttscp */
 

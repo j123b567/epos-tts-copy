@@ -164,7 +164,6 @@ synth::synsegs(voice *v, segment *d, int n, wavefm *w)
 				int negoffs = (SOUND_LABEL_BASE - v->sl[x.code].pos)
 					* len >> SOUND_LABEL_SHIFT;
 				int level = cfg->label_sseg ? d[i].ll : scfg->phone_level;
-//				FILE *f = fopen("02tmp", "a+"); fputs(enum2str(level, scfg->unit_levels), f); fputs("\n", f); fclose(f);
 				w->label(negoffs, tmp, enum2str(level, scfg->unit_levels));
 			}
 			// label again (this time its the 'offset', if i undestood that right)
