@@ -22,7 +22,7 @@
  *
  */
 
-#ifdef STANDALONE_COMPILE
+#ifndef WITHOUT_EPOS_INCLUDES
 	#include "common.h"
 	#include "client.h"
 	#include "agent.h"

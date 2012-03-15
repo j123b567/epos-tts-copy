@@ -862,7 +862,7 @@ void parse_cmd_line()
 			}
 			break;
 		case 0:
-			if (!is_monolith) shriek(814, "Only options allowed at Epos server command line");
+			if (!is_monolith) shriek(814, "Only options allowed at Epos server command line\nUse a client (e.g. \"say\") to specify text");
 			if (scfg->input_text && scfg->input_text!=ar) {
 				if (!scfg->warnings) break;
 				if (cfg->paranoid) shriek(814, "Quotes forgotten on the command line?");

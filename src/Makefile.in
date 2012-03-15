@@ -1,306 +1,578 @@
-# Makefile.in should be processed by configure to yield Makefile
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
-OBJ=.o
-SRC=.cc
-COPY=cp
-CC=@CXX@
-LNK=@CXX@
-LDOPTS=-L/lib -L/usr/local/lib -L/usr/lib @LIBS@
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
 
 # The following line may be deleted if using any other compiler than Watcom C.
-export WPP386=-xs
 
 
-# Want an external debugging lib? Download dmalloc and uncomment the following.
-# DMALLOC_STATUS=-DWANT_DMALLOC
-# ifeq ($(DMALLOC_STATUS), -DWANT_DMALLOC)
-#    DMALLOC_LINK_OPT=-ldmalloc -L/usr/local/lib
-# endif
+SHELL = @SHELL@
 
-# HOMEMADE_STRDUP=-DHOMEMADE_STRDUP
-
-#add -pg for profiling, -ggdb for gdb debugging
-
-CFLAGS=@CXXFLAGS@ -w -DEPOS -ggdb
-FLAGS=$(DMALLOC_STATUS) $(HOMEMADE_STRDUP) $(CFLAGS)
-LINKFLAGS=
-
-# SS     = ss
-
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
 prefix = @prefix@
-exec_prefix = $(prefix)
+exec_prefix = @exec_prefix@
+
 bindir = @bindir@
 sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
 libdir = @libdir@
-LIBDIR = $(libdir)/epos
-# LIBNAME = libepos.so.$(shell ../aux/makever)
-CFGDIR = $(LIBDIR)/cfg
-eposversionfile = $(LIBDIR)/version
-
-SHELL = /bin/sh
-
-HEADERS=common.h defaults.h unit.h parser.h rule.h text.h encoding.h interf.h function.h options.h hash.h synth.h voice.h exc.h
-MOREHEADERS=waveform.h ktdsyn.h ptdsyn.h lpcsyn.h tdpsyn.h mbrsyn.h tcpsyn.h slab.h rx.h client.h agent.h 
-SOURCES=parser.cc unit.cc marker.cc rule.cc block.cc text.cc encoding.cc interf.cc function.cc options.cc exc.cc hash.cc hashd.cc hashtmpl.cc synth.cc waveform.cc voice.cc say.cc options.lst nnet.cc monolith.cc daemon.cc agent.cc ttscp.cc client.cc qnxipc.cc ktdsyn.cc ptdsyn.cc lpcsyn.cc tdpsyn.cc mbrsyn.cc tcpsyn.cc rx.c gauge.cc nnet/stream/bang_fstream.cpp nnet/stream/bang_iostream.cpp nnet/stream/bang_istream.cpp nnet/stream/bang_ostream.cpp nnet/enumstring.cpp nnet/map.cpp nnet/matrix.cpp nnet/perceptron.cpp nnet/percinit.cpp nnet/percstruct.cpp nnet/set.cpp nnet/string.cpp nnet/traindata.cpp nnet/utils.cpp nnet/xml.cpp nnet/xml.y.tab.cpp nnet/xmltempl.cpp nnet/xmlutils.cpp nnet/neural.cc nnet/neural.tab.cc
-DOSSOURCES=epos.cpp config.dos README.dos
-MODULES=parser.o unit.o rule.o text.o encoding.o interf.o function.o options.o synth.o ktdsyn.o ptdsyn.o lpcsyn.o tdpsyn.o mbrsyn.o tcpsyn.o voice.o waveform.o bang_fstream.o bang_iostream.o bang_istream.o bang_ostream.o enumstring.o map.o matrix.o perceptron.o percinit.o percstruct.o set.o string.o traindata.o utils.o xml.o xmltempl.o xmlutils.o neural.o neural.tab.o xml.y.tab.o
-TARGETS=epos say vrfy gauge
-DOSES=  dos1250 dos1252 dospc2 dosil1 dosil2 doskam doskoi8 dosascii dosmac dosvga
-
-# the compilation proper may also depend on this makefile.
-# Linking always does.
-
-# MAKEFILE=
-MAKEFILE=Makefile
-
-.PHONY: all monolith mh install clean distclean tgz dist distdoc cfgsync date gdb pg dos $(DOSES) okay
-
-all: $(TARGETS)
-
-install : all $(SHELL) ../arch/unix/makeinst
-	@$(SHELL) ../arch/unix/makeinst $(libdir) $(LIBDIR) ../cfg
-#	install -m 0755 -o bin -g bin $(TARGETS) $(EXEDIR)
-#	install -m 0644 -o bin -g bin $(LIBRARY) $(LIBDIR)
-
-
-
-clean:  $(SHELL) ../arch/unix/listtmp
-	@if [ `cat $(CFGDIR)/epos.ini $(CFGDIR)/fixed.ini 2>/dev/null | grep 'use_debug *on\|use_debug *yes\|memory_low *on\|memory_low *yes'|wc -l` -ne 0 ];\
-		 then echo Debugging option seems to be set; fi
-	@rm -fr ../dos
-	@rm -f `$(SHELL) ../arch/unix/listtmp $(LIBDIR) $(TARGETS)`
-
-distclean: clean
-	@rm -f config.h Makefile config.cache config.log
-	@cp -f ../arch/unix/Makefile.dummy Makefile
-
-config.h.in: configure.in ../arch/unix/acconfig.h
-	@rm -f config.h.in
-	autoheader -l ../arch/unix
-
-configure: configure.in config.h.in
-	autoconf
-
-Makefile: configure Makefile.in
-	@./configure
-	@touch Makefile
-
-
-say	: say.o Makefile ../cfg/cfg/default.ini
-	@echo Building the client...
-	$(LNK) -o $@ say.o $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
-	@echo Type \"make install\" to install cfg files to $(LIBDIR)
-
-vrfy	: vrfy.cc client.cc
-	$(CC) $(LDOPTS) $(FLAGS) -o $@ vrfy.cc
-
-gauge	: gauge.o $(MAKEFILE)
-	$(CC) $(LDOPTS) $(FLAGS) -o $@ gauge.cc
-
-monolith mh : eposm
-
-eposm: monolith.o hash.o client.o $(MODULES) Makefile ../cfg/cfg/default.ini
-	$(LNK) -o $@ monolith.o client.o hash.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
-
-# static  : $(MODULES) monolith.o say.o Makefile ../cfg/cfg/default.ini
-#	$(LNK) -o say say.o $(LIBNAME) $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
-#	$(LNK) -o say say.o $(DMALLOC_LINK_OPT) $(LDOPTS) $(FLAGS)
-
-
-# $(LIBNAME)  : $(HEADERS) $(MODULES) Makefile ../cfg/cfg/default.ini
-#	$(LNK) -shared -o $@ $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) -Wl,-soname,$(LIBNAME) $(FLAGS)
-
-epos:	Makefile $(HEADERS) $(MODULES) hashd.o daemon.o agent.o ttscp.o nonblock.o client.o
-	@echo Building the daemon...
-# replace MODULES with LIBNAME in the following line to produce a shared daemon
-	$(LNK) -o $@ daemon.o agent.o ttscp.o nonblock.o client.o hashd.o $(MODULES) $(DMALLOC_LINK_OPT) $(LDOPTS) $(LINKFLAGS)
-#	@../arch/unix/rerunepos
-
-tgz: distclean $(SHELL) ../arch/unix/maketgz $(eposversionfile) cfgsync
-	@echo Building a .tgz package...
-	@$(SHELL) ../arch/unix/maketgz
-
-dist: distdoc tgz
-
-distdoc:
-	@$(MAKE) -C ../doc/english dist
-
-cfgsync: ../arch/unix/distcfg
-	@$(SHELL) ../arch/unix/distcfg
-
-date: $(SHELL) ../arch/unix/makedate
-	@echo -n 'Source files last modified '
-	@$(SHELL) ../arch/unix/makedate
-
-../cfg/cfg/default.ini: options.lst ../arch/unix/makedflt $(SHELL)
-	@$(SHELL) ../arch/unix/makedflt $@
-
-gdb: $(SHELL)
-	@$(SHELL) ../arch/unix/addcflag ggdb
-
-pg: $(SHELL)
-	@$(SHELL) ../arch/unix/addcflag pg
-
-dos:
-	@echo
-	@echo You must also specify how to encode Czech characters. Possible targets:
-	@echo  $(DOSES)
-	@echo 
-
-# $(DOSES): dos% :$(HEADERS) $(SOURCES) /usr/lib/cstocs/%.enc clean $(SHELL) ../arch/unix/cstodos cfgsync
-#	@echo Building a DOS distribution.
-#	@$(SHELL) ../arch/unix/cstodos $* "$(HEADERS) $(MOREHEADERS) $(SOURCES)" "$(DOSSOURCES)"
-
-$(SHELL):
-	@echo You should already have bash installed.
-	@if which bash >/dev/null; ln -s `which bash` $(SHELL); fi
-	@if [ -f $(SHELL) ]; then echo I\'ve tried to install it now.; fi
-
-
-$(CFGDIR)/fixed.ini:
-	#mkdir -p $(CFGDIR)
-	#@cp -f $(CFGDIR)/fixed.ini $(CFGDIR)/fixed.old.ini 2>/dev/null
-	#cp -f cfg/fixed.ini $(CFGDIR)
-
-okay: $(eposversionfile)
-	@echo Version stamp is okay.
-
-$(eposversionfile): common.h
-	@echo Updating version stamp.
-	@cat common.h | grep '#define.*VERSION' | cut -f 2 -d\" > $(eposversionfile)
-
-
-config.h: config.h.in
-	@sh ./configure
-	@touch config.h
-
-say.o: say.cc client.cc $(HEADERS) $(MAKEFILE) options.lst $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ say.cc
-
-monolith.o: monolith.cc $(HEADERS) $(MAKEFILE) options.lst $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ monolith.cc
-
-daemon.o: daemon.cc qnxipc.cc $(HEADERS) agent.h client.h $(MAKEFILE) options.lst $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ daemon.cc
-
-agent.o: agent.cc $(HEADERS) agent.h client.h waveform.h $(MAKEFILE) options.lst $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ agent.cc
-
-ttscp.o: ttscp.cc $(HEADERS) agent.h $(MAKEFILE) options.lst $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ ttscp.cc
-
-nonblock.o: nonblock.cc $(HEADERS) agent.h $(MAKEFILE) options.lst $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ nonblock.cc
-
-client.o: client.cc client.h $(MAKEFILE) options.lst $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ client.cc
-
-parser.o: common.h parser.h interf.h parser.cc voice.h options.h options.lst $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ parser.cc
-
-interf.o: common.h interf.h options.h voice.h interf.cc exc.cc options.lst $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ interf.cc
-
-function.o: function.h options.h interf.h unit.h function.cc options.lst $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ function.cc
-
-options.o: common.h interf.h options.h voice.h options.cc exc.cc options.lst $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ options.cc  -DBASE_DIR=$(LIBDIR)
-
-hash.o: hash.h hash.cc hashtmpl.cc defaults.h slab.h $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ hash.cc
-
-hashd.o: hash.h hash.cc hashd.cc hashtmpl.cc defaults.h slab.h $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ hashd.cc
-
-rule.o: $(HEADERS) rule.cc block.cc options.lst $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ rule.cc
-
-unit.o: $(HEADERS) unit.cc marker.cc nnet.cc options.lst $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ unit.cc
-
-text.o: common.h defaults.h hash.h interf.h options.lst $(MAKEFILE) text.cc $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ text.cc
-
-encoding.o: $(HEADERS) encoding.h encoding.cc options.lst $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ encoding.cc
-
-synth.o: synth.h synth.cc interf.h options.h options.lst waveform.h ktdsyn.h lpcsyn.h tdpsyn.h $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ synth.cc
-
-waveform.o: waveform.h waveform.cc interf.h options.lst $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ waveform.cc
-
-voice.o: voice.h waveform.h voice.cc interf.h options.h options.lst $(MAKEFILE) $(SHELL)
-	$(CC) $(FLAGS) -c -o $@ voice.cc
-
-ktdsyn.o: ktdsyn.h waveform.h synth.h ktdsyn.cc interf.h options.lst $(MAKEFILE)
-	$(CC) $(FLAGS) -c -o $@ ktdsyn.cc
-
-ptdsyn.o: ptdsyn.h waveform.h synth.h ptdsyn.cc interf.h options.lst $(MAKEFILE)
-	$(CC) $(FLAGS) -c -o $@ ptdsyn.cc
-
-lpcsyn.o: lpcsyn.h waveform.h synth.h lpcsyn.cc interf.h options.lst $(MAKEFILE)
-	$(CC) $(FLAGS) -c -o $@ lpcsyn.cc
-
-mbrsyn.o: mbrsyn.h synth.h mbrsyn.cc waveform.h interf.h options.lst $(MAKEFILE)
-	$(CC) $(FLAGS) -c -o $@ mbrsyn.cc
-
-tdpsyn.o: tdpsyn.h waveform.h synth.h tdpsyn.cc interf.h options.lst $(MAKEFILE)
-	$(CC) $(FLAGS) -c -o $@ tdpsyn.cc
-
-tcpsyn.o: tcpsyn.h tcpsyn.cc client.h waveform.h interf.h options.lst $(MAKEFILE)
-	$(CC) $(FLAGS) -c -o $@ tcpsyn.cc
-
-gauge.o: gauge.cc client.cc $(HEADERS) $(MAKEFILE)
-	$(CC) $(FLAGS) -c -o $@ gauge.cc
-
-
-bang_fstream.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/stream/bang_fstream.cpp
-bang_iostream.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/stream/bang_iostream.cpp
-bang_istream.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/stream/bang_istream.cpp
-bang_ostream.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/stream/bang_ostream.cpp
-enumstring.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/enumstring.cpp
-map.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/map.cpp
-matrix.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/matrix.cpp
-perceptron.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/perceptron.cpp
-percinit.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/percinit.cpp
-percstruct.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/percstruct.cpp
-set.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/set.cpp
-string.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/string.cpp
-traindata.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/traindata.cpp
-utils.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/utils.cpp
-xml.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/xml.cpp
-xml.y.tab.o: nnet/xml.y.tab.cpp
-	$(CC) $(FLAGS) -c -o $@ nnet/xml.y.tab.cpp
-xmltempl.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/xmltempl.cpp
-xmlutils.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/xmlutils.cpp
-neural.o:
-	$(CC) $(FLAGS) -c -o $@ nnet/neural.cc
-neural.tab.o: nnet/neural.tab.cc
-	$(CC) $(FLAGS) -c -o $@ nnet/neural.tab.cc
-qnxipc.o: qnxipc.cc $(HEADERS) agent.h client.h client.cc
-	$(CC) $(FLAGS) -c -o $@ qnxipc.cc -DSTANDALONE_COMPILE 
-
-nnet/neural.tab.cc: nnet/neural.y
-	bison -o $@ -p neural $^
-
-nnet/xml.y.tab.cpp: nnet/xml.y
-	bison -o $@ -p xml $^
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+DESTDIR =
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = ..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+AS = @AS@
+CC = @CC@
+CXX = @CXX@
+DLLTOOL = @DLLTOOL@
+ECHO = @ECHO@
+EXEEXT = @EXEEXT@
+LEX = @LEX@
+LIBTOOL = @LIBTOOL@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LNK = @LNK@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+STRIP = @STRIP@
+VERSION = @VERSION@
+YACC = @YACC@
+CLEANFILES = *~ */*~ */*/*~ */*/*/*~ DEADJOE epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi
+
+AM_CXXFLAGS = -w -DEPOS -ggdb -DDATADIR=$(datadir) -DPREFIXDIR=$(prefix)
+AM_YFLAGS = -d -t
+LDFLAGS = @LDFLAGS@ -L$(libdir)
+AM_CPPFLAGS = -I$(srcdir)/..
+MAINTAINERCLEANFILES = epos.html epos-?.html
+
+SUBDIRS = nnet
+
+bin_PROGRAMS = epos say eposm vrfy gauge
+
+SRC_BASE = parser.cc unit.cc rule.cc \
+text.cc encoding.cc interf.cc function.cc options.cc \
+synth.cc waveform.cc voice.cc client.cc \
+ktdsyn.cc ptdsyn.cc lpcsyn.cc tdpsyn.cc mbrsyn.cc tcpsyn.cc \
+common.h defaults.h unit.h parser.h rule.h text.h encoding.h interf.h \
+function.h options.h hash.h synth.h voice.h exc.h \
+waveform.h ktdsyn.h ptdsyn.h lpcsyn.h tdpsyn.h mbrsyn.h tcpsyn.h \
+slab.h rx.h client.h agent.h 
+
+
+epos_SOURCES = daemon.cc agent.cc ttscp.cc nonblock.cc hashd.cc rx.c $(SRC_BASE)
+eposm_SOURCES = monolith.cc hash.cc rx.c $(SRC_BASE)
+say_SOURCES = say.cc
+gauge_SOURCES = gauge.cc
+vrfy_SOURCES = vrfy.cc
+
+epos_LDADD = nnet/libeposnnet.la
+eposm_LDADD = nnet/libeposnnet.la
+
+EXTRA_DIST = options.lst hashtmpl.cc marker.cc block.cc exc.cc \
+nnet.cc qnxipc.cc
+
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../config.h
+CONFIG_CLEAN_FILES = 
+bin_PROGRAMS =  epos$(EXEEXT) say$(EXEEXT) eposm$(EXEEXT) vrfy$(EXEEXT) \
+gauge$(EXEEXT)
+PROGRAMS =  $(bin_PROGRAMS)
+
+
+DEFS = @DEFS@ -I. -I$(srcdir) -I..
+CPPFLAGS = @CPPFLAGS@
+LIBS = @LIBS@
+epos_OBJECTS =  daemon.$(OBJEXT) agent.$(OBJEXT) ttscp.$(OBJEXT) \
+nonblock.$(OBJEXT) hashd.$(OBJEXT) rx.$(OBJEXT) parser.$(OBJEXT) \
+unit.$(OBJEXT) rule.$(OBJEXT) text.$(OBJEXT) encoding.$(OBJEXT) \
+interf.$(OBJEXT) function.$(OBJEXT) options.$(OBJEXT) synth.$(OBJEXT) \
+waveform.$(OBJEXT) voice.$(OBJEXT) client.$(OBJEXT) ktdsyn.$(OBJEXT) \
+ptdsyn.$(OBJEXT) lpcsyn.$(OBJEXT) tdpsyn.$(OBJEXT) mbrsyn.$(OBJEXT) \
+tcpsyn.$(OBJEXT)
+epos_DEPENDENCIES =  nnet/libeposnnet.la
+epos_LDFLAGS = 
+say_OBJECTS =  say.$(OBJEXT)
+say_LDADD = $(LDADD)
+say_DEPENDENCIES = 
+say_LDFLAGS = 
+eposm_OBJECTS =  monolith.$(OBJEXT) hash.$(OBJEXT) rx.$(OBJEXT) \
+parser.$(OBJEXT) unit.$(OBJEXT) rule.$(OBJEXT) text.$(OBJEXT) \
+encoding.$(OBJEXT) interf.$(OBJEXT) function.$(OBJEXT) \
+options.$(OBJEXT) synth.$(OBJEXT) waveform.$(OBJEXT) voice.$(OBJEXT) \
+client.$(OBJEXT) ktdsyn.$(OBJEXT) ptdsyn.$(OBJEXT) lpcsyn.$(OBJEXT) \
+tdpsyn.$(OBJEXT) mbrsyn.$(OBJEXT) tcpsyn.$(OBJEXT)
+eposm_DEPENDENCIES =  nnet/libeposnnet.la
+eposm_LDFLAGS = 
+vrfy_OBJECTS =  vrfy.$(OBJEXT)
+vrfy_LDADD = $(LDADD)
+vrfy_DEPENDENCIES = 
+vrfy_LDFLAGS = 
+gauge_OBJECTS =  gauge.$(OBJEXT)
+gauge_LDADD = $(LDADD)
+gauge_DEPENDENCIES = 
+gauge_LDFLAGS = 
+CXXFLAGS = @CXXFLAGS@
+CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+CXXLD = $(CXX)
+CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+DIST_COMMON =  Makefile.am Makefile.in configure
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = gtar
+GZIP_ENV = --best
+SOURCES = $(epos_SOURCES) $(say_SOURCES) $(eposm_SOURCES) $(vrfy_SOURCES) $(gauge_SOURCES)
+OBJECTS = $(epos_OBJECTS) $(say_OBJECTS) $(eposm_OBJECTS) $(vrfy_OBJECTS) $(gauge_OBJECTS)
+
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .cc .lo .o .obj .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) $(top_srcdir)/Makefile.common
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps src/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-binPROGRAMS:
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+distclean-binPROGRAMS:
+
+maintainer-clean-binPROGRAMS:
+
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	  else :; fi; \
+	done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	done
+
+.c.o:
+	$(COMPILE) -c $<
+
+# FIXME: We should only use cygpath when building on Windows,
+# and only if it is available.
+.c.obj:
+	$(COMPILE) -c `cygpath -w $<`
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+	-rm -f *.$(OBJEXT)
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.c.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+epos$(EXEEXT): $(epos_OBJECTS) $(epos_DEPENDENCIES)
+	@rm -f epos$(EXEEXT)
+	$(CXXLINK) $(epos_LDFLAGS) $(epos_OBJECTS) $(epos_LDADD) $(LIBS)
+
+say$(EXEEXT): $(say_OBJECTS) $(say_DEPENDENCIES)
+	@rm -f say$(EXEEXT)
+	$(CXXLINK) $(say_LDFLAGS) $(say_OBJECTS) $(say_LDADD) $(LIBS)
+
+eposm$(EXEEXT): $(eposm_OBJECTS) $(eposm_DEPENDENCIES)
+	@rm -f eposm$(EXEEXT)
+	$(CXXLINK) $(eposm_LDFLAGS) $(eposm_OBJECTS) $(eposm_LDADD) $(LIBS)
+
+vrfy$(EXEEXT): $(vrfy_OBJECTS) $(vrfy_DEPENDENCIES)
+	@rm -f vrfy$(EXEEXT)
+	$(CXXLINK) $(vrfy_LDFLAGS) $(vrfy_OBJECTS) $(vrfy_LDADD) $(LIBS)
+
+gauge$(EXEEXT): $(gauge_OBJECTS) $(gauge_DEPENDENCIES)
+	@rm -f gauge$(EXEEXT)
+	$(CXXLINK) $(gauge_LDFLAGS) $(gauge_OBJECTS) $(gauge_LDADD) $(LIBS)
+.cc.o:
+	$(CXXCOMPILE) -c $<
+.cc.obj:
+	$(CXXCOMPILE) -c `cygpath -w $<`
+.cc.lo:
+	$(LTCXXCOMPILE) -c $<
+
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+
+@SET_MAKE@
+
+all-recursive install-data-recursive install-exec-recursive \
+installdirs-recursive install-recursive uninstall-recursive  \
+check-recursive installcheck-recursive info-recursive dvi-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
+
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	dot_seen=no; \
+	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
+	  rev="$$subdir $$rev"; \
+	  test "$$subdir" != "." || dot_seen=yes; \
+	done; \
+	test "$$dot_seen" = "no" && rev=". $$rev"; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
+	done
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+   if test "$$subdir" = .; then :; else \
+	    test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
+   fi; \
+	done; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = src
+
+distdir: $(DISTFILES)
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+	for subdir in $(SUBDIRS); do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d $(distdir)/$$subdir \
+	    || mkdir $(distdir)/$$subdir \
+	    || exit 1; \
+	    chmod 777 $(distdir)/$$subdir; \
+	    (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir=../$(top_distdir) distdir=../$(distdir)/$$subdir distdir) \
+	      || exit 1; \
+	  fi; \
+	done
+agent.o: agent.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h agent.h client.h
+client.o: client.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h client.h
+daemon.o: daemon.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h client.h agent.h
+encoding.o: encoding.cc common.h ../config.h defaults.h exc.h hash.h \
+	text.h voice.h options.lst function.h interf.h options.h \
+	parser.h unit.h rule.h waveform.h synth.h encoding.h
+function.o: function.cc common.h ../config.h defaults.h exc.h hash.h \
+	text.h voice.h options.lst function.h interf.h options.h \
+	parser.h unit.h rule.h waveform.h synth.h encoding.h
+gauge.o: gauge.cc ../config.h exc.h client.cc client.h
+hash.o: hash.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h hashtmpl.cc slab.h
+hashd.o: hashd.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h hash.cc hashtmpl.cc \
+	slab.h agent.h
+interf.o: interf.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h exc.cc
+ktdsyn.o: ktdsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h ktdsyn.h
+lpcsyn.o: lpcsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h lpcsyn.h
+mbrsyn.o: mbrsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h mbrsyn.h
+monolith.o: monolith.cc common.h ../config.h defaults.h exc.h hash.h \
+	text.h voice.h options.lst function.h interf.h options.h \
+	parser.h unit.h rule.h waveform.h synth.h encoding.h
+nonblock.o: nonblock.cc common.h ../config.h defaults.h exc.h hash.h \
+	text.h voice.h options.lst function.h interf.h options.h \
+	parser.h unit.h rule.h waveform.h synth.h encoding.h client.h \
+	agent.h
+options.o: options.cc common.h ../config.h defaults.h exc.h hash.h \
+	text.h voice.h options.lst function.h interf.h options.h \
+	parser.h unit.h rule.h waveform.h synth.h encoding.h slab.h
+parser.o: parser.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h
+ptdsyn.o: ptdsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h ptdsyn.h
+rule.o: rule.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h nnet/neural.h \
+	nnet/nnettypes.h nnet/stream.h nnet/slowstring.h nnet/vector.h \
+	nnet/iterator.h nnet/base.h nnet/map.h nnet/pair.h nnet/set.h \
+	nnet/matrix.h nnet/enumstring.h nnet/utils.h nnet/perceptron.h \
+	nnet/traindata.h nnet/xmlstream.h nnet/xml.h nnet/percstruct.h \
+	block.cc
+rx.o: rx.c ../config.h rx.h
+say.o: say.cc ../config.h exc.h client.cc client.h
+synth.o: synth.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h ktdsyn.h ptdsyn.h \
+	tdpsyn.h lpcsyn.h mbrsyn.h tcpsyn.h
+tcpsyn.o: tcpsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h tcpsyn.h client.h
+tdpsyn.o: tdpsyn.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h tdpsyn.h
+text.o: text.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h
+ttscp.o: ttscp.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h agent.h client.h
+unit.o: unit.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h nnet/neural.h \
+	nnet/nnettypes.h nnet/stream.h nnet/slowstring.h nnet/vector.h \
+	nnet/iterator.h nnet/base.h nnet/map.h nnet/pair.h nnet/set.h \
+	nnet/matrix.h nnet/enumstring.h nnet/utils.h nnet/perceptron.h \
+	nnet/traindata.h nnet/xmlstream.h nnet/xml.h nnet/percstruct.h \
+	slab.h marker.cc
+voice.o: voice.cc common.h ../config.h defaults.h exc.h hash.h text.h \
+	voice.h options.lst function.h interf.h options.h parser.h \
+	unit.h rule.h waveform.h synth.h encoding.h
+vrfy.o: vrfy.cc ../config.h client.cc client.h
+waveform.o: waveform.cc common.h ../config.h defaults.h exc.h hash.h \
+	text.h voice.h options.lst function.h interf.h options.h \
+	parser.h unit.h rule.h waveform.h synth.h encoding.h client.h
+
+info-am:
+info: info-recursive
+dvi-am:
+dvi: dvi-recursive
+check-am: all-am
+check: check-recursive
+installcheck-am:
+installcheck: installcheck-recursive
+install-exec-am: install-binPROGRAMS
+install-exec: install-exec-recursive
+
+install-data-am:
+install-data: install-data-recursive
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-recursive
+uninstall-am: uninstall-binPROGRAMS
+uninstall: uninstall-recursive
+all-am: Makefile $(PROGRAMS)
+all-redirect: all-recursive
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs: installdirs-recursive
+installdirs-am:
+	$(mkinstalldirs)  $(DESTDIR)$(bindir)
+
+
+mostlyclean-generic:
+
+clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+mostlyclean-am:  mostlyclean-binPROGRAMS mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-tags \
+		mostlyclean-generic
+
+mostlyclean: mostlyclean-recursive
+
+clean-am:  clean-binPROGRAMS clean-compile clean-libtool clean-tags \
+		clean-generic mostlyclean-am
+
+clean: clean-recursive
+
+distclean-am:  distclean-binPROGRAMS distclean-compile distclean-libtool \
+		distclean-tags distclean-generic clean-am
+	-rm -f libtool
+
+distclean: distclean-recursive
+
+maintainer-clean-am:  maintainer-clean-binPROGRAMS \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-tags maintainer-clean-generic \
+		distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-recursive
+
+.PHONY: mostlyclean-binPROGRAMS distclean-binPROGRAMS clean-binPROGRAMS \
+maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
+mostlyclean-compile distclean-compile clean-compile \
+maintainer-clean-compile mostlyclean-libtool distclean-libtool \
+clean-libtool maintainer-clean-libtool install-data-recursive \
+uninstall-data-recursive install-exec-recursive \
+uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
+all-recursive check-recursive installcheck-recursive info-recursive \
+dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
+maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
+distclean-tags clean-tags maintainer-clean-tags distdir info-am info \
+dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
+install-exec install-data-am install-data install-am install \
+uninstall-am uninstall all-redirect all-am all installdirs-am \
+installdirs mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+
+
+export WPP386=-xs
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

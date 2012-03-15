@@ -26,6 +26,15 @@ const bool is_monolith = 1;
 
 // int session_uid = 0;
 
+void close_and_invalidate(socky int sd)
+{
+	async_close(sd);
+}
+
+void use_async_sputs()
+{
+};
+
 int submain()
 {
 	unit *root;
@@ -52,7 +61,7 @@ int submain()
 		if (scfg->show_segs) show_segments(root);
 	}
 
-	if (scfg->neuronet) root->nnet_out(scfg->nnet_file, scfg->matlab_dir);
+//	if (scfg->neuronet) root->nnet_out(scfg->nnet_file, scfg->matlab_dir);
 	delete(root);
 //	fprintf(stdout,"***** The End. ******************************\n");
 	return 0;

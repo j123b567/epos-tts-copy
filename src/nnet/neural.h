@@ -35,7 +35,7 @@
 #ifndef EPOS_NEURAL_H
 #define EPOS_NEURAL_H
 
-#include "types.h"
+#include "nnettypes.h"
 #include "perceptron.h"
 #include "traindata.h"
 #include <stdlib.h>

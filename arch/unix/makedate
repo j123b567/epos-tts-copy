@@ -1,3 +1,9 @@
-#! /bin/sh
+#!/usr/bin/perl
 
-ls -l --full-time --sort=time $* | awk '/-rw/{printf("%s %s %s %s\n",$10,$7,$8,$9);exit;}'
+%m = ("Jan", "January", "Feb", "February", "Mar", "March", "Apr",
+"April", "Jun", "June", "Jul", "July", "Aug", "August", "Sep",
+"September", "Oct", "October", "Nov", "November", "Dec", "December");
+
+$date = scalar localtime ( (stat("../configure.in"))[9]);
+(undef, $month, $day, undef, $year) = split / +/,$date;
+print $day, " ", $m{$month}, " ", $year, "\n";

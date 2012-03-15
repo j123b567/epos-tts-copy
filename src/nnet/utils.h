@@ -9,7 +9,7 @@
 #ifndef __BANG_UTILS_H__
 #define __BANG_UTILS_H__
 
-#include "types.h"
+#include "nnettypes.h"
 #include <stdlib.h>
 
 static const int logToConsole = 0;

@@ -1,10 +1,10 @@
 #ifndef _CXML_
 #define _CXML_
 
-#include "types.h"
-#include "string.h"
+#include "nnettypes.h"
+#include "slowstring.h"
 #include "vector.h"
-#include "stream/bang_fstream.h"
+#include "stream.h"
 
 class TEnumString;
 

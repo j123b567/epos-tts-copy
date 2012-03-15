@@ -338,6 +338,11 @@ void send_cmd_line(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
+	if (argc > 1 && !strcmp(argv[1], "--help")) {
+		dump_help();
+		exit(0);
+	}
+
 #ifdef HAVE_WINSOCK
 	if (WSAStartup(MAKEWORD(2,0), (LPWSADATA)scratch)) shriek(464, "No winsock");
 	charset = "cp1250";

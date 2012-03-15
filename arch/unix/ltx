@@ -1,0 +1,5 @@
+# just ignore this file
+
+make epos.tex
+export TEXINPUTS=/usr/lib/sgml-tools:/usr/lib/texmf/tex/latex/input:/usr/lib/texmf/tex/generic/babel:/usr/lib/texmf/tex/latex/graphics/input:.
+latex epos.tex

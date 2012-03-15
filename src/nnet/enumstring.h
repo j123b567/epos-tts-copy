@@ -3,7 +3,7 @@
 #ifndef _ENUMSTR_
 #define _ENUMSTR_
 
-#include "types.h"
+#include "nnettypes.h"
 #include "utils.h"
 
 MAP (CString, CInt, TMapString2Int)

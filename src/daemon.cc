@@ -75,6 +75,7 @@
 #endif
 
 #ifdef HAVE_QNX_NAME_ATTACH
+	#define WITHOUT_EPOS_INCLUDES
 	#include "qnxipc.cc"
 #else
 	inline void qipc_proxy_init() {};

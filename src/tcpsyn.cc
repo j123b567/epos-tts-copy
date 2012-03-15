@@ -172,6 +172,7 @@ tcpsyn::tcpsyn(voice *v)
 	} else port = TTSCP_PORT;
 
 	unsigned int a = getaddrbyname(serv_id);
+	if (a == -1) shriek(472, "Unknown remote tcpsyn server");
 	
 	cd = tcpsyn_connect_socket(a, port);
 	dd = tcpsyn_connect_socket(a, port);

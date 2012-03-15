@@ -1,4 +1,4 @@
-# !/bin/sh
+#!/bin/sh
 
 if [ -f ../src/common.h ]; then
 	commo=`( cat ../src/common.h|grep '^#define VERSION'|awk -F\" '{print $2}' )`

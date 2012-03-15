@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 
 cat ../src/options.lst \
 |sed 's/"[^"]*")/)/g'\

@@ -453,7 +453,7 @@
 # define strfy(s) #s
 # define stringify(s) strfy(s)
 # ifndef BASE_DIR
-	# define BASE_DIR /usr/lib/epos
+	# define BASE_DIR /usr/share/epos
 # endif
 	STATIC (base_dir, "base_dir", STR, strdup(stringify(BASE_DIR)))// base path to everything
 # undef strfy

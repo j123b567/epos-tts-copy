@@ -1,7 +1,7 @@
 #ifndef __BANG_MATRIX_H__
 #define __BANG_MATRIX_H__
 
-#include "stream/bang_ostream.h"
+#include "stream.h"
 
 /** @brief Number matrix */
 

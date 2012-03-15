@@ -9,9 +9,8 @@
 #ifndef __BANG_XMLSTREAM_H__
 #define __BANG_XMLSTREAM_H__
 
-#include "stream/bang_fstream.h"
-#include "stream/bang_iostream.h"
-#include "string.h"
+#include "stream.h"
+#include "slowstring.h"
 #include "vector.h"
 #include "map.h"
 #include "enumstring.h"

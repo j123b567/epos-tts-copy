@@ -156,7 +156,7 @@ int getaddrbyname(const char *inet_name)
 #endif
 	hostent *he = gethostbyname(inet_name);
 	if (!he || he->h_addrtype != AF_INET || !he->h_addr_list[0])
-		shriek(472, "Unknown remote tcpsyn server");
+		return -1;
 	return ((in_addr *)he->h_addr_list[0])->s_addr;
 }
 
@@ -168,8 +168,10 @@ int just_connect_socket(unsigned int ipaddr, int port)
 	if (!port) {
 		sd = just_connect_socket(ipaddr, TTSCP_PORT);
 		if (sd == -1) sd = just_connect_socket(ipaddr, TTSCP_PORT + 1);
-		if (sd == -1) sd = just_connect_socket(getaddrbyname(PUBLIC_TTSCP_SERVER), TTSCP_PORT + 1);
-		if (sd == -1) sd = just_connect_socket(getaddrbyname(PUBLIC_TTSCP_SERVER), TTSCP_PORT);
+		int public_addr = getaddrbyname(PUBLIC_TTSCP_SERVER);
+		if (public_addr == -1) return -1;
+		if (sd == -1) sd = just_connect_socket(public_addr, TTSCP_PORT + 1);
+		if (sd == -1) sd = just_connect_socket(public_addr, TTSCP_PORT);
 		return sd;
 	}
 
@@ -182,6 +184,7 @@ int just_connect_socket(unsigned int ipaddr, int port)
 //		gethostname(scratch, scfg->scratch);	// can be used instead of localhost
 		strcpy(scratch, "localhost");
 		ipaddr = getaddrbyname(scratch);
+		if (ipaddr == -1) return -1;
 	}
 	addr.sin_addr.s_addr = ipaddr;
 
@@ -192,7 +195,7 @@ int connect_socket(unsigned int ipaddr, int port)
 {
 	int sd = just_connect_socket(ipaddr, port);
 	if (sd == -1) {
-		shriek(473, "Server unreachable\n");
+		shriek(473, "Server unreachable (Epos not running?)\n");
 	}
 	if (!sgets(scratch, scfg->scratch, sd)) shriek(474, "Remote server listens but discards\n");
 	if (strncmp(scratch, "TTSCP spoken here", 18)) {

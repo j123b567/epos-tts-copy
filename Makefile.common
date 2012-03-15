@@ -1,0 +1,14 @@
+##	Include this file by all child Makefiles
+
+# The following line may be deleted if using any other compiler than Watcom C.
+export WPP386=-xs
+
+CLEANFILES = *~ *.wav core gmon.out matlab.in tmp.0* dmalloc hackfile \
+		profile.log said.* 0\?tmp DEADJOE *.old *.local
+
+AM_CXXFLAGS = -w -DEPOS -ggdb -DDATADIR=$(datadir) -DPREFIXDIR=$(prefix)
+AM_YFLAGS = -d -t
+LDFLAGS = @LDFLAGS@ -L$(libdir)
+AM_CPPFLAGS = -I$(srcdir)/..
+CLEANFILES = *~ */*~ */*/*~ */*/*/*~ DEADJOE epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi
+MAINTAINERCLEANFILES = epos.html epos-?.html
