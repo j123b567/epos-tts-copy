@@ -569,23 +569,23 @@ version: $(top_srcdir)/configure.ac
 
 install-data-local: installdirs
 	@cd $(srcdir) && for i in $(DATA_DIRS); do \
-		$(mkinstalldirs) $(pkgdatadir)/$$i;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/$$i;\
 	done
 	cd $(srcdir) && for i in $(DATA_FILES); do \
-		$(INSTALL_DATA) $$i $(pkgdatadir)/$$i;\
+		$(INSTALL_DATA) $$i $(DESTDIR)$(pkgdatadir)/$$i;\
 	done
 
 uninstall-local:
 	for i in $(DATA_FILES); do \
-		rm -f $(pkgdatadir)/$$i;\
+		rm -f $(DESTDIR)$(pkgdatadir)/$$i;\
 	done
 	DATA_DIRS_REVERSED=;\
 	for i in $(DATA_DIRS); do \
 		DATA_DIRS_REVERSED="$$i $$DATA_DIRS_REVERSED";\
 	done;\
 	for i in $$DATA_DIRS_REVERSED; do \
-		chmod o+w $(pkgdatadir)/$$i/..;\
-		rmdir $(pkgdatadir)/$$i;\
+		chmod o+w $(DESTDIR)$(pkgdatadir)/$$i/..;\
+		rmdir $(DESTDIR)$(pkgdatadir)/$$i;\
 	done
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
