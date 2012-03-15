@@ -38,26 +38,9 @@ void colorize(int level, FILE *handle);  // See this function in interf.cc for v
 
 // void check_lib_version(const char *s);
 
-#if 0
-
-char *fmt(const char *s, int userval);
-char *fmt(const char *s, int userval, int anotherval);
-char *fmt(const char *s, const char *t, int userval, const char *u);
-char *fmt(const char *s, const char *t, int userval, const char *u);
-char *fmt(const char *s, const char *t, int userval);
-char *fmt(const char *s, const char *t);
-char *fmt(const char *s, const char *t, const char *u);
-char *fmt(const char *s, const char *t, const char *u, int userval);
-char *fmt(const char *s, const char *t, const char *u, const char *v);
-char *fmt(const char *s, int userval, const char *u);
-char *fmt(const char *s, int userval, const char *u, const char *v);
-char *fmt(const char *s, int userval, int anotherval, int nextval, int lastval);
-
-#endif
-
 void user_pause();
 
-void shriek(int code, const char *msg)
+void shriek(int code, const char *msg, ...)
 #ifdef __GNUC__
 	__attribute__((__noreturn__))
 #endif

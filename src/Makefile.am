@@ -2,9 +2,9 @@
 
 include $(top_srcdir)/Makefile.common
 
-SUBDIRS = nnet
+SUBDIRS = nnet . tests
 
-bin_PROGRAMS = epos say eposm vrfy gauge
+bin_PROGRAMS = epos say eposm gauge
 
 SRC_BASE = parser.cc unit.cc rule.cc \
 text.cc encoding.cc interf.cc function.cc options.cc \
@@ -19,7 +19,6 @@ epos_SOURCES = daemon.cc agent.cc ttscp.cc nonblock.cc hashd.cc rx.c $(SRC_BASE)
 eposm_SOURCES = monolith.cc hash.cc rx.c $(SRC_BASE)
 say_SOURCES = say.cc
 gauge_SOURCES = gauge.cc
-vrfy_SOURCES = vrfy.cc
 
 epos_LDADD = nnet/libeposnnet.la
 eposm_LDADD = nnet/libeposnnet.la

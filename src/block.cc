@@ -37,7 +37,7 @@ int   global_current_line = 0;
 
 extern unit EMPTY;
 
-#define diatax(x) shriek(811, fmt("%s:%d %s", file->current_file, file->current_line, (x)))
+#define diatax(x) shriek(811, "%s:%d %s", file->current_file, file->current_line, (x))
 
 
 class block_rule : public rule
@@ -130,7 +130,7 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 		case (int)END_OF_SWITCH: diatax("No length-based switch to terminate");
 		case (int)END_OF_RULES: 
 			if (!began_at) break;
-			else shriek(811, fmt("Unterminated block in file %s line %d", began_in, began_at));
+			else shriek(811, "Unterminated block in file %s line %d", began_in, began_at);
 		default: shriek(861, "next_rule() gone mad");
 	}
 	free(began_in);
@@ -541,7 +541,7 @@ next_real_rule(text *file, hash *vars, int *count)
 		rule *r = parse_rule(file, vars, count);
 		if (r > END_OF_RULES) return r;
 		if (r < END_OF_RULES) diatax("No rule follows a conditional rule");
-		shriek(811, fmt("No rule follows a conditional rule at the end of %s", file->current_file));
+		shriek(811, "No rule follows a conditional rule at the end of %s", file->current_file);
 	} catch (any_exception *e) {
 		if (e->code / 10 != 81) throw e;
 		shriek(881, "Parse error, cannot continue");

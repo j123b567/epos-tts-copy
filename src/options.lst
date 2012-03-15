@@ -461,7 +461,7 @@
 
 
 STATIC (use_dbg,    "use_debug",  BOOL, false)  // Whether to print any debug info at all
-STATIC (debug_level,"debug_level", INT, 3)	// minimum level of debug messages
+STATIC (debug_level,"debug_level", INT, 4)	// minimum level of debug messages
 
 STATIC (loaded, "",               BOOL, false)  // Do we have already compiled the .ini files?
 STATIC (fixedfile,"fixed_ini_file",STR, strdup("fixed.ini"))

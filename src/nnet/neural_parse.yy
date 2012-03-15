@@ -146,6 +146,16 @@ The statement is defining associativity as well. Hence
 %token <string_val> STRING
 %token <string_val> QUOTED_STRING
 
+%token COUNT "count"
+%token INDEX "index"
+%token THIS "this"
+%token ANCESTOR "ancestor"
+%token PREV "prev"
+%token NEXT "next"
+%token NEURAL "neural"
+%token BASAL_F "basal_f"
+%token CONT "cont"
+
 %type <func_val> input_exp
 %type <func_val> float_exp
 %type <func_val> int_exp
@@ -310,16 +320,35 @@ int yylex ()
 	bison_row = end;
 
 	//try to find the grammar symbol 
+
+	if (!strcmp(lex, "==")) return EQ;
+	if (!strcmp(lex, "!=")) return NOTEQ;
+	if (!strcmp(lex, "<=")) return LESSEQ;
+	if (!strcmp(lex, ">=")) return GREATEREQ;
+	if (!strcmp(lex, "AND"))return AND;
+	if (!strcmp(lex, "OR")) return OR;
+	if (!strcmp(lex, "count")) return COUNT;
+	if (!strcmp(lex, "index")) return INDEX;
+	if (!strcmp(lex, "this")) return THIS;
+	if (!strcmp(lex, "ancestor")) return ANCESTOR;
+	if (!strcmp(lex, "neural")) return NEURAL;
+	if (!strcmp(lex, "prev")) return PREV;
+	if (!strcmp(lex, "next")) return NEXT;
+	if (!strcmp(lex, "basal_f")) return BASAL_F;
+	if (!strcmp(lex, "cont")) return CONT;
+
+#if 0
 	for (int i = 0; i < YYNTOKENS; i++) {
 		if (yytname[i] != 0
 		    && yytname[i][0] == '"'
 			 && !strncmp (yytname[i] + 1, lex,
 							 strlen (lex))
 			 && yytname[i][strlen (lex) + 1] == '"'
-			 && yytname[i][strlen (lex) + 2] == 0)
+			 && yytname[i][strlen (lex) + 2] == 0
+			&& printf("%s\n", lex))
 		  return yytoknum[i];	// in case of errors try return i;
 	}
-
+#endif
 
 	//not a grammar symbol - a number or chartofloat name or error
 	yylval.int_val = strtol (lex, const_cast<char **>(&end), 10);

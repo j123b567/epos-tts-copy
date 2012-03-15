@@ -94,7 +94,7 @@ void *tcpsyn_appl(int bytes, int ctrld, int datad, int *size)
 			offset += bytes;
 		}
 	} while (!strchr("2468", scratch[0]));
-	if (scratch[0] != '2' && scratch[1] != '0') shriek(475, fmt("Remote returned %.3s for appl", scratch));
+	if (scratch[0] != '2' && scratch[1] != '0') shriek(475, "Remote returned %.3s for appl", scratch);
 	while (sum - offset) {
 		bytes = yread(datad, rec + offset, sum - offset);
 		if (bytes == -1) {
@@ -134,7 +134,7 @@ static int tcpsyn_connect_socket(unsigned int ipaddr, int port)
 static inline void tcpsyn_chk_cmd(int cd, const char *tag, const char *par)
 {
 	int err = sync_finish_command(cd);
-	if (err) shriek(475, fmt("Remote returned %d for %s %s", err, tag, par));
+	if (err) shriek(475, "Remote returned %d for %s %s", err, tag, par);
 }
 
 static inline void tcpsyn_send_cmd(int cd, const char *tag, const char *par)
@@ -209,9 +209,9 @@ tcpsyn::~tcpsyn()
 	sputs(handle, cd);
 	sputs("\r\ndone\r\n", cd);
 	err = sync_finish_command(cd);
-	if (err) shriek(475, fmt("Remote returned %d for delh", err));
+	if (err) shriek(475, "Remote returned %d for delh", err);
 	err = sync_finish_command(cd);
-	if (err) shriek(475, fmt("Remote returned %d for done", err));
+	if (err) shriek(475, "Remote returned %d for done", err);
 	close_and_invalidate(cd);
 	close_and_invalidate(dd);
 	free(handle);

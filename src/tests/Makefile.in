@@ -92,72 +92,59 @@ LDFLAGS = @LDFLAGS@ -L$(libdir)
 AM_CPPFLAGS = -I$(srcdir)/..
 MAINTAINERCLEANFILES = epos.html epos-?.html
 
-noinst_LTLIBRARIES = libeposnnet.la
+noinst_PROGRAMS = vrfy
 
-libeposnnet_la_SOURCES = base.h enumstring.cc enumstring.h iterator.h \
-map.cc map.h matrix.cc matrix.h neural.cc.h neural.h stream.h stream.cc \
-neural_parse.yy neural.cc pair.h perceptron.cc perceptron.h \
-percinit.cc percstruct.cc percstruct.h set.cc set.h slowstring.cc slowstring.h \
-traindata.cc traindata.h trainprocess.h nnettypes.h utils.cc utils.h \
-vector.h xml.cc xml.h xmlstream.h xmltempl.cc xmltempl.h \
-xmlutils.cc xmlutils.h xml_parse.yy xml_parse.h
+vrfy_SOURCES = vrfy.cc
 
+TESTS = vrfy
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config.h
 CONFIG_CLEAN_FILES = 
-LTLIBRARIES =  $(noinst_LTLIBRARIES)
+noinst_PROGRAMS =  vrfy$(EXEEXT)
+PROGRAMS =  $(noinst_PROGRAMS)
 
 
 DEFS = @DEFS@ -I. -I$(srcdir) -I../..
 CPPFLAGS = @CPPFLAGS@
 LIBS = @LIBS@
-libeposnnet_la_LDFLAGS = 
-libeposnnet_la_LIBADD = 
-libeposnnet_la_OBJECTS =  enumstring.lo map.lo matrix.lo stream.lo \
-neural_parse.lo neural.lo perceptron.lo percinit.lo percstruct.lo \
-set.lo slowstring.lo traindata.lo utils.lo xml.lo xmltempl.lo \
-xmlutils.lo xml_parse.lo
+vrfy_OBJECTS =  vrfy.$(OBJEXT)
+vrfy_LDADD = $(LDADD)
+vrfy_DEPENDENCIES = 
+vrfy_LDFLAGS = 
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
-YLWRAP = $(srcdir)/ylwrap
-CFLAGS = @CFLAGS@
-COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
-DIST_COMMON =  Makefile.am Makefile.in neural_parse.cc xml_parse.cc \
-ylwrap
+DIST_COMMON =  Makefile.am Makefile.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-SOURCES = $(libeposnnet_la_SOURCES)
-OBJECTS = $(libeposnnet_la_OBJECTS)
+SOURCES = $(vrfy_SOURCES)
+OBJECTS = $(vrfy_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .S .c .cc .lo .o .obj .s .yy
+.SUFFIXES: .S .c .cc .lo .o .obj .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) $(top_srcdir)/Makefile.common
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps src/nnet/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps src/tests/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 
-mostlyclean-noinstLTLIBRARIES:
+mostlyclean-noinstPROGRAMS:
 
-clean-noinstLTLIBRARIES:
-	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
 
-distclean-noinstLTLIBRARIES:
+distclean-noinstPROGRAMS:
 
-maintainer-clean-noinstLTLIBRARIES:
+maintainer-clean-noinstPROGRAMS:
 
 .c.o:
 	$(COMPILE) -c $<
@@ -203,19 +190,15 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 
-libeposnnet.la: $(libeposnnet_la_OBJECTS) $(libeposnnet_la_DEPENDENCIES)
-	$(CXXLINK)  $(libeposnnet_la_LDFLAGS) $(libeposnnet_la_OBJECTS) $(libeposnnet_la_LIBADD) $(LIBS)
+vrfy$(EXEEXT): $(vrfy_OBJECTS) $(vrfy_DEPENDENCIES)
+	@rm -f vrfy$(EXEEXT)
+	$(CXXLINK) $(vrfy_LDFLAGS) $(vrfy_OBJECTS) $(vrfy_LDADD) $(LIBS)
 .cc.o:
 	$(CXXCOMPILE) -c $<
 .cc.obj:
 	$(CXXCOMPILE) -c `cygpath -w $<`
 .cc.lo:
 	$(LTCXXCOMPILE) -c $<
-.yy.cc:
-	$(SHELL) $(YLWRAP) "$(YACC)" $< y.tab.c $*.cc y.tab.h $*.h -- $(AM_YFLAGS) $(YFLAGS)
-neural_parse.hh: neural_parse.cc
-xml_parse.hh: xml_parse.cc
-
 
 tags: TAGS
 
@@ -248,7 +231,7 @@ maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = src/nnet
+subdir = src/tests
 
 distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
@@ -261,72 +244,39 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
-enumstring.lo enumstring.o : enumstring.cc enumstring.h nnettypes.h \
-	stream.h slowstring.h vector.h iterator.h base.h map.h pair.h \
-	set.h matrix.h utils.h xml.h
-map.lo map.o : map.cc map.h pair.h set.h vector.h iterator.h base.h
-matrix.lo matrix.o : matrix.cc matrix.h stream.h
-neural.lo neural.o : neural.cc ../common.h ../../config.h ../defaults.h \
-	../exc.h ../hash.h ../text.h ../voice.h ../options.lst \
-	../function.h ../interf.h ../options.h ../parser.h ../unit.h \
-	../rule.h ../waveform.h ../synth.h ../encoding.h neural.h \
-	nnettypes.h stream.h slowstring.h vector.h iterator.h base.h \
-	map.h pair.h set.h matrix.h enumstring.h utils.h perceptron.h \
-	traindata.h xmlstream.h xml.h percstruct.h xmlutils.h
-neural_parse.lo neural_parse.o : neural_parse.cc ../common.h \
-	../../config.h ../defaults.h ../exc.h ../hash.h ../text.h \
-	../voice.h ../options.lst ../function.h ../interf.h \
-	../options.h ../parser.h ../unit.h ../rule.h ../waveform.h \
-	../synth.h ../encoding.h neural.h nnettypes.h stream.h \
-	slowstring.h vector.h iterator.h base.h map.h pair.h set.h \
-	matrix.h enumstring.h utils.h perceptron.h traindata.h \
-	xmlstream.h xml.h percstruct.h
-perceptron.lo perceptron.o : perceptron.cc perceptron.h traindata.h \
-	utils.h nnettypes.h stream.h slowstring.h vector.h iterator.h \
-	base.h map.h pair.h set.h matrix.h enumstring.h xmlstream.h \
-	xml.h percstruct.h
-percinit.lo percinit.o : percinit.cc perceptron.h traindata.h utils.h \
-	nnettypes.h stream.h slowstring.h vector.h iterator.h base.h \
-	map.h pair.h set.h matrix.h enumstring.h xmlstream.h xml.h \
-	percstruct.h
-percstruct.lo percstruct.o : percstruct.cc perceptron.h traindata.h \
-	utils.h nnettypes.h stream.h slowstring.h vector.h iterator.h \
-	base.h map.h pair.h set.h matrix.h enumstring.h xmlstream.h \
-	xml.h percstruct.h xmlutils.h
-set.lo set.o : set.cc
-slowstring.lo slowstring.o : slowstring.cc slowstring.h
-stream.lo stream.o : stream.cc stream.h
-string.lo string.o : string.cc string.h
-traindata.lo traindata.o : traindata.cc traindata.h utils.h nnettypes.h \
-	stream.h slowstring.h vector.h iterator.h base.h map.h pair.h \
-	set.h matrix.h enumstring.h xmlstream.h xml.h xmlutils.h
-utils.lo utils.o : utils.cc utils.h nnettypes.h stream.h slowstring.h \
-	vector.h iterator.h base.h map.h pair.h set.h matrix.h \
-	enumstring.h
-xml.lo xml.o : xml.cc xml.h nnettypes.h stream.h slowstring.h vector.h \
-	iterator.h base.h map.h pair.h set.h matrix.h enumstring.h \
-	utils.h xml_parse.h
-xml_parse.lo xml_parse.o : xml_parse.cc ../common.h ../../config.h \
-	../defaults.h ../exc.h ../hash.h ../text.h ../voice.h \
-	../options.lst ../function.h ../interf.h ../options.h \
-	../parser.h ../unit.h ../rule.h ../waveform.h ../synth.h \
-	../encoding.h neural.h nnettypes.h stream.h slowstring.h \
-	vector.h iterator.h base.h map.h pair.h set.h matrix.h \
-	enumstring.h utils.h perceptron.h traindata.h xmlstream.h xml.h \
-	percstruct.h
-xmltempl.lo xmltempl.o : xmltempl.cc xmlutils.h utils.h nnettypes.h \
-	stream.h slowstring.h vector.h iterator.h base.h map.h pair.h \
-	set.h matrix.h enumstring.h xmltempl.h traindata.h xmlstream.h \
-	xml.h perceptron.h percstruct.h
-xmlutils.lo xmlutils.o : xmlutils.cc xml.h nnettypes.h stream.h \
-	slowstring.h vector.h iterator.h base.h map.h pair.h set.h \
-	matrix.h enumstring.h utils.h xmlutils.h
+vrfy.o: vrfy.cc ../../config.h ../client.cc ../client.h
 
+check-TESTS: $(TESTS)
+	@failed=0; all=0; \
+	srcdir=$(srcdir); export srcdir; \
+	for tst in $(TESTS); do \
+	  if test -f $$tst; then dir=.; \
+	  else dir="$(srcdir)"; fi; \
+	  if $(TESTS_ENVIRONMENT) $$dir/$$tst; then \
+	    all=`expr $$all + 1`; \
+	    echo "PASS: $$tst"; \
+	  elif test $$? -ne 77; then \
+	    all=`expr $$all + 1`; \
+	    failed=`expr $$failed + 1`; \
+	    echo "FAIL: $$tst"; \
+	  fi; \
+	done; \
+	if test "$$failed" -eq 0; then \
+	  banner="All $$all tests passed"; \
+	else \
+	  banner="$$failed of $$all tests failed"; \
+	fi; \
+	dashes=`echo "$$banner" | sed s/./=/g`; \
+	echo "$$dashes"; \
+	echo "$$banner"; \
+	echo "$$dashes"; \
+	test "$$failed" -eq 0
 info-am:
 info: info-am
 dvi-am:
 dvi: dvi-am
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 installcheck-am:
 installcheck: installcheck-am
@@ -341,7 +291,7 @@ install-am: all-am
 install: install-am
 uninstall-am:
 uninstall: uninstall-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(PROGRAMS)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
@@ -358,26 +308,26 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-	-test -z "neural_parsehhneural_parseccxml_parsehhxml_parsecc$(MAINTAINERCLEANFILES)" || rm -f neural_parsehh neural_parsecc xml_parsehh xml_parsecc $(MAINTAINERCLEANFILES)
-mostlyclean-am:  mostlyclean-noinstLTLIBRARIES mostlyclean-compile \
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+mostlyclean-am:  mostlyclean-noinstPROGRAMS mostlyclean-compile \
 		mostlyclean-libtool mostlyclean-tags \
 		mostlyclean-generic
 
 mostlyclean: mostlyclean-am
 
-clean-am:  clean-noinstLTLIBRARIES clean-compile clean-libtool \
-		clean-tags clean-generic mostlyclean-am
+clean-am:  clean-noinstPROGRAMS clean-compile clean-libtool clean-tags \
+		clean-generic mostlyclean-am
 
 clean: clean-am
 
-distclean-am:  distclean-noinstLTLIBRARIES distclean-compile \
+distclean-am:  distclean-noinstPROGRAMS distclean-compile \
 		distclean-libtool distclean-tags distclean-generic \
 		clean-am
 	-rm -f libtool
 
 distclean: distclean-am
 
-maintainer-clean-am:  maintainer-clean-noinstLTLIBRARIES \
+maintainer-clean-am:  maintainer-clean-noinstPROGRAMS \
 		maintainer-clean-compile maintainer-clean-libtool \
 		maintainer-clean-tags maintainer-clean-generic \
 		distclean-am
@@ -386,15 +336,15 @@ maintainer-clean-am:  maintainer-clean-noinstLTLIBRARIES \
 
 maintainer-clean: maintainer-clean-am
 
-.PHONY: mostlyclean-noinstLTLIBRARIES distclean-noinstLTLIBRARIES \
-clean-noinstLTLIBRARIES maintainer-clean-noinstLTLIBRARIES \
+.PHONY: mostlyclean-noinstPROGRAMS distclean-noinstPROGRAMS \
+clean-noinstPROGRAMS maintainer-clean-noinstPROGRAMS \
 mostlyclean-compile distclean-compile clean-compile \
 maintainer-clean-compile mostlyclean-libtool distclean-libtool \
 clean-libtool maintainer-clean-libtool tags mostlyclean-tags \
-distclean-tags clean-tags maintainer-clean-tags distdir info-am info \
-dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
-install-exec install-data-am install-data install-am install \
-uninstall-am uninstall all-redirect all-am all installdirs \
+distclean-tags clean-tags maintainer-clean-tags distdir check-TESTS \
+info-am info dvi-am dvi check check-am installcheck-am installcheck \
+install-exec-am install-exec install-data-am install-data install-am \
+install uninstall-am uninstall all-redirect all-am all installdirs \
 mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 

@@ -299,7 +299,7 @@ void restrict_options()
 		o = option_set->translate(line);
 		if (!o) {
 			if (cfg->paranoid)
-				shriek(812, fmt("Typo in %s:%d\n", t->current_file, t->current_line));
+				shriek(812, "Typo in %s:%d\n", t->current_file, t->current_line);
 			continue;
 		}
 		o->readable = o->writable = A_NOACCESS;
@@ -310,8 +310,8 @@ void restrict_options()
 				case 'w': o->writable = level; break;
 				case '#': level = A_ROOT; break;
 				case '$': level = A_AUTH; break;
-				default : shriek(812, fmt("Invalid access rights in %s line %d",
-						t->current_file, t->current_line));
+				default : shriek(812, "Invalid access rights in %s line %d",
+						t->current_file, t->current_line);
 			}
 		}
 	}
@@ -534,7 +534,7 @@ epos_option *option_struct(const char *name, hash_table<char, epos_option> *soft
 
 void unknown_option(char *name, char *)
 {
-	shriek(442, fmt("Never heard about \"%s\", option ignored", name));
+	shriek(442, "Never heard about \"%s\", option ignored", name);
 }
 
 void parse_cfg_str(char *val)
@@ -557,7 +557,7 @@ template<class T> inline void set_enum_option(epos_option *o, const char *val, c
 	parse_cfg_str(const_cast<char *>(val));
 	T tmp = (T)str2enum(val, list, U_ILL);
 	if (tmp == (T)U_ILL)
-		shriek(447, fmt("Can't set %s to %s", o->optname, val));
+		shriek(447, "Can't set %s to %s", o->optname, val);
 	*(T *)locus = tmp;
 }
 
@@ -571,7 +571,7 @@ bool set_option(epos_option *o, const char *val, void *base)
 		case O_BOOL:
 			tmp = str2enum(val, BOOLstr, false);
 			if (cfg->paranoid && (!val || tmp == U_ILL)) 
-				shriek(447, fmt("%s is used as a boolean value for %s", val, o->optname));
+				shriek(447, "%s is used as a boolean value for %s", val, o->optname);
 			*(bool *)locus = tmp & 1;
 			D_PRINT(1, "Configuration option \"%s\" set to %s\n",
 				o->optname,enum2str(*(bool*)locus, BOOLstr));
@@ -590,7 +590,7 @@ bool set_option(epos_option *o, const char *val, void *base)
 			break;
 		case O_UNIT:
 //			if((*(UNIT *)locus=str2enum(val, scfg->unit_levels, U_ILL))==U_ILL) 
-//				shriek(447, fmt("Can't set %s to %s", o->optname, val));
+//				shriek(447, "Can't set %s to %s", o->optname, val);
 			set_enum_option<UNIT>(o, val, scfg->unit_levels, locus);
 			D_PRINT(1, "Configuration option \"%s\" set to %d\n",o->optname,*(int *)locus);
 			break;
@@ -608,9 +608,9 @@ bool set_option(epos_option *o, const char *val, void *base)
 			*(char**)locus = strdup(val);	// FIXME: should be forever if monolith etc. (maybe)
 			break;
 		case O_CHAR:
-			if (!val[0]) shriek(447, fmt("Empty string given for a CHAR option %s", o->optname));
+			if (!val[0]) shriek(447, "Empty string given for a CHAR option %s", o->optname);
 			parse_cfg_str(const_cast<char *>(val));
-			if (val[1]) shriek(447, fmt("Multiple chars given for a CHAR option %s", o->optname));
+			if (val[1]) shriek(447, "Multiple chars given for a CHAR option %s", o->optname);
 			else *(char *)locus=*val;
 //			D_PRINT(1, "Configuration option \"%s\" set to \"%s\"\n",o->optname,val);
 			break;
@@ -623,11 +623,11 @@ bool set_option(epos_option *o, const char *val, void *base)
 		case O_CHARSET:
 			parse_cfg_str(const_cast<char *>(val));
 			if ((tmp = load_charset(val)) == CHARSET_NOT_AVAILABLE)
-				shriek(447, fmt("Unknown charset %s", val));
+				shriek(447, "Unknown charset %s", val);
 			*(int *)locus = tmp;
 			D_PRINT(1, "Charset set to %i\n",*(int*)locus);
 			break;
-		default: shriek(462, fmt("Bad option type %d", (int)o->opttype));
+		default: shriek(462, "Bad option type %d", (int)o->opttype);
 	}
 	if (o->action) invoke_set_action(o, NULL);
 
@@ -681,12 +681,12 @@ static inline bool set_option(char *name, const char *value)
 static inline void set_option_or_die(char *name, const char *value)
 {
 	epos_option *o = option_struct(name, NULL);
-	if (!o) shriek(814, fmt("Unknown option %s", name));
+	if (!o) shriek(814, "Unknown option %s", name);
 	if (!cfg->langs && (o->structype == OS_LANG || o->structype == OS_VOICE || o->opttype == O_LANG))
 		return;
 
 	if (set_option(o, value)) return;
-	shriek(814, fmt("Bad value %s for option %s", value, name));
+	shriek(814, "Bad value %s for option %s", value, name);
 }
 
 /*
@@ -749,7 +749,7 @@ const char *format_option(epos_option *o, void *base)
 			return (char *)this_voice->name;
 		case O_CHARSET:
 			return enum2str(*(int *)locus, charset_list);
-		default: shriek(462, fmt("Bad option type %d", (int)o->opttype));
+		default: shriek(462, "Bad option type %d", (int)o->opttype);
 	}
 	return NULL; /* unreachable */
 }
@@ -770,7 +770,7 @@ const char *format_option(const char *name)
 {
 	epos_option *o = option_struct(name, this_lang->soft_options);
 	if (!o) {
-		shriek(442, fmt("Nonexistent option %s", name));
+		shriek(442, "Nonexistent option %s", name);
 		return NULL; /* unreachable */
 	}
 	return format_option(o);
@@ -828,7 +828,7 @@ void parse_cmd_line()
 //					else if (scfg->warnings)
 //						scfg->always_dbg--;
 					break;
-				default : shriek(442, fmt("Unknown option -%c, no action taken", *j));
+				default : shriek(442, "Unknown option -%c, no action taken", *j);
 			}
 			if (!ar[1]) {
 				cfg->input_file = "";   	//dash only
@@ -902,7 +902,7 @@ void load_config(const char *filename, const char *dirname, const char *what,
 			if (whither == cfg) {		// ...try also static_cfg
 				line[-2] = OPT_STRUCT_PREFIX[OS_STATIC];
 				if (!set_option(line - 2, value, scfg, (hash_table<char, epos_option> *)NULL))
-					shriek(812, fmt("Bad option %s in %s:%d", line, t->current_file, t->current_line));
+					shriek(812, "Bad option %s in %s:%d", line, t->current_file, t->current_line);
 				line[-2] = OPT_STRUCT_PREFIX[OS_CFG];
 			}
 		}

@@ -194,7 +194,7 @@ lang::add_soft_option(const char *optname)
 
 	if (closing) {
 		if (strchr(optname, OPENING) != closing - 2 || closing[1])
-			shriek(812, fmt("Syntax error in soft option %s in lang %s", optname, name));
+			shriek(812, "Syntax error in soft option %s in lang %s", optname, name);
 		closing[-2] = 0;
 		switch(closing[-1]|('a'-'A')) {
 			case 'b': o.opttype = O_BOOL; break;
@@ -202,15 +202,15 @@ lang::add_soft_option(const char *optname)
 			case 'n': o.opttype = O_INT; break;
 			case 'c': o.opttype = O_CHAR; shriek(812, "char typed soft options are tricky"); break;
 //			case 'f': o.opttype = O_FILE; break;
-			default : shriek(812, fmt("Unknown option type in %s in lang %s", optname, name));
+			default : shriek(812, "Unknown option type in %s in lang %s", optname, name);
 		}
 	} else if (strchr(optname, OPENING))
-		shriek(812, fmt("Unterminated type spec in soft option %s in lang %s", optname, name));
+		shriek(812, "Unterminated type spec in soft option %s in lang %s", optname, name);
 	if (option_struct(optname, NULL))
-		shriek(812, fmt("Soft option name conflicts with a built-in option name %s in lang %s", optname, name));
+		shriek(812, "Soft option name conflicts with a built-in option name %s in lang %s", optname, name);
 	if (soft_options) {
 		if (soft_options->translate(optname))
-			shriek(812, fmt("Soft option already exists in lang %s", name));
+			shriek(812, "Soft option already exists in lang %s", name);
 		soft_defaults = xrealloc(soft_defaults,
 				(soft_options->items + 2) * sizeof(void *) >> 1);
 	} else {

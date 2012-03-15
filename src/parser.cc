@@ -163,7 +163,7 @@ void
 parser::done()
 {
 	if (current < text + txtlen) 
-		shriek(463, fmt("Too high level symbol in a dictionary, parser contains %s", (char *)text));
+		shriek(463, "Too high level symbol in a dictionary, parser contains %s", (char *)text);
 }
 
 UNIT
@@ -174,7 +174,7 @@ parser::chrlev(unsigned char c)
 	{
 		if (cfg->relax_input && CHRLEV[cfg->dflt_char] != U_ILL) return CHRLEV[cfg->dflt_char];
 		DBG(2, fprintf(cfg->stdshriek,"Fatal: parser dumps core.\n%s\n",(char *)current-2);)
-		shriek(431, fmt("Parsing an unhandled character  '%c' - ASCII code %d", (unsigned int) c, (unsigned int) c));
+		shriek(431, "Parsing an unhandled character  '%c' - ASCII code %d", (unsigned int) c, (unsigned int) c);
 	}
 	return(CHRLEV[c]);
 }
@@ -187,7 +187,7 @@ parser::regist(UNIT u, const char *list)
 	for(s=(unsigned char *)list;*s!=0;s++)
 	{
 		if (CHRLEV[*s] != U_ILL && CHRLEV[*s] != u)
-			shriek(812, fmt("Ambiguous syntactic function of %c",*s));
+			shriek(812, "Ambiguous syntactic function of %c",*s);
 		CHRLEV[*s] = u;
 		TRANSL_INPUT[*s] = (unsigned char)*s;
 	}
@@ -223,6 +223,6 @@ parser::initables(SYMTABLE table)
 //	case ST_EMPTY:
 //		for(c=1; c<256; c++) CHRLEV[c] = U_VOID; *CHRLEV = scfg->text_level;
 //		break;
-	default: shriek(861, fmt("Garbage passed to parser::initables, %d", table));
+	default: shriek(861, "Garbage passed to parser::initables, %d", table);
 	}
 }

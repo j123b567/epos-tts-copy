@@ -120,7 +120,7 @@ rule::set_level(UNIT scp, UNIT trg)
 {
 	scope =  scp == U_DEFAULT ? scfg->default_scope  : scp;
 	target = trg == U_DEFAULT ? scfg->default_target : trg;
-	if (scope < target) shriek (811, fmt("%s Scope must not be more narrow than target", debug_tag()));
+	if (scope < target) shriek (811, "%s Scope must not be more narrow than target", debug_tag());
 			// was scope <= target -  consider returning back
 }
 
@@ -143,7 +143,7 @@ rule::check_child(rule *r)
 		if (r->scope != U_INHERIT) {
 			printf("this %d child %d\n",scope, r->scope);
 			debug();
-			shriek(811, fmt("%s Scope of rule exceeds scope of its block", debug_tag()));
+			shriek(811, "%s Scope of rule exceeds scope of its block", debug_tag());
 		}
 		r->scope = this->scope;
 	}
@@ -245,7 +245,7 @@ void
 hashing_rule::verify()
 {
 	if (negated > 1)
-		shriek(811, fmt("%s Unexpected negated dictionary", debug_tag()));
+		shriek(811, "%s Unexpected negated dictionary", debug_tag());
 	if (cfg->paranoid) {
 		load_hash();
 
@@ -266,7 +266,7 @@ hashing_rule::load_hash()
 		dict = new hash(raw, scfg->hash_full, 0, 200, 5,
 			(char *) allow_id, false, "dictionary %s not found", esc);
 	} else dict = literal_hash(raw);
-	if (!dict) shriek(463, fmt("%s Unterminated argument", debug_tag()));	// or out of memory
+	if (!dict) shriek(463, "%s Unterminated argument", debug_tag());	// or out of memory
 }
 
 void 
@@ -480,7 +480,7 @@ class r_absol: public rule
 
 r_absol::r_absol(char *param) : rule(param)
 {
-	if (strcmp(param, "t")) shriek(811, fmt("%s: Impossible absolutize request", debug_tag()));
+	if (strcmp(param, "t")) shriek(811, "%s: Impossible absolutize request", debug_tag());
 }
 
 /************************************************
@@ -573,13 +573,13 @@ r_contour::r_contour(char *param) : rule(param)
 		switch (*p) {
 		case ':':  contour[l++] += tmp*sgn; tmp=0;
 				sgn=1; contour[l] = 0;  break;
-		case '*':  if (p[1] && p[1] != ':') shriek(811, fmt("%s A ':' should follow '*'", debug_tag()));
-			   if (padd_start > -1) shriek(811, fmt("%s Ambiguous padding", debug_tag()));
+		case '*':  if (p[1] && p[1] != ':') shriek(811, "%s A ':' should follow '*'", debug_tag());
+			   if (padd_start > -1) shriek(811, "%s Ambiguous padding", debug_tag());
 				padd_start = l; break;
 		case '-':
 		case '+':  contour[l]+=tmp*sgn; sgn=(*p=='+' ?+1:-1); break;
-		default:   if (*p<'0' || *p>'9') shriek(811, fmt("%s Expected a number, found \"%s\"",
-					debug_tag(), p));
+		default:   if (*p<'0' || *p>'9') shriek(811, "%s Expected a number, found \"%s\"",
+					debug_tag(), p);
 			   else tmp = tmp*10 + *p-'0';
 		}
 	}
@@ -634,14 +634,14 @@ r_smooth::r_smooth(char *param) : rule(param)
 			   sgn=1; list[l]=0;  break;
 		case '-':
 		case '+':  list[l]+=tmp*sgn; sgn=(*p=='+' ?+1:-1); break;
-		default:   if (*p<'0' || *p>'9') shriek(811, fmt("%s Expected a number, found \"%s\"",
-					debug_tag(), p));
+		default:   if (*p<'0' || *p>'9') shriek(811, "%s Expected a number, found \"%s\"",
+					debug_tag(), p);
 			   else tmp = tmp*10 + *p-'0';
 		}
 	}
 	if (tmp) list[l++]+=tmp*sgn, total+=tmp*sgn;
 	if (total!=RATIO_TOTAL)
-		shriek (811, fmt("%s Smooth percentages don't add up to 100%% (%d%%)", debug_tag(), total));
+		shriek (811, "%s Smooth percentages don't add up to 100%% (%d%%)", debug_tag(), total);
 	if (cfg->paranoid) {
 		for (tmp=max=0; tmp<l; tmp++)
 			if (list[tmp]>max) max=list[tmp];
@@ -711,27 +711,27 @@ r_regress::r_regress(char *param) : rule(param)
 	char *right;
 
 	eff = strchr(aff=strdup(param),ASSIM_DELIM1);
-	if (!eff) shriek(811, fmt("%s Bad param", debug_tag()));
+	if (!eff) shriek(811, "%s Bad param", debug_tag());
 	*eff++ = 0;
 
 	left = strchr(eff,ASSIM_DELIM2);
-	if(!left) shriek(811, fmt("%s Bad param", debug_tag()));
+	if(!left) shriek(811, "%s Bad param", debug_tag());
 	*left++ = 0;
 	
 	right = strchr(left,ASSIM_DELIM3);
-	if (!right) shriek(811, fmt("%s Bad param", debug_tag()));
+	if (!right) shriek(811, "%s Bad param", debug_tag());
 	*right++ = 0;
 
 
 	char *tmp = strchr(right,ASSIM_DELIM4);
-	if (!tmp) shriek(811, fmt("%s Bad param", debug_tag()));
+	if (!tmp) shriek(811, "%s Bad param", debug_tag());
 	*tmp++ = 0;
-	if (*tmp) shriek(811, fmt("%s Strange appendix to param", debug_tag()));
+	if (*tmp) shriek(811, "%s Strange appendix to param", debug_tag());
 	
 	D_PRINT(0, "Parsed assim param \"%s>%s(%s_%s)\"\n",aff,eff,left,right);
 
 	if (strlen(aff) != strlen(eff) && strlen(eff) != 1)
-		shriek(811, fmt("%s Bad param", debug_tag()));
+		shriek(811, "%s Bad param", debug_tag());
 	fn = new charxlat(aff,eff,true); ltab = new charclass(left); rtab = new charclass(right);
 	free(aff);
 	
@@ -886,13 +886,13 @@ class r_regex: public rule
 #define PAREN_OPEN  '('
 #define PAREN_CLOS  ')'
 
-#define rshr(x) shriek(811, fmt("%s Regex invalid: %s", debug_tag(), x));
+#define rshr(x) shriek(811, "%s Regex invalid: %s", debug_tag(), x);
 
 r_regex::r_regex(char *param) : rule(param)
 {
 	char separator = *param++;
 	char *tmp = strchr(param, separator);
-	if (!tmp) shriek(811, fmt("%s Regex param should be separated thus: /regex/replacement/", debug_tag()));
+	if (!tmp) shriek(811, "%s Regex param should be separated thus: /regex/replacement/", debug_tag());
 	*tmp++=0;
 	parens = 0;
 	int result;
@@ -937,13 +937,13 @@ r_regex::r_regex(char *param) : rule(param)
 			rshr("too ugly");
 		case REG_ESPACE:
 			rshr("too huge");
-		default: shriek(811, fmt("%s Bad regex, regcomp returns %d", debug_tag(), result));
+		default: shriek(811, "%s Bad regex, regcomp returns %d", debug_tag(), result);
 	}
 	free(param);
 	repl = tmp;
 	tmp = strchr(tmp, separator);
-	if (!tmp) shriek(811, fmt("%s Regex param should be separated thus: /regex/replacement/ ", debug_tag()));
-	if (tmp[1]) shriek(811, fmt("%s garbage follows replacement", debug_tag()));
+	if (!tmp) shriek(811, "%s Regex param should be separated thus: /regex/replacement/ ", debug_tag());
+	if (tmp[1]) shriek(811, "%s garbage follows replacement", debug_tag());
 	*tmp=0;
 	repl=strdup(repl);
 	D_PRINT(0, "%s Regex is okay\n", debug_tag());
@@ -1170,7 +1170,7 @@ r_with::apply(unit *root)
 		else dict = new hash(raw, scfg->hash_full,
 			0, 200, 3, DATA_EQUALS_KEY, false, "dictionary %s not found", esc);
 	}
-	if (!dict) shriek(811, fmt("%s Unterminated argument", debug_tag()));	// or out of memory
+	if (!dict) shriek(811, "%s Unterminated argument", debug_tag());	// or out of memory
 
 	if (root->subst(dict, M_ONCE) ^ negated) then->apply(root);
 }
@@ -1197,9 +1197,9 @@ class r_if: public cond_rule
 r_if::r_if(char *param, text *file, hash *vars) : cond_rule(param, file, vars)
 {
 	epos_option *o = option_struct(raw + (*raw == EXCLAM) , this_lang->soft_options);
-	if (!o) shriek(811, fmt("%s Not an option: %s", debug_tag(), raw));
-	if (o->opttype != O_BOOL) shriek(811, fmt("%s Not a truth value option: %s", debug_tag(), raw));
-	if (o->structype != OS_VOICE) shriek(811, fmt("%s Not a voice option: %s", debug_tag(), raw));
+	if (!o) shriek(811, "%s Not an option: %s", debug_tag(), raw);
+	if (o->opttype != O_BOOL) shriek(811, "%s Not a truth value option: %s", debug_tag(), raw);
+	if (o->structype != OS_VOICE) shriek(811, "%s Not a voice option: %s", debug_tag(), raw);
 	flag_offs = o->offset;
 }
 

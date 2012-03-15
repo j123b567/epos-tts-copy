@@ -128,7 +128,7 @@ unit::write_segs(segment *whither, int first, int n)
 	unit *tmpu;
 	static unit *iucache; static int ifcache; static unit *ocache;
 	 
-	if (!whither) shriek (861, fmt("NULL ptr passed to write_segs() n=%d", n));
+	if (!whither) shriek (861, "NULL ptr passed to write_segs() n=%d", n);
 	scope = true;
 	if (first && first == ifcache && iucache == this) tmpu=ocache;
 	else for (m = first, tmpu = LeftMost(scfg->segm_level); m--; tmpu = tmpu->Next(scfg->segm_level));
@@ -387,7 +387,7 @@ void
 unit::insert_begin(unit*from, unit*member)
 {
 	sanity();
-	if(!member) shriek(861, fmt("I am Sorry. Nice to meet ya at %d",depth));
+	if(!member) shriek(861, "I am Sorry. Nice to meet ya at %d",depth);
 	if (firstborn) {
 		firstborn->prev=member;
 		member->next=firstborn;
@@ -404,7 +404,7 @@ unit::insert_end(unit *member, unit*to)
 {
 	sanity();
 	if(!to) to=member;
-	if(!member) shriek (861, fmt("I am Sorry. Nice to meet ya at %d", depth));    //this may not be the reason
+	if(!member) shriek (861, "I am Sorry. Nice to meet ya at %d", depth);    //this may not be the reason
 	if (lastborn) {
 		lastborn->next=member;
 		member->prev=lastborn;
@@ -553,7 +553,7 @@ unit::subst(hash *table, int l, char *prefix, char *prefix_end, char *body, char
 		sbsize <<= 1;
 		sb = (char *)xrealloc(sb, sbsize);
 	}
-//		shriek (463, fmt("Huge or infinitely iterated substitution %30s...", resultant));
+//		shriek (463, "Huge or infinitely iterated substitution %30s...", resultant);
 	if (prefix && prefix_end - prefix > 0) {
 		strncpy(sb, prefix, prefix_end - prefix);
 		*(sb + (prefix_end - prefix)) = 0;
@@ -622,7 +622,7 @@ unit::subst(hash *table, SUBST_METHOD method)
 		}
 
 		if (method & M_SEQ) {
-			// shriek(462, fmt("I reached rule mysubst!\n", 50));
+			// shriek(462, "I reached rule mysubst!\n", 50);
 
 			// algorithm similar to M_BEGIN, but continue through the rest of the string, until nothing found and string processed
 			char* real_tail = strend;
@@ -715,7 +715,7 @@ unit::subst(hash *table, SUBST_METHOD method)
 		}
 		if (method & M_ONCE) return true;
 	}
-	shriek(463, fmt("Infinite substitution loop detected on \"%s\"", gb));
+	shriek(463, "Infinite substitution loop detected on \"%s\"", gb);
 	cont = separ;
 	sanity();
 	return true;
@@ -769,7 +769,7 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 			gb[--len] = 0; len--;
 			if ((r = table->translate(gb + 1))) {
 				if (cfg->paranoid && strlen(r) - len)
-					shriek(462, fmt("Substitute length differs: '%s' to '%s'", gb + 1, r));
+					shriek(462, "Substitute length differs: '%s' to '%s'", gb + 1, r);
 				strcpy(gb + 1, r);
 				goto commit;
 			}
@@ -784,7 +784,7 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 						j += !j;
 						gb[i] = tmp;
 						if (cfg->paranoid && strlen(r) - i + j + !tmp)
-							shriek(462, fmt("Substitute length differs: '%s' to '%s'", gb+j, r));
+							shriek(462, "Substitute length differs: '%s' to '%s'", gb+j, r);
 						memcpy(gb+j, r, strlen(r));
 						goto break_home;
 					}
@@ -797,7 +797,7 @@ unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
 		break_home:
 		if (method & M_ONCE) goto commit;
 	}
-	shriek(463, fmt("Infinite substitution loop detected on \"%s\"", gb));
+	shriek(463, "Infinite substitution loop detected on \"%s\"", gb);
 	sanity();
 
 commit:
@@ -854,7 +854,7 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 			if (repl[j]==ESCAPE && repl[j+1]>='0' && repl[j+1]<='9') {
 				int index = repl[j+1] - '0';
 				if (index >= subexps) 
-					shriek(463, fmt("Index %d too big in regex replacement", index));
+					shriek(463, "Index %d too big in regex replacement", index);
 				assert_sbsize(k + subexp[index].rm_eo - subexp[index].rm_so);
 				for (l = subexp[index].rm_so; l < subexp[index].rm_eo; l++) {
 					if (l<0) shriek(463, "regex - alternative not taken, sorry");
@@ -877,7 +877,7 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 
 		subst();
 	}
-	shriek(463, fmt("Infinite regex replacement loop detected on \"%s\"", gb));
+	shriek(463, "Infinite regex replacement loop detected on \"%s\"", gb);
 	sanity();
 	return;
 }
@@ -1102,7 +1102,7 @@ unit::contour(UNIT target, int *recipe, int rec_len, int padd_start, FIT_IDX wha
 			i < rec_len && u != &EMPTY;
 			u = u->Next(target), i++)  /* just count'em */ ;
 	if (u->Next(target) != &EMPTY && padd_start == -1) {
-		shriek(463, fmt("recipe too short: %d items", rec_len));
+		shriek(463, "recipe too short: %d items", rec_len);
 	}
 	if (i < rec_len) {
 		shriek(463, "recipe too long");
@@ -1464,7 +1464,7 @@ unit::index(UNIT what, UNIT where)
 {
 	int i=0;
 	if (what > where) shriek(862, "Wrong order of arguments to unit::index");
-	if (what < depth) shriek(862, fmt("Underindexing in unit::index %d",what));
+	if (what < depth) shriek(862, "Underindexing in unit::index %d",what);
 	unit *lookfor = ancestor(what);
 	unit *lookin = ancestor(where);
 	unit *tmpu;

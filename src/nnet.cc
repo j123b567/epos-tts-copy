@@ -104,6 +104,6 @@ unit::nnet_type()
 		case NN_PUNCTUATION:
 		case NN_NOTHING:return 3.0;
 	}
-	shriek(463, fmt("Please apply nnet rules before calling nnet_dump() %c", cont));
+	shriek(463, "Please apply nnet rules before calling nnet_dump() %c", cont);
 	return 0;
 }

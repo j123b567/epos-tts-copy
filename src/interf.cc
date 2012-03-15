@@ -85,9 +85,10 @@ int severity(int code)
 }
 #endif
 
+char error_fmt_scratch[MAX_ERR_LINE];
 int errors = 0;
 
-void shriek(int code, const char *s) 
+void shriek(int code, const char *fs, ...) 
 {
 	int l_errno = errno;
 	/* Art (c) David Miller */
@@ -97,19 +98,30 @@ void shriek(int code, const char *s)
 "              /_| \\__/ |_\\\n"
 "                 \\__U_/\n");
 	if (scfg->shriek_art == 2) fprintf(cfg->stdshriek, "\nSuddenly, something went wrong.\n\n");
+
+	const char *message;
+	if (strchr(fs, '%')) {
+		va_list ap;
+		va_start(ap, fs);
+		vsnprintf(error_fmt_scratch, MAX_ERR_LINE, fs, ap);
+		error_fmt_scratch[MAX_ERR_LINE - 1] = 0;
+		message = error_fmt_scratch;
+		va_end(ap);
+	} else message = fs;
+
 	color(cfg->stdshriek, scfg->shriek_col);
-	fprintf(cfg->stdshriek, "Error: %s (%d)\n",s, code); 
+	fprintf(cfg->stdshriek, "Error: %s (%d)\n", message, code); 
 	color(cfg->stdshriek, scfg->normal_col);
 
 #ifdef HAVE_SYSLOG_H
 	if (scfg->use_syslog)
-		if (scfg->log_codes) syslog(LOG_DAEMON | severity(code), "%3d %s", code, s);
-		else syslog(LOG_DAEMON | severity(code), "%s", s);
+		if (scfg->log_codes) syslog(LOG_DAEMON | severity(code), "%3d %s", code, message);
+		else syslog(LOG_DAEMON | severity(code), "%s", message);
 	unuse(l_errno);
 #else
 	FILE *h = fopen("epos.err","w");
 	if (h) {
-		fprintf(h, "%s\nerrno=%d (%s)\n", s, l_errno, strerror(l_errno));
+		fprintf(h, "%s\nerrno=%d (%s)\n", message, l_errno, strerror(l_errno));
 		fclose(h);
 	}
 #endif
@@ -118,34 +130,32 @@ void shriek(int code, const char *s)
 	switch (code / 100) {
 		case 4 :
 //			printf("Just a command will fail.\n");
-			xcf = new command_failed (code, s);
+			xcf = new command_failed (code, message);
 			throw xcf;
 
 		case 6 :
-			throw new connection_lost (code, s);
+			throw new connection_lost (code, message);
 
 		case 8 :
 			errors++;
-//			printf("Abnormal condition: %s (code %d)\n", s, code);
+//			printf("Abnormal condition: %s (code %d)\n", message, code);
 			if (l_errno && EAGAIN) printf("Current errno value: %d (%s)\n", l_errno, strerror(l_errno));
-			throw new fatal_error (code, s);
+			throw new fatal_error (code, message);
 
 			printf("Your compiler does NOT support exception handling, aborting\n");
 			fflush(NULL);
 			abort();
-		default:  shriek(869, fmt("Bad error class %d", code));
+		default:  shriek(869, "Bad error class %d", code);
 	}
 }
-
-char error_fmt_scratch[MAX_ERR_LINE];
 
 char *fmt(const char *s, ...) 
 {
 	va_list ap;
 	va_start(ap, s);
-	vsprintf(error_fmt_scratch, s, ap);
+	vsnprintf(scratch, scfg->scratch, s, ap);
 	va_end(ap);
-	return error_fmt_scratch;
+	return scratch;
 }
 
 void tag_vfprintf(const char *fmt, va_list ap)
@@ -173,7 +183,7 @@ void dprint_always(int level, const char *fmt, ...)
 
 void hash_shriek(const char *s1, const char *s2, int i)
 {
-	shriek(812, fmt(s1, s2, i));	//FIXME?
+	shriek(812, s1, s2, i);		//FIXME?
 }
 
 void user_pause()
@@ -205,15 +215,15 @@ fopen(const char *filename, const char *flags, const char *reason)
 	switch (*flags) {
 		case 'r': message = "Failed to read %s from %s: %s"; break;
 		case 'w': message = "Failed to write %s to %s: %s"; break;
-		default : shriek(861, fmt("Bad flags for %s", reason)); message = NULL;
+		default : shriek(861, "Bad flags for %s", reason); message = NULL;
 	}
 	f = fopen(filename, flags);
 	if (!f && errno == ENOMEM)
 		OOM_HANDLER;
-	if (!f && reason) shriek(445, fmt(message, reason, filename, strerror(errno)));
+	if (!f && reason) shriek(445, message, reason, filename, strerror(errno));
 	if (cfg->paranoid && f && *flags == 'r') {
 		if (reason && !fread(&message, 1, 1, f))
-			shriek(445, fmt(message, reason, filename, "maybe a directory"));
+			shriek(445, message, reason, filename, "maybe a directory");
 		fseek(f, 0, SEEK_SET);
 	}
 	return f;
@@ -238,7 +248,7 @@ FIT_IDX fit(char c)
 		case 'I': return Q_INTENS;
 		case 't':
 		case 'T': return Q_TIME;
-		default: shriek(811, fmt("Expected f,i or t, found %c",c));
+		default: shriek(811, "Expected f,i or t, found %c",c);
 			return Q_FREQ;
 	}
 }
@@ -282,7 +292,7 @@ const char *enum2str(int item, const char *list)
 		} else {
 			_enum2str_buff[j++] = *i;
 			if (j >= MAX_SYMBOLIC)
-				shriek(461, fmt("Symbolic %.20s... too long", _enum2str_buff));
+				shriek(461, "Symbolic %.20s... too long", _enum2str_buff);
 		}
 	}
 
@@ -291,7 +301,7 @@ const char *enum2str(int item, const char *list)
 		_enum2str_buff[j] = 0;
 		return _enum2str_buff;
 	}
-	return NULL;	// shriek(446, fmt("enum2str should stringize %d",item));
+	return NULL;	// shriek(446, "enum2str should stringize %d",item);
 }
 
 /*************
@@ -308,7 +318,7 @@ hash *str2hash(const char *list, unsigned int max_item_len)
 		item=enum2str(d-1, list);	// sllooww
 		h->add_int(item,d-1);
 		if (max_item_len && strlen(item) > max_item_len)
-			shriek(446, fmt("Directive %s too long", item));
+			shriek(446, "Directive %s too long", item);
 	}
 	return h;
 }
@@ -343,8 +353,8 @@ char *fntab(const char *s, const char *t)
 	int tmp;
 	tab=(char *)xmalloc(256); for(tmp=0; tmp<256; tmp++) tab[tmp] = (unsigned char)tmp;  //identity mapping
 	if(cfg->paranoid && (tmp=strlen(s)-strlen(t)) && t[1]) 
-		shriek(811, fmt(tmp>0 ? "Not enough (%d) resultant elements"
-					: "Too many (%d) resultant elements",abs(tmp)));
+		shriek(811, tmp>0 ? "Not enough (%d) resultant elements"
+				  : "Too many (%d) resultant elements",abs(tmp));
 	if(!t[1]) for (tmp=0; s[tmp]; tmp++) tab[(unsigned char)s[tmp]]=*t;
 	else for (tmp=0;s[tmp]&&t[tmp];tmp++) tab[(unsigned char)(s[tmp])]=t[tmp];
 	
@@ -463,7 +473,7 @@ int get_timestamp(char *filename)
 
 file::~file()
 {
-	if (ref_count) shriek(862, fmt("File %s not unclaimed", filename));
+	if (ref_count) shriek(862, "File %s not unclaimed", filename);
 	free(data);
 	free(filename);
 }
@@ -487,7 +497,7 @@ inline bool reclaim(file *ff, const char *flags, const char *description, void o
 	len = fread(ff->data, 1, tmp, f);
 	if (len < 0) {
 		if (!description) description = "an unspecified stuff";
-		shriek(445, fmt("Failed to read %s from %s", description, ff->filename));
+		shriek(445, "Failed to read %s from %s", description, ff->filename);
 	}
 	ff->data[len] = 0;
 	if (oven != NULL) oven(ff->data, len);
@@ -509,7 +519,7 @@ file *claim(const char *filename, const char *dirname, const char *treename, con
 		file_cache->dupkey = file_cache->dupdata = false;
 	}
 
-	if (!filename) shriek(445, fmt("Failed to read %s (no file name)", description ? description : "??"));
+	if (!filename) shriek(445, "Failed to read %s (no file name)", description ? description : "??");
 
 	pathname = compose_pathname(filename, dirname, treename);
 	ff = file_cache->translate(pathname);
@@ -530,7 +540,7 @@ file *claim(const char *filename, const char *dirname, const char *treename, con
 	tmp = fread(data, 1, tmp, f);
 	if (tmp == -1) {
 		if (!description) return NULL;
-		shriek(445, fmt("Failed to read %s from %s", description, pathname));
+		shriek(445, "Failed to read %s from %s", description, pathname);
 	}
 	data[tmp] = 0;	  // remember DOS crlfs. tmp suits here.
 	if (oven != NULL) oven(data, tmp);
@@ -587,7 +597,7 @@ static inline void compile_rules()
 		} catch (any_exception *e) {
 			errors++;
 		}
-		if (errors > 0) shriek(811, fmt("Rules for %s cannot be compiled", cfg->langs[i]->name));
+		if (errors > 0) shriek(811, "Rules for %s cannot be compiled", cfg->langs[i]->name);
 	}
 	free(_next_rule_line); _next_rule_line = NULL;
 	cfg->default_lang = tmp;
@@ -638,7 +648,7 @@ void epos_init()	 //Some global sanity checks made here
 	if (!scfg->loaded)cfg->stddbg = stdout,
 				cfg->stdshriek = stderr;
 	if (sizeof(int)<4*sizeof(char) || sizeof(int *)<4*sizeof(char)) 
-		shriek (862, fmt("You dwarf! I want at least 32 bit arithmetic & pointery [%d]", sizeof(int)));
+		shriek (862, "You dwarf! I want at least 32 bit arithmetic & pointery [%d]", sizeof(int));
 	if (sizeof(int) > sizeof(void *)) shriek(862, "Your integers are longer than pointers!\n"
 				"Turn hash_table::forall() fns in hash.h the other way round.");
 	if ((unsigned char)-1 != 255) shriek(862, "Your chars are not 8-bit? Funny.");
@@ -668,7 +678,10 @@ void epos_init()	 //Some global sanity checks made here
 //	if (!_subst_buff) _subst_buff = (char *)xmalloc(MAX_GATHER+2);
 //	if (!_gather_buff) _gather_buff = (char *)xmalloc(MAX_GATHER+2);
 	if (!_resolve_vars_buff) _resolve_vars_buff = (char *)xmalloc(scfg->max_line+1); 
-	if (!scratch) scratch = (char *)xmalloc(scfg->scratch+1);
+	if (!scratch) {
+		scratch = (char *)xmalloc(scfg->scratch+1);
+		scratch[scfg->scratch] = 0;
+	}
 	use_async_sputs();
 	
 	compile_rules();
@@ -837,4 +850,15 @@ int fork()
 }
 #endif   // ifdef HAVE_FORK
 
+
+#ifndef HAVE_VSNPRINTF
+int vsnprintf(char *str, size_t size, const char *format, ...)
+{
+	va_list ap;
+	va_start(ap, format);
+	int ret = vsprintf(str, format, ap);
+	va_end(ap);
+	return ret;
+}
+#endif	// ifdef HAVE_VSNPRINTF
 

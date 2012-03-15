@@ -143,9 +143,9 @@ inline char *get_quoted(char *buffer)
 	char *tmp2;
 
 	tmp1=strchr(buffer+1, DQUOT);
-	if (!tmp1) shriek (812, fmt("%s:%d Forgotten quotes", global_current_file, global_current_line));
+	if (!tmp1) shriek (812, "%s:%d Forgotten quotes", global_current_file, global_current_line);
 	tmp2=strchr(++tmp1,DQUOT);
-	if (!tmp2) shriek (812, fmt("%s:%d Forgotten quotes", global_current_file, global_current_line));
+	if (!tmp2) shriek (812, "%s:%d Forgotten quotes", global_current_file, global_current_line);
 	*tmp2=0;
 	return tmp1;
 }
@@ -159,7 +159,7 @@ text::getline(char *buffer)
 	
 	while (true) {
 		while(!fgets(buffer + l, scfg->max_line - l, current->f)) {
-			if (l) shriek(462, fmt("Backslash at the end of %s", current_file));
+			if (l) shriek(462, "Backslash at the end of %s", current_file);
 			else superfile();
 			if (!current) return false;
 		}
@@ -168,7 +168,7 @@ text::getline(char *buffer)
 		global_current_file = current_file;
 		D_PRINT(0, "text::getline processing %s",buffer);
 		if ((int)strlen(buffer) + 1 >= scfg->max_line)
-			shriek(462, fmt("Line too long in %s:%d", current_file, current_line));
+			shriek(462, "Line too long in %s:%d", current_file, current_line);
 		if (!raw && strip(buffer + l)) {
 			l = strlen(buffer);
 			continue;	/* continuation line */
@@ -193,7 +193,7 @@ text::getline(char *buffer)
 			charset = load_charset(get_quoted(buffer));
 			cfg->charset = charset;
 			if (charset == CHARSET_NOT_AVAILABLE)
-				shriek(812, fmt("%s:%d Charset not available", current_file, current_line));
+				shriek(812, "%s:%d Charset not available", current_file, current_line);
 			continue;
 		} else if (begins(buffer, D_WARN)) {
 			if (warn) fprintf(cfg->stdshriek,
@@ -201,7 +201,7 @@ text::getline(char *buffer)
 			continue;
 		} else if (begins(buffer, D_ERROR)) {
 			shriek(801, get_quoted(buffer));
-		} else shriek(812, fmt("%s:%d Bad directive", current_file, current_line));
+		} else shriek(812, "%s:%d Bad directive", current_file, current_line);
 	}
 }
 
@@ -229,5 +229,5 @@ text::~text()
 void
 text::done()
 {
-	if (current && exists()) shriek(812, fmt("File %s was left prematurely at line %d", base, current_line));
+	if (current && exists()) shriek(812, "File %s was left prematurely at line %d", base, current_line);
 }

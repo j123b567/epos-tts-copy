@@ -81,7 +81,10 @@ RANLIB = @RANLIB@
 STRIP = @STRIP@
 VERSION = @VERSION@
 YACC = @YACC@
-CLEANFILES = *~ */*~ */*/*~ */*/*/*~ DEADJOE epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi
+
+CLEANFILES = *~ *.wav core gmon.out matlab.in tmp.0* dmalloc hackfile \
+		profile.log said.* 0\?tmp DEADJOE *.old *.local \
+		epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi
 
 AM_CXXFLAGS = -w -DEPOS -ggdb -DDATADIR=$(datadir) -DPREFIXDIR=$(prefix)
 AM_YFLAGS = -d -t

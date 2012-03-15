@@ -14,6 +14,15 @@
 # define	INT_NUM	265
 # define	STRING	266
 # define	QUOTED_STRING	267
+# define	COUNT	268
+# define	INDEX	269
+# define	THIS	270
+# define	ANCESTOR	271
+# define	PREV	272
+# define	NEXT	273
+# define	NEURAL	274
+# define	BASAL_F	275
+# define	CONT	276
 
 #line 1 "neural_parse.yy"
  
@@ -150,8 +159,8 @@ static const char yytranslate[] =
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    28,     2,     2,     2,     2,     2,     2,
-      24,    25,    13,    11,    27,    12,     2,    14,     2,     2,
+       2,     2,     2,    33,     2,     2,     2,     2,     2,     2,
+      29,    30,    13,    11,    32,    12,     2,    14,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        9,     2,    10,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -174,7 +183,7 @@ static const char yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     3,     4,     5,
        6,     7,     8,    15,    16,    17,    18,    19,    20,    21,
-      22,    23,    26,    29,    30,    31,    32,    33
+      22,    23,    24,    25,    26,    27,    28,    31
 };
 
 #if YYDEBUG
@@ -188,24 +197,24 @@ static const short yyprhs[] =
 };
 static const short yyrhs[] =
 {
-      -1,    35,    36,     0,    39,     0,     1,     0,    20,    38,
-       0,    21,    38,     0,    22,     0,    23,    24,    42,    25,
-       0,    26,    24,    19,    27,    42,    27,    42,    25,     0,
-      24,    37,    25,     0,    24,    37,    27,    42,    27,    40,
-      25,     0,    24,    37,    27,    42,    25,     0,    24,    42,
-      27,    40,    25,     0,    24,    37,    27,    40,    25,     0,
-      24,    37,    25,     0,    24,    42,    25,     0,    24,    40,
-      25,     0,    24,    25,     0,    18,    24,    37,    25,     0,
-      28,    39,     0,    39,     8,    39,     0,    39,     7,    39,
+      -1,    35,    36,     0,    39,     0,     1,     0,    25,    38,
+       0,    24,    38,     0,    22,     0,    23,    29,    42,    30,
+       0,    31,    29,    19,    32,    42,    32,    42,    30,     0,
+      29,    37,    30,     0,    29,    37,    32,    42,    32,    40,
+      30,     0,    29,    37,    32,    42,    30,     0,    29,    42,
+      32,    40,    30,     0,    29,    37,    32,    40,    30,     0,
+      29,    37,    30,     0,    29,    42,    30,     0,    29,    40,
+      30,     0,    29,    30,     0,    18,    29,    37,    30,     0,
+      33,    39,     0,    39,     8,    39,     0,    39,     7,    39,
        0,    39,     3,    39,     0,    39,     4,    39,     0,    39,
        9,    39,     0,    39,     5,    39,     0,    39,    10,    39,
        0,    39,     6,    39,     0,    39,    11,    39,     0,    39,
       12,    39,     0,    39,    13,    39,     0,    39,    14,    39,
-       0,    29,    24,    37,    27,    40,    25,     0,    40,     0,
-      24,    39,    25,     0,    16,     0,    30,    24,    42,    27,
-      42,    25,     0,    31,    24,    42,    27,    42,    25,     0,
-      32,    24,    37,    25,     0,    33,    24,    37,    25,     0,
-      24,    40,    25,     0,    17,     0,    24,    41,    25,     0,
+       0,    26,    29,    37,    32,    40,    30,     0,    40,     0,
+      29,    39,    30,     0,    16,     0,    20,    29,    42,    32,
+      42,    30,     0,    21,    29,    42,    32,    42,    30,     0,
+      27,    29,    37,    30,     0,    28,    29,    37,    30,     0,
+      29,    40,    30,     0,    17,     0,    29,    41,    30,     0,
       19,     0,    41,     0
 };
 
@@ -215,11 +224,11 @@ static const short yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined. */
 static const short yyrline[] =
 {
-       0,   165,   165,   172,   174,   177,   178,   179,   180,   181,
-     182,   186,   188,   189,   190,   191,   192,   193,   194,   198,
-     199,   200,   201,   202,   203,   204,   205,   206,   207,   208,
-     209,   210,   211,   212,   213,   214,   215,   218,   219,   220,
-     221,   222,   223,   225,   226,   228
+       0,   175,   175,   182,   184,   187,   188,   189,   190,   191,
+     192,   196,   198,   199,   200,   201,   202,   203,   204,   208,
+     209,   210,   211,   212,   213,   214,   215,   216,   217,   218,
+     219,   220,   221,   222,   223,   224,   225,   228,   229,   230,
+     231,   232,   233,   235,   236,   238
 };
 #endif
 
@@ -234,10 +243,10 @@ static const char *const yytname[] =
 {
   "$", "error", "$undefined.", "\"==\"", "\"!=\"", "\"<=\"", "\">=\"", 
   "\"AND\"", "\"OR\"", "'<'", "'>'", "'+'", "'-'", "'*'", "'/'", "NOT", 
-  "FLOAT_NUM", "INT_NUM", "STRING", "QUOTED_STRING", "\"next\"", 
-  "\"prev\"", "\"this\"", "\"ancestor\"", "'('", "')'", "\"maxfloat\"", 
-  "','", "'!'", "\"neural\"", "\"count\"", "\"index\"", "\"basal_f\"", 
-  "\"cont\"", "all", "@1", "input_exp", "unit_exp", "prev_next_params", 
+  "FLOAT_NUM", "INT_NUM", "STRING", "QUOTED_STRING", "\"count\"", 
+  "\"index\"", "\"this\"", "\"ancestor\"", "\"prev\"", "\"next\"", 
+  "\"neural\"", "\"basal_f\"", "\"cont\"", "'('", "')'", "\"maxfloat\"", 
+  "','", "'!'", "all", "@1", "input_exp", "unit_exp", "prev_next_params", 
   "float_exp", "int_exp", "string_exp", "unit_level", 0
 };
 /* YYTOKNUM[YYLEX] -- Index in YYTNAME corresponding to YYLEX. */
@@ -245,8 +254,8 @@ static const short yytoknum[] =
 {
        0,   256,     2,   257,   258,   259,   260,   261,   262,    60,
       62,    43,    45,    42,    47,   263,   264,   265,   266,   267,
-     268,   269,   270,   271,    40,    41,   272,    44,    33,   273,
-     274,   275,   276,   277,    -1
+     268,   269,   270,   271,   272,   273,   274,   275,   276,    40,
+      41,   277,    44,    33,    -1
 };
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives. */
 static const short yyr1[] =
@@ -274,97 +283,103 @@ static const short yyr2[] =
 static const short yydefact[] =
 {
        1,     0,     4,    36,    42,     0,     0,     0,     0,     0,
-       0,     0,     0,     2,     3,    34,     0,     0,    34,    20,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     7,
-       0,     0,     0,     0,    35,    41,     0,    44,     0,    45,
-       0,     0,     0,     0,    23,    24,    26,    28,    22,    21,
-      25,    27,    29,    30,    31,    32,     0,     5,     6,     0,
+       0,     0,     0,     2,     3,    34,     0,     0,     0,     0,
+       0,     0,     0,    34,    20,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     7,     0,     0,
+       0,     0,     0,     0,    44,     0,    45,     0,     0,     0,
+       0,     0,    35,    41,    23,    24,    26,    28,    22,    21,
+      25,    27,    29,    30,    31,    32,     0,     0,     6,     5,
        0,     0,    19,     0,     0,     0,     0,    39,    40,     0,
-      18,     0,     0,     0,     0,    10,     0,     0,     0,    43,
-       0,     0,     0,    15,     0,    17,    16,     0,     8,     0,
-      33,    37,    38,     0,     0,     0,     0,     0,    14,    12,
+       0,    18,     0,     0,     0,    10,     0,    43,     0,     0,
+       0,     0,     8,     0,    15,     0,    17,    16,     0,     0,
+      37,    38,    33,     0,     0,     0,     0,     0,    14,    12,
        0,    13,     0,     0,     0,    11,     9,     0,     0,     0
 };
 
 static const short yydefgoto[] =
 {
-     117,     1,    13,    70,    67,    14,    15,    49,    50
+     117,     1,    13,    70,    68,    14,    15,    46,    47
 };
 
 static const short yypact[] =
 {
-  -32768,     9,-32768,-32768,-32768,   -17,   101,   101,   -12,     8,
-      12,    20,    23,-32768,   166,-32768,   100,    10,   -21,-32768,
-     100,   -13,   -13,   100,   100,   101,   101,   101,   101,   101,
-     101,   101,   101,   101,   101,   101,   101,    24,    24,-32768,
-      47,   100,    48,    55,-32768,-32768,    56,-32768,   -13,-32768,
-      57,    58,    64,    65,    89,    89,    17,    17,   190,   178,
-      17,    17,    40,    40,-32768,-32768,   118,-32768,-32768,   -13,
-      68,    63,-32768,    45,    71,   -13,   -13,-32768,-32768,   135,
-  -32768,    18,   102,    34,   103,-32768,   109,    45,   120,-32768,
-     121,   122,   -21,-32768,    33,-32768,-32768,    45,-32768,   -13,
-  -32768,-32768,-32768,    33,   128,    43,   137,   133,-32768,-32768,
-      45,-32768,   -13,   138,   139,-32768,-32768,   186,   197,-32768
+  -32768,     3,-32768,-32768,-32768,    -7,     5,     6,     9,    10,
+      11,   124,   124,-32768,   183,-32768,   200,   -14,   -14,   200,
+     200,   200,    97,    12,-32768,   124,   124,   124,   124,   124,
+     124,   124,   124,   124,   124,   124,   124,-32768,    17,    18,
+      18,   200,    19,    25,-32768,   -14,-32768,   -19,     1,    27,
+      31,    32,-32768,-32768,   107,   107,    -2,    -2,   207,   195,
+      -2,    -2,     4,     4,-32768,-32768,   -14,   139,-32768,-32768,
+      34,    49,-32768,    40,   -14,   -14,    46,-32768,-32768,    41,
+     154,-32768,   -16,    42,    -5,-32768,    44,-32768,    47,    50,
+      46,    51,-32768,    12,-32768,    24,-32768,-32768,    46,   -14,
+  -32768,-32768,-32768,    24,    53,    -4,    55,    54,-32768,-32768,
+      46,-32768,   -14,    58,    59,-32768,-32768,    90,    91,-32768
 };
 
 static const short yypgoto[] =
 {
-  -32768,-32768,-32768,   -15,   160,    80,    -6,   -45,   -20
+  -32768,-32768,-32768,   -13,    56,   103,   -11,   -43,   -17
 };
 
 
-#define	YYLAST		204
+#define	YYLAST		231
 
 
 static const short yytable[] =
 {
-      18,    43,    51,    74,    45,    46,    47,    16,    52,    53,
-       2,    48,    20,    25,    26,    27,    28,    29,    30,    31,
-      32,    33,    34,    35,    36,     3,     4,     5,    33,    34,
-      35,    36,    21,     6,    74,    44,    22,     7,     8,     9,
-      10,    11,    12,    93,    23,    94,    83,    24,    66,    84,
-       4,    81,    47,    35,    36,    90,    91,   103,    74,    96,
-      82,    97,     4,     9,    10,    11,    12,    88,   109,    87,
-     110,    69,    71,    92,   105,     9,    10,    11,    12,   107,
-      72,    92,    86,    73,    75,    76,    17,    19,   104,    77,
-      78,   106,   114,    85,    27,    28,    89,    92,    31,    32,
-      33,    34,    35,    36,   113,    54,    55,    56,    57,    58,
-      59,    60,    61,    62,    63,    64,    65,     3,     4,     5,
-      37,    38,    39,    40,    41,     6,    42,    95,    98,     7,
-       8,     9,    10,    11,    12,     4,    99,    47,    37,    38,
-      39,    40,    79,    80,    42,   100,   101,   102,     9,    10,
-      11,    12,     4,   108,    47,    37,    38,    39,    40,    79,
-     112,    42,   111,   115,   116,     9,    10,    11,    12,    25,
-      26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
-      36,    25,    26,    27,    28,    29,   118,    31,    32,    33,
-      34,    35,    36,    25,    26,    27,    28,   119,    68,    31,
-      32,    33,    34,    35,    36
+      23,    48,    73,    43,     2,    44,    49,    50,    51,    33,
+      34,    35,    36,    74,    94,    45,    95,    35,    36,     3,
+       4,     5,    16,     6,     7,    97,   109,    98,   110,     8,
+       9,    10,    11,    75,    17,    18,    12,    73,    19,    20,
+      21,     4,    53,    44,     6,     7,    66,    67,    71,    79,
+      84,     9,    10,   103,    82,    72,    83,    88,    89,    76,
+      73,    77,    78,     4,    85,    91,     6,     7,    86,    93,
+      87,    92,    96,     9,    10,    90,    99,   100,   105,    93,
+     101,   102,   107,   108,   104,   111,   112,   106,   115,   116,
+     118,   119,    93,     0,     0,   114,    69,     0,     0,   113,
+      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
+      35,    36,    27,    28,    22,    24,    31,    32,    33,    34,
+      35,    36,     0,     0,     0,     0,     0,    52,    54,    55,
+      56,    57,    58,    59,    60,    61,    62,    63,    64,    65,
+       3,     4,     5,     0,     6,     7,     0,     0,     0,     0,
+       8,     9,    10,    11,     0,     0,     4,    12,    44,     6,
+       7,    37,    38,    39,    40,     0,     9,    10,    80,    81,
+      42,     4,     0,    44,     6,     7,    37,    38,    39,    40,
+       0,     9,    10,    80,     0,    42,    25,    26,    27,    28,
+      29,    30,    31,    32,    33,    34,    35,    36,    25,    26,
+      27,    28,    29,     0,    31,    32,    33,    34,    35,    36,
+      25,    26,    27,    28,     0,     0,    31,    32,    33,    34,
+      35,    36,    37,    38,    39,    40,     0,     0,     0,    41,
+       0,    42
 };
 
 static const short yycheck[] =
 {
-       6,    16,    22,    48,    25,    20,    19,    24,    23,    24,
-       1,    24,    24,     3,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,    13,    14,    16,    17,    18,    11,    12,
-      13,    14,    24,    24,    79,    25,    24,    28,    29,    30,
-      31,    32,    33,    25,    24,    27,    66,    24,    24,    69,
-      17,    66,    19,    13,    14,    75,    76,    24,   103,    25,
-      66,    27,    17,    30,    31,    32,    33,    73,    25,    24,
-      27,    24,    24,    79,    94,    30,    31,    32,    33,    99,
-      25,    87,    19,    27,    27,    27,     6,     7,    94,    25,
-      25,    97,   112,    25,     5,     6,    25,   103,     9,    10,
-      11,    12,    13,    14,   110,    25,    26,    27,    28,    29,
-      30,    31,    32,    33,    34,    35,    36,    16,    17,    18,
-      20,    21,    22,    23,    24,    24,    26,    25,    25,    28,
-      29,    30,    31,    32,    33,    17,    27,    19,    20,    21,
-      22,    23,    24,    25,    26,    25,    25,    25,    30,    31,
-      32,    33,    17,    25,    19,    20,    21,    22,    23,    24,
-      27,    26,    25,    25,    25,    30,    31,    32,    33,     3,
-       4,     5,     6,     7,     8,     9,    10,    11,    12,    13,
-      14,     3,     4,     5,     6,     7,     0,     9,    10,    11,
-      12,    13,    14,     3,     4,     5,     6,     0,    38,     9,
-      10,    11,    12,    13,    14
+      11,    18,    45,    16,     1,    19,    19,    20,    21,    11,
+      12,    13,    14,    32,    30,    29,    32,    13,    14,    16,
+      17,    18,    29,    20,    21,    30,    30,    32,    32,    26,
+      27,    28,    29,    32,    29,    29,    33,    80,    29,    29,
+      29,    17,    30,    19,    20,    21,    29,    29,    29,    66,
+      67,    27,    28,    29,    67,    30,    67,    74,    75,    32,
+     103,    30,    30,    17,    30,    76,    20,    21,    19,    80,
+      30,    30,    30,    27,    28,    29,    32,    30,    95,    90,
+      30,    30,    99,    30,    95,    30,    32,    98,    30,    30,
+       0,     0,   103,    -1,    -1,   112,    40,    -1,    -1,   110,
+       3,     4,     5,     6,     7,     8,     9,    10,    11,    12,
+      13,    14,     5,     6,    11,    12,     9,    10,    11,    12,
+      13,    14,    -1,    -1,    -1,    -1,    -1,    30,    25,    26,
+      27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+      16,    17,    18,    -1,    20,    21,    -1,    -1,    -1,    -1,
+      26,    27,    28,    29,    -1,    -1,    17,    33,    19,    20,
+      21,    22,    23,    24,    25,    -1,    27,    28,    29,    30,
+      31,    17,    -1,    19,    20,    21,    22,    23,    24,    25,
+      -1,    27,    28,    29,    -1,    31,     3,     4,     5,     6,
+       7,     8,     9,    10,    11,    12,    13,    14,     3,     4,
+       5,     6,     7,    -1,     9,    10,    11,    12,    13,    14,
+       3,     4,     5,     6,    -1,    -1,     9,    10,    11,    12,
+      13,    14,    22,    23,    24,    25,    -1,    -1,    -1,    29,
+      -1,    31
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
 #line 3 "/usr/share/bison/bison.simple"
@@ -1074,177 +1089,177 @@ yyreduce:
   switch (yyn) {
 
 case 1:
-#line 165 "neural_parse.yy"
+#line 175 "neural_parse.yy"
 { 
 		//yydebug = 1;
 	 }
     break;
 case 2:
-#line 168 "neural_parse.yy"
+#line 178 "neural_parse.yy"
 { bison_input_result = yyvsp[0].func_val; }
     break;
 case 4:
-#line 174 "neural_parse.yy"
+#line 184 "neural_parse.yy"
 { yyval.func_val = NULL; }
     break;
 case 5:
-#line 177 "neural_parse.yy"
+#line 187 "neural_parse.yy"
 { yyval.func_val = yyvsp[0].func_val; }
     break;
 case 6:
-#line 178 "neural_parse.yy"
+#line 188 "neural_parse.yy"
 { yyval.func_val = yyvsp[0].func_val; yyval.func_val->function = fu_prev; }
     break;
 case 7:
-#line 179 "neural_parse.yy"
+#line 189 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_this,0,NULL); }
     break;
 case 8:
-#line 180 "neural_parse.yy"
+#line 190 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_ancestor,0,yyvsp[-1].func_val); }
     break;
 case 9:
-#line 181 "neural_parse.yy"
+#line 191 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_maxfloat,yyvsp[-5].string_val,yyvsp[-3].func_val,yyvsp[-1].func_val); }
     break;
 case 10:
-#line 182 "neural_parse.yy"
+#line 192 "neural_parse.yy"
 { yyval.func_val = yyvsp[-1].func_val; }
     break;
 case 11:
-#line 187 "neural_parse.yy"
+#line 197 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_next,0,yyvsp[-5].func_val,yyvsp[-3].func_val,yyvsp[-1].func_val); }
     break;
 case 12:
-#line 188 "neural_parse.yy"
+#line 198 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_next,0,yyvsp[-3].func_val,yyvsp[-1].func_val, make_tree (1)); }
     break;
 case 13:
-#line 189 "neural_parse.yy"
+#line 199 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_next,0,add_prefix_func (fu_this,0,NULL),yyvsp[-3].func_val,yyvsp[-1].func_val); }
     break;
 case 14:
-#line 190 "neural_parse.yy"
+#line 200 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_next,0,yyvsp[-3].func_val,make_tree (),yyvsp[-1].func_val); }
     break;
 case 15:
-#line 191 "neural_parse.yy"
+#line 201 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_next,0,yyvsp[-1].func_val,make_tree (), make_tree(1)); }
     break;
 case 16:
-#line 192 "neural_parse.yy"
+#line 202 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_next,0,add_prefix_func (fu_this,0,NULL),yyvsp[-1].func_val, make_tree(1)); }
     break;
 case 17:
-#line 193 "neural_parse.yy"
+#line 203 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_next,0,add_prefix_func (fu_this,0,NULL),make_tree(), yyvsp[-1].func_val); }
     break;
 case 18:
-#line 194 "neural_parse.yy"
+#line 204 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_next,0,add_prefix_func (fu_this,0,NULL),make_tree(), make_tree(1)); }
     break;
 case 19:
-#line 198 "neural_parse.yy"
+#line 208 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_chartofloat,yyvsp[-3].string_val,yyvsp[-1].func_val); }
     break;
 case 20:
-#line 199 "neural_parse.yy"
+#line 209 "neural_parse.yy"
 { yyval.func_val = add_infix_un_func (fu_not,yyvsp[0].func_val);	}
     break;
 case 21:
-#line 200 "neural_parse.yy"
+#line 210 "neural_parse.yy"
 { yyval.func_val = add_infix_bin_func (fu_or,yyvsp[-2].func_val,yyvsp[0].func_val); }
     break;
 case 22:
-#line 201 "neural_parse.yy"
+#line 211 "neural_parse.yy"
 { yyval.func_val = add_infix_bin_func (fu_and,yyvsp[-2].func_val,yyvsp[0].func_val); }
     break;
 case 23:
-#line 202 "neural_parse.yy"
+#line 212 "neural_parse.yy"
 { yyval.func_val = add_infix_bin_func (fu_equals,yyvsp[-2].func_val,yyvsp[0].func_val); }
     break;
 case 24:
-#line 203 "neural_parse.yy"
+#line 213 "neural_parse.yy"
 { yyval.func_val = add_infix_bin_func (fu_notequals,yyvsp[-2].func_val,yyvsp[0].func_val); }
     break;
 case 25:
-#line 204 "neural_parse.yy"
+#line 214 "neural_parse.yy"
 { yyval.func_val = add_infix_bin_func (fu_less,yyvsp[-2].func_val,yyvsp[0].func_val); }
     break;
 case 26:
-#line 205 "neural_parse.yy"
+#line 215 "neural_parse.yy"
 { yyval.func_val = add_infix_bin_func (fu_lessorequals,yyvsp[-2].func_val,yyvsp[0].func_val); }
     break;
 case 27:
-#line 206 "neural_parse.yy"
+#line 216 "neural_parse.yy"
 { yyval.func_val = add_infix_bin_func (fu_greater,yyvsp[-2].func_val,yyvsp[0].func_val); }
     break;
 case 28:
-#line 207 "neural_parse.yy"
+#line 217 "neural_parse.yy"
 { yyval.func_val = add_infix_bin_func (fu_greaterorequals,yyvsp[-2].func_val,yyvsp[0].func_val); }
     break;
 case 29:
-#line 208 "neural_parse.yy"
+#line 218 "neural_parse.yy"
 { yyval.func_val = add_infix_bin_func (fu_add,yyvsp[-2].func_val,yyvsp[0].func_val); }
     break;
 case 30:
-#line 209 "neural_parse.yy"
+#line 219 "neural_parse.yy"
 { yyval.func_val = add_infix_bin_func (fu_subtract,yyvsp[-2].func_val,yyvsp[0].func_val); }
     break;
 case 31:
-#line 210 "neural_parse.yy"
+#line 220 "neural_parse.yy"
 { yyval.func_val = add_infix_bin_func (fu_multiply,yyvsp[-2].func_val,yyvsp[0].func_val); }
     break;
 case 32:
-#line 211 "neural_parse.yy"
+#line 221 "neural_parse.yy"
 { yyval.func_val = add_infix_bin_func (fu_divide,yyvsp[-2].func_val,yyvsp[0].func_val); }
     break;
 case 33:
-#line 212 "neural_parse.yy"
+#line 222 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_neural,0,yyvsp[-3].func_val,yyvsp[-1].func_val); }
     break;
 case 35:
-#line 214 "neural_parse.yy"
+#line 224 "neural_parse.yy"
 { yyval.func_val = yyvsp[-1].func_val; }
     break;
 case 36:
-#line 215 "neural_parse.yy"
+#line 225 "neural_parse.yy"
 { yyval.func_val = make_tree (double (yyvsp[0].float_val));	}
     break;
 case 37:
-#line 218 "neural_parse.yy"
+#line 228 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_count,0,yyvsp[-3].func_val,yyvsp[-1].func_val); }
     break;
 case 38:
-#line 219 "neural_parse.yy"
+#line 229 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_index,0,yyvsp[-3].func_val,yyvsp[-1].func_val); }
     break;
 case 39:
-#line 220 "neural_parse.yy"
+#line 230 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_f0,0,yyvsp[-1].func_val); }
     break;
 case 40:
-#line 221 "neural_parse.yy"
+#line 231 "neural_parse.yy"
 { yyval.func_val = add_prefix_func (fu_cont,0,yyvsp[-1].func_val); }
     break;
 case 41:
-#line 222 "neural_parse.yy"
+#line 232 "neural_parse.yy"
 { yyval.func_val = yyvsp[-1].func_val; }
     break;
 case 42:
-#line 223 "neural_parse.yy"
+#line 233 "neural_parse.yy"
 { yyval.func_val = make_tree (int (yyvsp[0].int_val)); }
     break;
 case 43:
-#line 225 "neural_parse.yy"
+#line 235 "neural_parse.yy"
 { yyval.func_val = yyvsp[-1].func_val;}
     break;
 case 44:
-#line 226 "neural_parse.yy"
+#line 236 "neural_parse.yy"
 { yyval.func_val = make_tree (yyvsp[0].string_val); }
     break;
 case 45:
-#line 229 "neural_parse.yy"
+#line 239 "neural_parse.yy"
 { 
 				yyval.func_val = yyvsp[0].func_val;
 				if (get_level(yyvsp[0].func_val->v()) == U_DEFAULT) shriek (812, fmt("Unknown level: %s", static_cast<const char *>(yyvsp[0].func_val->v()))); 
@@ -1484,7 +1499,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 236 "neural_parse.yy"
+#line 246 "neural_parse.yy"
 
      
 
@@ -1562,16 +1577,35 @@ int yylex ()
 	bison_row = end;
 
 	//try to find the grammar symbol 
+
+	if (!strcmp(lex, "==")) return EQ;
+	if (!strcmp(lex, "!=")) return NOTEQ;
+	if (!strcmp(lex, "<=")) return LESSEQ;
+	if (!strcmp(lex, ">=")) return GREATEREQ;
+	if (!strcmp(lex, "AND"))return AND;
+	if (!strcmp(lex, "OR")) return OR;
+	if (!strcmp(lex, "count")) return COUNT;
+	if (!strcmp(lex, "index")) return INDEX;
+	if (!strcmp(lex, "this")) return THIS;
+	if (!strcmp(lex, "ancestor")) return ANCESTOR;
+	if (!strcmp(lex, "neural")) return NEURAL;
+	if (!strcmp(lex, "prev")) return PREV;
+	if (!strcmp(lex, "next")) return NEXT;
+	if (!strcmp(lex, "basal_f")) return BASAL_F;
+	if (!strcmp(lex, "cont")) return CONT;
+
+#if 0
 	for (int i = 0; i < YYNTOKENS; i++) {
 		if (yytname[i] != 0
 		    && yytname[i][0] == '"'
 			 && !strncmp (yytname[i] + 1, lex,
 							 strlen (lex))
 			 && yytname[i][strlen (lex) + 1] == '"'
-			 && yytname[i][strlen (lex) + 2] == 0)
+			 && yytname[i][strlen (lex) + 2] == 0
+			&& printf("%s\n", lex))
 		  return yytoknum[i];	// in case of errors try return i;
 	}
-
+#endif
 
 	//not a grammar symbol - a number or chartofloat name or error
 	yylval.int_val = strtol (lex, const_cast<char **>(&end), 10);

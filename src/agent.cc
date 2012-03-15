@@ -567,12 +567,12 @@ extern int localsound;
 socky int special_io(const char *name, DATA_TYPE intype)
 {
 	if (intype == T_INPUT || strcmp(name, LOCALSOUNDAGENT))
-		shriek(415, fmt("Bad stream component %s", name));
+		shriek(415, "Bad stream component %s", name);
 	if (!cfg->localsound) shriek(453, "Not allowed to use localsound");
 
 	if (localsound != -1) return localsound;
 	int r = open(scfg->local_sound_device, O_WRONLY | O_NONBLOCK);
-	if (r == -1) shriek(462, fmt("Could not open localsound device, error %d", errno));
+	if (r == -1) shriek(462, "Could not open localsound device, error %d", errno);
 	localsound = r;
 	return r;
 }
@@ -599,7 +599,7 @@ a_io::a_io(const char *par, DATA_TYPE in, DATA_TYPE out) : agent(in, out)
 			  socket = open(filename, in == T_INPUT ? O_RDONLY | O_NONBLOCK | O_BINARY
 						: O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK | O_BINARY, MODE_MASK);
 			  free(filename);
-			  if (socket == -1) shriek(445, fmt("Cannot open file %s", par));
+			  if (socket == -1) shriek(445, "Cannot open file %s", par);
 			  else close_upon_exit = true;
 			  break;
 		case '#': socket = special_io(par + 1, in);
@@ -655,7 +655,7 @@ void a_input::run()
 		c->leave();
 		delete data_conns->remove(dc->handle);
 		c->enter();
-		shriek(436, fmt("data conn %d lost", socket));
+		shriek(436, "data conn %d lost", socket);
 	}
 	offset += res;
 	if (offset == toread) {
@@ -664,8 +664,8 @@ void a_input::run()
 		switch (out) {
 			case T_SEGS:
 				if ((((segment *)inb)->code + 1) * (int)sizeof(segment) != offset)
-					shriek(432, fmt("Received bad segments: %d segs, %d bytes",
-						((segment *)inb)->code, offset));
+					shriek(432, "Received bad segments: %d segs, %d bytes",
+						((segment *)inb)->code, offset);
 				break;
 			case T_WAVEFM:
 				wavefm *w;
@@ -811,7 +811,7 @@ oa_wavefm::run()
 	
 	if (!attached && !push_table[socket]) {
 		w->attach(socket);
-		report(false, w->written /* + sizeof(wave_header)*/);
+		report(false, w->written);
 		attached = true;
 	}
 	bool to_do;
@@ -839,7 +839,7 @@ oa_wavefm::brk()
 
 		wavefm *w = (wavefm *)inb;
 		
-		report(false, w->written_bytes());
+		report(true, w->written_bytes());
 		w->brk();
 		if (attached) w->detach(socket);
 		D_PRINT(1, "oa_wavefm wrote %d bytes\n", w->written_bytes());
@@ -896,7 +896,7 @@ agent *make_agent(char *s, agent *preceding)
 		case AT_T_SEGS:  return new a_type<T_SEGS>;
 		case AT_T_WAVEFM:return new a_type<T_WAVEFM>;
 
-		default:       shriek(415, "Unknown agent type"); return NULL;
+		default:       shriek(415, "Unknown agent type %s", s); return NULL;
 	}
 }
 
@@ -967,9 +967,9 @@ bool
 stream::brk()
 {
 	if (!callbk) return false;	/* break only if running */
-	reply("401 interrupted");
 	for (agent *a = head; a && a != this; a = a->next)
 		a->brk();
+	reply("401 interrupted");
 	return true;
 }
 
@@ -1286,7 +1286,7 @@ a_accept::run()
 	static socklen_t sia = sizeof(sockaddr);	// Will __QNX__ complain?
 	int f = accept(cfg->sd_in, (sockaddr *)&ia, &sia);
 	if (f == -1) {
-//		shriek(871, fmt("Cannot accept() - network problem (errno %d)", errno));
+//		shriek(871, "Cannot accept() - network problem (errno %d)", errno);
 		D_PRINT(3, "Cannot accept() - errno %d! Madly looping.\n", errno);
 		if (errno != EAGAIN) schedule();
 		return;
@@ -1365,9 +1365,9 @@ agent::block(socky int fd)
 		agent *a;
 
 		if (this == block_table[fd])
-			shriek(861, fmt("Resleeping on %d", fd));
+			shriek(861, "Resleeping on %d", fd);
 		if (!FD_ISSET(fd, &block_set))
-			shriek(861, fmt("Countersleeping on %d", fd));
+			shriek(861, "Countersleeping on %d", fd);
 		for (a = block_table[fd]; a->dep; a = a->dep) ;
 		a->dep = this;
 	} else {
@@ -1386,9 +1386,9 @@ agent::push(socky int fd)
 		agent *a;
 
 		if (this == push_table[fd])
-			shriek(861, fmt("Resleeping on %d", fd));
+			shriek(861, "Resleeping on %d", fd);
 		if (!FD_ISSET(fd, &push_set))
-			shriek(861, fmt("Countersleeping on %d", fd));
+			shriek(861, "Countersleeping on %d", fd);
 		for (a = push_table[fd]; a->dep; a = a->dep) ;
 		a->dep = this;
 	} else {

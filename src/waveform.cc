@@ -87,8 +87,8 @@ static int downsample_factor(int working, int out)
 	if (working / 2 == out) return 2;
 	if (working / 3 == out) return 3;
 	if (working / 4 == out) return 4;
-	shriek(462, fmt("Currently, you can only get %d Hz, %d Hz, %d Hz or %d Hz output signal with this voice",
-		working, working / 2, working / 3, working / 4));
+	shriek(462, "Currently, you can only get %d Hz, %d Hz, %d Hz or %d Hz output signal with this voice",
+		working, working / 2, working / 3, working / 4);
 	return 1;
 }
 
@@ -154,7 +154,7 @@ wavefm::wavefm(voice *v)
 	channel = v->channel;
 	int stereo = channel==CT_MONO ? 0 : 1;
 	if (this_voice->samp_size <= 0 || (this_voice->samp_size >> 3) > (signed)sizeof(int))
-		shriek(447, fmt("Invalid sample size %d", this_voice->samp_size));
+		shriek(447, "Invalid sample size %d", this_voice->samp_size);
 	if (cfg->ulaw && !cfg->wav_hdr)
 		this_voice->samp_size = 8, this_voice->out_rate = 8000;
 //	cfg->samp_size = cfg->samp_size + 7 & ~7;	// Petr had this
@@ -464,8 +464,8 @@ wavefm::attach()
 #ifdef	HAVE_MMSYSTEM_H
 	localsound = d;
 #endif
-	if (d == -1) shriek(445, fmt("Failed to %s %s", strncmp(output, "/dev/", 5)
-			? "create output file" : "open audio device", output));
+	if (d == -1) shriek(445, "Failed to %s %s", strncmp(output, "/dev/", 5)
+			? "create output file" : "open audio device", output);
 	free(output);
 	attach(d);
 }
@@ -860,7 +860,7 @@ wavefm::chunk_become(char *p, int size)
 		translated = true;
 		return;
 	}
-	shriek(471, fmt("Unknown chunk %.4s", p));
+	shriek(471, "Unknown chunk %.4s", p);
 }
 
 void wavefm::become(void *b, int size)

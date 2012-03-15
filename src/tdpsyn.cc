@@ -207,7 +207,7 @@ void tdpsyn::synseg(voice *v, segment d, wavefm *w)
 	if (diph_len[d.code] == 0) {
 		D_PRINT(2, "missing speech unit No: %d\n", d.code);
 		if (!cfg->paranoid) return;
-		shriek(463, fmt("missing speech unit No: %d\n",d.code));
+		shriek(463, "missing speech unit No: %d\n",d.code);
 	}
 
 	/* lp prosody reconstruction filter excitation signal computing */

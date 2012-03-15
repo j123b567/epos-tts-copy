@@ -1242,3 +1242,16 @@ for an exciting story, just skip it.
 	- .DELETE_ON_ERROR in Makefile.common
 	- missing sgml2html doesn't interrupt a make any more
 
+2.5.12 from 2.5.11	25.6.03
+	- shriek now accepts varargs, thus eliminated most fmt()s
+	- fmt() now uses scratch instead of error_fmt_scratch
+	- some error messages improved
+	- vrfy: some more tests
+	- using vsnprintf instead of vsprintf if available
+	- sending 401 reply at the end of the intr
+	- oa_wavefm::break now issues a 122 and no 123 reply
+	- moved vrfy into the new src/tests subdirectory and TESTS
+	- vrfy now can spawn (and uses and kills) a temporary Epos
+	- moved the compiler tests somewhat up the configure.in
+	- fixed yylex() in neural_parse.yy not to use yytoknum
+	- fixed the multiply defined CLEANFILES bug

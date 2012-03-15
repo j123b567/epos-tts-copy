@@ -114,7 +114,7 @@ int ptdsyn::analyza(DIFON *dfn, sample_type *waveout, int *tas, voice *v)
  FILE *fil;
 
  fil=fopen(filename,"rb");
- if (!fil) shriek(445, fmt("ptdsyn cannot find segments in %s", filename));
+ if (!fil) shriek(445, "ptdsyn cannot find segments in %s", filename);
  else {
 
  unsigned char *buf;
@@ -205,7 +205,7 @@ ptdsyn::ptdsyn(voice *v)
 	strcat(filename,".label");
 */
   f=fopen(filename,"rb");
-  if (!f) ;//shriek(499, fmt("ptdsyn cannot find labels at %s", filename));
+  if (!f) ;//shriek(499, fmt("ptdsyn cannot find labels at %s", filename);
   else {
 	char *buf=(char *)xcalloc(50,1);
 	fscanf(f,"%s",buf);

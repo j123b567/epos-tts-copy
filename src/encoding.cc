@@ -144,14 +144,14 @@ void encode_string(unsigned char *s, int cs, bool alloc)
 				wchar_t u = charsets[cs][*s];
 				if (u == UNDEFINED) u = non_unicode_alloc_code(*s);
 				if (u == UNDEFINED)
-					shriek(418, fmt(cs ? "Illegal character '%c' in int '%d'" : "Unspecified charset for character %c in int %d", *s, (unsigned int) *s));  // FIXME - filename
+					shriek(418, cs ? "Illegal character '%c' in int '%d'" : "Unspecified charset for character %c in int %d", *s, (unsigned int) *s);  // FIXME - filename
 				alloc_code(u, *s, cs);
 				continue;
 			} else if (cfg->relax_input) {
 				if (encoders[cs][(unsigned char)cfg->dflt_char] == UNDEFINED)
 					shriek(431, "You specified relax_input but default_char is undefined");
 				else *s = encoders[cs][(unsigned char)cfg->dflt_char];
-			} else shriek(431, fmt("Parsing an unhandled character  '%c' - code %d", (unsigned int) *s, (unsigned int) *s));
+			} else shriek(431, "Parsing an unhandled character  '%c' - code %d", (unsigned int) *s, (unsigned int) *s);
 		} else *s = t;
 	} while (*s++);
 }
@@ -160,7 +160,7 @@ void decode_string(unsigned char *s, int cs)
 {
 	do {
 		int t = decoders[cs][*s];
-		if (t == UNDEFINED && *s) shriek(461, fmt("Character '%c', code %d infiltrated internal encoding", *s));
+		if (t == UNDEFINED && *s) shriek(461, "Character '%c', code %d infiltrated internal encoding", *s);
 		else *s = t;
 	} while (*s++);
 }
@@ -207,7 +207,7 @@ int load_charset(const char *name)
 	free(p);
 	if (!t->exists()) {
 		delete t;
-		if (!charsets) shriek(844, fmt("Couldn't find unicode map for initial charset %s", name));
+		if (!charsets) shriek(844, "Couldn't find unicode map for initial charset %s", name);
 		return CHARSET_NOT_AVAILABLE;
 	}
 	char *line = (char *)xmalloc(scfg->max_line);
@@ -218,7 +218,7 @@ int load_charset(const char *name)
 	while(t->getline(line)) {
 		int b, x, dummy;
 		if (sscanf(line, "%i %i %i", &b, &x, & dummy) != 2) continue;
-		if (b < 0 || b >= 256) shriek(463, fmt("unicode map file %s maps out of range characters", name));
+		if (b < 0 || b >= 256) shriek(463, "unicode map file %s maps out of range characters", name);
 		int e = internal_code(x, b);
 		w[b] = x;
 		if (e == UNDEFINED) continue;
@@ -228,7 +228,7 @@ int load_charset(const char *name)
 	delete t;
 
 //	if (cfg->paranoid) for (int i = 1; i < 256; i++) if (w[i] == UNDEFINED)	FIXME
-//		shriek(462, fmt("Character code %d left undefined for charset %s", i, name));
+//		shriek(462, "Character code %d left undefined for charset %s", i, name);
 	return charset_list_len - 1;
 }
 
@@ -258,7 +258,7 @@ void update_sampa(int alt, const char *filename)
 		char x[4], dummy;
 		memset(x, 0, sizeof(x));
 		int n = sscanf(line, "%i %3s %2s", &u, x, &dummy);
-		if (n ==1 || n == 3) shriek(463, fmt("Weird entry in file %s line %d", t->current_file, t->current_line));
+		if (n ==1 || n == 3) shriek(463, "Weird entry in file %s line %d", t->current_file, t->current_line);
 		for (int i = 0; i < 256; i++) {
 			if (epos_charset[i] == u) {
 				strncpy(sampa[alt][i], x, MAX_SAMPA_ENC);
@@ -289,7 +289,7 @@ const char *encode_to_sampa(unsigned char c, int sampa_alt)
 		return ret;
 	} else {
 		if (cfg->paranoid) return nothing;
-		else shriek(462, fmt("Character code %d has no SAMPA representation\n", c));
+		else shriek(462, "Character code %d has no SAMPA representation\n", c);
 	}
 }
 

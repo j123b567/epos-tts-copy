@@ -81,7 +81,10 @@ RANLIB = @RANLIB@
 STRIP = @STRIP@
 VERSION = @VERSION@
 YACC = @YACC@
-CLEANFILES = *~ */*~ */*/*~ */*/*/*~ DEADJOE epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi
+
+CLEANFILES = *~ *.wav core gmon.out matlab.in tmp.0* dmalloc hackfile \
+		profile.log said.* 0\?tmp DEADJOE *.old *.local \
+		epostwk.txt epostwk.sgml epos.sgml epos.txt epos.dvi
 
 AM_CXXFLAGS = -w -DEPOS -ggdb -DDATADIR=$(datadir) -DPREFIXDIR=$(prefix)
 AM_YFLAGS = -d -t
@@ -89,9 +92,9 @@ LDFLAGS = @LDFLAGS@ -L$(libdir)
 AM_CPPFLAGS = -I$(srcdir)/..
 MAINTAINERCLEANFILES = epos.html epos-?.html
 
-SUBDIRS = nnet
+SUBDIRS = nnet . tests
 
-bin_PROGRAMS = epos say eposm vrfy gauge
+bin_PROGRAMS = epos say eposm gauge
 
 SRC_BASE = parser.cc unit.cc rule.cc \
 text.cc encoding.cc interf.cc function.cc options.cc \
@@ -107,7 +110,6 @@ epos_SOURCES = daemon.cc agent.cc ttscp.cc nonblock.cc hashd.cc rx.c $(SRC_BASE)
 eposm_SOURCES = monolith.cc hash.cc rx.c $(SRC_BASE)
 say_SOURCES = say.cc
 gauge_SOURCES = gauge.cc
-vrfy_SOURCES = vrfy.cc
 
 epos_LDADD = nnet/libeposnnet.la
 eposm_LDADD = nnet/libeposnnet.la
@@ -118,8 +120,7 @@ nnet.cc qnxipc.cc
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
-bin_PROGRAMS =  epos$(EXEEXT) say$(EXEEXT) eposm$(EXEEXT) vrfy$(EXEEXT) \
-gauge$(EXEEXT)
+bin_PROGRAMS =  epos$(EXEEXT) say$(EXEEXT) eposm$(EXEEXT) gauge$(EXEEXT)
 PROGRAMS =  $(bin_PROGRAMS)
 
 
@@ -147,10 +148,6 @@ client.$(OBJEXT) ktdsyn.$(OBJEXT) ptdsyn.$(OBJEXT) lpcsyn.$(OBJEXT) \
 tdpsyn.$(OBJEXT) mbrsyn.$(OBJEXT) tcpsyn.$(OBJEXT)
 eposm_DEPENDENCIES =  nnet/libeposnnet.la
 eposm_LDFLAGS = 
-vrfy_OBJECTS =  vrfy.$(OBJEXT)
-vrfy_LDADD = $(LDADD)
-vrfy_DEPENDENCIES = 
-vrfy_LDFLAGS = 
 gauge_OBJECTS =  gauge.$(OBJEXT)
 gauge_LDADD = $(LDADD)
 gauge_DEPENDENCIES = 
@@ -172,8 +169,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-SOURCES = $(epos_SOURCES) $(say_SOURCES) $(eposm_SOURCES) $(vrfy_SOURCES) $(gauge_SOURCES)
-OBJECTS = $(epos_OBJECTS) $(say_OBJECTS) $(eposm_OBJECTS) $(vrfy_OBJECTS) $(gauge_OBJECTS)
+SOURCES = $(epos_SOURCES) $(say_SOURCES) $(eposm_SOURCES) $(gauge_SOURCES)
+OBJECTS = $(epos_OBJECTS) $(say_OBJECTS) $(eposm_OBJECTS) $(gauge_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -266,10 +263,6 @@ say$(EXEEXT): $(say_OBJECTS) $(say_DEPENDENCIES)
 eposm$(EXEEXT): $(eposm_OBJECTS) $(eposm_DEPENDENCIES)
 	@rm -f eposm$(EXEEXT)
 	$(CXXLINK) $(eposm_LDFLAGS) $(eposm_OBJECTS) $(eposm_LDADD) $(LIBS)
-
-vrfy$(EXEEXT): $(vrfy_OBJECTS) $(vrfy_DEPENDENCIES)
-	@rm -f vrfy$(EXEEXT)
-	$(CXXLINK) $(vrfy_LDFLAGS) $(vrfy_OBJECTS) $(vrfy_LDADD) $(LIBS)
 
 gauge$(EXEEXT): $(gauge_OBJECTS) $(gauge_DEPENDENCIES)
 	@rm -f gauge$(EXEEXT)
