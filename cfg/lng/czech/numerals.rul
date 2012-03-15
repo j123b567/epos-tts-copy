@@ -19,7 +19,7 @@ regex	/([0-9])\ ([0-9])/\1\X\2/	colon	; FIXME: comment
 regex	/^(0*)0/\1nula|/	word
 
 #	/\m/minus/	colon
-# regex   /\$/~dolar~/    colon  ; tohle mi nejde
+regex   /\\\\$/~dolar~/    colon
 regex   /\\^/~støí¹ka~/   colon
 subst	mathsign.dic	colon
 

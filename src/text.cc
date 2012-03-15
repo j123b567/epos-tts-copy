@@ -26,22 +26,32 @@
 
 #define SPECIAL_CHARS "#;\n\\"
 
-bool strip(char *s)
+inline bool text::strip(char *s)
 {
 	char *r;
 	char *t;
+	char c;
 
-	for (r=t=s + strcspn(s, SPECIAL_CHARS); *t; t++, r++) {
-		switch (*r = *t) {
+	if (strip_whitespace) {
+		r = s;
+		t = s + strspn(s, WHITESPACE);
+		if (r != t) do {
+			*r++ = c = *t++;
+		} while (c); else r = s + strlen(s) + 1;
+		for (r -= 2; r >= s && strchr(WHITESPACE, *r); r--)
+			*r = 0;
+	}
+	if (strip_specials) {
+		for (r = t = s + strcspn(s, SPECIAL_CHARS); *t; t++, r++) switch (*r = *t) {
 			case ';':
 			case '#':
 				if (s != r && !strchr(WHITESPACE, r[-1])) break;	// else fall through
 			case '\n':
-//				while (r>s && strchr(WHITESPACE, *--r));
+//				while (r > s && strchr(WHITESPACE, *--r));
 				*r = 0;
 				return false;
 			case ESCAPE:
-				if (!*++t || *t=='\n') {
+				if (!*++t || *t == '\n') {
 					*r = 0;
 					return true;
 				}
@@ -51,8 +61,8 @@ bool strip(char *s)
 				break;
 			default:;
 		}
+		*r = 0;
 	}
-	*r = 0;
 	return false;
 }
 
@@ -73,7 +83,8 @@ text::text(const char *filename, const char *dirname, const char *treename,
 	tag = description;
 	base = strdup(filename);
 	warn = warnings;
-	raw = false;
+	strip_specials = true;
+	strip_whitespace = true;
 	basefile(base, "opening");
 }
 
@@ -110,7 +121,7 @@ text::subfile(const char *filename, const char *action)
 	current->line = current_line;
 	current_file = strdup(filename);
 	current_line = 0;
-	if (++embed > scfg->max_nest) shriek(882, "infinite #include cycle");
+	if (++embed > scfg->max_nest) shriek(882, "infinite @include cycle");
 }
 
 void
@@ -197,7 +208,7 @@ text::get_line(char *buffer)
 			handle_directive(buffer);
 			continue;
 		}		
-		if (!raw && strip(buffer + l)) {
+		if (strip(buffer + l)) {
 			l = strlen(buffer);
 			continue;	/* continuation line */
 		}

@@ -57,8 +57,9 @@ class unit
 	void nnet_dump(FILE *outf);
 	float nnet_type();
     
-	inline bool subst(hash *table, int total_length,
-		char*s2b,char*s3b); //inner, see implem.
+	inline bool subst(hash *table,	char*s2b,char*s3b); //inner, see implem.
+	inline void subst();          //replace this unit by sb
+	bool subst(hash *table, regex_t *fastmatch);	// M_SUBSTR stuff
 	void syll_break(char *sonority, unit *before);
 	void syllabify(char *sonority);  //May split "father" just before "this", if sonority minimum
 	void analyze(UNIT target, hash *table, int unanal_unit_penalty, int unanal_part_penalty);
@@ -93,13 +94,11 @@ class unit
 	void fout(char *filename);        //stdout if NULL
 	void fprintln(FILE *outf);        //does not recurse, prints cont,f,i,t
 	char *gather(char *buffer_start, char *buffer_end, bool suprasegm);
-	char *gather(int *l, bool delimited, bool suprasegm);	// returns length in *l
+	char *gather(bool delimited, bool suprasegm);	// returns in gb, gblen
              // gather() returns the END of the string (which is unterminated!)
         void insert(UNIT target, bool backwards, char what, charclass *left, charclass *right);
-//	void subst(UNIT target, hash *table, SUBST_METHOD method);
-	inline void subst();          //replace this unit by sb
-	bool subst(hash *table, SUBST_METHOD method);
-	bool relabel(hash *table, SUBST_METHOD method, UNIT target);				      
+	bool subst(hash *table, regex_t *fastmatch, SUBST_METHOD method);
+	bool relabel(hash *table, regex_t *fastmatch, SUBST_METHOD method, UNIT target);				      
 #ifdef WANT_REGEX
 	void regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl);
 #endif
@@ -145,7 +144,8 @@ class unit
 	void operator delete(void *ptr);
 
 	static char *gb;		// gather buffer
-	static int gbsize;
+	static int gbsize;			// allocated size
+	static int gblen;			// actual data
 	static char *sb;		// subst buffer
 	static int sbsize;
 	static void done();		// free buffers

@@ -1335,6 +1335,7 @@ for an exciting story, just skip it.
 	- fixed slab leak reporting
 	- speed optimizations of critical spots (inlines, booltab->always)
 	- (Cz) completely new and better main.dic, short.dic
+		(suggested by Pavel Machek)
 	- (Cz) optimizations (numerals) and fixes (infinite substs)
 	- (Cz) several "near" optimizations and soft opts to skip some rules
 	- (Cz) nonsyl.dic -> nonsyllprep.dic; introduced interj.dic
@@ -1362,4 +1363,24 @@ for an exciting story, just skip it.
 	- fixed the  with !"... ..."    word splitting bug
 	- fixed two 0 disappearances in the rules
 	- r_regress and r_progress now use ABSENT_CHAR instead of '0'
+
+2.5.21 from 2.5.20	27.11.03
+	- fastmatch optimization speeds up subst rules in VERY large scope units
+	- gather now returns in gb and gblen 
+	- (Cz) related and other main.dic fixes
+	- (Cz) fixes related to characters from mathsign.dic, dollars etc.
+	- a_accept now has no context of its own, but has "listening"
+	- ~configuration is now no duplicate for free_all_options()
+	- fixed theimer's n_segs to 441
+	- several fixes connected with the reinitialization
+	- say -r now properly times out
+	- rule::whole_tag buffer made static
+	- removed arch/win/cpconv2.exe and made the conversion optional
+	- fixed a mysterious order dependency bug in wavefm::flush()
+		(reported by Larry Gilbert)
+	- text preprocessor now by default strips leading and trailing whitespace
+	- after a fatal bug, don't complain about slab's lost cells
+	- parser::depth (to fix downgradable character disappearances)
+	- an attempt at a THANKS file
+
 

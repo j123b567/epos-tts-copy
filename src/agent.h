@@ -176,6 +176,7 @@ class a_accept : public agent
 	virtual void run();
 	virtual const char *name() { return "accept"; };
 	sockaddr_in ia;
+	socky int listening;
    public:
 	a_accept();
 	virtual ~a_accept();

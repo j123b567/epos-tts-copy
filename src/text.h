@@ -33,6 +33,9 @@ class text
 	bool warn;		// whether to heed or ignore #warn
 	int embed;		// subfiling depth 
 	
+	bool strip(char *s);	// strip newlines, escape seqs, whitespace;
+				// return whether the line ended in a backslash (continuation)
+	
 	void basefile(const char *filename, const char *action);
 	void subfile(const char *filename, const char *action);
 	void superfile();
@@ -51,7 +54,8 @@ class text
 	char *current_file;
 	int   current_line;
 	int   charset;
-	bool  raw;		// whether to strip newlines and escape seqs
+	bool  strip_specials;	// whether to strip newlines, comments, escape seqs
+	bool  strip_whitespace; // whether to strip leading and trailing whitespace
 };
 
 #endif                    //#ifndef EPOS_TEXT

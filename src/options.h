@@ -48,11 +48,12 @@ struct configuration : public cowabilium	//Some description & defaults can be fo
 };
 
 #define CONFIG_STATIC_DECLARE
-struct static_configuration
+struct static_configuration : public cowabilium
 {
 	#include "options.lst"
 	
 	inline static_configuration();
+	void shutdown();	// destructor of some sort
 };
 
 /*	Visual C++ 6.0 and Watcom C 10.6 generate incorrect code for
@@ -129,6 +130,8 @@ void shutdown_cfgs();
 void shutdown_langs();
 
 void free_extra_options();
+
+void reinitialize_configuration();
 
 extern int argc_copy;
 extern char **argv_copy;

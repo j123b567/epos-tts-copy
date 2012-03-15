@@ -70,17 +70,12 @@ void cow(cowabilium **p, int size, int extraoffset, int extrasize)
 	cowabilium **ptr = p;
 
 	if (!*p) {
-//		if (p == (cowabilium **)&this_lang) shriek(814, "Language-specific option not supported on the cmd line");
-//		if (p == (cowabilium **)&this_voice) shriek(814, "Voice-specific option not supported on the cmd line");
 		shriek(861, "cow()ing a NULL");
 	}
 
 	if (src->cow) {
-//		*ptr = (cowabilium *)xmalloc(size);
-//		printf("Copying %p(%d) to %p\n", src, src->cow, *ptr);
-//		memcpy(*ptr, src, size);
-
 		*ptr = (cowabilium *)memdup(src, size);
+		D_PRINT(0, "Copying %p(%d) to %p\n", src, src->cow, *ptr);
 		(*ptr)->cow = 0;
 		(*ptr)->parent = src;
 		src->cow--;
@@ -102,13 +97,13 @@ void cow_configuration(configuration **cfg)
 
 void cow_claim()
 {
-//	printf("Claiming %p, was %d\n", cfg, cfg->cow);
+	D_PRINT(0, "Claiming %p, was %d\n", cfg, cfg->cow);
 	for (int i=0; i < cfg->n_langs; i++) {
 		lang *l = cfg->langs[i];
-//		printf("   lang %s(%p) was %d\n", l->name, l, l->cow);
+		D_PRINT(0, "   lang %s(%p) was %d\n", l->name, l, l->cow);
 		l->cow++;
 		for (int j=0; j < l->n_voices; j++) {
-//			printf("      voice %s(%p) was %d\n", l->voicetab[j]->name, l->voicetab[j], l->voicetab[j]->cow);
+			D_PRINT(0, "      voice %s(%p) was %d\n", l->voicetab[j]->name, l->voicetab[j], l->voicetab[j]->cow);
 			l->voicetab[j]->cow++;
 		}
 	}
@@ -123,7 +118,7 @@ void cow_unstring(cowabilium *p, epos_option *opts)
 		char **to_free = (char **)((char *)p + o->offset);
 		if (*to_free && (*(char **)((char *)p->parent + o->offset) != *to_free
 				|| p->parent == p)) {
-//			printf("Freeing %s\n", o->optname);
+			D_PRINT(0, "Freeing %s\n", o->optname);
 			free(*to_free);
 			*to_free = NULL;
 		}
@@ -150,12 +145,12 @@ extern epos_option optlist[];
 
 void cow_unclaim(configuration *that_cfg)
 {
-//	printf("Unclaiming %p, was %d\n", that_cfg, that_cfg->cow);
+	D_PRINT(0, "Unclaiming %p, was %d\n", that_cfg, that_cfg->cow);
 	for (int i=0; i < that_cfg->n_langs; i++) {
 		lang *l = that_cfg->langs[i];
-//		printf("   lang %s(%p) was %d\n", l->name, l, l->cow);
+		D_PRINT(0, "   lang %s(%p) was %d\n", l->name, l, l->cow);
 		for (int j=0; j < l->n_voices; j++) {
-//			printf("      voice %s(%p) was %d\n", l->voicetab[j]->name, l->voicetab[j],l->voicetab[j]->cow);
+			D_PRINT(0, "      voice %s(%p) was %d\n", l->voicetab[j]->name, l->voicetab[j],l->voicetab[j]->cow);
 			if (!l->voicetab[j]->cow--) cow_free(l->voicetab[j], voiceoptlist, NULL);
 			/* * * fortunately, soft options are never strings * * */
 		}
@@ -167,8 +162,8 @@ void cow_unclaim(configuration *that_cfg)
 void cow_catharsis()
 {
 	cow_unclaim(cfg);
-//	cfg = &proto_cfg;
-//	cow_claim();
+	cfg = &proto_cfg;
+	cow_claim();
 }
 
 #define CONFIG_INITIALIZE
@@ -187,7 +182,7 @@ inline configuration::configuration() : cowabilium()
 
 configuration::~configuration()
 {
-	cow_unstring(this, optlist);
+//	cow_unstring(this, optlist);
 }
 
 #define EO {NULL, O_INT, OS_CFG, A_PUBLIC, A_PUBLIC, false, false, -1},
@@ -215,7 +210,7 @@ epos_option optlist[]={
 
 
 #define CONFIG_STATIC_INITIALIZE
-inline static_configuration::static_configuration()
+inline static_configuration::static_configuration() : cowabilium()
 {
 	#include "options.lst"
 }
@@ -242,11 +237,17 @@ hash_table<char, epos_option> *option_set = NULL;
 void configuration::shutdown()
 {
 	int i;
-	for (i=0; i < n_langs; i++) delete langs[i];
+	for (i = 0; i < n_langs; i++) delete langs[i];
 	free(langs);
 	langs = NULL;
-//	this_lang = NULL; this_voice = NULL;
 	n_langs = 0;
+
+	cow_unstring(this, optlist);
+}
+
+void static_configuration::shutdown()
+{
+	cow_unstring(this, staticoptlist);
 }
 
 /*
@@ -328,6 +329,7 @@ static void free_extra_options(epos_option *optlist, cowabilium *whence)
 	for ( o++; o->offset != -2; o++) {
 		if (o->offset == -1) continue;
 		if ((o->opttype == O_STRING || o->opttype == O_LIST) && whence) {
+			D_PRINT(1, "Clearing an extra option %s, whence=%p\n", o->optname - 2, whence);
 			if (*(char **)((char *)whence + o->offset)) {
 				free(*(char **)((char *)whence + o->offset));
 				*(char **)((char *)whence + o->offset) = NULL;
@@ -412,8 +414,8 @@ void alloc_level_options(epos_option *optlist, OPT_STRUCT os, void *base, int le
 			}
 			p->offset = o->offset + levnum * size;
 			if (base)
-				memcpy((char *)base + p->offset, (char *)base + o->offset, size);
-					// CHECKME cow
+				if (o->opttype == O_STRING) *(char **)((char *)base + p->offset) = NULL;	// CHECKME should not rather copy the default from o->offset?
+				else memcpy((char *)base + p->offset, (char *)base + o->offset, size);
 		}
 	}
 }
@@ -588,6 +590,7 @@ bool set_option(epos_option *o, const char *val, void *base)
 {
 	int tmp;
 	if (!o) return false;
+	if (o->action && !val) val = "";
 	if (o->action && !(val = invoke_set_action(o, val))) return false;
 	char *locus = (char *)base + o->offset;
 	switch(o->opttype) {
@@ -633,14 +636,15 @@ bool set_option(epos_option *o, const char *val, void *base)
 			D_PRINT(1, "Configuration option \"%s\" set to %d\n",o->optname,*(int *)locus);
 			break;
 		case O_STRING: 
-			if (val[0]) parse_cfg_str(const_cast<char *>(val));
+			if (val && val[0]) parse_cfg_str(const_cast<char *>(val));
    process_as_string:
-			D_PRINT(1, "Configuration option \"%s\" set to \"%s\"%s\n", o->optname, val, strchr(val, '\033') && scfg->normal_color ? scfg->normal_color : "");
+			D_PRINT(1, "Configuration option \"%s\" set to \"%s\"%s\n", o->optname, val, val && strchr(val, '\033') && scfg->normal_color ? scfg->normal_color : "");
 			if (*(char **)locus) free(*(char**)locus);
-			*(char**)locus = strdup(val);	// FIXME: should be forever if monolith etc. (maybe)
+			if (!val) *(char **)locus = NULL;
+			else *(char**)locus = strdup(val);	// FIXME: should be forever if monolith etc. (maybe)
 			break;
 		case O_LIST:
-			if (val[0]) parse_cfg_str(const_cast<char *>(val));
+			if (val && val[0]) parse_cfg_str(const_cast<char *>(val));
 			else goto process_as_string;
 			char *old;
 			old = *(char **)locus;
@@ -686,6 +690,32 @@ bool set_option(epos_option *o, const char *val, void *base)
 	return true;
 }
 
+bool set_option_to_default(epos_option *o, void *base)
+{
+	if (!o) return false;
+	if (o->per_level) {
+		return false;
+	}
+	char *locus = (char *)base + o->offset;
+	switch(o->opttype) {
+		case O_BOOL:	set_option(o, "false", base); break;
+		case O_MARKUP:	set_option(o, "none", base); break;
+		case O_SALT:	set_option(o, "SAMPA", base); break;
+		case O_SYNTH:	set_option(o, "none", base); break;
+		case O_CHANNEL:	set_option(o, "mono", base); break;
+		case O_UNIT:	/* nothing */  break;
+		case O_INT:	set_option(o, "0", base); break;
+		case O_STRING:	set_option(o, NULL, base); break;
+		case O_LIST:	set_option(o, NULL, base); break;
+		case O_CHAR:	set_option(o, " ", base); break;
+		case O_LANG:	/* nothing */  break;
+		case O_VOICE:   /* nothing */  break;
+		case O_CHARSET:	/* nothing */  break;
+		default: shriek(462, "Bad option type %d", (int)o->opttype);
+	}
+	return true;
+}
+
 /*
  *	C++ is evil with respect to double indirection.
  *	The casts to cowabilium below are a braindamage,
@@ -727,6 +757,7 @@ static inline void set_option_or_die(char *name, const char *value)
 {
 	epos_option *o = option_struct(name, NULL);
 	if (!o) shriek(814, "Unknown option %s", name);
+	if (name[0] == '_') shriek(814, "Option %s is not user settable", name);
 	if (!cfg->langs && (o->structype == OS_LANG || o->structype == OS_VOICE || o->opttype == O_LANG))
 		return;
 
@@ -825,6 +856,47 @@ const char *format_option(const char *name)
 	}
 	return format_option(o);
 }
+
+void reinitialize_configuration(cowabilium *p, epos_option *optlist)
+{
+	for (epos_option *o = optlist; o->optname; o++) {
+		set_option_to_default(o, p);
+	}
+	
+}
+
+
+void reinitialize_configuration()
+{
+	reinitialize_configuration(cfg, optlist);
+	reinitialize_configuration(scfg, staticoptlist);
+
+	#define strfy(x) #x
+	#define stringify(x) strfy(x)
+		set_option_or_die("base_dir", stringify(BASE_DIR));
+	#undef stringify
+	#undef strfy
+
+	set_option_or_die("ini_dir", "cfg");
+	set_option_or_die("fixed_ini_file", "fixed.ini");
+	set_option_or_die("restr_file", "restr.ini");
+
+	set_option_or_die("_token_esc", "nrt[eE\\ #;@~.d-mXYZWVU");
+	set_option_or_die("_value_esc", "\n\r\t\033\033\033\\\377#;@\1\2\3\4\5\037\036\035\034\032\030");
+
+	scfg->_slash_esc = '/';
+
+	scfg->listen_port = TTSCP_PORT;
+	scfg->syslog = true;
+	scfg->debug_level = 4;
+	scfg->hash_search = 60;
+	scfg->max_nest = 60;
+	scfg->max_line_len = 512;
+
+	for (int i = 0; i < UNIT_MAX; i++)
+		cfg->pros_weight[i] = 1;
+}
+
 
 int argc_copy = 0;		// these get filled by the args to main()
 char **argv_copy = NULL;
@@ -944,6 +1016,7 @@ void load_config(const char *filename, const char *dirname, const char *what,
 			if (value[i]) i++;
 			value[i] = 0;		// clumsy: strip off trailing whitespace
 		}
+		if (line[0] == '_') shriek(814, "Option %s is not user settable in %s:%d", line, t->current_file, t->current_line);
 		if (!set_option(line - 2, value, whither, parent_lang ? parent_lang->soft_opts : (hash_table<char, epos_option> *)NULL)) {
 			if (whither == cfg) {		// ...try also static_cfg
 				line[-2] = OPT_STRUCT_PREFIX[OS_STATIC];

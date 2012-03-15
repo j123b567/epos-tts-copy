@@ -309,9 +309,8 @@ void
 a_print::run()
 {
 	char *b;
-	int l;
 
-	b = ((unit *)inb)->gather(&l, false /* no ^$ */, true /* incl. ssegs */ );
+	b = ((unit *)inb)->gather(false /* no ^$ */, true /* incl. ssegs */ );
 
 	delete (unit *) inb;
 	inb = NULL;
@@ -935,9 +934,7 @@ stream::stream(char *s, context *pc) : agent(T_NONE, T_NONE)
 	agent *l = head = NULL;
 
 	callbk = NULL;
-//	c = new context(cfg->sdin, cfg->sdout);	// a little redundant
 	c = pc;
-//	navelcord<context> ncc(c);
 
 	tmp = strchr(s, LIST_DELIM);
 	if (!tmp) shriek(415, "Bad stream syntax");
@@ -963,7 +960,6 @@ stream::stream(char *s, context *pc) : agent(T_NONE, T_NONE)
 	a->prev = l;
 	a->next = this;
 	if (head->next != this) head->out = head->next->in;	/* adjust a_input type */
-//	ncc.release();
 }
 
 stream::~stream()
@@ -1280,40 +1276,41 @@ a_accept::a_accept() : agent(T_NONE, T_NONE)
 	
 	char one = 1;
 
-	c = new context(-1, /*** dark errors ***/ DARK_ERRLOG);	//FIXME
-	c->enter();
+//	c = new context(-1, /*** dark errors ***/ DARK_ERRLOG);	//FIXME
+//	c->enter();
 
-	cfg->_sd_in = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	listening = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	memset(&sa, 0, sizeof(sa));
 	gethostname(scratch, scfg->scratch_size - 1);
 	sa.sin_family = AF_INET;
 	sa.sin_addr.s_addr = htonl(scfg->local_only ? INADDR_LOOPBACK : INADDR_ANY);
 	sa.sin_port = htons(scfg->listen_port);
-	setsockopt(cfg->_sd_in, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
+	setsockopt(listening, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
 	D_PRINT(3, "* Binding to the TTSCP port %d.\n", scfg->listen_port);
-	if (bind(cfg->_sd_in, (sockaddr *)&sa, sizeof (sa))) shriek(871, "Could not bind");
-	if (listen(cfg->_sd_in, 64)) shriek(871, "Could not listen");
-	make_nonblocking(cfg->_sd_in);
+	if (bind(listening, (sockaddr *)&sa, sizeof (sa))) shriek(871, "Could not bind");
+	if (listen(listening, 64)) shriek(871, "Could not listen");
+	make_nonblocking(listening);
 
 	ia.sin_family = AF_INET;
 	ia.sin_addr.s_addr = htonl(INADDR_ANY);
 	ia.sin_port = 0;
 
-	block(cfg->_sd_in);
-	c->leave();
+	block(listening);
+//	c->leave();
 }
 
 a_accept::~a_accept()
 {
-	close (c->config->_sd_in);
-	delete c;
+	close (listening);
+//	close (c->config->_sd_in);
+//	delete c;
 }
 
 void
 a_accept::run()
 {
 	static socklen_t sia = sizeof(sockaddr);	// Will __QNX__ complain?
-	int f = accept(cfg->_sd_in, (sockaddr *)&ia, &sia);
+	int f = accept(listening, (sockaddr *)&ia, &sia);
 	if (f == -1) {
 //		shriek(871, "Cannot accept() - network problem (errno %d)", errno);
 		D_PRINT(3, "Cannot accept() - errno %d! Madly looping.\n", errno);
@@ -1321,11 +1318,11 @@ a_accept::run()
 		return;
 	}
 	make_nonblocking(f);
-	D_PRINT(2, "Accepted %d (on %d).\n", f, cfg->_sd_in);
-	c->leave();
+	D_PRINT(2, "Accepted %d (on %d).\n", f, listening);
+//	c->leave();
 	unuse(new a_ttscp(f, f));
-	c->enter();
-	block(cfg->_sd_in);
+//	c->enter();
+	block(listening);
 }
 
 struct sched_aq

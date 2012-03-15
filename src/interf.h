@@ -37,6 +37,8 @@ void colorize(int level, FILE *handle);  // See this function in interf.cc for v
 
 void user_pause();
 
+extern int fatal_bugs;		// normally zero
+
 void shriek(int code, const char *msg, ...)
 #ifdef __GNUC__
 	__attribute__((__noreturn__))
@@ -234,10 +236,10 @@ void end_of_eternity();
 #define ETERNAL_ALLOCS	1024
 #define END_OF_ETERNITY  end_of_eternity()
 
-#else       // ifndef WANT_MALLOC
+#else       // ifndef WANT_DMALLOC
 #define FOREVER(allocated) (allocated)
 #define END_OF_ETERNITY  /**/
-#endif      // ifdef WANT_MALLOC
+#endif      // ifdef WANT_DMALLOC
 
 
 #endif      // ifndef EPOS_INTERF_H

@@ -425,10 +425,11 @@ STATIC (_token_esc, 	STR, strdup("nrt[eE\\ #;@~.d-mXYZWVU"))  // Escape sequence
 STATIC (_value_esc,	STR, strdup("\n\r\t\033\033\033\\\377#;@\1\2\3\4\5\037\036\035\034\032\030"))
 STATIC (_slash_esc,	CHAR, '/')	// Path separator ('/' or '\') .ini escape seq
 
-STATIC (hashes_full,	INT, 100)    // How full should a hash table become?
-STATIC (max_errors,	INT, 16)	// How many rule file syntax errors to report?
-STATIC (max_nest,	INT, 16)	// How many @include directives may be nested?
-OPTION (multi_subst,	INT, 100)    // How many substs should apply to a word?
+STATIC (hashes_full,	INT, 0)		// How full should a hash table become?
+STATIC (max_errors,	INT, 0)		// How many rule file syntax errors to report?
+STATIC (max_nest,	INT, 60)	// How many @include directives may be nested?
+OPTION (multi_subst,	INT, 0)		// How many substs should apply to a word?
+OPTION (fastmatch_thres,INT, 0)		// How long words should use fastmatch?
 STATIC (memory_low,	BOOL, false)  // Should we free hash tables after first use?
 STATIC (forking,	BOOL, false)  // (UNIX only) Detach using a child process?
 STATIC (asyncing,	BOOL, false)  // (UNIX only) Close files using a child process?
@@ -439,29 +440,29 @@ STATIC (languages,	LIST, NULL)	// Which languages to provide?
 STATIC (version,	BOOL, false)	// Print version info to stdshriek on startup?
 STATIC (help,		BOOL, false)	// Print help on stdshriek and exit on startup?
 STATIC (long_help,	BOOL, false)	// Print also a simple list of long options?
-STATIC (neuronet,	BOOL, false)  // Initialize and use the nnet stuff
-STATIC (trusted,	BOOL, false)  // Are sanity checks in unit::sanity() unnecessary?
-OPTION (paranoid,	BOOL, true)   // Are config files out to get us? (strict syntax)
+STATIC (neuronet,	BOOL, false)	// Initialize and use the nnet stuff
+STATIC (trusted,	BOOL, false)	// Are sanity checks in unit::sanity() unnecessary?
+OPTION (paranoid,	BOOL, false)	// Are config files out to get us? (strict syntax)
 // OPTION (stml,	BOOL, false)	// Input text are STML (as opposed to plain ASCII)?
-STATIC (show_rule,	BOOL, false)  // Print each rule before its application? DEBUGGING only!
-STATIC (pausing,	BOOL, false)  // Pause after each rule application?
-STATIC (verbose,	BOOL, false)  // When dumping rules, print them all?
-// OPTION (warn_pause,	BOOL, false)  // Pause after every warning?
-STATIC (_warnings,	BOOL, false)   // Report command line errors?
-STATIC (ptr_trusted,	BOOL, true)   // When sanity checking, allow any pointers?
+STATIC (show_rule,	BOOL, false)	// Print each rule before its application? DEBUGGING only!
+STATIC (pausing,	BOOL, false)	// Pause after each rule application?
+STATIC (verbose,	BOOL, false)	// When dumping rules, print them all?
+// OPTION (warn_pause,	BOOL, false)	// Pause after every warning?
+STATIC (_warnings,	BOOL, false)	// Report command line errors?
+STATIC (ptr_trusted,	BOOL, false)	// When sanity checking, allow any pointers?
 
-STATIC (variables,	INT, 43)     // About how many variables in the rules?
-STATIC (rules_in_block,	INT, 32)	// About how many rules in a block?
-STATIC (max_rule_weight,INT, 900000)	// Maximum rule weight in a choice?
-STATIC (hash_search,	INT, 57)	// number of attempts at constructing
+STATIC (variables,	INT, 0)		// About how many variables in the rules?
+STATIC (rules_in_block,	INT, 0)		// About how many rules in a block?
+STATIC (max_rule_weight,INT, 0)		// Maximum rule weight in a choice?
+STATIC (hash_search,	INT, 60)	// number of attempts at constructing
 						// a perfect hashing function
 
 STATIC (max_line_len,	INT, 512)	// How long may an input line be?
-STATIC (scratch_size,	INT, 512)	// How long may some temporary strings be?
-OPTION (dev_text_len,	INT, 50000)  // How much data can we expect from a device?
-STATIC (max_text_size,	INT, 17000000)  // Maximum gather buffer size
+STATIC (scratch_size,	INT, 0)		// How long may some temporary strings be?
+OPTION (dev_text_len,	INT, 0)		// How much data can we expect from a device?
+STATIC (max_text_size,	INT, 0)		// Maximum gather buffer size
 
-STATIC (end_of_file,	CHAR, '\033') // Which key should terminate user input?
+STATIC (end_of_file,	CHAR, 0)	// Which key should terminate user input?
 
 
 LNG_OPTION (rules_dir,	STR, NULL)  // path to the rules and banner files
@@ -484,7 +485,6 @@ STATIC (stddbg_file,	STR, NULL)   // file to write debug info to (NULL...stdout)
 STATIC (stdshriek_file,	STR, NULL)   // file to write fatal errors to (NULL...stderr)
 STATIC (profile,	STR, NULL)        // file to write profiling information to
 
-// OPTION (show_transcript,	BOOL, true)	// Should we display transcription on exit?
 STATIC (show_phones,	BOOL, false)	// Should we display the sounds on exit?	// FIXME: STATIC or OPTION?  maybe need a rename
 OPTION (label_seg,	BOOL, false)  // Should we output the segment labels?
 OPTION (label_phones,	BOOL, false)// Should we output the phone labels?
@@ -511,32 +511,28 @@ VOICE_OPTION (codebook,	STR, NULL)	// File with vectors for vq voices?
 // VOICE_OPTION (dph_file,	STR, NULL)	// File describing the segments?
 VOICE_OPTION (dpt_file,	STR, NULL)	// File naming the segments?
 VOICE_OPTION (snl_file,	STR, NULL)	// Sound labels file?
-VOICE_OPTION (init_f,	INT, 100)	// Neutral frequency for the inventory
-VOICE_OPTION (init_i,	INT, 100)	// Neutral intensity
-VOICE_OPTION (init_t,	INT, 100)	// Neutral time factor
-// VOICE_OPTION (st_length,	INT, 400)	// Length of ST signals (ptdsyn)
+VOICE_OPTION (init_f,	INT, 0)		// Neutral frequency for the inventory
+VOICE_OPTION (init_i,	INT, 0)		// Neutral intensity
+VOICE_OPTION (init_t,	INT, 0)		// Neutral time factor
 
-VOICE_OPTION (inv_sampling_rate,INT, 8000)	// The real sampling rate of the inventory
-VOICE_OPTION (sample_size,	INT, 16)	// (not supported)
+VOICE_OPTION (inv_sampling_rate,INT, 0)	// The real sampling rate of the inventory
+VOICE_OPTION (sample_size,	INT, 0)	// (not supported)
 
 STATIC (sampa_alts,		STR, NULL)
 VOICE_OPTION (sampa_alternate,	SALT, 0)
 
 VOICE_OPTION (out_sampling_rate,	INT, 0)	// 0 means equal to samp_rate
 	// positive value specifies the required output rate (samp_rate divided by an integer)
-// VOICE_OPTION (f0_modelling,	STR, "classic")	// F0 contour modelling (classic, lpc, fujisaki)
 VOICE_OPTION (lpcprosody,	BOOL, false)	// F0 contour modelling using a linear prediction
 VOICE_OPTION (bang_nnet,	BOOL, false)	// F0 contour modelling using a linear prediction
 // VOICE_OPTION (nnet_phone,	BOOL, false)	// F0 contour with lpc but on the phone level
 VOICE_OPTION (f0_smoothing,	BOOL, false) // generated F0 shall be smoothed via filter after each pitchpuls
 // VOICE_OPTION (additive_cont,	BOOL, false)  // rule "contour" additive mode
 
-OPTION (pros_factor,	INT, 1000)				// this controls how strong prosody is applied
+OPTION (pros_factor,	INT, 0)
 OPTION (label_f0,	BOOL, false)
 
-// OPTION (dumpfilename,STR, "unitdumpfile.txt")  // name of file to dump if debug rule dumpunit executed
-
-OPTION (autofilter,	BOOL, true)	// When downsampling, band filter as necessary
+OPTION (autofilter,	BOOL, false)	// When downsampling, band filter as necessary
 
 OPTION (wave_header,	BOOL, false)  // Should .wav output contain .wav file header?
 // VOICE_OPTION (ioctlable,	BOOL, false)  // Is the voice a real device not file?
@@ -552,23 +548,23 @@ STATIC (debug_password,	STR, NULL)	// Additional server password (insecure)
 STATIC (restr_file,	STR, strdup("restr.ini")) // restricted options
 OPTION (seg_buff_size,	INT, 0)	// max n of segments to be synthesized at once - was dbsize
 OPTION (ssif_buff_size,	INT,0)	// max n bytes of SSIF to be synthesized at once
-OPTION (buffer_size,	INT, 8192)	// buffer size for wave files
-OPTION (max_net_cmd,	INT, 16384)  // Max TTSCP command length
+OPTION (buffer_size,	INT, 0)	// buffer size for wave files
+OPTION (max_net_cmd,	INT, 0)  // Max TTSCP command length
 STATIC (listen_port,	INT, TTSCP_PORT) // TTSCP port where the daemon should listen
-OPTION (handle_size,	INT, 15)	// TTSCP handle size
-STATIC (local_only,	BOOL, true) // visible only to local clients ?
+OPTION (handle_size,	INT, 0)	// TTSCP handle size
+STATIC (local_only,	BOOL, false) // visible only to local clients ?
 OPTION (localsound,	BOOL, false) // sound card available to any client?
 OPTION (readfs,		BOOL, false) // may read files in the pseudo_root_dir?
 OPTION (writefs,	BOOL, false) // may write files in the pseudo_root_dir?
-OPTION (deadlock_timeout,INT, 5)	// remote voice timeout
+OPTION (deadlock_timeout,INT, 0)	// remote voice timeout
 VOICE_OPTION (location,	STR, NULL)
 // OPTION (_sd,		INT, 0)	// network socket of the current session
 						// (can also be used to detect the daemon mode)
 OPTION (_sd_in,		INT, -1)	// current input network socket
 OPTION (_sd_out,	INT, -1)	// current output network socket
 
-STATIC (pend_min,	INT, 3)	// FIXME: non-functional
-STATIC (pend_max,	INT, 7)	// FIXME: non-functional
+STATIC (pend_min,	INT, 0)	// FIXME: non-functional
+STATIC (pend_max,	INT, 0)	// FIXME: non-functional
 
 STATIC (_big_endian,	BOOL, false)  // run-time decided
 
@@ -580,8 +576,8 @@ LNG_OPTION (fallback_voice,	STR, NULL)
 				// voice to be used when the current one fails at run time
 
 LNG_OPTION (charset,	CHARSET, 0)	// character encoding table index
-OPTION (relax_input,	BOOL, true)   // Survive unknown characters on input
-OPTION (default_char,	CHAR, ' ')	// Replace them with this char
+OPTION (relax_input,	BOOL, false)	// Survive unknown characters on input
+OPTION (default_char,	CHAR, 0)	// Replace them with this char
 
 STATIC (header,		STR, NULL)     // Header and footer printed
 STATIC (footer,		STR, NULL)     //   in unit::fout()
@@ -611,25 +607,25 @@ OPTIONARRAY (pros_weight,	INT, 1, UNIT_MAX)	// FIXME: make all these STATIC
 // OPTION (sseg_weights_denom,	INT, 1) never used, maybe some day
 
 OPTIONAGGR (bool pros_mul[3])
-OPTIONITEM (pros_mul[Q_FREQ], pros_eff_multiply_f,	BOOL, true)
-OPTIONITEM (pros_mul[Q_INTENS], pros_eff_multiply_i,	BOOL, true)
-OPTIONITEM (pros_mul[Q_TIME], pros_eff_multiply_t,	BOOL, true)
+OPTIONITEM (pros_mul[Q_FREQ], pros_eff_multiply_f,	BOOL, false)
+OPTIONITEM (pros_mul[Q_INTENS], pros_eff_multiply_i,	BOOL, false)
+OPTIONITEM (pros_mul[Q_TIME], pros_eff_multiply_t,	BOOL, false)
 OPTIONAGGRENDS
 
 OPTIONAGGR (int pros_neutral[3])
-OPTIONITEM (pros_neutral[Q_FREQ], pros_neutral_f,	INT, 100) // Neutral (unmarked) frequency
-OPTIONITEM (pros_neutral[Q_INTENS], pros_neutral_i,   INT, 100) // Neutral intensity
-OPTIONITEM (pros_neutral[Q_TIME], pros_neutral_t,	INT, 100) // Neutral time factor
+OPTIONITEM (pros_neutral[Q_FREQ], pros_neutral_f,	INT, 0) // Neutral (unmarked) frequency
+OPTIONITEM (pros_neutral[Q_INTENS], pros_neutral_i,	INT, 0) // Neutral intensity
+OPTIONITEM (pros_neutral[Q_TIME], pros_neutral_t,	INT, 0) // Neutral time factor
 OPTIONAGGRENDS
 
 // VOICE_OPTION (t_i_adj,	BOOL, false)	// Adjust neutral time/intensity for some segments
 
 
 
-STATIC (structured,		BOOL, true)   // Will unit::fout display other units than phones?
-STATIC (postfix,		BOOL, false)  // Content char follows the offspring?
-STATIC (prefix,			BOOL, false)  // Content char precedes the offspring?
-STATIC (swallow_underbars,	BOOL, true) // Skip underbars to be printed?
+STATIC (structured,		BOOL, false) // Will unit::fout display other units than phones?
+STATIC (postfix,		BOOL, false) // Content char follows the offspring?
+STATIC (prefix,			BOOL, false) // Content char precedes the offspring?
+STATIC (swallow_underbars,	BOOL, false) // Skip underbars to be printed?
 
 STATICARRAY (begin,	STR, NULL, UNIT_MAX)
 STATICARRAY (separ,	STR, NULL, UNIT_MAX)

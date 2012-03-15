@@ -36,7 +36,7 @@ echo ""                                                        >> mailme && \
 cat lastchanges     >> mailme && \
 cat $scriptdir/mail.append  >> mailme && \
 cat $mailonce    >> mailme && \
-cat mailme | ssh geo@math.cas.cz /bin/mail -I -s "\"Epos $release released\"" epos-dev@speech.cz
+# cat mailme | ssh geo@math.cas.cz /bin/mail -I -s "\"Epos $release released\"" epos-dev@speech.cz
 
 mv $mailonce ${mailonce}~ && echo -n "" >$mailonce \
 || { echo "Failed to reset $mailonce" && exit 4; }

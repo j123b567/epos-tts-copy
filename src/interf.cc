@@ -88,6 +88,7 @@ int severity(int code)
 
 char error_fmt_scratch[MAX_ERR_LINE];
 int errors = 0;
+int fatal_bugs = 0;
 
 void shriek(int code, const char *fs, ...) 
 {
@@ -138,6 +139,7 @@ void shriek(int code, const char *fs, ...)
 
 		case 8 :
 			errors++;
+			if (code / 10 == 86) fatal_bugs++;
 			if (l_errno && EAGAIN) printf("Current errno value: %d (%s)\n", l_errno, strerror(l_errno));
 			throw new fatal_error (code, message);
 
@@ -346,7 +348,7 @@ unit *str2units(const char *text)
 
 	if (text && *text) parsie = new parser(text, PARSER_MODE_INPUT);
 	else parsie = new parser(this_lang->input_file, PARSER_MODE_FILE);
-	root=new unit(scfg->_text_level, parsie);
+	root = new unit(scfg->_text_level, parsie);
 	delete parsie;
 	return root;
 }
@@ -689,22 +691,19 @@ void epos_catharsis()
 		_unit_just_unlinked=NULL;
 	}
 
-//	if (_directive_prefices) delete _directive_prefices;
-//	_directive_prefices = NULL;
-
 	// one a_protocol may be lost here, see agent.cc
 
-//	cow_catharsis(cfg);
+	cow_catharsis();
 
 	release_sampa();
 
 	cfg->shutdown();	//...FIXME: might need proto_cfg->shutdown; othrws shutdown never called
+	scfg->shutdown();
+	free_extra_options();
 	delete esctab; esctab = NULL;
 
 	shutdown_file_cache();
 	
-	free_extra_options();
-
 	shutdown_enc();
 #ifdef HAVE_SYSLOG_H
 	closelog();
@@ -737,7 +736,7 @@ void epos_done()
 void epos_reinit()
 {
 	epos_catharsis();
-//	load_config("default.ini");
+	reinitialize_configuration();
 	epos_init();
 }
 

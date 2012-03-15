@@ -178,32 +178,21 @@ context::enter()
 	master_context->config = cfg;
 	cfg = config;
 	this_context = this;
-
-//	session_uid = uid;
-//	config->sd = index;	// should be unnecessary. Why not?
 }
 
 void
 context::leave()
 {
-//	context *c = context_table[index];
 	if (!this) {
 		D_PRINT(2, "(nothing to leave!)\n");
 		return;
 	}
 	if (this_context != this) shriek(462, "leaving unentered context");
 
-//	this_voice = ::this_voice;
-//	this_lang = ::this_lang;
 	config = cfg;
 
-//	uid = session_uid;
-
-//	::this_voice = master_context->this_voice;
-//	::this_lang = master_context->this_lang;
 	cfg = master_context->config;
 	this_context = master_context;
-//	session_uid = master_context->uid;
 	D_PRINT(1, "leave_context(%p)\n", this);
 }
 

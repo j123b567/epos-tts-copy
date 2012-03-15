@@ -38,6 +38,7 @@ parser::parser(const char *string, int requested_mode)
 
 	char_level = this_lang->char_level + mode * CHARSET_SIZE;
 	downgradables = this_lang->downgradables;
+	depth = scfg->_text_level;
 	if (!downgradables) downgradables = "";
 
 	if (is_file) {
@@ -118,9 +119,9 @@ parser::identify_token()
 }
 
 inline bool
-parser::is_garbage(UNIT level, UNIT last_level)
+parser::is_garbage(UNIT level, UNIT last_level, UNIT toomuch)
 {
-	return level <= last_level && level > scfg->_phone_level && level < scfg->_text_level;
+	return (level >= toomuch || level <= last_level && level > scfg->_phone_level) && level < scfg->_text_level;
 }
 
 unsigned char
@@ -135,12 +136,13 @@ parser::gettoken()
 		if (char_level[token] == U_ILL && cfg->relax_input)
 			token = cfg->default_char;
 		level = chrlev(token);
-		if (is_garbage(level, lastlev) && strchr(downgradables, token)) {
+		if (is_garbage(level, lastlev, depth) && strchr(downgradables, token)) {
 			level = scfg->_phone_level; 
-		}
+			D_PRINT(0, "Parser downgrading %c\n", token);
+		} else D_PRINT(0, "Parser not downgrading %c\n", token);
 		t = 1;
 		current++;
-	} while (is_garbage(level, lastlev));
+	} while (is_garbage(level, lastlev, depth));
 		// (We are skipping any empty units, except for phones.)
 	D_PRINT(0, "Parser: char requested, '%c' (level %u), next: '%c' (level %u)\n", ret, lastlev, *current, level);
 

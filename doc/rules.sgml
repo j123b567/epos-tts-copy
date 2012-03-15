@@ -262,7 +262,11 @@ your preference.
 
   Substring substitution.  The replacers replace every occurrence
   of their respective replacees; longer matches are matched first; the
-  process is iterated until no replacee occurs in the string.  It is required
+  process is iterated until no replacee occurs in the string.
+  It there is a tie between several matches of equal length, the rightmost
+  match is chosen.
+
+  It is required
   either to have a <tt>phone</tt> target, or to keep all the replacers
   and replacees the same length, because otherwise it is not obvious how to handle the
   children of the units affected.  Note also that to be considered a match
@@ -273,7 +277,8 @@ your preference.
 
   Any replacer may begin with a ^ or end with a &dollar;. That forces
   the substring being replaced to be at the beginning or the end
-  of the scope unit, respectively.
+  of the scope unit, respectively.  This ^ or &dollar; also counts
+  as a character when determining the longest match.
 
   The replacer should not contain units of the scope level or higher.
   Unless the <tt/paranoid/ option is set, this is tolerated, but the
@@ -340,6 +345,7 @@ substitution process is iterated.  For example,
 <tt>pmmmmmmmmm</tt> would be first relabeled to <tt>pmmmmmxmmm</tt>
 using the last item as listed in the dictionary and then once more
 using a different item to <tt>pxmmxmxmmm</tt>.
+
 
 <sect2> Type <tt>prep</tt> <label id="prep-rule">
 <p>

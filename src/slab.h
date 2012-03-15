@@ -79,7 +79,7 @@ inline void slab<size>::shutdown()
 	}
 	tail = NULL;
 	slices = NULL;
-	if (cells) shriek(862, fmt("Slab<%d> lost %d cells", size, -cells));
+	if (cells && !fatal_bugs) shriek(862, fmt("Slab<%d> lost %d cells", size, -cells));
 }
 
 template <int size>

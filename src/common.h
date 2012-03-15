@@ -71,7 +71,7 @@
 	#include <dmalloc.h>
 #endif			      // new and delete are overloaded in interf.cc !
 
-#ifndef  IGNORE_REGEX_RULES
+#ifndef  IGNORE_REGEX_RULES_OR_THE_FASTMATCH_OPTIMIZATION
 	#define WANT_REGEX    // About always, we want to use the regex code
 #endif
 
@@ -87,6 +87,8 @@
 	    #endif
 	#endif
    }
+#else
+	typedef void regex_t;
 #endif
 
 

@@ -62,13 +62,17 @@ subst   short.dic
 #  samohlásku nebo slabikotvornou souhlásku.  Tato pravidla se mohou chovat
 #  nerozumnì v kombinaci s velkými písmeny.
 
-near	\d				colon	word
+near	\@\d				colon	word
 {
 	inside \d  word
 	{
 		regress 0>\d(!_0)
 	}
-	regress \d>\ (!_!)		word	word
+	inside \@  word
+	{
+		regress 0>\@(!_0)
+	}
+	regress \d\@>\ (!_!)		word	word
 }
 if	roman
 {
@@ -113,7 +117,7 @@ near  !${lower_case}							colon
 	regress  ${upper_case}>${lower_case}($everywhere)		colon
 }
 
-near 0123456789^+\d\-\m=/\@()[]{}&*%_'"`\\<>\#			sent phone
+near 0123456789^\$+\d\-\m=/\@()[]{}&*%_'"`\\<>\#			sent phone
 {
 	@include "numerals.rul"
 }

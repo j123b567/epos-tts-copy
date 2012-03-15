@@ -641,7 +641,7 @@ const w_ophase wavefm::ophases[] = {
 	INLINED_WOPH(cuehdr, cue_header)
 	VAR_WOPH(cp_buff, cuehdr.len, -4)
 	INLINED_WOPH(adtlhdr, adtl_header)
-	VAR_WOPH(adtl_buff, adtlhdr.len, 0)
+	VAR_WOPH(adtl_buff, adtlhdr.len, 0)	// last must not be inlined! else skipped
 	{true, 0, WOPHASE_NO_MORE_BUFFS, (int *)0}
 };
 
@@ -711,9 +711,10 @@ wavefm::flush()
 	if (fd == -1)
 		return flush_deferred();
 	translate();
-		
-	written = ywrite(fd, get_ophase_buff(&ophases[ophase]) + ooffset,
-			get_ophase_len(&ophases[ophase]) - ooffset);
+
+	const char *o_buff = get_ophase_buff(&ophases[ophase]) + ooffset;
+	int o_buff_size = get_ophase_len(&ophases[ophase]) - ooffset;
+	written = ywrite(fd, o_buff, o_buff_size);
 	if (1 > written) return flush_deferred();
 	
 	ooffset += written;

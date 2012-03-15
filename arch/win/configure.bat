@@ -1,7 +1,7 @@
 
 rem         Run this script before opening the Visual C++ project file
 
-call convert.bat
+if exist cpconv.exe call convert.bat
 
 cd ..\..\src
 

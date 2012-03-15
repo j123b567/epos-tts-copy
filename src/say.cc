@@ -288,7 +288,12 @@ void send_cmd_line(int argc, char **argv)
 				case 'p': send_option("pausing", "true"); break;
 #ifdef HAVE_UNISTD_H
 				case 'r': system("killall -HUP epos");
-					  do sleep(1); while(just_connect_socket(0, 8778) == -1);
+					  int timeout;
+					  timeout = 10;
+					  do sleep(1); while(just_connect_socket(0, 8778) != -1 && timeout--);
+					  if (timeout == -1) shriek("Restart not attempted");
+					  do sleep(1); while(just_connect_socket(0, 8778) == -1 && timeout--);
+					  if (timeout == -1) shriek("Restart attempted, but timed out");
 					  exit(0);
 #endif
 				case 's': traditional = false; break;

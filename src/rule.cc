@@ -92,8 +92,10 @@ class hashing_rule: public rule
 {
    protected:
 	bool allow_id;
+	bool use_fastmatch;
 	char negated;
 	hash *dict;
+	regex_t *fastmatch;
    public:
 		hashing_rule(char *param);
 	virtual ~hashing_rule();
@@ -184,7 +186,7 @@ rule::check_children()
 const char *
 rule::debug_tag()
 {
-	char *wholetag=(char *)FOREVER(xmalloc(scfg->max_line_len));
+	static char *wholetag=(char *)FOREVER(xmalloc(scfg->max_line_len));
 
 #ifdef DEBUGGING
 	char *tmp;
@@ -262,13 +264,21 @@ hashing_rule::hashing_rule(char *param) : rule(NULL)
 //	if (*param == DQUOT) raw = strdup(param);
 //	else raw = compose_pathname(param, this_lang->hash_dir, scfg->lang_base_dir);
 	dict = NULL;
+	fastmatch = NULL;
 	allow_id = false;
+	use_fastmatch = false;
 }
 
 
 hashing_rule::~hashing_rule()
 {
 	if (dict) delete dict;
+#ifdef WANT_REGEX
+	if (fastmatch) {
+		regfree(fastmatch);
+		free(fastmatch);
+	}
+#endif
 }
 
 void
@@ -287,6 +297,72 @@ hashing_rule::verify()
 	}
 }
 
+#ifdef WANT_REGEX
+
+#define REGEX_SPECIALS	".[*\\"	// contains no ^ nor $ nor { nor ( ) + = |
+
+static bool begins_with_caret(char *key) { return key[0] == '^'; }
+static bool ends_with_dollar(char *key) { return *key && key[strlen(key) - 1] == '$'; }
+static int special_chars(char *key)
+{
+	int r = 0;
+	for (char *s = key; *s; s++) if (strchr(REGEX_SPECIALS, *s)) r++;
+	return r;
+}
+
+void strcpy_escapeful(char *where, const char *from)
+{
+	do {
+		if (*from && strchr(REGEX_SPECIALS, *from)) *where++ = '\\';
+	} while ((*where++ = *from++));
+}
+
+static void compute_size(char *key, char *value, void *total)
+{
+	*(int *)total += strlen(key) + 2 + special_chars(key)
+		+ 2 * begins_with_caret(key) + 2 * ends_with_dollar(key);
+}
+
+static void append_to_regex(char *key, char *value, void *str)
+{
+	char *s = (char *)str;
+	int l = strlen(s);
+
+	if (begins_with_caret(key)) {
+		strcpy(s + l, "^\\");
+		l += 2;
+	}
+	strcpy_escapeful(s + l, key);
+	l += strlen(key) + special_chars(key);
+
+	if (ends_with_dollar(key)) {
+		strcpy(s + l - 1, "\\$$");
+		l += 2;
+	}
+	strcpy(s + l, "\\|");
+}
+
+static regex_t *regex_from_hash(hash *h)
+{
+	int total = 3;	
+	h->forall(compute_size, &total);
+	char *b = (char *)xmalloc(total);
+	*b = 0;
+	h->forall(append_to_regex, b);
+	if (*b) b[strlen(b) - 2] = 0;
+	D_PRINT(1, "Fastmatch regex: %s\n", b);
+	regex_t *r = (regex_t *)xmalloc(sizeof(regex_t));
+	if (regcomp(r, b, 0)) {
+		D_PRINT(3, "Failed to create a fastmatch from %.20s..., code=%d\n", b, regcomp(r, b, 0));
+		return 0;
+	}
+	free(b);
+	return r;
+}
+
+#endif
+
+
 void
 hashing_rule::load_hash()
 {
@@ -298,6 +374,10 @@ hashing_rule::load_hash()
 			scfg->hashes_full, 0, 200, 5,
 			(char *) allow_id, false);
 	} else dict = literal_hash(raw);
+#ifdef WANT_REGEX
+	if (use_fastmatch)
+		fastmatch = regex_from_hash(dict);
+#endif
 	if (!dict) shriek(463, "%s Unterminated argument", debug_tag());	// or out of memory
 }
 
@@ -348,6 +428,7 @@ r_subst::r_subst(char *param) : hashing_rule(param)
 {
 	method = M_SUBSTR;
 	negated *= 2;
+	use_fastmatch = true;
 }
 
 r_prep::r_prep(char *param) : r_subst(param)
@@ -358,6 +439,7 @@ r_prep::r_prep(char *param) : r_subst(param)
 		negated = 1;
 	}
 	allow_id = true;
+	use_fastmatch = false;
 }
 
 r_postp::r_postp(char *param) : r_subst(param)
@@ -368,6 +450,7 @@ r_postp::r_postp(char *param) : r_subst(param)
 		negated = 1;
 	}
 	allow_id = true;
+	use_fastmatch = false;
 }
 
 void
@@ -387,7 +470,7 @@ r_subst::apply(unit *root)
 
 //	if (target == U_PHONE) root->subst(dict, method);
 
-	root->relabel(dict, method, target);
+	root->relabel(dict, fastmatch, method, target);
 
 	if (scfg->memory_low) {
 		D_PRINT(2, "Hash table caching is disabled.\n"); //hashtabscache[rulist[i].param]->debug();
@@ -1232,7 +1315,7 @@ r_with::apply(unit *root)
 	}
 	if (!dict) shriek(811, "%s Unterminated argument", debug_tag());	// or out of memory
 
-	if (root->subst(dict, M_ONCE) ^ negated) then->cook(root);
+	if (root->subst(dict, NULL, M_ONCE) ^ negated) then->cook(root);
 }
 
 
@@ -1325,7 +1408,6 @@ r_neural::apply (unit *root)
 
 r_neural::r_neural(char *param, hash *vars) : rule(param)
 {
-	raw = strdup(param);
 	neuralnet = NULL;
 	if (scfg->neuronet)
 		neuralnet = new CNeuralNet(raw, vars);

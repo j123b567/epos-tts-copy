@@ -50,8 +50,9 @@ class parser
 	UNIT level;		// contains the UNIT level of the next symbol
 //	int f, i, t;		// f, i, t of the next symbol (usually zero)
 	float t;
+	UNIT depth;		// if set, the level which triggers downgrades
 	unsigned char identify_token();
-	static bool is_garbage(UNIT level, UNIT last_level);
+	static bool is_garbage(UNIT level, UNIT last_level, UNIT toomuch);
 	unsigned char gettoken(); // gets the next symbol
 	UNIT chrlev(unsigned char c);  // what level c is to be analysed at
 	void done();		// shriek if some input left

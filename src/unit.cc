@@ -465,7 +465,7 @@ unit::gather(char *buffer_now, char *buffer_end, bool suprasegm)
 }
 
 char *
-unit::gather(int *l, bool delimited, bool suprasegm)
+unit::gather(bool delimited, bool suprasegm)
 {
 	char *r;
 //	if (!gb) {
@@ -484,7 +484,7 @@ unit::gather(int *l, bool delimited, bool suprasegm)
 	} while (!r);
 	if (delimited) *r++ = '$';
 	*r = 0;
-	*l = r - gb;
+	gblen = r - gb;
 	return gb;
 }
 
@@ -498,6 +498,7 @@ unit::gather(int *l, bool delimited, bool suprasegm)
 
 char *unit::gb = (char *)xmalloc(INIT_GB_SIZE);
 int unit::gbsize = INIT_GB_SIZE;
+int unit::gblen = 0;
 char *unit::sb = (char *)xmalloc(INIT_GB_SIZE);
 int unit::sbsize = INIT_GB_SIZE;
 
@@ -518,6 +519,7 @@ unit::subst()
 	unit   *tmpu;
 
 	parsie = new parser(sb, PARSER_MODE_RAW);
+	parsie->depth = depth;
 	D_PRINT(0, "innermost unit::subst - parser is ready\n");
 	tmpu = new unit(depth, parsie);
 	if (cfg->paranoid) parsie->done();
@@ -545,15 +547,15 @@ unit::subst()
  ****************************************************************************/
 
 inline bool
-unit::subst(hash *table, int l, char *body, char *suffix)
+unit::subst(hash *table, char *body, char *suffix)
 {
 	char *resultant;
 	int safe_grow;
 
-	if (body < gb || suffix && suffix <= body || suffix && suffix - gb > strlen(gb) || l != strlen(gb))
+	if (body < gb || suffix && suffix <= body || suffix && suffix - gb > strlen(gb) || gblen != strlen(gb))
 		shriek(862, "inner subst called with inconsistent parameters");
 
-	D_PRINT(0, "inner unit::subst called with BUFFER %s MAIN %s SUFFIX %s; total len %d\n",gb,body,suffix,l);
+	D_PRINT(0, "inner unit::subst called with BUFFER %s MAIN %s SUFFIX %s; total len %d\n",gb,body,suffix,gblen);
 	if (suffix && *suffix) {
 		char c = *suffix;    
 		*suffix = 0;
@@ -565,7 +567,7 @@ unit::subst(hash *table, int l, char *body, char *suffix)
 		sbsize = INIT_GB_SIZE;
 		sb = (char *)xmalloc(sbsize);
 	}
-	safe_grow = sbsize - l;
+	safe_grow = sbsize - gblen;
 	int increase = suffix ? strlen(resultant) - (suffix - body) : strlen(resultant) - strlen(body);
 	while (increase > safe_grow) {
 		safe_grow += sbsize;
@@ -581,27 +583,89 @@ unit::subst(hash *table, int l, char *body, char *suffix)
 	strcat (sb, resultant);
 	D_PRINT(1, "inner unit::subst result: %s\n",sb);
     
-	char *suffix_end = gb + l - 1;
+	char *suffix_end = gb + gblen - 1;
 //	D_PRINT(0, "inner unit::subst: suffix %s suffix_end %s sb %s\n", suffix, suffix_end, sb);
 	if (suffix && suffix_end - suffix > 0) strncat(sb, suffix, suffix_end - suffix);
 	D_PRINT(1, "inner unit::subst - subst found: %s Resultant: %s\n", sb, resultant);
 	subst();
 	sanity();
+	D_PRINT(1, "Match, resultant is %s\n", resultant);
 	return true;
 }
 
 /****************************************************************************
- unit::subst  (outer - implements the various subst "methods")
+ unit::subst  (outer - implements M_SUBSTR)
+ ****************************************************************************/
+
+int regexec_max(regex_t *re, char *str, int nm, regmatch_t *rmp)
+{
+	int maxl = -1;
+	int l = 0;
+	regmatch_t m;
+	int code;
+	char *place = str;
+	int eflags = 0;
+	while (!(code = regexec(re, place, nm, &m, eflags))) {
+		D_PRINT(1, "Considering a match in %s at %s between %d and %d\n", str, place, m.rm_so, m.rm_eo);
+		int l = m.rm_eo - m.rm_so;
+		if (l >= maxl) {
+			maxl = l;
+			rmp->rm_so = place - str + m.rm_so;
+			rmp->rm_eo = place - str + m.rm_eo;
+		}
+		if (place[m.rm_eo] == 0)
+			break;
+		place += m.rm_so + 1;
+		eflags = REG_NOTBOL;
+	}
+	if (maxl >= 0) {
+		D_PRINT(1, "Returning a match in %s between %d and %d\n", str, rmp->rm_so, rmp->rm_eo);
+		return 0;
+	}
+	D_PRINT(0, "No match in %s, returning %d\n", str, code);
+	return code;
+}
+
+bool
+unit::subst(hash *table, regex_t *fastmatch)
+{
+#ifdef WANT_REGEX
+	if (fastmatch && gblen > cfg->fastmatch_thres) {
+		regmatch_t rm;
+		int code = regexec_max(fastmatch, gb, 1, &rm);
+		if (!code) {
+			D_PRINT(2, "Fastmatch in %s at %s\n", gb, gb + rm.rm_so);
+			if (subst(table, gb + rm.rm_so, gb + rm.rm_eo))
+				return true;
+			else {
+				gb[rm.rm_eo] = 0;
+				shriek(861, "fastmatch, but not ordinary match on %s", gb + rm.rm_so);
+			}
+		} else {
+			D_PRINT(0, "Fastmatch failed with %d\n", code);
+		}
+	} else
+#endif
+	{
+		D_PRINT(0, "Didn't try to fastmatch\n");
+		for (int j = gblen < table->longest ? gblen : table->longest; j > 0; j--) {
+			for (char *p = gb + gblen - j; p >= gb; p--) {
+				if (subst(table, p, p + j))
+					return true;
+			}
+		}
+	}
+	return false;
+}
+
+/****************************************************************************
+ unit::subst  (outermost - implements the various subst "methods")
  ****************************************************************************/
 
 bool
-unit::subst(hash *table, SUBST_METHOD method)
+unit::subst(hash *table, regex_t *fastmatch, SUBST_METHOD method)
 {
 	char   *tail;
-	char   *strend;
-	// char   *strrealend;
-
-	int l;
 
 	char *b;
 	
@@ -612,39 +676,21 @@ unit::subst(hash *table, SUBST_METHOD method)
 	bool exact = ((method & M_PROPER) == M_EXACT);
 	char separ = cont; cont = NO_CONT;
 	for (int i = cfg->multi_subst; i; i--) {
-		b = gather(&l, !exact, !exact);
-		strend = gb + l;
+		b = gather(!exact, !exact);
 
 		// if (safe_grow>300) shriek("safe_grow");	// fixme
 		D_PRINT(1, "inner unit::subst %s, method %d\n", gb + 1, method);
 		sanity();
 		if (exact) {
-			if (subst(table, l, gb, NULL))
+			if (subst(table, gb, NULL))
 				goto break_home;
 		}
-		if (b[l-1] == cont) --l;
-#if 0
+//		if (b[gblen - 1] == cont) --gblen;
 		if (method & M_SUBSTR) {
-			// strrealend = strend;
-			for (; strend != gb; strend--) {
-				strend[1] = *strend;
-				*strend = 0;
-				tail = gb < strend - table->longest ? strend-table->longest : gb;
-				for( ; tail < strend; tail++) 
-					if (subst(table, l, gb + 1, tail,  strend+1)) 
-						goto break_home;
-			}
+			if (subst(table, fastmatch))
+				goto break_home;
+			D_PRINT(0, "No subst occured, after %d iterations\n", cfg->multi_subst - i);
 		}
-#else
-		if (method & M_SUBSTR) {
-			for (int j = l < table->longest ? l : table->longest; j > 0; j--) {
-				for (char *p = strend - j; p >= gb; p--) {
-					if (subst(table, l, p, p + j))
-						goto break_home;
-				}
-			}
-		}
-#endif
 		cont = separ;
 		if (method & (M_LEFT | M_RIGHT) && method & M_NEGATED) {
 			unlink(method&M_LEFT ? M_LEFTWARDS : M_RIGHTWARDS);
@@ -681,9 +727,9 @@ unit::subst(hash *table, SUBST_METHOD method)
  ****************************************************************************/
 
 bool
-unit::relabel(hash *table, SUBST_METHOD method, UNIT target)
+unit::relabel(hash *table, regex_t *fastmatch, SUBST_METHOD method, UNIT target)
 {
-	if (target == scfg->_phone_level) return subst(table, method);
+	if (target == scfg->_phone_level) return subst(table, fastmatch, method);
 
 	char	*r;
 	unit	*u;
@@ -800,8 +846,8 @@ unit::regex(regex_t *regex, int subexps, regmatch_t *subexp, const char *repl)
 	
 	sanity();
 	for (i = cfg->multi_subst; i; i--) {
-		gather(&l, false, true);
-		strend = gb + l;
+		gather(false, true);
+		strend = gb + gblen;
 //		if (!strend) return;	// gather overflow
 //		*strend=0;
 		D_PRINT(1, "unit::regex %s, subexps=%d\n", gb, subexps);
@@ -986,7 +1032,8 @@ unit::analyze(UNIT target, hash *table, int unanal_unit_penalty, int unanal_part
 		shriek(462, "Analyze with target other than phone unimplemented");	// FIXME
 
 	int l;
-	char *b = gather(&l, false, false);
+	char *b = gather(false, false);
+	l = gbsize;
 	if (++l > vb_size) {
 		vb_size = l;
 		D_PRINT(1, "Growing Viterbi buffer to %d items\n", vb_size);
