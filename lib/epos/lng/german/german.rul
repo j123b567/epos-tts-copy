@@ -1,0 +1,56 @@
+#
+#	provisorische Regeln, Jirka Hanika <geo@ff.cuni.cz>
+#
+#
+
+$voiced    = bdgvzZh¾
+$voiceless = ptkfscx¹
+$fric      = sz¹¾fvhxß
+$afric     = cZè®
+$stop      = ptkbdg
+$nasal     = mnN
+$sonant    = jlr$nasal
+$short     = aeiouäöüy
+$long      = áéíóúäöüý
+#$diphtong  = OAE
+$vowel     = $short$long    #...$diphtong
+$consonant=$voiced$voiceless$sonant
+$everywhere= !_!
+$sonority  = 0'<$fric$afric${stop}$nasal<lrj<$vowel
+
+ regress   0>s(x_!)
+ regress   u0>0v(q_!)
+ regress   0>v(q_!)                ; Rozlo¾ení x,q na ks, kv
+ regress   xq>k($everywhere)
+ regress   h>x(c_!)                ; Spøe¾ka ch > x
+ progress  c>0(!_x)
+ progress  s>¹(!_x)
+ regress   x>0(¹_!)
+ regress   i>í(!_e)
+ regress   e>0(í_!)
+
+ regress   s>¹(0$consonant_$voiceless)
+ regress   z>c($everywhere)
+ regress   s>ß(s_!)
+ regress   s>0(!_ß)
+ regress   sß>zs($everywhere)
+ regress   e>a(!_i)
+ regress   i>j(a_!)
+ regress   v>f($everywhere)
+ regress   w>v($everywhere)
+
+
+ regress   $voiced>${voiceless}(!_$voiceless&0')       	; Asimilace znìlosti
+ regress   $voiceless>$voiced(!_$voiced!v)
+
+
+ subst     ../czech/syll.dic		; Rozsadit vokály
+
+ syll      $sonority	syll	; Rozklad_na_slabiky
+
+ regress   0>q(!_0)
+ regress   $short>$long(!_0h)   syll
+ regress   q>0(!_0)
+ regress   h>0($long_!)		syll
+
+ diphones  ../czech/kadlec.dph		colon
