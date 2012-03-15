@@ -110,7 +110,7 @@ class wavefm
 	
 	void translate_data(char *new_buff);	/* recode data from buffer to new_buff */
 	void translate();	/* downsample, stereophonize, eightbitize or ulawize */
-	void band_filter();	/* low band filter applied if downsampling */
+	void band_filter(int ds);	/* low band filter applied if downsampling */
 	bool translated;
 	int downsamp;
 	

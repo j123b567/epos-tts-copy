@@ -16,6 +16,10 @@
  *
  */
 
+#ifdef HAVE_WINDOWS_H
+	#include <windows.h>
+#endif
+
 #include "common.h"
 
 #define DIPH_BUFF_SIZE  1000 //unimportant
@@ -863,10 +867,14 @@ r_regex::apply(unit *root)
  **	  is applied
  ************************************************/
 
+//typedef UINT (CALLBACK* TSR_EVAL)(unit*);
+
+typedef int (*TSR_EVAL)(unit*);
 
 class r_debug: public rule
 {
 	virtual OPCODE code() {return OP_DEBUG;};
+	TSR_EVAL tsr_eval;
    public:
 		r_debug(char *param);
 	virtual void apply(unit *root);
@@ -879,6 +887,19 @@ r_debug::r_debug(char *param) : rule(param)
 void
 r_debug::apply(unit *root)
 {
+	if(strstr(raw,"tsrtool")) {
+#ifdef HAVE_MMSYSTEM_H		// The TSR debuging tool is up to now available only in the M$WIN port of the epos
+		HINSTANCE hDLL = LoadLibrary("tsrtool.dll");
+		if (hDLL != NULL)
+		{
+			tsr_eval = (TSR_EVAL)GetProcAddress(hDLL,"_tsr_eval");
+			if (!tsr_eval) shriek(445, "cannot get 'tsr_eval' function from tsrtool.dll");
+			//root->fout(NULL);
+			//printf("tsr_eval...\n");
+			tsr_eval(root);
+		}
+#endif
+	}
 	if(strstr(raw,"elem")) root->fout(NULL);
 //	if(strstr(raw,"rules")) ruleset->debug();
 //	else if(strstr(raw,"rule") && ruleset->current_rule+1 < ruleset->n_rules)

@@ -201,6 +201,12 @@ char *fmt(const char *s, int t, const char *u, const char *v)
 	return error_fmt_scratch;
 }
 
+char *fmt(const char *s, int t, int t2, int t3, int t4)
+{
+	sprintf(error_fmt_scratch, s, t, t2, t3, t4);
+	return error_fmt_scratch;
+}
+
 void hash_shriek(const char *s1, const char *s2, int i)
 {
 	shriek(812, fmt(s1, s2, i));	//FIXME?

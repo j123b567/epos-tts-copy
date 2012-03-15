@@ -88,7 +88,7 @@ static inline unsigned char do_alloc_code(wchar_t c, unsigned char hint)
 	}
 	DEBUG(2,10,fprintf(STDDBG, "Want to allocate charcode unicode %d, original enc %d\n", c, hint);)
 	shriek(447, "Epos internal character table overflow");
-
+	return UNDEFINED;
 }
 
 static inline unsigned char alloc_code(wchar_t c, unsigned char hint, int cs)

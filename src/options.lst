@@ -444,6 +444,9 @@ VOICE_OPTION (inv_samp_size, samp_size, "sample_size",INT, 16)	// (not supported
 
 VOICE_OPTION (inv_out_rate, out_rate, "out_sampling_rate", INT, 0)	// 0 means equal to samp_rate
 	// positive value specifies the required output rate (samp_rate divided by an integer)
+//VOICE_OPTION (f0_model, f0_model, "f0_modelling", STR, "classic")	// F0 contour modelling (classic, lpc, fujisaki)
+VOICE_OPTION (lpcprosody, lpcprosody, "lpcprosody", BOOL, false)	// F0 contour modelling using a linear prediction
+
 OPTION (autofilter, "autofilter", BOOL, true)	// When downsampling, band filter as necessary
 
 OPTION (wav_hdr, "wave_header",	  BOOL, true)   // Should .wav output contain .wav file header?

@@ -1,9 +1,9 @@
 /*
- *	epos/src/tdpsyn.cc
- * 	(c) 2000-2001 Petr Horak, petr.horak@click.cz
- * 	(c) 2001 Jirka Hanika, geo@cuni.cz
+ *	epos/src/tdpsyn.h
+ * 	(c) 2000-2002 Petr Horak, horak@petr.cz
+ * 	(c) 2001-2002 Jirka Hanika, geo@cuni.cz
  *
- *	tdpsyn version 1.1 (31.10.2001)
+ *	tdpsyn version 2.3 (19.3.2002)
  *
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,6 +23,9 @@
 
 #define t_samp short
 
+#define LPC_PROS_ORDER 4
+#define MAX_OFILT_ORDER 9
+
 const double pii = 3.141592653589793;
 
 int hamkoe(int winlen, double *data);
@@ -38,6 +41,14 @@ class tdpsyn : public synth
 	int *diph_len;
 	int difpos;
 	unsigned short *wwin;
+	double lpfilt[LPC_PROS_ORDER];
+	double ofilt[MAX_OFILT_ORDER];
+	int lppitch;
+	int lpestep;
+	int lppstep;
+	unsigned int sigpos;
+	int basef0;
+	int filtf0;
 	
 	file *tdi;
 	

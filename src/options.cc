@@ -433,7 +433,7 @@ void parse_cfg_str(char *val)
 	*netto = 0;
 }
 
-template<class T> inline void set_enum_option(option *o, const char *val, char *list, char *locus)
+template<class T> inline void set_enum_option(option *o, const char *val, const char *list, char *locus)
 {
 	parse_cfg_str(const_cast<char *>(val));
 	T tmp = (T)str2enum(val, list, U_ILL);
@@ -479,13 +479,13 @@ bool set_option(option *o, const char *val, void *base)
 		case O_CHANNEL:
 //			if((*(CHANNEL_TYPE *)locus=(CHANNEL_TYPE)str2enum(val, CHANNEL_TYPEstr, U_ILL))==(int)U_ILL)
 //				shriek(447, fmt("Can't set %s to %s", o->optname, val));
-			set_enum_option<SYNTH_TYPE>(o, val, STstr, locus);
+			set_enum_option<CHANNEL_TYPE>(o, val, CHANNEL_TYPEstr, locus);
 			DEBUG(1,10,fprintf(STDDBG,"Channel type option set to %i\n",*(int*)locus);)
 			break;
 		case O_UNIT:
 //			if((*(UNIT *)locus=str2enum(val, cfg->unit_levels, U_ILL))==U_ILL) 
 //				shriek(447, fmt("Can't set %s to %s", o->optname, val));
-			set_enum_option<SYNTH_TYPE>(o, val, STstr, locus);
+			set_enum_option<UNIT>(o, val, cfg->unit_levels, locus);
 			DEBUG(1,10,fprintf(STDDBG,"Configuration option \"%s\" set to %d\n",o->optname,*(int *)locus);)
 			break;
 		case O_INT:

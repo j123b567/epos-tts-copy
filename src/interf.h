@@ -54,6 +54,7 @@ char *fmt(const char *s, const char *t, const char *u, int userval);
 char *fmt(const char *s, const char *t, const char *u, const char *v);
 char *fmt(const char *s, int userval, const char *u);
 char *fmt(const char *s, int userval, const char *u, const char *v);
+char *fmt(const char *s, int userval, int anotherval, int nextval, int lastval);
 
 void user_pause();
 

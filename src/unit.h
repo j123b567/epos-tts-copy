@@ -39,6 +39,7 @@ class unit
 	friend void epos_catharsis();	  // necessary only #ifdef WANT_DMALLOC
 	friend class r_inside;
 
+    public:
 	unit *next, *prev;                //same layer
 	unit *firstborn, *lastborn;       //layer lower by one
 	unit *father;                     //layer greater by one
@@ -63,7 +64,7 @@ class unit
 	void insane(const char *token);   //called exclusively by sanity() in case of a problem
     
 	int f,i,t;
-    public:
+//    public:
 	bool scope;                       //true=don't pass on Next/Prev requests
 		unit(UNIT layer, parser *);
 		unit(UNIT layer, int content); 
