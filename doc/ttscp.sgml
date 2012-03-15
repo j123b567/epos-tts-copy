@@ -828,7 +828,7 @@ code      | error type      | suggested action@
 411	| command not recognized@
 412	| option passed illegal value@
 413	| command too long, ignored@
-414	| parameter should be a non-negative integer@
+414	| parameter should be a positive integer@
 415	| no or bad stream@
 416	| no parameter allowed@
 417	| parameter missing@

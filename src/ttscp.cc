@@ -353,7 +353,7 @@ int cmd_stream(char *param, a_ttscp *a)
 int cmd_apply(char *param, a_ttscp *a)
 {
 	int n;
-	if (!sscanf(param, "%d", &n) || n < 0) {
+	if (!sscanf(param, "%d", &n) || n <= 0) {
 		reply("414 Bad size");
 		return PA_NEXT;
 	}

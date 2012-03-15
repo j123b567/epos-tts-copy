@@ -6,8 +6,8 @@ as an exciting story, just skip it.
 [ Note: some items mention who reported a bug or even did the
 described modification.  The absence of such attribution
 doesn't imply that the work did itself spontaneously.
-Notably Pavel Machek, Daniel Sobe, Mirek Trmac and Milan Zamazal contributed
-in this way much more often than explicitly indicated here.     ]
+Notably Pavel Machek, Adam Nohejl, Daniel Sobe, Mirek Trmac and Milan Zamazal
+contributed in this way much more often than explicitly indicated here.     ]
 
 
 1.1.1 from earlier releases (incomplete):
@@ -1491,5 +1491,10 @@ in this way much more often than explicitly indicated here.     ]
 	- fixed unassigned external variables: segfaults
 	- fix: settings associated with a headerless ulaw used to be permanent
 	- fixed the behavior after some data connection writing errors (used to deadlock)
-	- reinit fix when being started from /
+	- reinit fix when being started from root (all bugs reported by Adam Nohejl)
+
+2.5.34 from 2.5.33	30.6.05
+	- fix: one more deadlock (on errors while detaching waveform)
+	- fix: response to some pseudoempty inputs
+	- fix: appl 0 is now forbidden
 

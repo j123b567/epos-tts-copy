@@ -729,7 +729,12 @@ void
 wavefm::translate()
 {
 	D_PRINT(1, "Translating waveform, buffer_idx=%d\n", hdr.buffer_idx);
-	if (translated || !hdr.buffer_idx) return;
+	if (!hdr.buffer_idx) {
+		translated = true;
+	}
+	if (translated) {
+		return;
+	}
 
 #ifdef WANT_PORTAUDIO_PABLIO
 	/*
@@ -931,8 +936,14 @@ wavefm::flush_deferred()
 {
 //	D_PRINT(2, "Flushing the signal (deferred)\n");
 	D_PRINT(1, "adtlhdr.len is %d\n", adtlhdr.len);
-	if (errno == EAGAIN) {
+	if (written == -1 && errno == EAGAIN) {
 		written = 0;
+	}
+	if (written == -1 && errno == EINTR) {
+		written = 0;
+	}
+	if (written == -1) {
+		return false;
 	}
 
 	int used = translated ? from_le32s(hdr.buffer_idx) : hdr.buffer_idx;
