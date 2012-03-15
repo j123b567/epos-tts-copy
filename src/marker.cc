@@ -97,6 +97,6 @@ int
 marker::write_ssif(char *whither)
 {
 	if (quant == Q_FREQ) return sprintf(whither, "(%d,%d) ", (int)(pos * 100),
-		this_voice->init_f + par, extent?"yes":"no");
+		this_voice->init_f + par /*, extent?"yes":"no" */ );
 	else return 0;
 }

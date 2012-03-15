@@ -163,7 +163,6 @@ and <tt>value&lowbar;esc</tt> constants in <tt>option.cc</tt>, or the table in
 <tt>parser.h</tt>.) ASCII codes in parentheses are ASCII codes used for different
 purposes by Epos.
 
-
 <sect2> Comments and the &commat;include directive <label id="include-directive">
 <p>
 

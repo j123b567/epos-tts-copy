@@ -868,7 +868,7 @@ of errors (internal errors).
 841	| cannot open necessary configuration file@
 842	| no voices configured@
 843	| up-to-date configuration files not found@
-844	| no unicode maps found@
+844	| no unicode or SAMPA maps found@
 861	| internal error: impossible branch of execution@
 862	| internal error: invariance violation@
 863	| internal error: buffer overflow@

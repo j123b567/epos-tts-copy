@@ -1141,3 +1141,7 @@ for an exciting story, just skip it.
 	- mbrsyn and projection code heavily debugged
 	- new rule type: absolutize (temporary implementation)
 	- (Cz) generate_segs, traditional_dph options
+
+2.5.5 from 2.5.4	15.4.03
+	- SAMPA translation
+	- fixes related to the prosody (mostly to unit::t)

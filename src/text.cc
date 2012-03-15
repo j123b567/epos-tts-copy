@@ -78,6 +78,7 @@ text::text(const char *filename, const char *dirname, const char *treename,
 	current_file = NULL;
 	current_line = 0;
 	charset = cfg->charset;
+	raw = false;
 	subfile(base);
 }
 
@@ -168,7 +169,7 @@ text::getline(char *buffer)
 		DBG(0,1,fprintf(STDDBG,"text::getline processing %s",buffer);)
 		if ((int)strlen(buffer) + 1 >= scfg->max_line)
 			shriek(462, fmt("Line too long in %s:%d", current_file, current_line));
-		if (strip(buffer + l)) {
+		if (!raw && strip(buffer + l)) {
 			l = strlen(buffer);
 			continue;	/* continuation line */
 		}

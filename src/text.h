@@ -49,6 +49,7 @@ class text
 	char *current_file;
 	int   current_line;
 	int   charset;
+	bool  raw;		// whether to strip newlines and escape seqs
 };
 
 #endif                    //#ifndef EPOS_TEXT

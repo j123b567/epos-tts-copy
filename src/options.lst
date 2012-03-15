@@ -588,6 +588,8 @@ VOICE_OPTION (inv_st, st, "st_length",       INT, 400)	// Length of ST signals (
 VOICE_OPTION (samp_rate, samp_rate, "inv_sampling_rate", INT, 8000)	// The real sampling rate of the inventory
 VOICE_OPTION (samp_size, samp_size, "sample_size",INT, 16)	// (not supported)
 
+VOICE_OPTION (sampa_alt, sampa_alt, "sampa_alternate", INT, 0)
+
 VOICE_OPTION (inv_out_rate, out_rate, "out_sampling_rate", INT, 0)	// 0 means equal to samp_rate
 	// positive value specifies the required output rate (samp_rate divided by an integer)
 OPTION (autofilter, "autofilter", BOOL, true)	// When downsampling, band filter as necessary

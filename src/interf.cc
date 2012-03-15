@@ -695,6 +695,7 @@ void epos_init()	 //Some global sanity checks made here
 	if (!scratch) scratch = (char *)xmalloc(scfg->scratch+1);
 	
 	compile_rules();
+	update_sampa();
 
 	DBG(1,10,fprintf(STDDBG,"struct unit is %d bytes\n", (int)sizeof(unit));)
 	DBG(1,10,fprintf(STDDBG,"struct static_configuration is %d bytes\n", (int)sizeof(static_configuration));)

@@ -42,7 +42,7 @@ unit::unit(UNIT layer, parser *parser)
 	depth = layer;
 	cont = NO_CONT;
 //	f = i = t = 0;
-	t = 0;
+	t = 1;
 	m = NULL;
 	scope = false;
 	DBG(1,2,fprintf(STDDBG,"New unit %u, parser %u\n", layer, parser->level);)
@@ -161,7 +161,7 @@ unit::write_segs(segment *whither, int first, int n)
  
 int
 unit::write_ssif_head(char *whither) {
-	return sprintf(whither, "%c %d ", cont, effective(Q_TIME));
+	return sprintf(whither, "%.3s %d ", encode_to_sampa(cont, this_voice->sampa_alt), effective(Q_TIME));
 }
 
 
@@ -1000,7 +1000,7 @@ void
 unit::prospoint(FIT_IDX what, int value, float position)
 {
 	DBG(1,2,fprintf(STDDBG, "Adding prosody point at %d\n", depth);)
-	if (what == Q_TIME) t += value;
+	if (what == Q_TIME) t += ((float)value * 0.01);
 	else m = new marker(what, true /* extent */, value, m, position);
 }
 

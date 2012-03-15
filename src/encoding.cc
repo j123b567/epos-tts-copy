@@ -30,6 +30,13 @@ wchar_t **charsets = 0;			/* charset to unicode */
 unsigned char **encoders = 0;		/* charset to Epos */
 unsigned char **decoders = 0;		/* Epos to charset */
 
+#define MAX_SAMPA_ALTS	2
+#define MAX_SAMPA_ENC	4
+char sampa[MAX_SAMPA_ALTS][256][MAX_SAMPA_ENC];
+					/* Epos to SAMPA */
+
+bool sampa_updated = false;
+
 
 void init_enc()
 {
@@ -37,6 +44,7 @@ void init_enc()
 	decoders = (unsigned char **)xmalloc(sizeof(unsigned char *));
 	charsets = (wchar_t **)xmalloc(sizeof(wchar_t *));
 	for (int i = 0; i < 256; i++) epos_charset[i] = UNUSED;
+	memset(&sampa, 0, sizeof(sampa));
 }
 
 void shutdown_enc()
@@ -99,6 +107,9 @@ static inline unsigned char alloc_code(wchar_t c, unsigned char hint, int cs)
 	epos_charset[hint] = c;
 	encoders[cs][orig] = hint;
 	decoders[cs][hint] = orig;
+
+	sampa_updated = false;
+
 	return hint;
 }
 
@@ -228,6 +239,56 @@ void load_default_charset()
 		encoders[0][i] = i;
 		decoders[0][i] = i;
 		charsets[0][i] = i;
+	}
+}
+
+void update_sampa(int alt, const char *filename)
+{
+	DBG(3,10,fprintf(STDDBG, "Loading %sSAMPA mappings\n", alt ? "alternate " : "");)
+	text *t = new text(filename, scfg->unimap_dir, "", NULL, true);
+	if (!t->exists()) {
+		delete t;
+		shriek(844, "Couldn't find the SAMPA map");
+	}
+//	t->raw = true;
+	char *line = (char *)xmalloc(scfg->max_line);
+	while(t->getline(line)) {
+		int u;
+		char x[4], dummy;
+		memset(x, 0, sizeof(x));
+		int n = sscanf(line, "%i %3s %2s", &u, x, &dummy);
+		if (n ==1 || n == 3) shriek(463, fmt("Weird entry in file %s line %d", t->current_file, t->current_line));
+		for (int i = 0; i < 256; i++) {
+			if (epos_charset[i] == u) {
+				strncpy(sampa[alt][i], x, MAX_SAMPA_ENC);
+			}
+		}
+	}
+	delete t;
+}
+
+void update_sampa()
+{
+	char filename[20];
+	for (int i = 0; i < MAX_SAMPA_ALTS; i++) {
+		sprintf(filename, "sampa-%d.txt", i);
+		update_sampa(i, i ? filename : "sampa-std.txt");
+	}
+	sampa_updated = true;
+}
+
+const char *encode_to_sampa(unsigned char c, int sampa_alt)
+{
+	const char *ret = sampa[sampa_alt][c];
+	const char *nothing = "_";
+
+	if (sampa_alt < 0 || sampa_alt >= MAX_SAMPA_ALTS) return nothing;
+	if (!sampa_updated) update_sampa();
+	if (*ret) {
+		return ret;
+	} else {
+		if (cfg->paranoid) return nothing;
+		else shriek(462, fmt("Character code %d has no SAMPA representation\n", c));
 	}
 }
 
