@@ -867,7 +867,7 @@ fi
 
 PACKAGE=epos
 
-VERSION=2.5.21
+VERSION=2.5.22
 
 if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
   { echo "configure: error: source directory already configured; run "make distclean" there first" 1>&2; exit 1; }
@@ -7747,7 +7747,7 @@ ac_given_srcdir=$srcdir
 ac_given_INSTALL="$INSTALL"
 
 trap 'rm -fr `echo "Makefile src/Makefile src/nnet/Makefile src/tests/Makefile \
-	cfg/Makefile doc/Makefile config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+	cfg/Makefile arch/Makefile doc/Makefile config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -7859,7 +7859,7 @@ EOF
 cat >> $CONFIG_STATUS <<EOF
 
 CONFIG_FILES=\${CONFIG_FILES-"Makefile src/Makefile src/nnet/Makefile src/tests/Makefile \
-	cfg/Makefile doc/Makefile"}
+	cfg/Makefile arch/Makefile doc/Makefile"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then

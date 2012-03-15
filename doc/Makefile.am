@@ -44,4 +44,4 @@ header.sgml: ../configure.in
 	@ echo Source code version may have changed, documentation adjusted.
 	@ touch header.sgml
 
-EXTRA_DIST = $(CONTENTS) header.sgml footer.sgml
+EXTRA_DIST = $(CONTENTS) header.sgml footer.sgml Todo Intro Files FAQ FORMATS

@@ -14,6 +14,8 @@
 # The following line may be deleted if using any other compiler than Watcom C.
 
 
+
+
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -92,13 +94,58 @@ LDFLAGS = @LDFLAGS@ -L$(libdir)
 AM_CPPFLAGS = -I$(srcdir)/..
 MAINTAINERCLEANFILES = epos.html epos-?.html
 
-CONTENTS = intro.sgml arch.sgml rules.sgml options.sgml ttscp.sgml security.sgml devel.sgml 
+DATA_DIRS = dos				\
+unix unix/upload			\
+win win/service win-ce
 
-EXTRA_DIST = $(CONTENTS) header.sgml footer.sgml Todo Intro Files FAQ FORMATS
+
+DATA_FILES = dos/epos.cpp		\
+dos/bepos.bpr				\
+dos/README.dos				\
+dos/say.bpr				\
+dos/config.in				\
+unix/doctwk.sed				\
+unix/commat				\
+unix/makedate				\
+unix/test.optdoc			\
+unix/docopts				\
+unix/test.version			\
+unix/longopts				\
+unix/upload/lastchanges.append		\
+unix/upload/lastchanges.sed		\
+unix/upload/mail.append			\
+unix/upload/README			\
+unix/upload/upload			\
+unix/makever				\
+win/config.in				\
+win/epos.dsp				\
+win/instserv.dsp			\
+win/configure.bat			\
+win/epos.dsw				\
+win/convert.bat				\
+win/eposm.dsp				\
+win/epos.ini				\
+win/say.dsp				\
+win/README.CODEPAGE			\
+win/service/install.cpp			\
+win/service/service.cpp			\
+win/service/service.h			\
+win/service/startsrv.cpp		\
+win/service/globals.h			\
+win/config.in.orig			\
+win-ce/stdlib.cpp			\
+win-ce/config.in			\
+win-ce/configure.bat			\
+win-ce/epos.vcw				\
+win-ce/epos.vcp				\
+win-ce/say.vcp
+
+
+EXTRA_DIST = $(DATA_FILES) data_dirs.am data_files.am
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
-DIST_COMMON =  COPYING Makefile.am Makefile.in
+DIST_COMMON =  Makefile.am Makefile.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -107,8 +154,8 @@ TAR = gtar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
-$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) $(top_srcdir)/Makefile.common
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps doc/Makefile
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) $(top_srcdir)/Makefile.common $(srcdir)/data_dirs.am $(srcdir)/data_files.am
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps arch/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) \
@@ -120,9 +167,11 @@ TAGS:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = doc
+subdir = arch
 
 distdir: $(DISTFILES)
+	$(mkinstalldirs) $(distdir)/dos $(distdir)/unix $(distdir)/unix/upload \
+	   $(distdir)/win $(distdir)/win-ce $(distdir)/win/service
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -200,46 +249,6 @@ mostlyclean distclean maintainer-clean
 export WPP386=-xs
 
 .DELETE_ON_ERROR:
-
-all: epos.html
-
-epos.sgml: header.sgml $(CONTENTS) footer.sgml
-	@echo Updating epos.sgml
-	@cat $^ | sed							\
-		-e "s/CURRENT_EPOS_VERSION/$(VERSION)/g"	\
-		-e "s/CURRENT_EPOS_DATE/`$(top_srcdir)/arch/unix/makedate`/g"	\
-		-f $(top_srcdir)/arch/unix/doctwk.sed   > $@
-
-epos.tex: epos.sgml
-	@sgml2latex $^ --output=tex
-
-epostwk.sgml: epos.sgml
-	@sed '/^<sect/s:</\?tt>::g' <$^ >$@
-
-epos.txt: epostwk.sgml
-	@sgml2txt $^
-	@mv epostwk.txt epos.txt
-
-epos.html: epos.sgml
-	@echo Converting to HTML
-	@-sgml2html $^
-	@-$(top_srcdir)/arch/unix/commat
-
-epos.dvi: epos.sgml
-	@sgml2latex --output=dvi --papersize=a4 --language=en $^
-
-epos.ps: epos.sgml
-	@sgml2latex --output=ps --papersize=a4 --language=en $^
-
-epos.info: epos.sgml
-	@sgml2info $^
-
-#/usr/lib/texmf/source/latex/misc/linuxdoc-sgml.sty: /usr/lib/sgml-tools/linuxdoc-sgml.sty
-#	@ln -s /usr/lib/sgml-tools/linuxdoc-sgml.sty $@
-
-header.sgml: ../configure.in
-	@ echo Source code version may have changed, documentation adjusted.
-	@ touch header.sgml
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

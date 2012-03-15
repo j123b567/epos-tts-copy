@@ -496,14 +496,26 @@ class a_synth : public agent
 	a_synth() : agent(T_SEGS, T_WAVEFM) {};
 };
 
+bool fallbackable_error(int code)
+{
+	switch (this_lang->fallback_mode) {
+		case 0: return false;
+		case 1: return true;
+		case 4: return code == 445 || code / 10 == 47;
+		case 7: return code / 10 == 47;
+		default: return code == this_lang->fallback_mode;
+	}
+}
+
 void
 a_synth::init_syn()
 {
 	try {
 		this_voice->syn = setup_synth(this_voice);
 	} catch (command_failed *e) {
-		if (e->code / 10 == 47 && this_lang->fallback_voice && *this_lang->fallback_voice) {
-							// 47x codes are network errors
+		if (fallbackable_error(e->code)
+				&& this_lang->fallback_voice
+				&& *this_lang->fallback_voice) {
 			voice_switch(this_lang->fallback_voice);
 			if (this_lang->permanent_fallbacks) {
 				c->leave();

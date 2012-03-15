@@ -54,15 +54,14 @@ doesn't prevent other control connections from referencing this
 data connection using its handle, it only limits its lifetime.
 
 The session header (as sent before a TTSCP session starts)
-is a sequence of lines terminated with an empty line (two consecutive
-linefeed characters with no whitespace intervening).  The first line
+is a sequence of lines.  The first line
 shall exactly match the string <tt/TTSCP spoken here/; the clients
 are strongly encouraged to use this string to identify the protocol.
-The following lines, except the terminating (empty) one each contain
+Each of the following lines contains
 a TTSCP header keyword terminated by a colon and a single space
 and the value associated with the keyword. The client may choose
 not to use these values at all, or to scan only for some header
-keywords.  The last keyword in the header shall be the <tt/handle/
+keywords.  The last line in the header shall contain the <tt/handle/
 keyword.
 
 A typical TTSCP session looks like this, with client commands
@@ -75,7 +74,6 @@ unindented and server responses indented.
 	server: Epos
 	release: 2.4.6
 	handle: O29-m2UZ
-	
 user user&commat;host.domain.net
 	452 user not found
 setl some_option on

@@ -572,6 +572,7 @@ LNG_OPTION (voices,		LIST, NULL) // voices supported for this language
 LNG_OPTION (soft_options,	LIST, NULL)
 				// language-specific voice options supported for this language
 LNG_OPTION (permanent_fallbacks,BOOL, false)
+LNG_OPTION (fallback_mode,	INT, 0)
 LNG_OPTION (fallback_voice,	STR, NULL)
 				// voice to be used when the current one fails at run time
 

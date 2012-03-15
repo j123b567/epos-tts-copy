@@ -1,0 +1,7 @@
+DATA_DIRS=cfg					\
+lng lng/czech lng/czech/prosody lng/czech/nnet	\
+lng/french lng/german lng/slovak lng/slovak.prev lng/slovak.prev/txt \
+voice voice/czech voice/slovak voice/german	\
+inv inv/lpc					\
+mappings					\
+ttscp ttscp/help

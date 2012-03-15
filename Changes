@@ -1,7 +1,13 @@
 
 
 RECENT CHANGES can be tracked at the BOTTOM END.  The rest doesn't qualify
-for an exciting story, just skip it.
+as an exciting story, just skip it.
+
+[ Note: some items mention who reported a bug or even did the
+described modification.  The absence of such attribution
+doesn't imply that the work did itself spontaneously.
+Notably Pavel Machek, Mirek Trmac and Milan Zamazal contributed
+in this way much more often than explicitly indicated here.     ]
 
 
 1.1.1 from earlier releases (incomplete):
@@ -1383,4 +1389,16 @@ for an exciting story, just skip it.
 	- parser::depth (to fix downgradable character disappearances)
 	- an attempt at a THANKS file
 
-
+2.5.22 from 2.5.21	10.1.04
+	- (Cz) main.dic improvements
+	- gauge -b
+	- cfg/Makefile.am now only installs and distributes listed files
+	- likewise for arch
+	- removed arch/win/*.enc, *.conv and added README.CODEPAGE
+	- make arch/unix/upload/upload a bit more atomic
+	- fallback_mode option (see docs) (addresses default voice problems)
+	- added WELCOME and several files in doc to EXTRA_DIST
+	- init_time option fixed (now works for 2+ seconds)
+	- TTSCP header documented not to be terminated by an empty line (Mirek)
+	- (Cz, Sk) "female" soft option to indicate voice gender
+	- removed pseudo root dir "root" from the distribution

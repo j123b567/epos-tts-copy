@@ -1136,13 +1136,30 @@ option is also language dependent.
 	Lists available soft options as described in subsection
 	<ref id="soft-options" name="soft options">.
 	This option <ref id="autoconcatenating" name="autoconcatenates">.
-<tag>--fallback&lowbar;voice <sl/voicename/</tag>
+<tag>--fallback&lowbar;mode <sl/mode/</tag>
 	Not used under normal circumstances.  Epos initialises its
 	synthesis type dependent specific structures the first time
-	it uses a voice.  Should such an initialization fail because
-	of a network error, the current voice will be switched to
-	the voice specified by this option and the initialisation will be
-	retried.
+	it uses a voice.  Should such an initialization fail due
+	to the reason specified by this option, the current voice will
+	be switched to the voice specified by the <ref
+	id="fallbackvoice-option" name="fallback&lowbar;voice"> option
+	and the initialisation will be retried.  The <sl/mode/
+	can either be a TTSCP error code of the <tt/4xx/ class,
+	or a template mode identifier.  In the former case,
+	the fallback occurs only if the initialization fails
+	with the specified TTSCP error code.  For the latter
+	case, the following modes have been defined:
+   <table loc="h">
+   <tabular ca="|l|l|">
+	<tt>0</tt>	| fallbacks are disabled @
+	<tt>1</tt>	| fallbacks occur on all 4xx class errors @
+	<tt>4</tt>	| fallbacks occur with uninstalled voices (445) and network errors (47x)@
+	<tt>7</tt>	| fallbacks occur with network errors (47x)@
+   </tabular>
+   </table>
+<label id="fallbackvoice-option">
+<tag>--fallback&lowbar;voice <sl/voicename/</tag>
+	Voice to switch to if another voice fails to initialize.
 <tag>--rules&lowbar;file <sl/filename/</tag>
 	The parameter is a filename. The file contains the transformational
 	rules to be applied for this language.

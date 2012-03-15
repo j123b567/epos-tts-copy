@@ -7,9 +7,9 @@ export VERSION
 
 AUTOMAKE_OPTIONS=1.4 foreign
 
-SUBDIRS = src cfg doc
+SUBDIRS = src cfg arch doc
 
-EXTRA_DIST=arch Makefile.common Changes
+EXTRA_DIST=Makefile.common Changes WELCOME
 
 #distcleancheck:
 #	@@:

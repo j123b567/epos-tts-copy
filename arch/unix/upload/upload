@@ -24,11 +24,16 @@ cp $origpath . || { echo "I don't see the released file $origpath" && exit 1; }
 cat $file | tar xzOf - $changesname | sed -n -f $scriptdir/lastchanges.sed \
 		>lastchanges && cat $scriptdir/lastchanges.append >>lastchanges
 
+
 cp $mailonce notes \
 || { echo "File $mailonce should either be 0 bytes long or 20 bytes long" && exit 5; }
 if [ ! -s notes ]; then
 	echo "                                     " >>notes
 fi
+
+cp $sfupload /dev/null || { echo "You need $sfupload installed" && exit 3; }
+$sfupload -pr=epos -p=epos-dev -r=$release -f=$file \
+	-cf=lastchanges nf=notes
 
 echo "Epos version $release has been released to SourceForge." > mailme && \
 echo "Changes from the last version:"                      >> mailme && \
@@ -36,12 +41,8 @@ echo ""                                                        >> mailme && \
 cat lastchanges     >> mailme && \
 cat $scriptdir/mail.append  >> mailme && \
 cat $mailonce    >> mailme && \
-# cat mailme | ssh geo@math.cas.cz /bin/mail -I -s "\"Epos $release released\"" epos-dev@speech.cz
+cat mailme | ssh geo@math.cas.cz /bin/mail -I -s "\"Epos $release released\"" epos-dev@speech.cz
 
 mv $mailonce ${mailonce}~ && echo -n "" >$mailonce \
 || { echo "Failed to reset $mailonce" && exit 4; }
-
-cp $sfupload /dev/null || { echo "You need $sfupload installed" && exit 3; }
-$sfupload -pr=epos -p=epos-dev -r=$release -f=$file \
-	-cf=lastchanges nf=notes
 

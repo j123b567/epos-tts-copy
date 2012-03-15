@@ -286,6 +286,13 @@ void use_trusted()
 	lst = "gauge-trusted.lst";
 }
 
+void use_bad()
+{
+	in = "gauge-bad.in";
+	nw = "gauge-bad.new";
+	lst = "gauge-bad.lst";
+}
+
 #define CMD_LINE_OPT "-"
 #define CMD_LINE_VAL '='
 
@@ -293,6 +300,7 @@ void dump_help()
 {
 	printf("usage: gauge [options] ['substring']\n");
 	printf(" -t  Use gauge-trusted.* instead of gauge.*\n");
+	printf(" -b  Use gauge-bad.* instead of gauge.*\n");
 	printf("\n");
 	printf(" * gauge.in is used as the input\n");
 	printf(" * gauge.new will be created unless you specify a substring\n");
@@ -332,6 +340,7 @@ void send_cmd_line(int argc, char **argv)
 				case 'h': dump_help(); exit(0);
 				case 'p': send_option("pausing", "true"); break;
 				case 't': use_trusted(); break;
+				case 'b': use_bad(); break;
 				case 'v': send_option("version", "true"); break;
 				case 'D':
 					send_option("debug", "true");

@@ -506,7 +506,7 @@ int start_unix_daemon()
 			case 0:  detach();
 				 server();
 				 return 0;	/* child  */
-			default: UNIX( if (!running_at_localhost() && scfg->init_time--) sleep(1);)
+			default: UNIX( while (!running_at_localhost() && scfg->init_time--) sleep(1);)
 				 return 0;	/* parent */
 		}
 
