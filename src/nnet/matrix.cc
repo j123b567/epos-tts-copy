@@ -67,13 +67,13 @@ template<class T> void CMatrix<T>::multiplyByTransponed (const CMatrix &y, CMatr
 	if (cols != y.cols) { retval.Realloc (0,0); return; }
 
 	T sum;
-	retVal.Realloc (rows, y.rows);
+	this->retVal.Realloc (rows, y.rows);
 	for (i = 0; i < rows; ++i)
 	for (j = 0; j < y.rows; ++j) {
 		sum = 0;
 		for (k = 0; k < cols; ++k)
 			sum += d (i,k) * y (j,k);
-		retVal (i,j) = sum;
+		this->retVal (i,j) = sum;
 	}
 }
 
@@ -105,7 +105,7 @@ template<class T> void CMatrix<T>::invert ()
 {
 #define FAIL { delete[] data; rows = cols = 0; data = 0; return; }
 
-	assert (rows == cols);
+	this->assert (rows == cols);
 	if (rows != cols) FAIL;
 	CMatrix<T> inv (rows,rows);
 	int i,j,k;
@@ -120,7 +120,7 @@ template<class T> void CMatrix<T>::invert ()
 		if (d(i,i) == 0) {
 			for (j=i+1; j < rows && d(j,i) == 0; ++j);
 			// if you failed here, the matrix can't be inverted!
-			assert (j < rows); 
+			this->assert (j < rows); 
 			if (j == rows) FAIL;
 			// add j-th row to the i-th row
 			for (k=i; k < rows; ++k) 

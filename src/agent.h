@@ -154,7 +154,7 @@ class a_protocol : public agent
    public:
 	a_protocol();
 	virtual ~a_protocol();
-	virtual void disconnect() = NULL;	// destructor, executes delayed. Also cleanup.
+	virtual void disconnect() = 0;	// destructor, executes delayed. Also cleanup.
 };
 
 class a_ttscp : public a_protocol

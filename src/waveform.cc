@@ -380,7 +380,7 @@ wavefm::ioctl_attach()
 		DWORD          dwResult;
 		WAVEFORMATEX   pFormat;
 		if (activebuffie)
-			while (!(wavehdr.dwFlags | WHDR_DONE)) ;  // FIXME: busy waiting
+			while (!(wavehdr.dwFlags & WHDR_DONE)) ;  // FIXME: busy waiting
 		pFormat.wFormatTag = hdr.datform;
 		pFormat.wBitsPerSample = hdr.samplesize;
 		pFormat.nSamplesPerSec = hdr.sf1;

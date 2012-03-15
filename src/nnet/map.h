@@ -9,9 +9,9 @@ template<class T1, class T2> class TMap : public TSet< TPair<T1,T2> > {
 	typedef T1 TFirst;
 	typedef T2 TSecond;
 public:
-	TMap () { d = NULL; capacity = 0; }
+	TMap () { this->d = 0; this->capacity = 0; }
 	T2 &operator [] (const T1 &key);
-	typedef TVector<TPair<T1,T2> >::iterator iterator;
+	typedef typename TVector<TPair<T1,T2> >::iterator iterator;
 	virtual iterator find (const T1& key) const;
 };
 
@@ -20,7 +20,7 @@ public:
 template<class T1,class T2> 
 T2 & TMap<T1,T2>::operator [] (const T1 &key) {
 	iterator found = find (key);
-	if (found != end())
+	if (found != this->end())
 		return found->second();
 	else {
 		TData x;
@@ -30,7 +30,7 @@ T2 & TMap<T1,T2>::operator [] (const T1 &key) {
 }
 
 template<class T1,class T2> 
-TMap<T1,T2>::iterator TMap<T1,T2>::find (const T1 &key) const {
+typename TMap<T1,T2>::iterator TMap<T1,T2>::find (const T1 &key) const {
 	TData x;
 	x.first() = key;
 	return TSet<TData>::find (x);

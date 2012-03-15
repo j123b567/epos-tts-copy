@@ -30,7 +30,7 @@ hsearchtree <void, void> **_hash_stk[_HASH_DEPTH+1];
 hash::hash(const char *filename, const char *dirname, const char *treename,
 		const char *description,
 		int perc_full, int perc_downsize, int perc_upsize,
-		int max_tree_depth, const char * no_data, bool multi_data)
+		int max_tree_depth, bool allow_id, bool multi_data)
 			: hash_table<char, char>(0)
 {
 	text *hashfile;
@@ -74,11 +74,11 @@ hash::hash(const char *filename, const char *dirname, const char *treename,
 	        tmp += strcspn(key, WHITESPACE);
 		if (*tmp) *tmp++ = 0;		//terminate the key and go on
 		value = tmp += strspn(tmp, WHITESPACE);
-		if (!*value) switch ((int)no_data) {
-			case (int)DATA_EQUALS_KEY: value = key; break;
-			case (int)DATA_OBLIGATORY: shriek(811, "%s:%d No value specified",
+		if (!*value) switch (allow_id) {
+			case true: value = key; break;
+			case false: shriek(811, "%s:%d No value specified",
 				hashfile->current_file, hashfile->current_line);
-			default: value = no_data;
+//			default: value = no_data;
 		}
 		else if (!multi_data && tmp[strcspn(tmp,WHITESPACE)]) 
 			shriek(811, "%s:%d Multiple values specified", hashfile->current_file, hashfile->current_line);

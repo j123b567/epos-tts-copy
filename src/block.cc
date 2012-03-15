@@ -17,10 +17,12 @@
  *
  */
  
-#define END_OF_BLOCK  ((rule *)0)
-#define END_OF_CHOICE ((rule *)1)
-#define END_OF_SWITCH ((rule *)2)	   // unit length
-#define END_OF_RULES  ((rule *)3)
+#define END_OF_BLOCK	0
+#define END_OF_CHOICE	1
+#define END_OF_SWITCH	2	   // by unit length
+#define END_OF_RULES	3
+#define LAST_SPECIAL_RULE	END_OF_RULES
+#define ORDINARY_RULE(x) (((unsigned int)(x)) > LAST_SPECIAL_RULE)
 #define MAX_WORDS_PER_LINE 64
 
 #define DOLLAR             '$'             //These symbols are used to represent 
@@ -47,7 +49,7 @@ class block_rule : public rule
 	int current_rule, n_rules;
 
 	void apply_current(unit *root);
-	void load_rules(rule * terminator, text *file, hash *inherited_vars);
+	void load_rules(int terminator, text *file, hash *inherited_vars);
    public:
 	block_rule();
 	~block_rule();
@@ -105,7 +107,7 @@ block_rule::~block_rule()
 }
 
 void
-block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
+block_rule::load_rules(int terminator, text *file, hash *inherited_vars)
 {
 	int l, again;
 	hash *vars = new hash(inherited_vars);
@@ -115,8 +117,8 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 	l = scfg->rules_in_block;
 	rulist = (rule **)xmalloc(sizeof(rule *) * l);
 	n_rules = 0; again = 1;
-	while((rulist[n_rules] = --again ? rulist[n_rules-1]
-					 : next_rule(file, vars, &again)) > END_OF_RULES) {
+	while(ORDINARY_RULE(rulist[n_rules] = --again ? rulist[n_rules-1]
+					 : next_rule(file, vars, &again))) {
 //		rulist[n_rules]->set_dbg_tag(file);
 		if (++n_rules == l) {
 			l+=scfg->rules_in_block;
@@ -124,11 +126,12 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 		}
 	}
 	if (again > 1) diatax("Badly placed count");
-	if (rulist[n_rules] != terminator) switch ((int)rulist[n_rules]) {
-		case (int)END_OF_BLOCK:  diatax("No block to terminate");
-		case (int)END_OF_CHOICE: diatax("No choice to terminate");
-		case (int)END_OF_SWITCH: diatax("No length-based switch to terminate");
-		case (int)END_OF_RULES: 
+	int last_as_special = (int)rulist[n_rules];
+	if (last_as_special != terminator) switch (last_as_special) {
+		case END_OF_BLOCK:  diatax("No block to terminate");
+		case END_OF_CHOICE: diatax("No choice to terminate");
+		case END_OF_SWITCH: diatax("No length-based switch to terminate");
+		case END_OF_RULES: 
 			if (!began_at) break;
 			else shriek(811, "Unterminated block in file %s line %d", began_in, began_at);
 		default: shriek(861, "next_rule() gone mad");
@@ -377,8 +380,8 @@ resolve_vars(char *line, hash *vars, text *file)
 
 /****************************************************************
  next_rule	  converts a string to class rule
-                  Returns: ptr to rule, NULL if end of block,
-                  END_OF_RULES if end of file
+                  Returns: ptr to rule or a small integer
+			(up to LAST_SPECIAL_RULE) typecast to rule*
                   
                   Caution! This function is not really reentrant,
                   as the word buffer is global. This implies we
@@ -402,7 +405,7 @@ parse_rule(text *file, hash *vars, int *count)
 
 	next_line:
 	
-	if(!file->get_line(str)) return END_OF_RULES;
+	if(!file->get_line(str)) return (rule *)END_OF_RULES;
 	
 	D_PRINT(0, "str2rule should parse: %s\n",str);
 	if(!str[strspn(str,WHITESPACE)]) goto next_line;
@@ -479,11 +482,11 @@ parse_rule(text *file, hash *vars, int *count)
 	case OP_NEAR:	 result = new r_near(word[param], file, vars); break;
 	case OP_WITH:	 result = new r_with(word[param], file, vars); break;
 	case OP_BEGIN:	 result = new r_block(file, vars); break;
-	case OP_END:	 return END_OF_BLOCK;
+	case OP_END:	 return (rule *)END_OF_BLOCK;
 	case OP_CHOICE:  result = new r_choice(file, vars); break;
-	case OP_CHOICEND:return END_OF_CHOICE;
+	case OP_CHOICEND:return (rule *)END_OF_CHOICE;
 	case OP_SWITCH:  result = new r_switch(file, vars); break;
-	case OP_SWEND:	 return END_OF_SWITCH;
+	case OP_SWEND:	 return (rule *)END_OF_SWITCH;
 	case OP_NOTHING: result = new r_nothing(); break;
 	case OP_NNET:    result = new r_neural(word[param], vars); break;
 
@@ -523,8 +526,8 @@ next_real_rule(text *file, hash *vars, int *count)
 {
 	try {
 		rule *r = parse_rule(file, vars, count);
-		if (r > END_OF_RULES) return r;
-		if (r < END_OF_RULES) diatax("No rule follows a conditional rule");
+		if (ORDINARY_RULE(r)) return r;
+		if ((int)r != END_OF_RULES) diatax("No rule follows a conditional rule");
 		shriek(811, "No rule follows a conditional rule at the end of %s", file->current_file);
 	} catch (any_exception *e) {
 		if (e->code / 10 != 81) throw e;

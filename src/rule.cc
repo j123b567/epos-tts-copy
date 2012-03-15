@@ -371,8 +371,7 @@ hashing_rule::load_hash()
 	dict = NULL;
 	if (*raw != DQUOT) {
 		dict = new hash(raw, this_lang->hash_dir, scfg->lang_base_dir, "dictionary",
-			scfg->hashes_full, 0, 200, 5,
-			(char *) allow_id, false);
+			scfg->hashes_full, 0, 200, 5, allow_id, false);
 	} else dict = literal_hash(raw);
 #ifdef WANT_REGEX
 	if (use_fastmatch)
@@ -1311,7 +1310,7 @@ r_with::apply(unit *root)
 	if (!dict) {
 		if (*raw == DQUOT) dict = literal_hash(raw);
 		else dict = new hash(raw, this_lang->hash_dir, scfg->lang_base_dir, "dictionary",
-			scfg->hashes_full, 0, 200, 3, DATA_EQUALS_KEY, false);
+			scfg->hashes_full, 0, 200, 3, true, false);
 	}
 	if (!dict) shriek(811, "%s Unterminated argument", debug_tag());	// or out of memory
 

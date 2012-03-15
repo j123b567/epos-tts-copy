@@ -9,7 +9,7 @@ protected:
 	int capacity;
 	T * d;
 public:
-	TVector () { d = NULL; capacity = 0; }
+	TVector () { d = 0; capacity = 0; }
 	TVector(const TVector&x);
 	TVector(int sz);
 	~TVector () { delete[] d; }
@@ -24,8 +24,8 @@ public:
 	typedef viterator<T> iterator;
 	typedef const_viterator<T> const_iterator;
 
-	virtual iterator begin () const		{ if (d) return &*d; else return NULL; }
-	virtual iterator end () const		{ if (d) return d+capacity; else return NULL; }
+	virtual iterator begin () const		{ if (d) return &*d; else return 0; }
+	virtual iterator end () const		{ if (d) return d+capacity; else return 0; }
 
 	int size() const			{ return capacity; }
 	virtual iterator push_back (T x);
@@ -36,7 +36,7 @@ public:
 
 template<class T> void TVector<T>::Realloc (int nsz) {
 	T *newd = new T [nsz];
-	for (int i = 0; i < Min (capacity, nsz); i ++)
+	for (int i = 0; i < Min (this->capacity, nsz); i ++)
 		newd[i] = d[i];
 	delete[] d;
 	d = newd;
@@ -46,10 +46,10 @@ template<class T> void TVector<T>::Realloc (int nsz) {
 template<class T> void TVector<T>::DeleteAll () {
 	delete[] d;
 	capacity = 0;
-	d = NULL;
+	d = 0;
 }
 
-template<class T> TVector<T>::iterator TVector<T>::push_back (T x)
+template<class T> typename TVector<T>::iterator TVector<T>::push_back (T x)
 {
 	Realloc (capacity + 1);
 	d[capacity-1] = x;

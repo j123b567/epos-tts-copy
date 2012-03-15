@@ -29,10 +29,12 @@
 
 class parser
 {
+	unsigned char *xml;
+	unsigned char *xmllen;
 	unsigned char *text;	// allocated dynamically
+	unsigned int txtlen;	// length of text (not counting \0)
 	unsigned char *current;	// the byte to be parsed next
 	unsigned char token;	// the current token
-	unsigned int txtlen;	// length of text (not counting \0)
 
 	// to be initialized in the constructor:
 	static unsigned char transl_input[PARSER_MODES][CHARSET_SIZE];

@@ -18,26 +18,26 @@ private:
 
 #define SET(x,y) typedef TSet<x> y;
 
-template<class T> TSet<T>::iterator TSet<T>::insert (const T &x)
+template<class T> typename TSet<T>::iterator TSet<T>::insert (const T &x)
 {
-	if (capacity == 0) Realloc (1);
-	else Realloc (capacity + 1);
+	if (this->capacity == 0) this->Realloc (1);
+	else this->Realloc (this->capacity + 1);
 	int i;
-	for (i=0; i < capacity-1 && d[i] < x; ++i); 
+	for (i=0; i < this->capacity-1 && this->d[i] < x; ++i); 
 	int i2;
-	for (i2=capacity-1; i2 > i; --i2)
-		d[i2] = d[i2-1];
-	d[i] = x;
+	for (i2=this->capacity-1; i2 > i; --i2)
+		this->d[i2] = this->d[i2-1];
+	this->d[i] = x;
 
-	return d+i;
+	return this->d+i;
 }
 
-template<class T> TSet<T>::iterator TSet<T>::find(const T& x) const
+template<class T> typename TSet<T>::iterator TSet<T>::find(const T& x) const
 {
 	viterator<T> iter;
-	for (iter = begin(); iter != end() && x > *iter; ++iter);
-	if (iter == end()) return end();
-	if (*iter > x) return end();
+	for (iter = this->begin(); iter != this->end() && x > *iter; ++iter);
+	if (iter == this->end()) return this->end();
+	if (*iter > x) return this->end();
 	else return iter;		
 }
 

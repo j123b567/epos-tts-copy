@@ -30,9 +30,6 @@
 
 #define _HASH_DEPTH	       64   //allows up to cca ten trillion elements
 
-#define DATA_OBLIGATORY	     NULL   //parametr no_data to the out-of-file constructor
-#define DATA_EQUALS_KEY	(char *)1   //ditto, add(key, key) if no data specified
-
 #define key_t hash_key_t
 #define data_t hash_data_t
 
@@ -104,9 +101,9 @@ class hash: public hash_table<char, char>
 		int perc_downsize,	// if under that percentage full, call rehash()
 		int perc_upsize,	// if over that percentage full, rehash()
 		int max_tree_depth,	// if an AVL tree reaches this height, rehash()
-		const char * no_data,	// DATA_EQUALS_KEY, if we accept single word input
+		bool allow_id,		// true, if we accept single word input
 					// 	as both key and data
-					// DATA_OBLIGATORY, if we reject single word input
+					// false, if we reject single word input
 					// anything else - default data for this case
 		bool multi_data);	// true, if the data may consist of multiple words
 	void 	add_int(const char *key, 

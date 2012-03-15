@@ -91,7 +91,7 @@ booltab<T>::~booltab()
 	free(t);
 }
 
-template booltab<wchar>;
+template class booltab<wchar>;
 
 
 
@@ -160,4 +160,6 @@ function<T>::~function()
 	free(t);
 }
 
-template function<wchar>;
+template class function<wchar>;
+
+

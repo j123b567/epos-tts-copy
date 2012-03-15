@@ -15,7 +15,7 @@ template<class T> class const_viterator {
 private:
 	T *d;
 public:
-	const_viterator ()					{ d = NULL; }
+	const_viterator ()					{ d = 0; }
 	const_viterator (const const_viterator&src)		{ d = src.d; }
 	const_viterator &operator =(const const_viterator&src)	{ d = src.d; return *this; }
 	const_viterator (T *src)				{ d = src; }
@@ -30,14 +30,14 @@ public:
 	const_viterator operator - (int i) const		{ return d-i; }
 	bool operator == (const const_viterator&y) const	{ return d == y.d; }
 	bool operator != (const const_viterator&y) const	{ return d != y.d; }
-	bool valid () const				{ return d != NULL; }
+	bool valid () const				{ return d != 0; }
 };
 
 template<class T> class viterator {
 private:
 	T *d;
 public:
-	viterator ()					{ d = NULL; }
+	viterator ()					{ d = 0; }
 	viterator (const viterator&src)			{ d = src.d; }
 	viterator &operator =(const viterator&src)	{ d = src.d; return *this; }
 	viterator (T *src)				{ d = src; }
@@ -55,7 +55,7 @@ public:
 	viterator operator - (int i) const		{ return d-i; }
 	bool operator == (const viterator&y) const	{ return d == y.d; }
 	bool operator != (const viterator&y) const	{ return d != y.d; }
-	bool valid () const				{ return d != NULL; }
+	bool valid () const				{ return d != 0; }
 };
  
 #endif

@@ -1017,7 +1017,7 @@ in this way much more often than explicitly indicated here.     ]
 			(dependence on label_sseg)
 		- fixed the unit::write_segs() pointer cache
 		- terminology: fixed arch/win/epos.ini (play_segments option), say, mh, doc, etc.
-		- a minor fix in wavefm::ioctl_attach, MMSYSTEM code
+		- a minor fix in wavefm::ioctl_attach, mmsystem code
 		- made wavefm::attach (and also buffer_size handling) more logical
 		- fixed waveform headers (ulaw format, alignment and other fields)
 		- optimized away wavefm::samp_size_bytes
@@ -1415,4 +1415,8 @@ in this way much more often than explicitly indicated here.     ]
 	- renamed configure.in to configure.ac
 	- configuration::get__sd_in/out() sockified access functions
 
+2.5.24 from 2.5.23	5.9.04
+	- reorganized struct unit data items to make the struct smaller
+	- some fixes and workarounds for g++ 3.4 (Andreas Jochens)
+	- mmsystem fix - loop on an active buffer
 

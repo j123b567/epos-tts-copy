@@ -16,6 +16,7 @@
 #include "../dict/string.h"
 #include "../dict/xml.h" */
 #include "utils.h"
+#include "xml.h"
 
 // defined in xmltempl.cpp - prints info about all structures described in xmltempl.h
 CRox *xmltempl ();
