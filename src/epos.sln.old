@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "epos", "epos.vcproj", "{49D123DC-AB4A-4D80-AB58-F3FC26CCC38D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "eposm", "eposm.vcproj", "{78E53DD0-653C-4822-B448-DBBF9251CE92}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "instserv", "instserv.vcproj", "{F27D3771-198C-447F-9F8C-0DDD43CBDCA6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2501A509-C5B7-47A9-9957-C30CC20F490B} = {2501A509-C5B7-47A9-9957-C30CC20F490B}
+		{49D123DC-AB4A-4D80-AB58-F3FC26CCC38D} = {49D123DC-AB4A-4D80-AB58-F3FC26CCC38D}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libetdp", "libetdp.vcproj", "{1BA51894-5CE0-4B1F-9C19-DAA6787CEDFE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "say", "say.vcproj", "{2501A509-C5B7-47A9-9957-C30CC20F490B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{49D123DC-AB4A-4D80-AB58-F3FC26CCC38D} = {49D123DC-AB4A-4D80-AB58-F3FC26CCC38D}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49D123DC-AB4A-4D80-AB58-F3FC26CCC38D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{49D123DC-AB4A-4D80-AB58-F3FC26CCC38D}.Debug|Win32.Build.0 = Debug|Win32
+		{49D123DC-AB4A-4D80-AB58-F3FC26CCC38D}.Release|Win32.ActiveCfg = Release|Win32
+		{49D123DC-AB4A-4D80-AB58-F3FC26CCC38D}.Release|Win32.Build.0 = Release|Win32
+		{78E53DD0-653C-4822-B448-DBBF9251CE92}.Debug|Win32.ActiveCfg = Debug|Win32
+		{78E53DD0-653C-4822-B448-DBBF9251CE92}.Debug|Win32.Build.0 = Debug|Win32
+		{78E53DD0-653C-4822-B448-DBBF9251CE92}.Release|Win32.ActiveCfg = Release|Win32
+		{78E53DD0-653C-4822-B448-DBBF9251CE92}.Release|Win32.Build.0 = Release|Win32
+		{F27D3771-198C-447F-9F8C-0DDD43CBDCA6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F27D3771-198C-447F-9F8C-0DDD43CBDCA6}.Debug|Win32.Build.0 = Debug|Win32
+		{F27D3771-198C-447F-9F8C-0DDD43CBDCA6}.Release|Win32.ActiveCfg = Release|Win32
+		{F27D3771-198C-447F-9F8C-0DDD43CBDCA6}.Release|Win32.Build.0 = Release|Win32
+		{1BA51894-5CE0-4B1F-9C19-DAA6787CEDFE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1BA51894-5CE0-4B1F-9C19-DAA6787CEDFE}.Debug|Win32.Build.0 = Debug|Win32
+		{1BA51894-5CE0-4B1F-9C19-DAA6787CEDFE}.Release|Win32.ActiveCfg = Release|Win32
+		{1BA51894-5CE0-4B1F-9C19-DAA6787CEDFE}.Release|Win32.Build.0 = Release|Win32
+		{2501A509-C5B7-47A9-9957-C30CC20F490B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2501A509-C5B7-47A9-9957-C30CC20F490B}.Debug|Win32.Build.0 = Debug|Win32
+		{2501A509-C5B7-47A9-9957-C30CC20F490B}.Release|Win32.ActiveCfg = Release|Win32
+		{2501A509-C5B7-47A9-9957-C30CC20F490B}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

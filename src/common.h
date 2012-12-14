@@ -71,11 +71,17 @@
 #include "exc.h"
 
 struct segment {	/* This structure is part of an obsolete interface. */
-	int16_t code;
+	short code;
 	char nothing;
 	char ll;
 	int f,e,t;
+	char nm[3];	//chaloupka, segment name needed for TDP-MBROLA and other
 };
 
+/* Define if you need the SAPI support.  */
+//chaloupka
+#define SAPI_SPRT 1
+#define CA1A 402
+//chaloupka
 
 #endif   //#ifndef EPOS_COMMON_H

@@ -240,5 +240,9 @@ void end_of_eternity();
 #define END_OF_ETERNITY  /**/
 #endif      // ifdef WANT_DMALLOC
 
+//chaloupka
+#ifdef SAPI_SPRT
+	#include "sapi.h"
+#endif
 
 #endif      // ifndef EPOS_INTERF_H

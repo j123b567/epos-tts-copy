@@ -21,6 +21,8 @@ class synth;
 enum SYNTH_TYPE {
 	S_NONE = 0,
 	S_TCP = 1,
+	S_TDP_MBR = 2,
+	S_LPC_FEST = 3,
 	S_LPC_FLOAT = 4,
 	S_LPC_INT = 5,
 	S_LPC_VQ = 6,
@@ -31,7 +33,7 @@ enum SYNTH_TYPE {
 	S_MBROLA = 12
 };
 
-#define STstr "none:internet:::lpc-float:lpc-int:lpc-vq:fd::tdp:::mbrola:"
+#define STstr "none:internet:tdp-mbr:lpc-fest:lpc-float:lpc-int:lpc-vq:fd::tdp:::mbrola:"
 #define ST_MAX (S_MBROLA+1)
 
 enum CHANNEL_TYPE {CT_MONO, CT_LEFT, CT_RIGHT, CT_BOTH};

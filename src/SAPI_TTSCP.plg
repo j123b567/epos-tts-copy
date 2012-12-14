@@ -1,0 +1,51 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: say - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP102E.tmp" with contents
+[
+wsock32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib /nologo /subsystem:console /incremental:yes /pdb:"say___Win32_Debug/say.pdb" /debug /machine:I386 /out:"say_Debug/say.exe" /pdbtype:sept 
+".\say___Win32_Debug\say.obj"
+".\say___Win32_Debug\startsrv.obj"
+]
+Creating command line "link.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP102E.tmp"
+<h3>Output Window</h3>
+Linking...
+<h3>
+--------------------Configuration: instserv - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+<h3>
+--------------------Configuration: SAPI_TTSCP - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP1030.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/SAPI_TTSCP.pdb" /debug /machine:I386 /out:"Debug/SAPI_TTSCP.exe" /pdbtype:sept 
+".\Debug\sapi_ttscp.obj"
+]
+Creating command line "link.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP1030.tmp"
+<h3>Output Window</h3>
+Linking...
+sapi_ttscp.obj : error LNK2001: unresolved external symbol __imp__WSAGetLastError@0
+sapi_ttscp.obj : error LNK2001: unresolved external symbol __imp__recv@16
+sapi_ttscp.obj : error LNK2001: unresolved external symbol __imp__send@16
+sapi_ttscp.obj : error LNK2001: unresolved external symbol __imp__gethostbyname@4
+sapi_ttscp.obj : error LNK2001: unresolved external symbol __imp__connect@12
+sapi_ttscp.obj : error LNK2001: unresolved external symbol __imp__htons@4
+sapi_ttscp.obj : error LNK2001: unresolved external symbol __imp__socket@12
+sapi_ttscp.obj : error LNK2001: unresolved external symbol "bool __cdecl start_service(void)" (?start_service@@YA_NXZ)
+Debug/SAPI_TTSCP.exe : fatal error LNK1120: 8 unresolved externals
+Error executing link.exe.
+
+
+
+<h3>Results</h3>
+SAPI_TTSCP.exe - 9 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

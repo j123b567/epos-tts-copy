@@ -24,7 +24,10 @@
 #define LPC_PROS_ORDER 4
 #define MAX_OFILT_ORDER 9
 
-const double pii = 3.141592653589793;
+#ifndef pii
+#define pii 3.141592653589793
+#endif
+//const double pii = 3.141592653589793;
 
 int hamkoe(int winlen, double *data);
 int median(int lold, int lact, int lnext, int ibonus);
@@ -57,7 +60,7 @@ class tdpsyn : public synth
    public:
 	tdpsyn(voice *);
 	virtual ~tdpsyn(void);
-	void synseg(voice *v, segment d, wavefm *w);
+	void	synseg(voice *v, segment d, wavefm *w);
 };
 
 #endif		// EPOS_TDP_H

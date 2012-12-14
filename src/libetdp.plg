@@ -1,0 +1,42 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: libetdp - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP74.tmp" with contents
+[
+/nologo /MLd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR"libetdp___Win32_Debug/" /Fp"libetdp___Win32_Debug/libetdp.pch" /YX /Fo"libetdp___Win32_Debug/" /Fd"libetdp___Win32_Debug/" /FD /GZ /c 
+"D:\work\epos\epos-2.5.37.Lib\src\libtdp.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP74.tmp" 
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP77.tmp" with contents
+[
+wsock32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib /nologo /subsystem:console /incremental:yes /pdb:"libetdp___Win32_Debug/libetdp.pdb" /debug /machine:I386 /out:"libetdp___Win32_Debug/libetdp.exe" /pdbtype:sept 
+".\libetdp___Win32_Debug\libtdp.obj"
+".\libetdp___Win32_Debug\startsrv.obj"
+]
+Creating command line "link.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP77.tmp"
+<h3>Output Window</h3>
+Compiling...
+libtdp.cpp
+d:\work\epos\epos-2.5.37.lib\src\libtdp.cpp(145) : warning C4244: 'return' : conversion from 'double' to 'int', possible loss of data
+d:\work\epos\epos-2.5.37.lib\src\libtdp.cpp(196) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+d:\work\epos\epos-2.5.37.lib\src\libtdp.cpp(211) : warning C4101: 'hold' : unreferenced local variable
+d:\work\epos\epos-2.5.37.lib\src\libtdp.cpp(353) : warning C4018: '>' : signed/unsigned mismatch
+d:\work\epos\epos-2.5.37.lib\src\libtdp.cpp(402) : warning C4101: 'file_f0' : unreferenced local variable
+d:\work\epos\epos-2.5.37.lib\src\libtdp.cpp(402) : warning C4101: 'file_txt' : unreferenced local variable
+Linking...
+Creating command line "bscmake.exe /nologo /o"libetdp___Win32_Debug/libetdp.bsc"  ".\libetdp___Win32_Debug\libtdp.sbr" ".\libetdp___Win32_Debug\startsrv.sbr""
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+libetdp.exe - 0 error(s), 6 warning(s)
+</pre>
+</body>
+</html>

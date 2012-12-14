@@ -1,0 +1,251 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: epos - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP23C.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "_MT" /D "_DEBUG" /D "WIN32" /D "_MBCS" /FR"Debug/" /Fp"Debug/epos.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"F:\work\epos\epos-2.5.37.Lib\src\agent.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\clambr.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\client.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\daemon.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\encoding.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\enumstring.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\function.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\hash.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\hashd.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\hashi.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\interf.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\lpcsyn.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\map.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\matrix.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\mbrsyn.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\neural.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\neural_parse.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nonblock.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\options.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\parser.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\perceptron.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\percinit.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\percstruct.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\rule.cpp"
+"F:\work\epos\epos-2.5.37.Lib\libs\regex\rx.c"
+"F:\work\epos\epos-2.5.37.Lib\src\sapi.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\service.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\set.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\stream.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\synth.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\tcpsyn.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\tdpsyn.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\text.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\traindata.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\ttscp.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\unit.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\utils.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\voice.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\waveform.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\xml.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\xml_parse.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\xmltempl.cpp"
+"F:\work\epos\epos-2.5.37.Lib\src\nnet\xmlutils.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP23C.tmp" 
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP23D.tmp" with contents
+[
+wsock32.lib winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/epos.pdb" /debug /machine:I386 /nodefaultlib:"libcd" /out:"Debug/epos.exe" /pdbtype:sept 
+".\Debug\agent.obj"
+".\Debug\clambr.obj"
+".\Debug\client.obj"
+".\Debug\daemon.obj"
+".\Debug\encoding.obj"
+".\Debug\enumstring.obj"
+".\Debug\function.obj"
+".\Debug\hash.obj"
+".\Debug\hashd.obj"
+".\Debug\hashi.obj"
+".\Debug\interf.obj"
+".\Debug\lpcfest.obj"
+".\Debug\lpcsyn.obj"
+".\Debug\map.obj"
+".\Debug\matrix.obj"
+".\Debug\mbrsyn.obj"
+".\Debug\neural.obj"
+".\Debug\neural_parse.obj"
+".\Debug\nonblock.obj"
+".\Debug\options.obj"
+".\Debug\parser.obj"
+".\Debug\perceptron.obj"
+".\Debug\percinit.obj"
+".\Debug\percstruct.obj"
+".\Debug\rule.obj"
+".\Debug\rx.obj"
+".\Debug\sapi.obj"
+".\Debug\service.obj"
+".\Debug\set.obj"
+".\Debug\stream.obj"
+".\Debug\synth.obj"
+".\Debug\tcpsyn.obj"
+".\Debug\tdpmbr.obj"
+".\Debug\tdpsyn.obj"
+".\Debug\text.obj"
+".\Debug\traindata.obj"
+".\Debug\ttscp.obj"
+".\Debug\unit.obj"
+".\Debug\utils.obj"
+".\Debug\voice.obj"
+".\Debug\waveform.obj"
+".\Debug\xml.obj"
+".\Debug\xml_parse.obj"
+".\Debug\xmltempl.obj"
+".\Debug\xmlutils.obj"
+]
+Creating command line "link.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP23D.tmp"
+<h3>Output Window</h3>
+Compiling...
+agent.cpp
+f:\work\epos\epos-2.5.37.lib\src\agent.cpp(384) : warning C4101: 'tmp' : unreferenced local variable
+clambr.cpp
+f:\work\epos\epos-2.5.37.lib\src\clambr.cpp(54) : warning C4244: '=' : conversion from 'double' to 'short', possible loss of data
+f:\work\epos\epos-2.5.37.lib\src\clambr.cpp(103) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+f:\work\epos\epos-2.5.37.lib\src\clambr.cpp(104) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+f:\work\epos\epos-2.5.37.lib\src\clambr.cpp(145) : warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+f:\work\epos\epos-2.5.37.lib\src\clambr.cpp(148) : warning C4305: '*=' : truncation from 'const double' to 'float'
+f:\work\epos\epos-2.5.37.lib\src\clambr.cpp(148) : warning C4305: '*=' : truncation from 'const double' to 'float'
+f:\work\epos\epos-2.5.37.lib\src\clambr.cpp(149) : warning C4305: '*=' : truncation from 'const double' to 'float'
+f:\work\epos\epos-2.5.37.lib\src\clambr.cpp(149) : warning C4305: '*=' : truncation from 'const double' to 'float'
+f:\work\epos\epos-2.5.37.lib\src\clambr.cpp(140) : warning C4101: 'j' : unreferenced local variable
+client.cpp
+daemon.cpp
+encoding.cpp
+f:\work\epos\epos-2.5.37.lib\src\encoding.cpp(458) : warning C4018: '<' : signed/unsigned mismatch
+enumstring.cpp
+f:\work\epos\epos-2.5.37.lib\src\encoding.cpp(395) : warning C4715: 'load_named_sampa' : not all control paths return a value
+f:\work\epos\epos-2.5.37.lib\src\nnet\enumstring.cpp(55) : warning C4660: template-class specialization 'CBasicString<char>' is already instantiated
+function.cpp
+hash.cpp
+hashd.cpp
+hashi.cpp
+interf.cpp
+lpcfest.cpp
+f:\work\epos\epos-2.5.37.lib\src\lpcfest.h(56) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(159) : warning C4244: '=' : conversion from 'double' to 'short', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(261) : warning C4244: '/=' : conversion from 'const double' to 'short', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(262) : warning C4244: '*=' : conversion from 'const double' to 'short', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(283) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(284) : warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(293) : warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(297) : warning C4244: '*=' : conversion from 'double' to 'float', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(307) : warning C4244: '*=' : conversion from 'double' to 'float', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(319) : warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(357) : warning C4244: 'argument' : conversion from 'double' to 'const float', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(234) : warning C4101: 'win' : unreferenced local variable
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(231) : warning C4101: 'chbuf' : unreferenced local variable
+F:\work\epos\epos-2.5.37.Lib\src\lpcfest.cpp(388) : warning C4101: 'buff' : unreferenced local variable
+lpcsyn.cpp
+F:\work\epos\epos-2.5.37.Lib\src\lpcsyn.cpp(275) : warning C4244: 'argument' : conversion from 'float' to 'unsigned int', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\lpcsyn.cpp(277) : warning C4244: 'argument' : conversion from 'float' to 'unsigned int', possible loss of data
+map.cpp
+f:\work\epos\epos-2.5.37.lib\src\endian_utils.h(104) : warning C4715: 'from_le32s' : not all control paths return a value
+f:\work\epos\epos-2.5.37.lib\src\endian_utils.h(106) : warning C4715: 'from_le32u' : not all control paths return a value
+f:\work\epos\epos-2.5.37.lib\src\endian_utils.h(103) : warning C4715: 'from_le16s' : not all control paths return a value
+matrix.cpp
+mbrsyn.cpp
+neural.cpp
+f:\work\epos\epos-2.5.37.lib\src\nnet\neural.cpp(318) : warning C4305: 'argument' : truncation from 'const double' to 'float'
+neural_parse.cpp
+nonblock.cpp
+options.cpp
+parser.cpp
+perceptron.cpp
+percinit.cpp
+percstruct.cpp
+rule.cpp
+rx.c
+sapi.cpp
+f:\work\epos\epos-2.5.37.lib\src\sapi.cpp(137) : warning C4018: '<' : signed/unsigned mismatch
+f:\work\epos\epos-2.5.37.lib\src\sapi.cpp(108) : warning C4101: 'SubSubKey' : unreferenced local variable
+service.cpp
+set.cpp
+stream.cpp
+synth.cpp
+F:\work\epos\epos-2.5.37.Lib\src\synth.cpp(123) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+tcpsyn.cpp
+tdpmbr.cpp
+F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp(129) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp(134) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp(135) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp(150) : warning C4244: '+=' : conversion from 'double' to 'short', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp(165) : warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp(206) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp(226) : warning C4244: '=' : conversion from 'double' to 'short', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp(266) : warning C4244: '=' : conversion from 'double' to 'short', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp(268) : warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp(273) : warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp(284) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\tdpmbr.cpp(379) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+tdpsyn.cpp
+f:\work\epos\epos-2.5.37.lib\src\endian_utils.h(103) : warning C4715: 'from_le16s' : not all control paths return a value
+f:\work\epos\epos-2.5.37.lib\src\endian_utils.h(104) : warning C4715: 'from_le32s' : not all control paths return a value
+f:\work\epos\epos-2.5.37.lib\src\endian_utils.h(106) : warning C4715: 'from_le32u' : not all control paths return a value
+F:\work\epos\epos-2.5.37.Lib\src\tdpsyn.cpp(394) : warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
+text.cpp
+F:\work\epos\epos-2.5.37.Lib\src\tdpsyn.cpp(275) : warning C4700: local variable 'diflen' used without having been initialized
+f:\work\epos\epos-2.5.37.lib\src\endian_utils.h(103) : warning C4715: 'from_le16s' : not all control paths return a value
+f:\work\epos\epos-2.5.37.lib\src\endian_utils.h(104) : warning C4715: 'from_le32s' : not all control paths return a value
+f:\work\epos\epos-2.5.37.lib\src\endian_utils.h(106) : warning C4715: 'from_le32u' : not all control paths return a value
+traindata.cpp
+ttscp.cpp
+unit.cpp
+f:\work\epos\epos-2.5.37.lib\src\marker.cc(132) : warning C4305: '=' : truncation from 'const double' to 'float'
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(191) : warning C4244: 'argument' : conversion from 'short' to 'unsigned char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(322) : warning C4244: 'argument' : conversion from 'short' to 'char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(328) : warning C4244: 'argument' : conversion from 'short' to 'char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(356) : warning C4244: 'argument' : conversion from 'short' to 'char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(395) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(395) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(409) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(409) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(718) : warning C4244: 'initializing' : conversion from 'short' to 'char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(783) : warning C4244: '=' : conversion from 'short' to 'char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(955) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1201) : warning C4244: '=' : conversion from 'short' to 'char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1214) : warning C4244: '=' : conversion from 'short' to 'char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1216) : warning C4244: '=' : conversion from 'short' to 'char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1218) : warning C4305: '=' : truncation from 'const double' to 'float'
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1222) : warning C4305: '=' : truncation from 'const double' to 'float'
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1228) : warning C4244: '=' : conversion from 'short' to 'char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1320) : warning C4244: '+=' : conversion from 'double' to 'float', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1348) : warning C4305: 'argument' : truncation from 'const double' to 'float'
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1350) : warning C4305: 'argument' : truncation from 'const double' to 'float'
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1353) : warning C4305: 'argument' : truncation from 'const double' to 'float'
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1494) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1498) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1658) : warning C4244: 'return' : conversion from 'float' to 'int', possible loss of data
+F:\work\epos\epos-2.5.37.Lib\src\unit.cpp(1782) : warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+utils.cpp
+voice.cpp
+f:\work\epos\epos-2.5.37.lib\src\lpcfest.h(56) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+waveform.cpp
+xml.cpp
+f:\work\epos\epos-2.5.37.lib\src\endian_utils.h(104) : warning C4715: 'from_le32s' : not all control paths return a value
+f:\work\epos\epos-2.5.37.lib\src\endian_utils.h(109) : warning C4715: 'to_le32s' : not all control paths return a value
+f:\work\epos\epos-2.5.37.lib\src\endian_utils.h(108) : warning C4715: 'to_le16s' : not all control paths return a value
+xml_parse.cpp
+xml_parse.yy(150) : warning C4018: '>=' : signed/unsigned mismatch
+xmltempl.cpp
+xmlutils.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+epos.exe - 0 error(s), 87 warning(s)
+</pre>
+</body>
+</html>

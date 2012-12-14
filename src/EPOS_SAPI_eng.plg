@@ -1,0 +1,48 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: EPOS_SAPI_eng - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP9D3.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /ZI /Od /I "sapi\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "_ATL_STATIC_REGISTRY" /FR"SAPI_Debug/" /Fp"SAPI_Debug/EPOS_SAPI_eng.pch" /Yu"stdafx.h" /Fo"SAPI_Debug/" /Fd"SAPI_Debug/" /FD /GZ /c 
+"D:\work\epos\epos-2.5.37.S\src\TTS_Engine.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP9D3.tmp" 
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP9D4.tmp" with contents
+[
+kernel32.lib advapi32.lib ole32.lib ws2_32.lib /nologo /subsystem:windows /dll /incremental:yes /pdb:"SAPI_Debug/EPOS_SAPI_eng.pdb" /map:"SAPI_Debug/EPOS_SAPI_eng.map" /debug /machine:I386 /def:".\EPOS_SAPI_eng.def" /out:"SAPI_Debug/EPOS_SAPI_eng.dll" /implib:"SAPI_Debug/EPOS_SAPI_eng.lib" /pdbtype:sept /libpath:"sapi/lib/i386" 
+".\SAPI_Debug\EPOS_SAPI_eng.obj"
+".\SAPI_Debug\StdAfx.obj"
+".\SAPI_Debug\TTS_Engine.obj"
+".\SAPI_Debug\EPOS_SAPI_eng.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP9D4.tmp"
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP9D5.bat" with contents
+[
+@echo off
+regsvr32 /s /c ".\SAPI_Debug\EPOS_SAPI_eng.dll"
+echo regsvr32 exec. time > ".\SAPI_Debug\regsvr32.trg"
+]
+Creating command line "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP9D5.bat"
+Compiling...
+TTS_Engine.cpp
+D:\work\epos\epos-2.5.37.S\src\TTS_Engine.cpp(42) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+D:\work\epos\epos-2.5.37.S\src\TTS_Engine.cpp(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+D:\work\epos\epos-2.5.37.S\src\TTS_Engine.cpp(75) : warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+D:\work\epos\epos-2.5.37.S\src\TTS_Engine.cpp(479) : warning C4244: '=' : conversion from 'unsigned __int64' to 'int', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\TTS_Engine.cpp(483) : warning C4244: 'argument' : conversion from 'unsigned __int64' to 'unsigned long', possible loss of data
+Linking...
+<h3>Output Window</h3>
+Performing registration
+
+
+
+<h3>Results</h3>
+EPOS_SAPI_eng.dll - 0 error(s), 5 warning(s)
+</pre>
+</body>
+</html>

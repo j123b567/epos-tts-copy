@@ -1,0 +1,311 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: epos - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP28B.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "_MT" /D "_DEBUG" /D "WIN32" /D "_MBCS" /FR"Debug/" /Fp"Debug/epos.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"D:\work\epos\epos-2.5.37.S\src\agent.cpp"
+"D:\work\epos\epos-2.5.37.S\src\client.cpp"
+"D:\work\epos\epos-2.5.37.S\src\daemon.cpp"
+"D:\work\epos\epos-2.5.37.S\src\encoding.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\enumstring.cpp"
+"D:\work\epos\epos-2.5.37.S\src\function.cpp"
+"D:\work\epos\epos-2.5.37.S\src\hash.cpp"
+"D:\work\epos\epos-2.5.37.S\src\hashd.cpp"
+"D:\work\epos\epos-2.5.37.S\src\hashi.cpp"
+"D:\work\epos\epos-2.5.37.S\src\interf.cpp"
+"D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp"
+"D:\work\epos\epos-2.5.37.S\src\lpcsyn.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\map.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\matrix.cpp"
+"D:\work\epos\epos-2.5.37.S\src\mbrsyn.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\neural.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\neural_parse.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nonblock.cpp"
+"D:\work\epos\epos-2.5.37.S\src\options.cpp"
+"D:\work\epos\epos-2.5.37.S\src\parser.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\perceptron.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\percinit.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\percstruct.cpp"
+"D:\work\epos\epos-2.5.37.S\src\rule.cpp"
+"D:\work\epos\epos-2.5.37.S\libs\regex\rx.c"
+"D:\work\epos\epos-2.5.37.S\src\service.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\set.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\stream.cpp"
+"D:\work\epos\epos-2.5.37.S\src\synth.cpp"
+"D:\work\epos\epos-2.5.37.S\src\tcpsyn.cpp"
+"D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp"
+"D:\work\epos\epos-2.5.37.S\src\tdpsyn.cpp"
+"D:\work\epos\epos-2.5.37.S\src\text.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\traindata.cpp"
+"D:\work\epos\epos-2.5.37.S\src\ttscp.cpp"
+"D:\work\epos\epos-2.5.37.S\src\unit.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\utils.cpp"
+"D:\work\epos\epos-2.5.37.S\src\voice.cpp"
+"D:\work\epos\epos-2.5.37.S\src\waveform.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\xml.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\xml_parse.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\xmltempl.cpp"
+"D:\work\epos\epos-2.5.37.S\src\nnet\xmlutils.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP28B.tmp" 
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP28C.tmp" with contents
+[
+wsock32.lib winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/epos.pdb" /debug /machine:I386 /nodefaultlib:"libcd" /out:"Debug/epos.exe" /pdbtype:sept 
+".\Debug\agent.obj"
+".\Debug\client.obj"
+".\Debug\daemon.obj"
+".\Debug\encoding.obj"
+".\Debug\enumstring.obj"
+".\Debug\function.obj"
+".\Debug\hash.obj"
+".\Debug\hashd.obj"
+".\Debug\hashi.obj"
+".\Debug\interf.obj"
+".\Debug\lpcfest.obj"
+".\Debug\lpcsyn.obj"
+".\Debug\map.obj"
+".\Debug\matrix.obj"
+".\Debug\mbrsyn.obj"
+".\Debug\neural.obj"
+".\Debug\neural_parse.obj"
+".\Debug\nonblock.obj"
+".\Debug\options.obj"
+".\Debug\parser.obj"
+".\Debug\perceptron.obj"
+".\Debug\percinit.obj"
+".\Debug\percstruct.obj"
+".\Debug\rule.obj"
+".\Debug\rx.obj"
+".\Debug\service.obj"
+".\Debug\set.obj"
+".\Debug\stream.obj"
+".\Debug\synth.obj"
+".\Debug\tcpsyn.obj"
+".\Debug\tdpmbr.obj"
+".\Debug\tdpsyn.obj"
+".\Debug\text.obj"
+".\Debug\traindata.obj"
+".\Debug\ttscp.obj"
+".\Debug\unit.obj"
+".\Debug\utils.obj"
+".\Debug\voice.obj"
+".\Debug\waveform.obj"
+".\Debug\xml.obj"
+".\Debug\xml_parse.obj"
+".\Debug\xmltempl.obj"
+".\Debug\xmlutils.obj"
+]
+Creating command line "link.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP28C.tmp"
+<h3>Output Window</h3>
+Compiling...
+agent.cpp
+d:\work\epos\epos-2.5.37.s\src\agent.cpp(432) : warning C4101: 'f_betty' : unreferenced local variable
+client.cpp
+daemon.cpp
+encoding.cpp
+d:\work\epos\epos-2.5.37.s\src\encoding.cpp(458) : warning C4018: '<' : signed/unsigned mismatch
+enumstring.cpp
+d:\work\epos\epos-2.5.37.s\src\encoding.cpp(395) : warning C4715: 'load_named_sampa' : not all control paths return a value
+d:\work\epos\epos-2.5.37.s\src\nnet\enumstring.cpp(55) : warning C4660: template-class specialization 'CBasicString<char>' is already instantiated
+function.cpp
+hash.cpp
+hashd.cpp
+hashi.cpp
+interf.cpp
+D:\work\epos\epos-2.5.37.S\src\interf.cpp(691) : warning C4067: unexpected tokens following preprocessor directive - expected a newline
+lpcfest.cpp
+d:\work\epos\epos-2.5.37.s\src\lpcfest.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(159) : warning C4244: '=' : conversion from 'double' to 'short', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(261) : warning C4244: '/=' : conversion from 'const double' to 'short', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(262) : warning C4244: '*=' : conversion from 'const double' to 'short', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(283) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(284) : warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(293) : warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(297) : warning C4244: '*=' : conversion from 'double' to 'float', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(307) : warning C4244: '*=' : conversion from 'double' to 'float', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(319) : warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(357) : warning C4244: 'argument' : conversion from 'double' to 'const float', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(234) : warning C4101: 'win' : unreferenced local variable
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(231) : warning C4101: 'chbuf' : unreferenced local variable
+D:\work\epos\epos-2.5.37.S\src\lpcfest.cpp(388) : warning C4101: 'buff' : unreferenced local variable
+lpcsyn.cpp
+D:\work\epos\epos-2.5.37.S\src\lpcsyn.cpp(275) : warning C4244: 'argument' : conversion from 'float' to 'unsigned int', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\lpcsyn.cpp(277) : warning C4244: 'argument' : conversion from 'float' to 'unsigned int', possible loss of data
+map.cpp
+d:\work\epos\epos-2.5.37.s\src\endian_utils.h(104) : warning C4715: 'from_le32s' : not all control paths return a value
+d:\work\epos\epos-2.5.37.s\src\endian_utils.h(106) : warning C4715: 'from_le32u' : not all control paths return a value
+d:\work\epos\epos-2.5.37.s\src\endian_utils.h(103) : warning C4715: 'from_le16s' : not all control paths return a value
+matrix.cpp
+mbrsyn.cpp
+neural.cpp
+d:\work\epos\epos-2.5.37.s\src\nnet\neural.cpp(318) : warning C4305: 'argument' : truncation from 'const double' to 'float'
+neural_parse.cpp
+nonblock.cpp
+options.cpp
+parser.cpp
+perceptron.cpp
+percinit.cpp
+percstruct.cpp
+rule.cpp
+rx.c
+service.cpp
+set.cpp
+stream.cpp
+synth.cpp
+D:\work\epos\epos-2.5.37.S\src\synth.cpp(123) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+tcpsyn.cpp
+tdpmbr.cpp
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(108) : warning C4244: '=' : conversion from 'double' to 'short', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(189) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(227) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(228) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(232) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(236) : warning C4244: '*=' : conversion from 'double' to 'int', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(239) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(295) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(296) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(304) : warning C4305: 'argument' : truncation from 'const double' to 'const float'
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(311) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(168) : warning C4101: 'three' : unreferenced local variable
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(167) : warning C4101: 'avpitch' : unreferenced local variable
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(168) : warning C4101: 'one' : unreferenced local variable
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(168) : warning C4101: 'two' : unreferenced local variable
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(166) : warning C4101: 'pitch' : unreferenced local variable
+tdpsyn.cpp
+D:\work\epos\epos-2.5.37.S\src\tdpmbr.cpp(74) : warning C4715: 'tdpmbr::explosives_detection' : not all control paths return a value
+d:\work\epos\epos-2.5.37.s\src\endian_utils.h(103) : warning C4715: 'from_le16s' : not all control paths return a value
+d:\work\epos\epos-2.5.37.s\src\endian_utils.h(104) : warning C4715: 'from_le32s' : not all control paths return a value
+d:\work\epos\epos-2.5.37.s\src\endian_utils.h(106) : warning C4715: 'from_le32u' : not all control paths return a value
+D:\work\epos\epos-2.5.37.S\src\tdpsyn.cpp(394) : warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
+text.cpp
+D:\work\epos\epos-2.5.37.S\src\tdpsyn.cpp(275) : warning C4700: local variable 'diflen' used without having been initialized
+d:\work\epos\epos-2.5.37.s\src\endian_utils.h(103) : warning C4715: 'from_le16s' : not all control paths return a value
+d:\work\epos\epos-2.5.37.s\src\endian_utils.h(104) : warning C4715: 'from_le32s' : not all control paths return a value
+d:\work\epos\epos-2.5.37.s\src\endian_utils.h(106) : warning C4715: 'from_le32u' : not all control paths return a value
+traindata.cpp
+ttscp.cpp
+unit.cpp
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(171) : warning C4244: 'argument' : conversion from 'short' to 'unsigned char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(284) : warning C4244: 'argument' : conversion from 'short' to 'char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(290) : warning C4244: 'argument' : conversion from 'short' to 'char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(318) : warning C4244: 'argument' : conversion from 'short' to 'char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(357) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(357) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(371) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(371) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(680) : warning C4244: 'initializing' : conversion from 'short' to 'char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(745) : warning C4244: '=' : conversion from 'short' to 'char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(917) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(1140) : warning C4244: '=' : conversion from 'short' to 'char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(1220) : warning C4244: '+=' : conversion from 'double' to 'float', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(1247) : warning C4305: 'argument' : truncation from 'const double' to 'float'
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(1249) : warning C4305: 'argument' : truncation from 'const double' to 'float'
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(1252) : warning C4305: 'argument' : truncation from 'const double' to 'float'
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(1393) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(1397) : warning C4244: 'argument' : conversion from 'short' to 'const char', possible loss of data
+D:\work\epos\epos-2.5.37.S\src\unit.cpp(1556) : warning C4244: 'return' : conversion from 'float' to 'int', possible loss of data
+utils.cpp
+voice.cpp
+d:\work\epos\epos-2.5.37.s\src\lpcfest.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+waveform.cpp
+xml.cpp
+d:\work\epos\epos-2.5.37.s\src\endian_utils.h(104) : warning C4715: 'from_le32s' : not all control paths return a value
+d:\work\epos\epos-2.5.37.s\src\endian_utils.h(109) : warning C4715: 'to_le32s' : not all control paths return a value
+d:\work\epos\epos-2.5.37.s\src\endian_utils.h(108) : warning C4715: 'to_le16s' : not all control paths return a value
+xml_parse.cpp
+xml_parse.yy(150) : warning C4018: '>=' : signed/unsigned mismatch
+xmltempl.cpp
+xmlutils.cpp
+Linking...
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP28E.tmp" with contents
+[
+/nologo /o"Debug/epos.bsc" 
+".\Debug\agent.sbr"
+".\Debug\client.sbr"
+".\Debug\daemon.sbr"
+".\Debug\encoding.sbr"
+".\Debug\enumstring.sbr"
+".\Debug\function.sbr"
+".\Debug\hash.sbr"
+".\Debug\hashd.sbr"
+".\Debug\hashi.sbr"
+".\Debug\interf.sbr"
+".\Debug\lpcfest.sbr"
+".\Debug\lpcsyn.sbr"
+".\Debug\map.sbr"
+".\Debug\matrix.sbr"
+".\Debug\mbrsyn.sbr"
+".\Debug\neural.sbr"
+".\Debug\neural_parse.sbr"
+".\Debug\nonblock.sbr"
+".\Debug\options.sbr"
+".\Debug\parser.sbr"
+".\Debug\perceptron.sbr"
+".\Debug\percinit.sbr"
+".\Debug\percstruct.sbr"
+".\Debug\rule.sbr"
+".\Debug\rx.sbr"
+".\Debug\service.sbr"
+".\Debug\set.sbr"
+".\Debug\stream.sbr"
+".\Debug\synth.sbr"
+".\Debug\tcpsyn.sbr"
+".\Debug\tdpmbr.sbr"
+".\Debug\tdpsyn.sbr"
+".\Debug\text.sbr"
+".\Debug\traindata.sbr"
+".\Debug\ttscp.sbr"
+".\Debug\unit.sbr"
+".\Debug\utils.sbr"
+".\Debug\voice.sbr"
+".\Debug\waveform.sbr"
+".\Debug\xml.sbr"
+".\Debug\xml_parse.sbr"
+".\Debug\xmltempl.sbr"
+".\Debug\xmlutils.sbr"]
+Creating command line "bscmake.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP28E.tmp"
+Creating browse info file...
+<h3>Output Window</h3>
+<h3>
+--------------------Configuration: lib_tdp - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP28F.tmp" with contents
+[
+/nologo /MLd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR"lib_tdp___Win32_Debug/" /Fp"lib_tdp___Win32_Debug/lib_tdp.pch" /YX /Fo"lib_tdp___Win32_Debug/" /Fd"lib_tdp___Win32_Debug/" /FD /GZ /c 
+"D:\work\epos\epos-2.5.37.S\src\lib_tdp.cpp"
+"D:\work\epos\epos-2.5.37.S\src\startsrv.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP28F.tmp" 
+Creating temporary file "C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP290.tmp" with contents
+[
+wsock32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib libcd.lib /nologo /subsystem:windows /incremental:yes /pdb:"lib_tdp___Win32_Debug/lib_tdp.pdb" /debug /machine:I386 /out:"lib_tdp___Win32_Debug/lib_tdp.exe" /pdbtype:sept 
+".\lib_tdp___Win32_Debug\lib_tdp.obj"
+".\lib_tdp___Win32_Debug\startsrv.obj"
+]
+Creating command line "link.exe @C:\DOCUME~1\ZBA13~1.CHA\LOCALS~1\Temp\RSP290.tmp"
+<h3>Output Window</h3>
+Compiling...
+lib_tdp.cpp
+startsrv.cpp
+Linking...
+libcd.lib(wincrt0.obj) : error LNK2001: unresolved external symbol _WinMain@16
+lib_tdp___Win32_Debug/lib_tdp.exe : fatal error LNK1120: 1 unresolved externals
+Error executing link.exe.
+Creating command line "bscmake.exe /nologo /o"lib_tdp___Win32_Debug/lib_tdp.bsc"  ".\lib_tdp___Win32_Debug\lib_tdp.sbr" ".\lib_tdp___Win32_Debug\startsrv.sbr""
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+lib_tdp.exe - 2 error(s), 75 warning(s)
+</pre>
+</body>
+</html>

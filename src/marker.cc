@@ -29,6 +29,10 @@ class marker
 	void merge(marker *&into);
 	inline bool listed(marker *ma);
 	bool disjoint(marker *ma);
+	
+	//*chaloupka
+	void part(int val);
+	// chaloupka*/
 
 	bool operator < (marker &ma);
 	
@@ -119,3 +123,12 @@ marker::write_ssif(char *whither)
 		this_voice->init_f + par /*, extent?"yes":"no" */ );
 	else return 0;
 }
+
+//*chaloupka
+void 
+marker::part(int val){
+	next = this->derived();
+	next->par += (par > val ? -1 : 1)*abs(val-par)/2;
+	pos = .6;
+}
+//chaloupka*/

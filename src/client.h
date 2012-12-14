@@ -161,7 +161,8 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 
 	inline void async_close(int fd)
 	{
-		if (close(fd) && closesocket(fd)) shriek(465,"Error on close()");
+		//if (close(fd) && closesocket(fd)) shriek(465,"Error on close()");
+		if (closesocket(fd) && close(fd)) shriek(465,"Error on close()");
 		return;
 	}
 
@@ -182,10 +183,16 @@ int sync_finish_command(int ctrld);	// wait for the completion code
 	{
 		int result = recv(fd, (char *)buffer, size, 0);
 		if (result == -1) {
-			if (WSAGetLastError() == WSAEWOULDBLOCK) {
+			int i = WSAGetLastError();
+			switch (i){	//chaloupka
+				case WSAEWOULDBLOCK: errno = EAGAIN; return -1;
+				case WSAECONNRESET: errno = NULL; return -1;
+			}
+			/*
+			if ( i == WSAEWOULDBLOCK) {
 				errno = EAGAIN;
 				return -1;
-			}
+			}*/
 			return read(fd, (char *)buffer, size);
 		}
 		return result;

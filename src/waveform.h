@@ -76,11 +76,11 @@ struct wave_header
 	char string1[4];
 	int32_t  total_length;
 	char string2[8];
-	int32_t  fmt_length;
-	int16_t  datform, numchan, sf1, sf2, avr1, avr2, alignment, samplesize;
+	int32_t  fmt_length,sf1, avr1;
+	int16_t  datform, numchan,alignment, samplesize;
 	char string3[4];
-	int32_t  buffer_idx;
-};			// .wav file header
+	int32_t  buffer_idx; 
+};	// .wav file header
 
 struct cue_point;
 
@@ -190,6 +190,44 @@ class wavefm
 		D_PRINT(0, "Successfully buffering at offset %d, count %d\n", hdr.buffer_idx, count);
 		memcpy(buffer + hdr.buffer_idx, b, count * sizeof (SAMPLE));
 		hdr.buffer_idx += count;
+		if ( buffer && (hdr.buffer_idx + 1 <= buff_size) )
+            buffer[hdr.buffer_idx] = 0; //velmi podivne, jinak lupe
+	}
+
+	inline void sampleAdd(SAMPLE *b, int count, int sampleFreq, const float over)
+	{
+		int		numSamp = (int)(sampleFreq*over + 0.5), i;
+		int		countOld = count;
+		bool	alloc = false;
+		
+		if (hdr.buffer_idx)	count -= numSamp;
+		for (i = 0; i < numSamp; i++) {
+			b[countOld - numSamp + i] = (SAMPLE)(b[countOld - numSamp + i]*((numSamp - i)/(double)numSamp));
+			if (hdr.buffer_idx){
+				buffer[hdr.buffer_idx - numSamp + i] += (SAMPLE)(b[i]*(i/(double)numSamp));
+			}
+		}
+
+		while (buff_size < hdr.buffer_idx + count) {
+			D_PRINT(0, "Failed to fit into buffer with %d samples\n", count);
+			int avail = buff_size - hdr.buffer_idx;
+			if (hdr.buffer_idx){
+				b += countOld - numSamp;
+				alloc = true;
+			}
+			sample(b, avail);
+			b += avail;
+			count -= avail;
+			flush();
+		}
+		D_PRINT(0, "Successfully buffering at offset %d, count %d\n", hdr.buffer_idx, count);
+
+		if ( (hdr.buffer_idx) && (!alloc) )	
+			b += numSamp;
+		memcpy(buffer + hdr.buffer_idx, b, count * sizeof (SAMPLE));
+		hdr.buffer_idx += count;
+        if ( buffer && (hdr.buffer_idx + 1 <= buff_size) )
+            buffer[hdr.buffer_idx] = 0; //velmi podivne, jinak lupe
 	}
 
 	void label(int position, char *label, const char *note);

@@ -1,0 +1,32 @@
+// EPOS_SAPI_eng.idl : IDL source for EPOS_SAPI_eng.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (EPOS_SAPI_eng.tlb) and marshalling code.
+
+//import "oaidl.idl";
+//import "ocidl.idl";
+import "sapiddk.idl";
+
+[
+	uuid(D1FFC3E4-1098-445F-9D2B-6CAE312D6123),
+	version(1.0),
+	helpstring("EPOS_SAPI_eng 1.0 Type Library")
+]
+
+library EPOS_SAPI_ENGLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(1909197A-5D63-4896-BCC6-198CD6411F09),
+		helpstring("TTS_Engine Class")
+	]
+	coclass TTS_Engine
+	{
+		[default] interface ISpTTSEngine;
+        interface ISpObjectWithToken;
+	};
+	
+};

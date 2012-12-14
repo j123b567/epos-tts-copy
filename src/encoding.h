@@ -56,6 +56,7 @@
 
 	const char *decode_to_sampa(unsigned char c, int sampa_alt);
 	void decode_to_sampa(unsigned char *s, int sampa_alt);
+	void encode_from_sampa(char *source, unsigned char *target, int alt);
 	void encode_from_sampa(unsigned char *s, int sampa_alt);
 	void update_sampa();
 	void release_sampa();

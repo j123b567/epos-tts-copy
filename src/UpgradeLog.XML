@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="epos">
+</Property><Property Name="Solution File" Value="J:\work\epos\epos-2.5.37.Lib\src\epos.sln">
+</Property><Property Name="User Options File" Value="J:\work\epos\epos-2.5.37.Lib\src\epos.suo">
+</Property><Property Name="Date" Value="3. června 2009">
+</Property><Property Name="Time" Value="15:15">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="epos.sln" Description="File successfully backed up as J:\work\epos\epos-2.5.37.Lib\src\epos.sln.old">
+</Event><Event ErrorLevel="0" Project="" Source="epos.suo" Description="File successfully backed up as J:\work\epos\epos-2.5.37.Lib\src\epos.suo.old">
+</Event><Event ErrorLevel="0" Project="epos" Source="epos.vcproj" Description="Web deployment to the local IIS server is no longer supported. The Web Deployment build tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="epos" Source="epos.vcproj" Description="This application has been updated to include settings related to the User Account Control (UAC) feature of Windows Vista. By default, when run on Windows Vista with UAC enabled, this application is marked to run with the same privileges as the process that launched it. This marking also disables the application from running with virtualization. You can change UAC related settings from the Property Pages of the project.">
+</Event><Event ErrorLevel="0" Project="epos" Source="epos.vcproj" Description="Project file successfully backed up as 'J:\work\epos\epos-2.5.37.Lib\src\epos.vcproj.8.00.old'.">
+</Event><Event ErrorLevel="0" Project="epos" Source="epos.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="epos" Source="epos.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="eposm" Source="eposm.vcproj" Description="Web deployment to the local IIS server is no longer supported. The Web Deployment build tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="eposm" Source="eposm.vcproj" Description="This application has been updated to include settings related to the User Account Control (UAC) feature of Windows Vista. By default, when run on Windows Vista with UAC enabled, this application is marked to run with the same privileges as the process that launched it. This marking also disables the application from running with virtualization. You can change UAC related settings from the Property Pages of the project.">
+</Event><Event ErrorLevel="0" Project="eposm" Source="eposm.vcproj" Description="Project file successfully backed up as 'J:\work\epos\epos-2.5.37.Lib\src\eposm.vcproj.8.00.old'.">
+</Event><Event ErrorLevel="0" Project="eposm" Source="eposm.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="eposm" Source="eposm.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="instserv" Source="instserv.vcproj" Description="Web deployment to the local IIS server is no longer supported. The Web Deployment build tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="instserv" Source="instserv.vcproj" Description="This application has been updated to include settings related to the User Account Control (UAC) feature of Windows Vista. By default, when run on Windows Vista with UAC enabled, this application is marked to run with the same privileges as the process that launched it. This marking also disables the application from running with virtualization. You can change UAC related settings from the Property Pages of the project.">
+</Event><Event ErrorLevel="0" Project="instserv" Source="instserv.vcproj" Description="Project file successfully backed up as 'J:\work\epos\epos-2.5.37.Lib\src\instserv.vcproj.8.00.old'.">
+</Event><Event ErrorLevel="0" Project="instserv" Source="instserv.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="instserv" Source="instserv.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="libetdp" Source="libetdp.vcproj" Description="Web deployment to the local IIS server is no longer supported. The Web Deployment build tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="libetdp" Source="libetdp.vcproj" Description="This application has been updated to include settings related to the User Account Control (UAC) feature of Windows Vista. By default, when run on Windows Vista with UAC enabled, this application is marked to run with the same privileges as the process that launched it. This marking also disables the application from running with virtualization. You can change UAC related settings from the Property Pages of the project.">
+</Event><Event ErrorLevel="0" Project="libetdp" Source="libetdp.vcproj" Description="Project file successfully backed up as 'J:\work\epos\epos-2.5.37.Lib\src\libetdp.vcproj.8.00.old'.">
+</Event><Event ErrorLevel="0" Project="libetdp" Source="libetdp.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="libetdp" Source="libetdp.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="say" Source="say.vcproj" Description="Web deployment to the local IIS server is no longer supported. The Web Deployment build tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="say" Source="say.vcproj" Description="This application has been updated to include settings related to the User Account Control (UAC) feature of Windows Vista. By default, when run on Windows Vista with UAC enabled, this application is marked to run with the same privileges as the process that launched it. This marking also disables the application from running with virtualization. You can change UAC related settings from the Property Pages of the project.">
+</Event><Event ErrorLevel="0" Project="say" Source="say.vcproj" Description="Project file successfully backed up as 'J:\work\epos\epos-2.5.37.Lib\src\say.vcproj.8.00.old'.">
+</Event><Event ErrorLevel="0" Project="say" Source="say.vcproj" Description="Project upgraded successfully.">
+</Event><Event ErrorLevel="3" Project="say" Source="say.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="epos.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="epos.sln" Description="Converted">
+</Event></UpgradeLog>

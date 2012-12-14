@@ -23,6 +23,10 @@
  *
  */
 
+
+#ifndef __EPOS_H__ //chaloupka
+#define __EPOS_H__ //chaloupka
+
 #include "common.h"
 
 #ifndef FORGET_PORTAUDIO
@@ -113,7 +117,7 @@ typedef char wchar;
 	#define MODE_MASK	   (S_IREAD | S_IWRITE)
 #endif
 
-#if defined(HAVE_WINSOCK_H) || defined(HAVE_WINSOCK2_H)
+#if defined(HAVE_WINSOCK_H) || defined(HAVE_WINSOCK2_H)	//chaloupka
 	#define HAVE_WINSOCK
 	#define socky unsigned
 #else
@@ -134,6 +138,4 @@ typedef char wchar;
 #include "synth.h"
 #include "encoding.h"
 
-
-
-
+#endif

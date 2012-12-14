@@ -1,0 +1,24 @@
+HKCR
+{
+	EPOS_SAPI_eng.TTS_Engine.1 = s 'TTS_Engine Class'
+	{
+		CLSID = s '{1909197A-5D63-4896-BCC6-198CD6411F09}'
+	}
+	EPOS_SAPI_eng.TTS_Engine = s 'TTS_Engine Class'
+	{
+		CLSID = s '{1909197A-5D63-4896-BCC6-198CD6411F09}'
+		CurVer = s 'EPOS_SAPI_eng.TTS_Engine.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {1909197A-5D63-4896-BCC6-198CD6411F09} = s 'TTS_Engine Class'
+		{
+			ProgID = s 'EPOS_SAPI_eng.TTS_Engine.1'
+			VersionIndependentProgID = s 'EPOS_SAPI_eng.TTS_Engine'
+			InprocServer32 = s '%MODULE%'
+			{
+			}
+			'TypeLib' = s '{D1FFC3E4-1098-445F-9D2B-6CAE312D6123}'
+		}
+	}
+}

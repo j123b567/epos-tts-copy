@@ -33,6 +33,7 @@
 // #define MAX_GATHER       16          // Maximum word size (for buffer allocation)
 
 #define SMOOTH_CQ_SIZE    16		// max smooth request length, see unit::smooth()
+#define WSSIF_SAFETY 100			// FIXME	//chaloupka
 
 class marker;
 class CNeuralNet;
@@ -43,7 +44,7 @@ class unit
 	friend class r_inside;
 	friend class t_neuralnet;	  // neuralnet directly writes into f,i,t
 
-    public:
+public:
 	unit *next, *prev;                //same layer
 	unit *firstborn, *lastborn;       //layer lower by one
 	unit *father;                     //layer greater by one
@@ -74,10 +75,15 @@ class unit
     
 //	int f,i,t;
 	float t;
+	char nm[3];	//chaloupka
+	unit *NextValid(UNIT target);	//chaloupka
+	void SmoothContour(UNIT target);	//chaloupka
+
 	marker *m;
 //  public:
 		unit(UNIT layer, parser *);
 		unit(UNIT layer, int content); 
+		unit(UNIT layer, int content, char *descript); //chaloupka
 		unit();               //(empty unit) constructor
 		~unit();
 	void delete_children();

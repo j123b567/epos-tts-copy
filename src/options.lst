@@ -517,6 +517,15 @@ VOICE_OPTION (init_f,	INT, 0)		// Neutral frequency for the inventory
 VOICE_OPTION (init_i,	INT, 0)		// Neutral intensity
 VOICE_OPTION (init_t,	INT, 0)		// Neutral time factor
 
+//chaloupka
+VOICE_OPTION (ph_alternates, STR, NULL)
+VOICE_OPTION (mbrola_like,	STR, NULL)	// Test for the type of the MBROLA synthesis?
+VOICE_OPTION (smooth_contour,	BOOL, false)	// contour smoothing -> more prosody points?
+STATIC (mbr_version,	STR, "0.1")	// TDPMbrola format version
+STATIC (voice_set, BOOL, false)		// information about voice set command
+//VOICE_OPTION (mbr_timing, STR, NULL)	//
+//chaloupka
+
 VOICE_OPTION (inv_sampling_rate,INT, 0)	// The real sampling rate of the inventory
 VOICE_OPTION (sample_size,	INT, 0)	// (not supported)
 

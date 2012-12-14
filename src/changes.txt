@@ -1,0 +1,2 @@
+posledni upravy>
+	-init_f a init_t muze byt zadano pred nastavenim hlasu v podstate jako globalni promenna
