@@ -47,9 +47,9 @@ int yread(int, void *, int size);
 #define SIGNED_SAMPLE	signed short	/* FIXME: get rid of this */
 
 //chaloupka
-#ifdef HAVE_PULSE_ERROR_H && HAVE_PULSE_SIMPLE_H
+#ifdef HAVE_PULSE_PULSEAUDIO_H
 	#include "pa_asyn.h"
-	#include <pulse/error.h>
+//	#include <pulse/error.h>
 	#include <pulse/simple.h>
 #else
 	#define	pa_sample_spec void*

@@ -26,43 +26,32 @@ else
 	$1=${epos_cv_cxx_opt_$1}
 fi])
 
-AC_DEFUN([AC_DEST_DF], 
-	[AC_MSG_CHECKING([for $1], [epos_cv_$2])
-	 AC_CACHE_VAL([epos_cv_$2],
-		[
-		epos_cv_$2="empty"
-		outdir=''
-		outfil=''
-		sedscript="'s:./$2::; s:/::; s:$:\t\\\:; \$s:\\\\$::; '"
-		dirs=`find ./$2 -type d | sed '1i\\t'`
-		outdir=`find ./$2 -type d | eval sed -r $sedscript`
-		
-		sedscript="'s:^./$2$::'"
-		dirs=`find ./$2 -type d | eval sed -r $sedscript`
-		sedscript="'s:^./$2/::; s:$:\t\\\:; \$s:\\\\$::'"
-		for d in $dirs; do
-			fls=`find $d -type f | eval sed -r $sedscript`
-			if test -n "$fls"; then
-				if test -z "$outfil"; then
-					outfil=$fls
-				else
-					outfil="$outfil
-$fls"
-				fi
-	 		fi
-		done
-		if test -n "$outdir"; then 
-			if test -n "$outfil"; then
-				epos_cv_$2="checked"
+AC_DEFUN([AC_CHECK_32_64b],
+	[dnl
+	AC_MSG_CHECKING([for 32 bit version of the library $1], [epos_cv_lib_$1])
+	AC_CACHE_VAL([epos_cv_lib_$1],
+		[dnl
+		epos_cv_lib_$1='yes'
+		$1=''
+		adrs=(32 64)
+		for i in ${adrs[[@]]}; do
+			check_err=`file /usr/lib$i | sed '/ERROR/!d'`
+			if test -z "$check_err"; then
+				#num=`objdump -a /usr/lib$1.so | sed '/elf64*/!d'`
+				$1+="$i"
 			fi
-		fi
-		])
-	 AC_MSG_RESULT(${epos_cv_$2})
-	 if test "x${epos_cv_$2}" = "xchecked"; then
-		echo "DATA_DIRS=$outdir" > $2/data_dirs.am
-		echo "DATA_FILES=$outfil" > $2/data_files.am
-	 fi
+		done
+		if test -z "$1"; then epos_cv_lib_$1="no"
+			$1="missing"
+		else
+			if test "$1" = "64"; then
+				epos_cv_lib_$1='no'
+			fi
+		fi		
 ])
+	AC_MSG_RESULT(${epos_cv_lib_$1})
+]
+)
 
 syscmd(`rm ./cfg/data_dirs.am`)
 syscmd(`rm ./cfg/data_files.am`)

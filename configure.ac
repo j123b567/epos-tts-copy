@@ -104,24 +104,35 @@ AC_CHECK_HEADERS(sys/kernel.h)
 AC_CHECK_HEADERS(sys/name.h)
 AC_CHECK_HEADERS(fcntl.h)
 AC_CHECK_HEADERS(direct.h)
-#AC_CHECK_HEADERS(pulse/simple.h)
-AC_CHECK_HEADERS(pulse/error.h)
-AC_CHECK_HEADERS(pulse/pulseaudio.h)
 AC_CHECK_FUNCS(strerror vsnprintf strdup fork getegid strcasecmp stricmp getcwd gethostname gettimeofday qnx_name_attach abort kill pipe _pipe)
 
-if test "x$ac_cv_header_pulse_error_h" = "xyes"; then
-	if test "x$ac_cv_header_pulse_pulseaudio_h" = "xyes"; then
-		AC_SEARCH_LIBS(pa_mainloop_new, pulse, [], AC_MSG_ERROR([unable to locate PulseAudio libraries]))
-	else
-		AC_MSG_NOTICE([PulseAudio will not be used])
-	fi
+#IMPORTANT - we have to assure that compiling is 32bit
+
+#CXXFLAGS+="-m32"
+AC_CHECK_HEADERS(pulse/pulseaudio.h)
+AC_CHECK_HEADERS(pulse/simple.h)
+if test "x$ac_cv_header_pulse_pulseaudio_h" = "xyes" -a "x$ac_cv_header_pulse_simple_h" = "xyes"; then
+	AC_MSG_NOTICE([trying to link PulseAudio])
+	AC_SEARCH_LIBS(pa_mainloop_new, pulse, [dnl
+		AC_CHECK_32_64b([libpulse])
+		case $libpulse in
+	   	   64)
+			AC_MSG_ERROR([PulseAudio 64bit library will not be working, download the 32bit version...])
+			;;
+		   32|3264)
+			AC_MSG_NOTICE([PulseAudio 32bit library found...])
+			;;
+		   missing)
+			AC_MSG_ERROR([PulseAudio library is missing...])
+			;;
+		esac], AC_MSG_ERROR([PulseAudio linking failed]))
 else
-	AC_MSG_NOTICE([PulseAudio will not be used])
+	AC_MSG_ERROR([PulseAudio headers are required...])
 fi
 
 AC_CACHE_CHECK([for glibc regex error codes],
    epos_cv_symb_regeend,
-   AC_TRY_COMPILE(
+   AC_TRY_COMPILE([dnl
 	#include <sys/types.h>
 	#ifdef HAVE_RX_H
 	#include <rx.h>
@@ -131,11 +142,11 @@ AC_CACHE_CHECK([for glibc regex error codes],
 	#else
 	#include "rx.h"
 	#endif
-	#endif
-	,
+	#endif]
+	, [dnl
 	int result = REG_EEND;
 	int result2 = REG_ESIZE;
-	return 0;,
+	return 0;],
 	epos_cv_symb_regeend=yes,
 	epos_cv_symb_regeend=no)
 )
@@ -145,7 +156,7 @@ fi
 
 AC_CACHE_CHECK([for regmatch_t.rm_so],
    epos_cv_struct_rm_so,
-   AC_TRY_COMPILE(
+   AC_TRY_COMPILE([dnl
 	#include <sys/types.h>
 	#ifdef HAVE_RX_H
 	#include <rx.h>
@@ -155,11 +166,11 @@ AC_CACHE_CHECK([for regmatch_t.rm_so],
 	#else
 	#include "rx.h"
 	#endif
-	#endif
-	,
+	#endif]
+	,[dnl
 	regmatch_t rt;
 	rt.rm_so;
-	return 0;,
+	return 0;],
 	epos_cv_struct_rm_so=yes,
 	epos_cv_struct_rm_so=no)
 )
@@ -174,8 +185,7 @@ AC_CACHE_CHECK([for terminate],
 	[ #include <stdlib.h> ],
 	[ throw new int; exit(1); terminate() ] ,
 	[ epos_cv_fn_terminate=yes ],
-	[ epos_cv_fn_terminate=no ],
-	[ epos_cv_fn_terminate=yes ])
+	[ epos_cv_fn_terminate=no ])
 )
 if test "$epos_cv_fn_terminate" = yes; then
    AC_DEFINE([HAVE_TERMINATE], [], [ Define if you have the built-in terminate function. ])

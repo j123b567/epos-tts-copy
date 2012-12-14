@@ -15373,31 +15373,6 @@ fi
 
 done
 
-#AC_CHECK_HEADERS(pulse/simple.h)
-for ac_header in pulse/error.h
-do :
-  ac_fn_cxx_check_header_mongrel "$LINENO" "pulse/error.h" "ac_cv_header_pulse_error_h" "$ac_includes_default"
-if test "x$ac_cv_header_pulse_error_h" = x""yes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_PULSE_ERROR_H 1
-_ACEOF
-
-fi
-
-done
-
-for ac_header in pulse/pulseaudio.h
-do :
-  ac_fn_cxx_check_header_mongrel "$LINENO" "pulse/pulseaudio.h" "ac_cv_header_pulse_pulseaudio_h" "$ac_includes_default"
-if test "x$ac_cv_header_pulse_pulseaudio_h" = x""yes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_PULSE_PULSEAUDIO_H 1
-_ACEOF
-
-fi
-
-done
-
 for ac_func in strerror vsnprintf strdup fork getegid strcasecmp stricmp getcwd gethostname gettimeofday qnx_name_attach abort kill pipe _pipe
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -15412,9 +15387,37 @@ fi
 done
 
 
-if test "x$ac_cv_header_pulse_error_h" = "xyes"; then
-	if test "x$ac_cv_header_pulse_pulseaudio_h" = "xyes"; then
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing pa_mainloop_new" >&5
+#IMPORTANT - we have to assure that compiling is 32bit
+
+#CXXFLAGS+="-m32"
+for ac_header in pulse/pulseaudio.h
+do :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "pulse/pulseaudio.h" "ac_cv_header_pulse_pulseaudio_h" "$ac_includes_default"
+if test "x$ac_cv_header_pulse_pulseaudio_h" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_PULSE_PULSEAUDIO_H 1
+_ACEOF
+
+fi
+
+done
+
+for ac_header in pulse/simple.h
+do :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "pulse/simple.h" "ac_cv_header_pulse_simple_h" "$ac_includes_default"
+if test "x$ac_cv_header_pulse_simple_h" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_PULSE_SIMPLE_H 1
+_ACEOF
+
+fi
+
+done
+
+if test "x$ac_cv_header_pulse_pulseaudio_h" = "xyes" -a "x$ac_cv_header_pulse_simple_h" = "xyes"; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: trying to link PulseAudio" >&5
+$as_echo "$as_me: trying to link PulseAudio" >&6;}
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing pa_mainloop_new" >&5
 $as_echo_n "checking for library containing pa_mainloop_new... " >&6; }
 if test "${ac_cv_search_pa_mainloop_new+set}" = set; then :
   $as_echo_n "(cached) " >&6
@@ -15467,18 +15470,53 @@ $as_echo "$ac_cv_search_pa_mainloop_new" >&6; }
 ac_res=$ac_cv_search_pa_mainloop_new
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-
+  			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for 32 bit version of the library libpulse" >&5
+$as_echo_n "checking for 32 bit version of the library libpulse... " >&6; }
+	if test "${epos_cv_lib_libpulse+set}" = set; then :
+  $as_echo_n "(cached) " >&6
 else
-  as_fn_error "unable to locate PulseAudio libraries" "$LINENO" 5
+  		epos_cv_lib_libpulse='yes'
+		libpulse=''
+		adrs=(32 64)
+		for i in ${adrs[@]}; do
+			check_err=`file /usr/lib$i | sed '/ERROR/!d'`
+			if test -z "$check_err"; then
+				#num=`objdump -a /usr/liblibpulse.so | sed '/elf64*/!d'`
+				libpulse+="$i"
+			fi
+		done
+		if test -z "libpulse"; then epos_cv_lib_libpulse="no"
+			libpulse="missing"
+		else
+			if test "libpulse" = "64"; then
+				epos_cv_lib_libpulse='no'
+			fi
+		fi
+
 fi
 
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: PulseAudio will not be used" >&5
-$as_echo "$as_me: PulseAudio will not be used" >&6;}
-	fi
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${epos_cv_lib_libpulse}" >&5
+$as_echo "${epos_cv_lib_libpulse}" >&6; }
+
+
+		case $libpulse in
+	   	   64)
+			as_fn_error "PulseAudio 64bit library will not be working, download the 32bit version..." "$LINENO" 5
+			;;
+		   32|3264)
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: PulseAudio 32bit library found..." >&5
+$as_echo "$as_me: PulseAudio 32bit library found..." >&6;}
+			;;
+		   missing)
+			as_fn_error "PulseAudio library is missing..." "$LINENO" 5
+			;;
+		esac
 else
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: PulseAudio will not be used" >&5
-$as_echo "$as_me: PulseAudio will not be used" >&6;}
+  as_fn_error "PulseAudio linking failed" "$LINENO" 5
+fi
+
+else
+	as_fn_error "PulseAudio headers are required..." "$LINENO" 5
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for glibc regex error codes" >&5
@@ -15488,7 +15526,7 @@ if test "${epos_cv_symb_regeend+set}" = set; then :
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <sys/types.h>
+	#include <sys/types.h>
 	#ifdef HAVE_RX_H
 	#include <rx.h>
 	#else
@@ -15502,7 +15540,7 @@ else
 int
 main ()
 {
-int result = REG_EEND;
+	int result = REG_EEND;
 	int result2 = REG_ESIZE;
 	return 0;
   ;
@@ -15532,7 +15570,7 @@ if test "${epos_cv_struct_rm_so+set}" = set; then :
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <sys/types.h>
+	#include <sys/types.h>
 	#ifdef HAVE_RX_H
 	#include <rx.h>
 	#else
@@ -15546,7 +15584,7 @@ else
 int
 main ()
 {
-regmatch_t rt;
+	regmatch_t rt;
 	rt.rm_so;
 	return 0;
   ;
