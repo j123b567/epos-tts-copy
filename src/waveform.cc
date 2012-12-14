@@ -750,12 +750,13 @@ wavefm::write_header()
 void 
 wavefm::write_pa() {
 
+#ifdef HAVE_PULSE_ERROR_H && HAVE_PULSE_SIMPLE_H
 	/* The Sample format to use */
 	ss.format = hdr.samplesize == 8 ? PA_SAMPLE_U8 : PA_SAMPLE_S16LE;
 	ss.rate = samp_rate;
 	ss.channels = channel == CT_MONO ? 1 : 2;
 
-    	/* Create a new playback stream */
+    	/* Create new simple playback stream 
 	if (!(s = pa_simple_new(NULL, "Epos", PA_STREAM_PLAYBACK, NULL, "TTS-Epos", &ss, NULL, NULL, &error))) {
 		const char *err = pa_strerror(error);
         	shriek(445, err);
@@ -777,6 +778,71 @@ wavefm::write_pa() {
         	shriek(445, err);
 	}	
 	if (s) pa_simple_free(s);	//chaloupka
+	*/
+
+	/*Create new asynchro playback stream */	
+	int ret = 1, r;
+	pa_asyn_user user_params;
+
+	user_params.ss = &ss;
+	user_params.data = get_ophase_buff(&ophases[ophase]) + ooffset;
+	user_params.length = written;
+
+	assert(pa_sample_spec_valid(&ss));
+
+	//Set up a new main loop
+	if (!(m = pa_mainloop_new())) {
+		DEBUG(2,9,fprintf(stderr, ("pa_mainloop_new() failed.\n")););
+        	quit_pa();
+	}
+
+	DEBUG(2,9,fprintf(stderr, ("pa_mainloop_new() added.\n")););
+	mainloop_api = pa_mainloop_get_api(m);
+
+	r = pa_signal_init(mainloop_api);
+	assert(r == 0);
+	pa_signal_new(SIGINT, exit_signal_callback, NULL);
+#ifdef SIGPIPE
+	signal(SIGPIPE, SIG_IGN);
+#endif
+
+	// Create a new connection context
+	if (!(cntxt = pa_context_new(mainloop_api, client_name))) {
+        	DEBUG(2,9,fprintf(stderr, ("pa_context_new() failed.\n")););
+        	quit_pa();
+	}
+	
+	//pa_context_set_state_callback(cntxt, context_state_callback, NULL);
+	pa_context_set_state_callback(cntxt, context_state_callback, (void*)(&user_params));
+
+	// Connect the context
+	//    pa_context_connect(cntxt, server, (pa_context_flags_t)0, NULL);
+	pa_context_connect(cntxt, NULL, (pa_context_flags_t)0, NULL);
+
+	//* Run the main loop
+	if (pa_mainloop_run(m, &ret) < 0) {
+		DEBUG(2,9,fprintf(stderr, ("pa_mainloop_run() failed.\n")););
+		quit_pa();
+	}
+#endif
+}
+
+void
+wavefm::quit_pa()
+{
+#ifdef HAVE_PULSE_ERROR_H && HAVE_PULSE_SIMPLE_H
+	if (pa_strm)
+        	pa_stream_unref(pa_strm);
+
+	if (cntxt)
+        	pa_context_unref(cntxt);
+
+	if (m) {
+        	pa_signal_done();
+        	pa_mainloop_free(m);
+		m = NULL;
+	}
+#endif
 }
 
 void

@@ -149,7 +149,8 @@ extern charxlat *esctab;
 #define UID_SERVER	 1
 
 #ifndef HAVE_FORK
-	int fork();
+	#include <unistd.h>
+	//int fork();
 #endif
 
 // bool privileged_exec();		// true if suid or sgid
@@ -189,5 +190,7 @@ void end_of_eternity();
 #define END_OF_ETERNITY  /**/
 #endif      // ifdef WANT_MALLOC
 
+//chaloupka
+extern void use_async_sputs();
 
 #endif      // ifndef EPOS_INTERF_H

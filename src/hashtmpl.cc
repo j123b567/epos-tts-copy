@@ -40,6 +40,9 @@ some_key  this;is;the;replacement   ;this is a comment; why not.
 
 #include "hash.h"
 
+//chaloupka
+//#include "common.h"
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

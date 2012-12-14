@@ -97,7 +97,7 @@ typedef char UNIT;
 extern int unused_variable;
 #define unuse(x) (unused_variable = (int)(x));
 
-extern const bool is_monolith;
+extern const int is_monolith;
 
 struct file;
 struct option;

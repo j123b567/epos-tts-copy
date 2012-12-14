@@ -639,8 +639,6 @@ static inline void compile_rules()
  *	epos_catharsis(): to release as much as possible, but leave a way back
  */
 
-void use_async_sputs();
-
 void epos_init()	 //Some global sanity checks made here
 {
 #ifdef HAVE_SYSLOG_H

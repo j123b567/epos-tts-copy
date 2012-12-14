@@ -99,7 +99,7 @@ class wsa_init			/* initialise winsock before main() is entered  */
 int start_nt_service();
 #endif
 
-const bool is_monolith = 0;
+const int is_monolith = 0;
 
 
 #define DARK_ERRLOG 2	/* 2 == stderr; for global stdshriek and stddbg output */

@@ -47,8 +47,14 @@ int yread(int, void *, int size);
 #define SIGNED_SAMPLE	signed short	/* FIXME: get rid of this */
 
 //chaloupka
-#include <pulse/simple.h>
-#include <pulse/error.h>
+#ifdef HAVE_PULSE_ERROR_H && HAVE_PULSE_SIMPLE_H
+	#include "pa_asyn.h"
+	#include <pulse/error.h>
+	#include <pulse/simple.h>
+#else
+	#define	pa_sample_spec void*
+	#define pa_simple void
+#endif
 //#include <pulse/gccmacro.h>
 
 
@@ -108,11 +114,6 @@ class wavefm
 
 	//chaloupka
 	pa_sample_spec ss;
-	//ss.format = hdr.samplesize == 8 ? PA_SAMPLE_U8 : PA_SAMPLE_S16LE;
-	//ss.rate = samp_rate;
-	//ss.channels = channel;
-	//ss.rate = 44100;
-	//ss.channels = 1;
 	pa_simple *s;
 	int error;
 
@@ -155,6 +156,7 @@ class wavefm
 //	void skip_header();	// see waveform.cc for comments
 	void write_header();
 	void write_pa();	//chaloupka pulseaudio output
+	void quit_pa();
 	
 	inline void sample(unsigned int sample)
 	{

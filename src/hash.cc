@@ -16,7 +16,6 @@
  */
 
 #include "common.h"
-
 #include "hashtmpl.cc"	/* will probably include hash.h, defaults.h" */
 
 /*
