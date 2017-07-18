@@ -5,7 +5,7 @@ AC_INIT(src/unit.cc)
 AM_INIT_AUTOMAKE(epos, 2.5.37)
 AC_PREFIX_DEFAULT(/usr/local)
 
-CCC="g++ c++ cc++ gcc cc"
+#CCC="g++ c++ cc++ gcc cc"
 AC_PROG_CC
 AC_PROG_CXX
 if test $GXX = yes; then 

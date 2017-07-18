@@ -25,7 +25,7 @@ T2 & TMap<T1,T2>::operator [] (const T1 &key) {
 	else {
 		TData x;
 		x.first() = key;
-		return insert (x)->second();
+		return this->insert (x)->second();
 	}
 }
 

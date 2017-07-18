@@ -6,6 +6,8 @@
 #define yychar neuralchar
 #define yydebug neuraldebug
 #define yynerrs neuralnerrs
+#define yyerrflag neuralerrflag
+#define yyval neuralval
 
 #include "epos.h"
 #include "neural.h"
@@ -255,7 +257,7 @@ unit_level: string_exp
 
 int yyerror (char *s)
 {
-	shriek (812, fmt ("BISON:yyerror:bison_nnet parser: bison_row %i (not counting empty rows) '%s' is erroneous. %s\n", row_num, bison_row_buf, s));
+	shriek (812, fmt ("BISON:yyerror:bison_nnet parser: bison_row %i (not counting empty rows) '%s' is erroneous. %s\n", row_num, bison_row_buf.c_str(), s));
 	return -1;
 }
  

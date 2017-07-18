@@ -23,7 +23,7 @@
 #include <winsvc.h>
 #include "service.h"
 #include <stdio.h>		//sprintf & fopen
-#include <iostream.h>
+#include <iostream>
 #include "Shlwapi.h"
 
 SC_HANDLE	scm;
