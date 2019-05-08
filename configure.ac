@@ -221,35 +221,6 @@ if test "$epos_cv_type_socklen" = yes; then
    AC_DEFINE([HAVE_SOCKLEN_T], [], [ Define if you have socklen_t in sys/socket.h or sys/types.h. ])
 fi
 
-broken_enum_bitfields_test='\
-	#include <stdlib.h>	\
-	enum t { a, b, c };	\
-	struct s		\
-	{			\
-		t m : 2;	\
-		t n : 2;	\
-		t o : 2;	\
-	};			\
-	s arr[[2]] = {{a, b, c},{c, c, c}};\
-	int main()		\
-	{			\
-		exit (arr[[1]].n != 2);	\
-		return 0;       \
-	}\
-	'
-
-AC_CACHE_CHECK([for broken enum bitfields],
-   epos_cv_c_broken_enum_bitfields,
-   AC_TRY_RUN(
-	$broken_enum_bitfields_test,
-	epos_cv_c_broken_enum_bitfields=no,
-	epos_cv_c_broken_enum_bitfields=yes,
-	epos_cv_c_broken_enum_bitfields=yes)
-)
-if test "$epos_cv_c_broken_enum_bitfields" = yes; then
-   AC_DEFINE([BROKEN_ENUM_BITFIELDS], [], [ Define if your compiler incorrectly treats enum bit fields as signed ])
-fi
-
 EPOS_CXX_OPTION(mafwks,
 	[mac audio frameworks],
 	["-framework CoreAudio -framework AudioToolbox"])

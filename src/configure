@@ -2546,62 +2546,6 @@ EOF
 
 fi
 
-broken_enum_bitfields_test='\
-	enum t { a, b, c };	\
-	struct s		\
-	{			\
-		t m : 2;	\
-		t n : 2;	\
-		t o : 2;	\
-	};			\
-	s arr[2] = {{a, b, c},{c, c, c}};\
-	void main()		\
-	{			\
-		exit (arr[1].n != 2);	\
-	}\
-	'
-
-echo $ac_n "checking "for broken enum bitfields"""... $ac_c" 1>&6
-echo "configure:2566: checking "for broken enum bitfields"" >&5
-if eval "test \"`echo '$''{'epos_cv_c_broken_enum_bitfields'+set}'`\" = set"; then
-  echo $ac_n "(cached) $ac_c" 1>&6
-else
-  if test "$cross_compiling" = yes; then
-  epos_cv_c_broken_enum_bitfields=yes
-else
-  cat > conftest.$ac_ext <<EOF
-#line 2574 "configure"
-#include "confdefs.h"
-#ifdef __cplusplus
-extern "C" void exit(int);
-#endif
-$broken_enum_bitfields_test
-EOF
-if { (eval echo configure:2581: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
-then
-  epos_cv_c_broken_enum_bitfields=no
-else
-  echo "configure: failed program was:" >&5
-  cat conftest.$ac_ext >&5
-  rm -fr conftest*
-  epos_cv_c_broken_enum_bitfields=yes
-fi
-rm -fr conftest*
-fi
-
-
-fi
-
-echo "$ac_t""$epos_cv_c_broken_enum_bitfields" 1>&6
-if test "$epos_cv_c_broken_enum_bitfields" = yes; then
-   cat >> confdefs.h <<\EOF
-#define BROKEN_ENUM_BITFIELDS 1
-EOF
-
-fi
-
-
-
 trap '' 1 2 15
 cat > confcache <<\EOF
 # This file is a shell script that caches the results of configure

@@ -3,9 +3,6 @@
 /* Define if you have the ANSI C header files.  */
 #undef STDC_HEADERS
 
-/* Define if your compiler incorrectly treats enum bit fields as signed */
-#undef BROKEN_ENUM_BITFIELDS
-
 /* Define if your compiler somehow offers a boolean type.  */
 #undef HAVE_BOOL
 

@@ -130,12 +130,6 @@
 /* Define if you have the stdc++ library (-lstdc++).  */
 #define HAVE_LIBSTDC__ 1
 
-/* Define if using Visual C++ 6.0 or something like that */
-#define BROKEN_ENUM_BITFIELDS 1
-
-/* Define at least if using unpatched Visual C++ 6.0   */
-#define FORGET_ENUM_BITFIELDS 1
-
 /* Defining this initially may save you some headaches */
 /* #undef IGNORE_REGEX_RULES */
 

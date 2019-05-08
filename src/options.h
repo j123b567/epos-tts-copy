@@ -43,23 +43,6 @@ struct configuration : public cowabilium	//Some description & defaults can be fo
 	void operator delete(void *ptr);
 };
 
-/*	Visual C++ 6.0 and Watcom C 10.6 generate incorrect code for
- *	enum bit fields.  The VC thingie even feels syntactically
- *	depressed about them!  There is an autoconf test for
- *	BROKEN_ENUM_BITFIELDS, but not for FORGET_ENUM_BITFIELDS.
- *	Most compilers are OK.
- */
-
-#ifdef  BROKEN_ENUM_BITFIELDS
-   #ifdef FORGET_ENUM_BITFIELDS
-	#define BIT_FIELD(x) /* alas */
-   #else
-	#define BIT_FIELD(x) : (x)+1
-   #endif
-#else
-	#define BIT_FIELD(x) : x	
-#endif
-
  //void cow(cowabilium **p, int size, int, int);	/* copy **p if shared and adjust *p, see options.cc */
 void cow_claim();				/* claim all current global cfg */
 void cow_unclaim(configuration *);		/* unclaim the cfg specified */
@@ -69,13 +52,12 @@ void cow_configuration(configuration **);
 struct option
 {
 	const char *optname;
-  	OPT_TYPE opttype	BIT_FIELD(5);
-//	int reserved		BIT_FIELD(3);
-	OPT_STRUCT structype	BIT_FIELD(2);
-	ACCESS 	readable	BIT_FIELD(2);
-	ACCESS 	writable	BIT_FIELD(2);
-	bool action		BIT_FIELD(1);
-	bool per_level		BIT_FIELD(1);
+  	OPT_TYPE opttype;
+	OPT_STRUCT structype;
+	ACCESS 	readable;
+	ACCESS 	writable;
+	bool action;
+	bool per_level;
 	short int offset;
 };
 

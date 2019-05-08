@@ -15708,54 +15708,6 @@ $as_echo "#define HAVE_SOCKLEN_T /**/" >>confdefs.h
 
 fi
 
-broken_enum_bitfields_test='\
-	#include <stdlib.h>	\
-	enum t { a, b, c };	\
-	struct s		\
-	{			\
-		t m : 2;	\
-		t n : 2;	\
-		t o : 2;	\
-	};			\
-	s arr[2] = {{a, b, c},{c, c, c}};\
-	int main()		\
-	{			\
-		exit (arr[1].n != 2);	\
-		return 0;       \
-	}\
-	'
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for broken enum bitfields" >&5
-$as_echo_n "checking for broken enum bitfields... " >&6; }
-if test "${epos_cv_c_broken_enum_bitfields+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test "$cross_compiling" = yes; then :
-  epos_cv_c_broken_enum_bitfields=yes
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-$broken_enum_bitfields_test
-_ACEOF
-if ac_fn_cxx_try_run "$LINENO"; then :
-  epos_cv_c_broken_enum_bitfields=no
-else
-  epos_cv_c_broken_enum_bitfields=yes
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $epos_cv_c_broken_enum_bitfields" >&5
-$as_echo "$epos_cv_c_broken_enum_bitfields" >&6; }
-if test "$epos_cv_c_broken_enum_bitfields" = yes; then
-
-$as_echo "#define BROKEN_ENUM_BITFIELDS /**/" >>confdefs.h
-
-fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for mac audio frameworks" >&5
 $as_echo_n "checking for mac audio frameworks... " >&6; }
 if test "${epos_cv_cxx_opt_mafwks+set}" = set; then :

@@ -21,9 +21,6 @@
 #undef _ALL_SOURCE
 #endif
 
-/* Define if your compiler incorrectly treats enum bit fields as signed */
-#undef BROKEN_ENUM_BITFIELDS
-
 /* Define if your compiler somehow offers a boolean type.  */
 #undef HAVE_BOOL
 

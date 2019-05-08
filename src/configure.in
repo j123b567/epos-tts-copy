@@ -174,34 +174,6 @@ if test "$epos_cv_type_socklen" = yes; then
    AC_DEFINE(HAVE_SOCKLEN_T)
 fi
 
-broken_enum_bitfields_test='\
-	enum t { a, b, c };	\
-	struct s		\
-	{			\
-		t m : 2;	\
-		t n : 2;	\
-		t o : 2;	\
-	};			\
-	s arr[[2]] = {{a, b, c},{c, c, c}};\
-	void main()		\
-	{			\
-		exit (arr[[1]].n != 2);	\
-	}\
-	'
-
-AC_CACHE_CHECK("for broken enum bitfields",
-   epos_cv_c_broken_enum_bitfields,
-   AC_TRY_RUN(
-	$broken_enum_bitfields_test,
-	epos_cv_c_broken_enum_bitfields=no,
-	epos_cv_c_broken_enum_bitfields=yes,
-	epos_cv_c_broken_enum_bitfields=yes)
-)
-if test "$epos_cv_c_broken_enum_bitfields" = yes; then
-   AC_DEFINE(BROKEN_ENUM_BITFIELDS)
-fi
-
-
 AC_CONFIG_HEADER(config.h)
 AC_OUTPUT(Makefile)
 
