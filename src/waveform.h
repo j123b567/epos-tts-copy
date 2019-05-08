@@ -43,8 +43,7 @@ int yread(int, void *, int size);
 	#error Macro conflict: SAMPLE
 #endif
 
-#define SAMPLE		unsigned short	/* working sample type */
-#define SIGNED_SAMPLE	signed short	/* FIXME: get rid of this */
+#define SAMPLE		int16_t	/* working sample type */
 
 //chaloupka
 #ifdef HAVE_PULSE_PULSEAUDIO_H
@@ -61,15 +60,12 @@ int yread(int, void *, int size);
 struct wave_header
 {
 	char string1[4];
-	int  total_length;
+	int32_t  total_length;
 	char string2[8];
-	//int  fmt_length;
-	//short int  datform, numchan, sf1, sf2, avr1, avr2, alignment, samplesize;
-	//chaloupka
-	int  fmt_length,sf1, avr1;
-	short int datform, numchan,alignment, samplesize;
+	int32_t  fmt_length;
+	int16_t  datform, numchan, sf1, sf2, avr1, avr2, alignment, samplesize;
 	char string3[4];
-	int  buffer_idx;
+	int32_t  buffer_idx;
 };			// .wav file header
 
 struct cue_point;
@@ -77,14 +73,14 @@ struct cue_point;
 struct cue_header
 {
 	char string1[4];
-	int len;
-	int n;
+	int32_t len;
+	int32_t n;
 };
 
 struct adtl_header
 {
 	char string1[4];
-	int len;
+	int32_t len;
 	char string2[4];
 };
 
@@ -183,5 +179,5 @@ class wavefm
 
 	void become(void *buffer, int size);
 
-	inline int written_bytes() { return hdr.total_length + RIFF_HEADER_SIZE; }
+	int written_bytes();
 };

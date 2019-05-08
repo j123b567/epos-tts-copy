@@ -124,7 +124,7 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 	l = cfg->rules;
 	rulist = (rule **)xmalloc(sizeof(rule *) * l);
 	n_rules = 0; again = 1;
-	while((int)(rulist[n_rules] = --again ? rulist[n_rules-1]
+	while((long)(rulist[n_rules] = --again ? rulist[n_rules-1]
 					 : next_rule(file, vars, &again)) > END_OF_RULES) {
 //		rulist[n_rules]->set_dbg_tag(file);
 		if (++n_rules == l) {
@@ -133,7 +133,7 @@ block_rule::load_rules(rule *terminator, text *file, hash *inherited_vars)
 		}
 	}
 	if (again > 1) diatax("Badly placed count");
-	if (rulist[n_rules] != terminator) switch ((int)rulist[n_rules]) {
+	if (rulist[n_rules] != terminator) switch ((long)rulist[n_rules]) {
 		case END_OF_BLOCK:  diatax("No block to terminate");
 		case END_OF_CHOICE: diatax("No choice to terminate");
 		case END_OF_SWITCH: diatax("No length-based switch to terminate");
@@ -546,8 +546,8 @@ next_real_rule(text *file, hash *vars, int *count)
 {
 	try {
 		rule *r = parse_rule(file, vars, count);
-		if ((int)r > END_OF_RULES) return r;
-		if ((int)r < END_OF_RULES) diatax("No rule follows a conditional rule");
+		if ((long)r > END_OF_RULES) return r;
+		if ((long)r < END_OF_RULES) diatax("No rule follows a conditional rule");
 		shriek(811, fmt("No rule follows a conditional rule at the end of %s", file->current_file));
 	} catch (any_exception *e) {
 		if (e->code / 10 != 81) throw e;

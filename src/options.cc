@@ -77,7 +77,7 @@ void cow(cowabilium **p, int size, int extraoffset, int extrasize)
 	}
 }
 
-#define  LANGS_OFFSET   ((int)&((configuration *)NULL)->langs)
+#define  LANGS_OFFSET   ((long)&((configuration *)NULL)->langs)
 #define  LANGS_LENGTH   ((*cfg)->n_langs * sizeof(void *))
 
 void cow_configuration(configuration **cfg)
@@ -538,7 +538,7 @@ bool set_option(option *o, const char *val, void *base)
  *	The order of cowing cfg, lang and voice, is important.
  */
 
-#define  VOICES_OFFSET  ((int)&((lang *)NULL)->voices)
+#define  VOICES_OFFSET  ((long)&((lang *)NULL)->voices)
 #define  VOICES_LENGTH  (this_lang->n_voices * sizeof(void *))
 
 bool set_option(option *o, const char *value)

@@ -34,6 +34,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>           // just exit() in shriek(), malloc &co...
+#include <stdint.h>
+#include <stddef.h>
 
 #ifdef HAVE_STRING_H
 	#include <string.h>
@@ -94,8 +96,7 @@ typedef char UNIT;
 #define U_INHERIT	125
 #define U_VOID		120
 
-extern int unused_variable;
-#define unuse(x) (unused_variable = (int)(x));
+#define unuse(x) (void)(x);
 
 extern const int is_monolith;
 

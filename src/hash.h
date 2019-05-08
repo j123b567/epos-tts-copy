@@ -88,7 +88,7 @@ class hash_table
 	void 	add(const key_t *key, const data_t *value); //Will strcpy the arguments
 	data_t*	remove(const key_t *key);       //Its "data" will be returned (just free() it)
 	void 	forall(void usefn(key_t *key, data_t *value, void *parm), void *parm);
-	inline void forall(void usefn(key_t *key, data_t *value, int parm), int parm) {
+	inline void forall(void usefn(key_t *key, data_t *value, long parm), long parm) {
 		forall((void(*)(key_t*, data_t*, void *))usefn, (void *)parm);
 	}
 	data_t*	translate(const key_t *key);    //Will NOT strdup the result

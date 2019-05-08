@@ -413,7 +413,7 @@ void server()
 	server_shutdown();
 }
 
-void server_crashed(char *, a_ttscp *a, int why_we_crashed)
+void server_crashed(char *, a_ttscp *a, long why_we_crashed)
 {
 	int w = why_we_crashed;
 	char code[]= "865";

@@ -112,7 +112,7 @@
 #define CHARSET    O_CHARSET
 #define DEBUG_AREA O_DBG_AREA
 
-#define OPTION(member,name,type,default) {"C:" name + 2, type, OS_CFG, A_PUBLIC, A_PUBLIC, true, false, (int)&((configuration *)NULL)->member},
+#define OPTION(member,name,type,default) {"C:" name + 2, type, OS_CFG, A_PUBLIC, A_PUBLIC, true, false, (long)&((configuration *)NULL)->member},
 
 #define OPTIONAGGR(x) 
 #define OPTIONITEM(w,x,y,z) OPTION (w,x,y,z)
@@ -126,7 +126,7 @@
 #define LNG_OPTION(member,member_lang,name,type,default)  OPTION(member,name,type,default)
 
 #define OPTIONARRAY(member, name, type, default, number) {"C:" name + 2, type, OS_CFG, \
-		A_PUBLIC, A_PUBLIC, true, true, (int)&((configuration *)NULL)->member},
+		A_PUBLIC, A_PUBLIC, true, true, (long)&((configuration *)NULL)->member},
 #define LNG_OPTIONARRAY(member, name, type, default, number)  \
 		OPTIONARRAY(member, name, type, default, number)
 
@@ -205,16 +205,16 @@
 #define OPTIONAGGRENDS
 
 // #define LNG_OPTIONAGGR(x) 
-// #define LNG_OPTIONITEM(member,name,type,default) {"L:" name + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, true, false, (int)&((lang *)NULL)->member}, 
+// #define LNG_OPTIONITEM(member,name,type,default) {"L:" name + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, true, false, (long)&((lang *)NULL)->member},
 // #define LNG_OPTIONAGGRENDS 
 
 #define OPTION(w,x,y,z)
-#define VOICE_OPTION(member,member_voice,name,type,default)   {"L:" name + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, true, false, (int)&((lang *)NULL)->member_voice},
-#define LNG_OPTION(member,member_lang,name,type,default)  {"L:" name + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, true, false, (int)&((lang *)NULL)->member_lang},
+#define VOICE_OPTION(member,member_voice,name,type,default)   {"L:" name + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, true, false, (long)&((lang *)NULL)->member_voice},
+#define LNG_OPTION(member,member_lang,name,type,default)  {"L:" name + 2, type, OS_LANG, A_PUBLIC, A_PUBLIC, true, false, (long)&((lang *)NULL)->member_lang},
 
 #define OPTIONARRAY(member, name, type, default, number)
 #define LNG_OPTIONARRAY(member, name, type, default, number) {"L:" name + 2, type, OS_LANG, \
-		A_PUBLIC, A_PUBLIC, true, true, (int)&((lang *)NULL)->member},
+		A_PUBLIC, A_PUBLIC, true, true, (long)&((lang *)NULL)->member},
 
 
 #undef CONFIG_LANG_DESCRIBE
@@ -287,7 +287,7 @@
 // #define LNG_OPTIONITEM(w,x,y,z) OPTIONITEM(w,x,y,z)
 // #define LNG_OPTIONAGGRENDS OPTIONAGGRENDS
 
-#define VOICE_OPTION(member,member_voice,name,type,default)  {"V:" name + 2, type, OS_VOICE, A_PUBLIC, A_PUBLIC, true, false, (int)&((voice *)NULL)->member_voice},
+#define VOICE_OPTION(member,member_voice,name,type,default)  {"V:" name + 2, type, OS_VOICE, A_PUBLIC, A_PUBLIC, true, false, (long)&((voice *)NULL)->member_voice},
 
 #undef CONFIG_VOICE_DESCRIBE
 

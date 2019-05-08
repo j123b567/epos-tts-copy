@@ -60,7 +60,8 @@
 	#include <io.h>		/* open, (ioctl,) ... */
 #endif
 
-int localsound = -1;
+#define SOUNDCARD_NOT_OPEN -1
+int localsound = SOUNDCARD_NOT_OPEN;
 
 #ifndef SNDCTL_DSP_SYNC
 	#ifndef SOUND_PCM_SYNC
@@ -98,17 +99,17 @@ static int downsample_factor(int working, int out)
 //#pragma hdrstop
 
 // #define RIFF_HEADER_SIZE  8
-#define WAVE_HEADER_SIZE  ((long)(sizeof(wave_header) - RIFF_HEADER_SIZE))
+#define WAVE_HEADER_SIZE  ((int32_t)(sizeof(wave_header) - RIFF_HEADER_SIZE))
 
 
 struct cue_point
 {
-	long name;
-	long pos;
+	int32_t name;
+	int32_t pos;
 	char chunk[4];
-	long chunkstart;
-	long blkstart;
-	long sample_offset;
+	int32_t chunkstart;
+	int32_t blkstart;
+	int32_t sample_offset;
 };
 
 cue_point cue_point_template = { 0, 0, FOURCC_INIT("data"), 0, 0, 0 };
@@ -119,21 +120,21 @@ cue_point cue_point_template = { 0, 0, FOURCC_INIT("data"), 0, 0, 0 };
 struct ltxt
 {
 	char txt[4];
-	long len;
-	long cp_name;
-	long sample_count;
+	int32_t len;
+	int32_t cp_name;
+	int32_t sample_count;
 	char purpose[4];
-	short country;
-	short language;
-	short dialect;
-	short codepage;
+	int16_t country;
+	int16_t language;
+	int16_t dialect;
+	int16_t codepage;
 };
 
 struct labl
 {
 	char txt[4];
-	long len;
-	long cp_name;
+	int32_t len;
+	int32_t cp_name;
 };
 
 #define USA	 1		// FIXME (etc.)
@@ -150,11 +151,13 @@ wavefm::wavefm(voice *v)
 	samp_rate = v->samp_rate;
 //	samp_size_bytes = sizeof(SAMPLE);
 	channel = v->channel;
-	int stereo = channel==CT_MONO ? 0 : 1;
+	int stereo = channel == CT_MONO ? 0 : 1;
 	if (this_voice->samp_size <= 0 || (this_voice->samp_size >> 3) > (signed)sizeof(int))
 		shriek(447, fmt("Invalid sample size %d", this_voice->samp_size));
-	if (cfg->ulaw && !cfg->wav_hdr)
-		this_voice->samp_size = 8, this_voice->out_rate = 8000;
+	if (cfg->ulaw && !cfg->wav_hdr) {
+		this_voice->samp_size = 8;
+		this_voice->out_rate = 8000;
+	}
 //	cfg->samp_size = cfg->samp_size + 7 & ~7;	// Petr had this
 	downsamp = downsample_factor(samp_rate, v->out_rate);
 	translated = false;
@@ -248,7 +251,7 @@ wavefm::~wavefm()
 const static inline bool ioctlable(int fd)
 {
 	int tmp;
-	return !ioctl (fd, SNDCTL_DSP_GETBLKSIZE, &tmp);
+	return !ioctl(fd, SNDCTL_DSP_GETBLKSIZE, &tmp);
 }
 
 static inline void set_samp_size(int fd, int samp_size_bits)
@@ -314,7 +317,7 @@ static inline void reset_soundcard(int fd)
 
 static const inline bool ioctlable(int fd)
 {
-	return fd == localsound && fd != -1;
+	return fd == localsound && fd != SOUNDCARD_NOT_OPEN;
 }
 
 #else
@@ -359,6 +362,20 @@ static inline void reset_soundcard(int fd)
 
 #endif		// FORGET_SOUND_IOCTLS
 
+/*
+ *	The following function does NOT test whether the data represented
+ *	has actually been written out.  Anyway: if the data is untranslated,
+ *	something is wrong.
+ */
+
+int
+wavefm::written_bytes()
+{
+	if (!translated) {
+		shriek(462, "Early query! hdr.total_length may not be little-endian");
+	}
+	return hdr.total_length + RIFF_HEADER_SIZE;
+}
 
 void
 wavefm::ioctl_attach()
@@ -516,12 +533,12 @@ wavefm::band_filter(int ds)
 	for (i = 0; i < 9; i++) filt[i] = 0;
 
 	for (i = 0; i < hdr.buffer_idx; i++) {
-		filt[0] = (double)(SIGNED_SAMPLE)buffer[i];
+		filt[0] = (double)buffer[i];
 		for (j=1;j<9;filt[0]=filt[0]-a[ds-2][j]*filt[j++]);
 		double outsamp = 0;
 		for (j=0;j<9;outsamp=outsamp+b[ds-2][j]*filt[j++]);
 //		printf("%d %f        ", buffer[i], (float)outsamp);
-		buffer[i] = (SAMPLE)(SIGNED_SAMPLE)outsamp;
+		buffer[i] = (SAMPLE)outsamp;
 		for (j=8;j>0;j--) filt[j]=filt[j-1];		//FIXME: speed up
 	}
 }
@@ -664,14 +681,14 @@ wavefm::get_total_len()
 inline char *
 wavefm::get_ophase_buff(const w_ophase *p)
 {
-	char *tmp = (char *)this + (int)p->buff;
+	char *tmp = (char *)this + (long)p->buff;
 	return p->inlined ? tmp : *(char **)tmp;
 }
 
 inline int
 wavefm::get_ophase_len(const w_ophase *p)
 {
-	return (p->inlined ? (int)p->len : *(int *)((char *)this + (int)p->len)) + p->adjustment;
+	return (p->inlined ? (long)p->len : *(int *)((char *)this + (long)p->len)) + p->adjustment;
 }
 
 inline bool
