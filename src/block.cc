@@ -16,6 +16,8 @@
  *	at the end of rule.cc
  *
  */
+
+#include "common.h"
  
 /* HANIKA
 #define END_OF_BLOCK  ((rule *)0)

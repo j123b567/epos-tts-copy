@@ -18,6 +18,8 @@
 #ifndef EPOS_CLIENT_H
 #define EPOS_CLIENT_H
 
+#include "config.h"
+
 #if defined(HAVE_WINSOCK_H) || defined(HAVE_WINSOCK2_H)
 	#define HAVE_WINSOCK
 	#define socky unsigned

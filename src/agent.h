@@ -236,7 +236,7 @@ struct ttscp_cmd
 //	char name[4];
 	int name;		/* tried const, Visual C++ then rejects initialization */
 	int(*impl)(char *param, a_ttscp *a);
-	char *short_help;	/* was const, as above */
+	const char *short_help;
 	PAR_SYNTAX param;
 };
 

@@ -767,7 +767,7 @@ wavefm::write_header()
 void 
 wavefm::write_pa() {
 
-#ifdef HAVE_PULSE_ERROR_H && HAVE_PULSE_SIMPLE_H
+#if HAVE_PULSE_ERROR_H && HAVE_PULSE_SIMPLE_H
 	/* The Sample format to use */
 	ss.format = hdr.samplesize == 8 ? PA_SAMPLE_U8 : PA_SAMPLE_S16LE;
 	ss.rate = samp_rate;
@@ -847,7 +847,7 @@ wavefm::write_pa() {
 void
 wavefm::quit_pa()
 {
-#ifdef HAVE_PULSE_ERROR_H && HAVE_PULSE_SIMPLE_H
+#if HAVE_PULSE_ERROR_H && HAVE_PULSE_SIMPLE_H
 	if (pa_strm)
         	pa_stream_unref(pa_strm);
 

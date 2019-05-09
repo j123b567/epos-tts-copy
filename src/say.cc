@@ -63,13 +63,13 @@ char *data = NULL;
 char *ch;
 char *dh;
 
-void shriek(char *txt)
+void shriek(const char *txt)
 {
 	fprintf(stderr, "Client side error: %s\n", txt);
 	exit(1);
 }
 
-void shriek(int, char *txt)
+void shriek(int, const char *txt)
 {
 	shriek(txt);
 }
@@ -158,6 +158,7 @@ void say_data()
 	if (wavfile || wavstdout) {
 		b = get_data();
 		FILE *f = wavstdout ? stdout : fopen(output_file, "wb");
+		if (!size || !b) shriek("Could not get waveform");
 		if (!f || !fwrite(b, size, 1, f)) shriek("Could not write waveform");
 		if (!wavstdout) fclose(f);
 		free(b);
@@ -203,7 +204,7 @@ void send_option(const char *name, const char *value)
 
 void dump_help()
 {
-	printf("usage: say [options] ['Text to be processed.']\n");
+	printf("usage: say-epos [options] ['Text to be processed.']\n");
 	printf(" -b  bare format (no frills)\n");
 	printf(" -c  casual pronunciation\n");
 	printf(" -d  show segments\n");
@@ -302,7 +303,9 @@ void send_cmd_line(int argc, char **argv)
 			shriek("Too many dashes ");
 		}
 	}
-	if (data) for(char *p=data; *p; p++) if (*p=='\n') *p=' ';
+	if (data) for(char *p=data; *p; p++) if (*p == '\n' || *p == '\r') *p=' ';
+	if (data && data[0] == '\x00')
+		shriek("Input text too funny");
 }
 
 /*
