@@ -63,7 +63,10 @@ struct wave_header
 	int32_t  total_length;
 	char string2[8];
 	int32_t  fmt_length;
-	int16_t  datform, numchan, sf1, sf2, avr1, avr2, alignment, samplesize;
+	int16_t  datform, numchan;
+	int32_t  sf1;
+	int32_t  avr1;
+	int16_t alignment, samplesize;
 	char string3[4];
 	int32_t  buffer_idx;
 };			// .wav file header
